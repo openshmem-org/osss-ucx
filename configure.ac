@@ -5,10 +5,12 @@ AC_PREREQ([2.69])
 AC_INIT([shmem-library], [1.0], [anthony.curtis@stonybrook.edu])
 AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_MACRO_DIRS([m4])
+dnl AC_CONFIG_MACRO_DIRS([m4])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC_C99
+AM_PROG_CC_C_O
 AC_PROG_INSTALL
 
 # Checks for libraries.
@@ -32,7 +34,7 @@ AS_IF([test -d $with_pmix],
 				)
 		CPPFLAGS="$save_cppflags"
 	],
-	[AC_MSG_ERROR([Can't find PMIx])]
+	[AC_MSG_ERROR([Cannot find PMIx])]
 	)
 
 # Checks for header files.
