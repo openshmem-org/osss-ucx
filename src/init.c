@@ -63,6 +63,8 @@ shmem_init(void)
 
     select_pmi_version();
 
+    logger(LOG_INIT, "using PMI%s", pmi_verstr);
+
     switch (pmi_version) {
     case PMI_VERSION_1:
         shmemi_init_pmi1();
@@ -77,8 +79,6 @@ shmem_init(void)
         logger(LOG_FATAL, "Unknown or missing PMI version");
         break;
     }
-
-    logger(LOG_INIT, "using PMI%s", pmi_verstr);
 
     /* urgh! */
 }

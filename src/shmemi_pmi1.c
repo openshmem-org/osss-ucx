@@ -51,6 +51,12 @@ shmemi_init_pmi1(void)
     s = PMI_Init(&spawned);
     assert(s == PMI_SUCCESS);
 
+    s = PMI_Get_size(&p.npes);
+    assert(s == PMI_SUCCESS);
+
+    s = PMI_Get_rank(&p.me);
+    assert(s == PMI_SUCCESS);
+
     s = atexit(shmemi_finalize_atexit_pmi1);
     assert(s == 0);
 
