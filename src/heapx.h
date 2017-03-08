@@ -1,5 +1,5 @@
-#ifndef _HEAPX_H
-#define _HEAPX_H 1
+#ifndef _SHMEMI_HEAPX_H
+#define _SHMEMI_HEAPX_H 1
 
 #include <sys/types.h>
 
@@ -23,4 +23,4 @@ int heapx_initialized(int n);
 void heapx_init(void);
 void heapx_finalize(void);
 
-#endif /* ! _HEAPX_H */
+#endif /* ! _SHMEMI_HEAPX_H */

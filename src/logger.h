@@ -1,4 +1,5 @@
-#ifndef _LOGGER_H
+#ifndef _SHMEMI_LOGGER_H
+#define _SHMEMI_LOGGER_H 1
 
 #define SHMEMI_BIT_SET(n) (1 << (n))
 
@@ -15,4 +16,4 @@ void shmemi_logger_finalize(void);
 
 void logger(shmem_log_t level, const char *fmt, ...);
 
-#endif /* ! _LOGGER_H */
+#endif /* ! _SHMEMI_LOGGER_H */

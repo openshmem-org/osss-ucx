@@ -1,5 +1,5 @@
-#ifndef _PE_H
-#define _PE_H 1
+#ifndef _SHMEMI_PE_H
+#define _SHMEMI_PE_H 1
 
 #include <stdbool.h>
 
@@ -11,4 +11,4 @@ typedef struct pe {
 
 extern pe_t p;
 
-#endif /* ! _PE_H */
+#endif /* ! _SHMEMI_PE_H */
