@@ -150,6 +150,8 @@ exchange_heap_info(void)
     }
 }
 
+/* -------------------------------------------------------------- */
+
 void
 shmemi_setup_heaps_pmix(void)
 {
@@ -182,6 +184,7 @@ shmemi_init_pmix(void)
     assert(ps == PMIX_SUCCESS);
 
     p.me = (int) vp->data.rank;
+    assert(p.me >= 0);
 
     /*
      * make a new proc to query things not linked to a specific rank
@@ -202,7 +205,6 @@ shmemi_init_pmix(void)
      * is the world a sane size?
      */
     assert(p.npes > 0);
-    assert(p.me >= 0);
     assert(p.me < p.npes);
 
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
@@ -214,16 +216,4 @@ shmemi_init_pmix(void)
     barrier_all_pmix();
 
     p.running = true;
-}
-
-int
-shmemi_my_pe_pmix(void)
-{
-    return p.me;
-}
-
-int
-shmemi_n_pes_pmix(void)
-{
-    return p.npes;
 }
