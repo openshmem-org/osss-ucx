@@ -50,5 +50,7 @@ AC_CHECK_FUNCS([atexit gettimeofday])
 
 AM_INIT_AUTOMAKE
 
-AC_CONFIG_FILES([Makefile shmem.h bin/Makefile bin/noshcc bin/noshrun])
+AC_CONFIG_FILES([Makefile
+		src/Makefile src/shmem.h
+		bin/Makefile bin/noshcc bin/noshrun])
 AC_OUTPUT

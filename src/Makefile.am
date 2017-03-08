@@ -11,5 +11,3 @@ libshmem_a_SOURCES = heapx.c init.c logger.c malloc.c pe.c shmemi_pmi1.c shmemi_
 libshmem_a_CPPFLAGS = $(PMIX_CPPFLAGS)
 
 include_HEADERS = shmem.h
-
-SUBDIRS = bin
