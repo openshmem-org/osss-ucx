@@ -91,7 +91,7 @@ publish_heap_info(void)
     ia[1].value.data.size = heapx[p.me].size;
 
     ps = PMIx_Publish(ia, 2);
-     assert(ps == PMIX_SUCCESS);
+    assert(ps == PMIX_SUCCESS);
 
     logger(LOG_INIT, "PUBLISH: my heap @ %p, %lu bytes",
            heapx[p.me].base, heapx[p.me].size);
