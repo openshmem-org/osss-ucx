@@ -1,0 +1,16 @@
+#!/bin/sh
+
+compiler="@CC@"
+pmix_libdir="@PMIX_LIBDIR@"
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+shmem_dir=@prefix@
+shmem_include=@includedir@
+shmem_lib=@libdir@
+
+$compiler \
+    -I$shmem_include \
+    $@ \
+    -L$pmix_libdir -Wl,-rpath,$pmix_libdir -lpmix \
+    -L$shmem_lib -Wl,-rpath,$shmem_lib -lshmem

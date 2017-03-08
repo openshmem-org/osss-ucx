@@ -1,1 +1,3 @@
-SUBDIRS = bin src
+ACLOCAL_AMFLAGS = -Im4
+
+SUBDIRS = src scripts

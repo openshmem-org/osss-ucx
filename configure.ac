@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.69])
 AC_INIT([shmem-library], [1.0], [anthony.curtis@stonybrook.edu])
-AC_CONFIG_SRCDIR([heapx.c])
+AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])
 
@@ -52,5 +52,5 @@ AM_INIT_AUTOMAKE
 
 AC_CONFIG_FILES([Makefile
 		src/Makefile src/shmem.h
-		bin/Makefile bin/noshcc bin/noshrun])
+		scripts/Makefile scripts/noshcc scripts/noshrun])
 AC_OUTPUT
