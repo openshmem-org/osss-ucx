@@ -1,0 +1,15 @@
+#ifndef _SHMEM_H
+#define _SHMEM_H 1
+
+void shmem_finalize(void);
+void shmem_init(void);
+
+int shmem_my_pe(void);
+int shmem_n_pes(void);
+
+void shmem_barrier_all(void);
+
+void *shmem_malloc(size_t);
+void shmem_free(void *);
+
+#endif /* ! _SHMEM_H */
