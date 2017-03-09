@@ -13,4 +13,4 @@ $compiler \
     -I$shmem_include \
     $@ \
     -L$pmix_libdir -Wl,-rpath,$pmix_libdir -lpmix \
-    -L$shmem_lib -Wl,-rpath,$shmem_lib -lshmem
+    -L$shmem_lib -Wl,-rpath,$shmem_lib -lshmem -lshmemi

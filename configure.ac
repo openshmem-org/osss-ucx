@@ -53,6 +53,7 @@ AC_CHECK_FUNCS([atexit gettimeofday])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_FILES([Makefile
-		src/Makefile src/shmem.h
-		scripts/Makefile scripts/noshcc scripts/noshrun])
+		src/Makefile src/shmemi/Makefile scripts/Makefile
+		src/shmem.h
+		scripts/noshcc scripts/noshrun])
 AC_OUTPUT

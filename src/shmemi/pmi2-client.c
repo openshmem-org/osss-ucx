@@ -5,8 +5,7 @@
 
 #include <pmi2.h>
 
-#include "pe.h"
-#include "logger.h"
+#include "shmemi.h"
 
 /* STUB == STUB == STUB == STUB == STUB == STUB == STUB == STUB */
 
@@ -19,7 +18,7 @@ void
 shmemi_finalize_handler_pmi2(bool need_barrier)
 {
     if (need_barrier) {
-        logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
+        shmemi_logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
     }
 
 

@@ -6,8 +6,7 @@
 #include <stdbool.h>
 #include <pmi.h>
 
-#include "pe.h"
-#include "logger.h"
+#include "shmemi.h"
 
 /*
  * if finalize called through atexit, force a barrier
@@ -20,7 +19,7 @@ shmemi_finalize_handler_pmi1(bool need_barrier)
     int s;
 
     if (need_barrier) {
-        logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
+        shmemi_logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
     }
 
     s = PMI_Finalize();

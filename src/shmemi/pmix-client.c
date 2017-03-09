@@ -6,9 +6,7 @@
 #include <stdbool.h>
 #include <pmix.h>
 
-#include "pe.h"
-#include "logger.h"
-#include "heapx.h"
+#include "shmemi.h"
 
 /*
  * if finalize called through atexit, force a barrier
@@ -23,7 +21,8 @@ shmemi_finalize_handler_pmix(bool need_barrier)
         pmix_status_t ps;
 
         if (need_barrier) {
-            logger(LOG_FINALIZE, "still alive, add barrier to finalize");
+            shmemi_logger(LOG_FINALIZE,
+                          "still alive, add barrier to finalize");
         }
 
         PMIX_INFO_CREATE(info, 1);
@@ -34,11 +33,11 @@ shmemi_finalize_handler_pmix(bool need_barrier)
 
         PMIX_INFO_FREE(info, 1);
 
-        heapx_finalize();
+        shmemi_heapx_finalize();
 
         p.running = false;
 
-        logger(LOG_FINALIZE, "shut down complete");
+        shmemi_logger(LOG_FINALIZE, "shut down complete");
     }
 }
 
@@ -93,8 +92,8 @@ publish_heap_info(void)
     ps = PMIx_Publish(ia, 2);
     assert(ps == PMIX_SUCCESS);
 
-    logger(LOG_INIT, "PUBLISH: my heap @ %p, %lu bytes",
-           heapx[p.me].base, heapx[p.me].size);
+    shmemi_logger(LOG_INIT, "PUBLISH: my heap @ %p, %lu bytes",
+                  heapx[p.me].base, heapx[p.me].size);
 
     PMIX_INFO_FREE(ia, 2);
 }
@@ -133,10 +132,10 @@ exchange_heap_info(void)
             assert(ps == PMIX_SUCCESS);
 #endif
 
-            heapx_set_pe(i,
-                         (void *) fetch[0].value.data.size,
-                         fetch[1].value.data.size
-                         );
+            shmemi_heapx_set_pe(i,
+                                (void *) fetch[0].value.data.size,
+                                fetch[1].value.data.size
+                                );
 
         }
     }
@@ -145,8 +144,8 @@ exchange_heap_info(void)
     PMIX_INFO_FREE(waiter, 1);
 
     for (i = 0; i < p.npes; i += 1) {
-        logger(LOG_INIT, "FETCH: heap %d @ %p, %lu bytes",
-               i, heapx[i].base, heapx[i].size);
+        shmemi_logger(LOG_INIT, "FETCH: heap %d @ %p, %lu bytes",
+                      i, heapx[i].base, heapx[i].size);
     }
 }
 

@@ -1,4 +1,4 @@
-#include "pe.h"
+#include "shmemi.h"
 
 /*
  * shared state

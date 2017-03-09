@@ -5,9 +5,7 @@
 #include <sys/time.h>
 #include <stdbool.h>
 
-#include "pe.h"
-#include "timer.h"
-#include "logger.h"
+#include "shmemi.h"
 
 #define TRACE_MSG_BUF_SIZE 256
 
@@ -29,6 +27,8 @@ level_to_string(shmem_log_t level)
         return "FINALIZE";
     case LOG_MEMORY:
         return "MEMORY";
+    case LOG_ALL:
+        return "ALL";
     default:
         return "UNKNOWN";
     }
@@ -69,9 +69,14 @@ shmemi_logger_finalize(void)
 #define SHMEMI_BIT_TEST(n) (levels & SHMEMI_BIT_SET(n))
 
 void
-logger(shmem_log_t level, const char *fmt, ...)
+shmemi_logger(shmem_log_t level, const char *fmt, ...)
 {
+    /* TODO just do all logging for now */
+#if 1
+    if (logging) {
+#else
     if (logging && SHMEMI_BIT_TEST(level)) {
+#endif
         char *tmp1;
         char *tmp2;
         va_list ap;
