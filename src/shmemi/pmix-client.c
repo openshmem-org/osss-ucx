@@ -17,7 +17,7 @@ void
 shmemi_finalize_handler_pmix(bool need_barrier)
 {
     if (p.running) {
-        pmix_info_t *info;
+        pmix_info_t *bar;
         pmix_status_t ps;
 
         if (need_barrier) {
@@ -25,13 +25,13 @@ shmemi_finalize_handler_pmix(bool need_barrier)
                           "still alive, add barrier to finalize");
         }
 
-        PMIX_INFO_CREATE(info, 1);
-        PMIX_INFO_LOAD(info, PMIX_EMBED_BARRIER, &need_barrier, PMIX_BOOL);
+        PMIX_INFO_CREATE(bar, 1);
+        PMIX_INFO_LOAD(bar, PMIX_EMBED_BARRIER, &need_barrier, PMIX_BOOL);
 
-        ps = PMIx_Finalize(info, 1);
+        ps = PMIx_Finalize(bar, 1);
         assert(ps == PMIX_SUCCESS);
 
-        PMIX_INFO_FREE(info, 1);
+        PMIX_INFO_FREE(bar, 1);
 
         shmemi_heapx_finalize();
 
