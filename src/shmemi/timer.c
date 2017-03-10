@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-static long epoch;
+static double epoch;
 
 static
 inline
-long
-read_time_us(void)
+double
+read_time(void)
 {
     struct timeval t;
 
     gettimeofday(&t, NULL);
 
-    return (long) ((t.tv_sec * 1e6) + t.tv_usec);
+    return (double) (t.tv_sec + (t.tv_usec / 1.0e6));
 }
 
 void
 shmemi_timer_init(void)
 {
-    epoch = read_time_us();
+    epoch = read_time();
 }
 
 void
@@ -26,8 +26,8 @@ shmemi_timer_finalize(void)
 {
 }
 
-long
-shmemi_timer_get_elapsed_us(void)
+double
+shmemi_timer_get_elapsed(void)
 {
-    return read_time_us() - epoch;
+    return read_time() - epoch;
 }

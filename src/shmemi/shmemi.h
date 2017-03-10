@@ -46,7 +46,7 @@ void *shmemi_align(size_t a, size_t s);
  */
 void shmemi_timer_init(void);
 void shmemi_timer_finalize(void);
-long shmemi_timer_get_elapsed_us(void);
+double shmemi_timer_get_elapsed(void);
 
 /*
  * message logging

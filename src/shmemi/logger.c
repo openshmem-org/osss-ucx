@@ -85,9 +85,9 @@ shmemi_logger(shmem_log_t level, const char *fmt, ...)
         tmp2 = (char *) malloc(TRACE_MSG_BUF_SIZE * sizeof(*tmp2));
 
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
-                 "[%10ld] PE %d: %10s: ",
-                 shmemi_timer_get_elapsed_us(),
+                 "[%d:%6.6f] %10s: ",
                  p.me,
+                 shmemi_timer_get_elapsed(),
                  level_to_string(level)
                  );
 
