@@ -38,7 +38,7 @@ AS_IF([test -d $with_pmix],
 	)
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h string.h sys/time.h])
+AC_CHECK_HEADERS([stdlib.h string.h sys/time.h sys/types.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -53,7 +53,8 @@ AC_CHECK_FUNCS([atexit gettimeofday])
 AM_INIT_AUTOMAKE
 
 AC_CONFIG_FILES([Makefile
-		src/Makefile src/shmemi/Makefile scripts/Makefile
+		src/Makefile src/shmemi/Makefile
 		src/shmem.h
-		scripts/noshcc scripts/noshrun])
+		scripts/Makefile scripts/noshcc scripts/noshrun])
+
 AC_OUTPUT
