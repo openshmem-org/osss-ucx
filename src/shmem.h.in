@@ -283,7 +283,7 @@ extern "C"
 
 #define SHMEM_MAX_NAME_LEN 64
 
-#define SHMEM_VENDOR_STRING "UH Reference Implementation"
+#define SHMEM_VENDOR_STRING "OSSS/SBU Reference Implementation"
 
     /**
      * @brief determines the major.minor version numbers of this release.

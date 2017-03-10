@@ -1,4 +1,4 @@
-LIBSHMEM_SOURCES       = init.c malloc.c
+LIBSHMEM_SOURCES       = init.c malloc.c version.c
 
 SUBDIRS                = shmemi
 
