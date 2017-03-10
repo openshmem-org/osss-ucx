@@ -105,4 +105,8 @@ shmemi_logger(shmem_log_t level, const char *fmt, ...)
         free(tmp2);
         free(tmp1);
     }
+
+    if (level == LOG_FATAL) {
+        exit(1);
+    }
 }
