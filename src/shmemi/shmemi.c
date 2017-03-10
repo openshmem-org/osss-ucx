@@ -9,10 +9,7 @@
 #include "pmi2-client.h"
 #include "pmi1-client.h"
 
-void
-shmemi_setup_heaps(void)
-{
-}
+/* -------------------------------------------------------------- */
 
 typedef enum pmi_ver {
     PMI_VERSION_NONE,
@@ -57,6 +54,26 @@ select_pmi_version(void)
     pmi_verstr = tp->str;
 }
 
+/* -------------------------------------------------------------- */
+
+typedef struct api_def {
+    void (*init_fn)(void);
+    void (*finalize_fn)(void);
+    void (*heap_setup_fn)(void);
+} api_def_t;
+
+static api_def_t api;
+
+/* -------------------------------------------------------------- */
+
+void
+shmemi_setup_heaps(void)
+{
+    api.heap_setup_fn();
+}
+
+/* -------------------------------------------------------------- */
+
 void
 shmemi_finalize(void)
 {
@@ -64,17 +81,19 @@ shmemi_finalize(void)
 
     switch (pmi_version) {
     case PMI_VERSION_1:
-        shmemi_finalize_pmi1();
+        api.finalize_fn = shmemi_finalize_pmi1;
         break;
     case PMI_VERSION_2:
-        shmemi_finalize_pmi2();
+        api.finalize_fn = shmemi_finalize_pmi2;
         break;
     case PMI_VERSION_X:
-        shmemi_finalize_pmix();
+        api.finalize_fn = shmemi_finalize_pmix;
         break;
     default:
         break;
     }
+
+    api.finalize_fn();
 
     shmemi_malloc_finalize();
     shmemi_logger_finalize();
@@ -94,16 +113,19 @@ shmemi_init(void)
 
     switch (pmi_version) {
     case PMI_VERSION_1:
-        shmemi_init_pmi1();
+        api.init_fn = shmemi_init_pmi1;
         break;
     case PMI_VERSION_2:
-        shmemi_init_pmi2();
+        api.init_fn = shmemi_init_pmi2;
         break;
     case PMI_VERSION_X:
-        shmemi_init_pmix();
+        api.init_fn = shmemi_init_pmix;
+        api.heap_setup_fn = shmemi_setup_heaps_pmix;
         break;
     default:
         shmemi_logger(LOG_FATAL, "Unknown or missing PMI version");
         break;
     }
+
+    api.init_fn();
 }
