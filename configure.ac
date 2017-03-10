@@ -60,9 +60,14 @@ AC_CHECK_FUNCS([atexit gettimeofday])
 
 AM_INIT_AUTOMAKE
 
+AC_SUBST(SHMEM_MAJOR_VERSION, 1)
+AC_SUBST(SHMEM_MINOR_VERSION, 3)
+AC_SUBST(SHMEM_MAX_NAME_LEN, 64)
+AC_SUBST(SHMEM_VENDOR_STRING, '"OSSS/SBU Reference Implementation"')
+
 AC_CONFIG_FILES([Makefile
 		src/Makefile src/shmemi/Makefile
-		src/shmem.h
+		src/shmem.h src/version.h
 		scripts/Makefile scripts/noshcc scripts/noshrun])
 
 AC_OUTPUT
