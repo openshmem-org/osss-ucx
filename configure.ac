@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([shmem-library], [1.0], [anthony.curtis@stonybrook.edu])
+AC_INIT([shmem-library], [1.3], [anthony.curtis@stonybrook.edu])
 AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
 dnl AC_CONFIG_MACRO_DIRS([m4])
