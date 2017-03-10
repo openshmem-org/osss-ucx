@@ -11,4 +11,4 @@ lib_LIBRARIES          = libshmem.a
 libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
 
 # retain tree
-nobase_include_HEADERS = shmem.h mpp/shmem.h
+nobase_include_HEADERS = shmem.h mpp/shmem.h shmemx.h mpp/shmemx.h
