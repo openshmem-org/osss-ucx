@@ -119,15 +119,19 @@ shmemi_align_once(int heap_no, size_t a, size_t s)
 void
 shmemi_malloc_init(void)
 {
-    once_api.malloc_fn  = shmemi_malloc_once;
-    once_api.free_fn    = shmemi_free_once;
-    once_api.realloc_fn = shmemi_realloc_once;
-    once_api.align_fn   = shmemi_align_once;
+    once_api = (malloc_api_t) {
+        .malloc_fn  = shmemi_malloc_once,
+        .free_fn    = shmemi_free_once,
+        .realloc_fn = shmemi_realloc_once,
+        .align_fn   = shmemi_align_once
+    };
 
-    run_api.malloc_fn   = shmemi_malloc_run;
-    run_api.free_fn     = shmemi_free_run;
-    run_api.realloc_fn  = shmemi_realloc_run;
-    run_api.align_fn    = shmemi_align_run;
+    run_api = (malloc_api_t) {
+        .malloc_fn   = shmemi_malloc_run,
+        .free_fn     = shmemi_free_run,
+        .realloc_fn  = shmemi_realloc_run,
+        .align_fn    = shmemi_align_run
+    };
 
     api                 = &once_api;
 }
