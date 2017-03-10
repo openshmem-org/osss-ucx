@@ -19,11 +19,16 @@ static malloc_api_t *api;
 
 /* ---------------------------------------------------------------- */
 
-#define INIT_CHECK()                            \
-    if (! shmemi_heapx_initialized(heap_no)) {  \
-        shmemi_heapx_init();                    \
-        api = &run_api;                         \
+static
+inline
+void
+init_check(int heap_no)
+{
+    if (! shmemi_heapx_initialized(heap_no)) {
+        shmemi_heapx_init();
+        api = &run_api;
     }
+}
 
 /* ---------------------------------------------------------------- */
 
@@ -38,7 +43,7 @@ static
 void *
 shmemi_malloc_once(int heap_no, size_t s)
 {
-    INIT_CHECK();
+    init_check(heap_no);
 
     return api->malloc_fn(heap_no, s);
 }
@@ -56,7 +61,7 @@ static
 void
 shmemi_free_once(int heap_no, void *p)
 {
-    INIT_CHECK();
+    init_check(heap_no);
 
     api->free_fn(heap_no, p);
 }
@@ -74,7 +79,7 @@ static
 void *
 shmemi_realloc_once(int heap_no, void *p, size_t s)
 {
-    INIT_CHECK();
+    init_check(heap_no);
 
     api->realloc_fn = shmemi_realloc_run;
 
@@ -102,7 +107,7 @@ static
 void *
 shmemi_align_once(int heap_no, size_t a, size_t s)
 {
-    INIT_CHECK();
+    init_check(heap_no);
 
     api->align_fn = shmemi_align_run;
 
