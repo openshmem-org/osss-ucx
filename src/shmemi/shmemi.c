@@ -101,14 +101,14 @@ shmemi_init(void)
     case PMI_VERSION_1:
         api = (api_def_t) {
             .init_fn = shmemi_init_pmi1,
-            /* .heap_setup_fn = shmemi_setup_heaps_pmix */
+            .heap_setup_fn = shmemi_setup_heaps_pmix,
             .finalize_fn = shmemi_finalize_pmi1
         };
         break;
     case PMI_VERSION_2:
         api = (api_def_t) {
             .init_fn = shmemi_init_pmi2,
-            /* .heap_setup_fn = shmemi_setup_heaps_pmix */
+            .heap_setup_fn = shmemi_setup_heaps_pmix,
             .finalize_fn = shmemi_finalize_pmi2
         };
         break;

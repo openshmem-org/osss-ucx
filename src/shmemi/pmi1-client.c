@@ -61,3 +61,8 @@ shmemi_init_pmi1(void)
 
     p.running = true;
 }
+
+void
+shmemi_setup_heaps_pmi1(void)
+{
+}
