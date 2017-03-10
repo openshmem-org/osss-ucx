@@ -79,20 +79,6 @@ shmemi_finalize(void)
 {
     shmemi_logger(LOG_FINALIZE, "finalizing PMI%s", pmi_verstr);
 
-    switch (pmi_version) {
-    case PMI_VERSION_1:
-        api.finalize_fn = shmemi_finalize_pmi1;
-        break;
-    case PMI_VERSION_2:
-        api.finalize_fn = shmemi_finalize_pmi2;
-        break;
-    case PMI_VERSION_X:
-        api.finalize_fn = shmemi_finalize_pmix;
-        break;
-    default:
-        break;
-    }
-
     api.finalize_fn();
 
     shmemi_malloc_finalize();
@@ -113,14 +99,25 @@ shmemi_init(void)
 
     switch (pmi_version) {
     case PMI_VERSION_1:
-        api.init_fn = shmemi_init_pmi1;
+        api = (api_def_t) {
+            .init_fn = shmemi_init_pmi1,
+            /* .heap_setup_fn = shmemi_setup_heaps_pmix */
+            .finalize_fn = shmemi_finalize_pmi1
+        };
         break;
     case PMI_VERSION_2:
-        api.init_fn = shmemi_init_pmi2;
+        api = (api_def_t) {
+            .init_fn = shmemi_init_pmi2,
+            /* .heap_setup_fn = shmemi_setup_heaps_pmix */
+            .finalize_fn = shmemi_finalize_pmi2
+        };
         break;
     case PMI_VERSION_X:
-        api.init_fn = shmemi_init_pmix;
-        api.heap_setup_fn = shmemi_setup_heaps_pmix;
+        api = (api_def_t) {
+            .init_fn = shmemi_init_pmix,
+            .heap_setup_fn = shmemi_setup_heaps_pmix,
+            .finalize_fn = shmemi_finalize_pmix
+        };
         break;
     default:
         shmemi_logger(LOG_FATAL, "Unknown or missing PMI version");
