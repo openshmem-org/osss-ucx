@@ -10,4 +10,5 @@ libshmem_la_LDFLAGS    = -version-info 0:0:0
 lib_LIBRARIES          = libshmem.a
 libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
 
-include_HEADERS        = shmem.h
+# retain tree
+nobase_include_HEADERS = shmem.h mpp/shmem.h
