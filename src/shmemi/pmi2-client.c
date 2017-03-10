@@ -18,7 +18,7 @@ void
 shmemi_finalize_handler_pmi2(bool need_barrier)
 {
     if (need_barrier) {
-        shmemi_logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
+        logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
     }
 
 

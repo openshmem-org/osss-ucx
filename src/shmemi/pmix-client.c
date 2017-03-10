@@ -21,8 +21,8 @@ shmemi_finalize_handler_pmix(bool need_barrier)
         pmix_status_t ps;
 
         if (need_barrier) {
-            shmemi_logger(LOG_FINALIZE,
-                          "still alive, add barrier to finalize");
+            logger(LOG_FINALIZE,
+                   "still alive, add barrier to finalize");
         }
 
         PMIX_INFO_CREATE(bar, 1);
@@ -37,7 +37,7 @@ shmemi_finalize_handler_pmix(bool need_barrier)
 
         p.running = false;
 
-        shmemi_logger(LOG_FINALIZE, "shut down complete");
+        logger(LOG_FINALIZE, "shut down complete");
     }
 }
 
@@ -92,8 +92,8 @@ publish_heap_info(void)
     ps = PMIx_Publish(ia, 2);
     assert(ps == PMIX_SUCCESS);
 
-    shmemi_logger(LOG_INIT, "PUBLISH: my heap @ %p, %lu bytes",
-                  heapx[p.me].base, heapx[p.me].size);
+    logger(LOG_INIT, "PUBLISH: my heap @ %p, %lu bytes",
+           heapx[p.me].base, heapx[p.me].size);
 
     PMIX_INFO_FREE(ia, 2);
 }
@@ -144,8 +144,8 @@ exchange_heap_info(void)
     PMIX_INFO_FREE(waiter, 1);
 
     for (i = 0; i < p.npes; i += 1) {
-        shmemi_logger(LOG_INIT, "FETCH: heap %d @ %p, %lu bytes",
-                      i, heapx[i].base, heapx[i].size);
+        logger(LOG_INIT, "FETCH: heap %d @ %p, %lu bytes",
+               i, heapx[i].base, heapx[i].size);
     }
 }
 

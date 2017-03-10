@@ -19,7 +19,7 @@ shmemi_finalize_handler_pmi1(bool need_barrier)
     int s;
 
     if (need_barrier) {
-        shmemi_logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
+        logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
     }
 
     s = PMI_Finalize();

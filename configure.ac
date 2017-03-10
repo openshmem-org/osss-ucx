@@ -37,6 +37,14 @@ AS_IF([test -d $with_pmix],
 	[AC_MSG_ERROR([Cannot find PMIx])]
 	)
 
+# Feature checks
+AC_ARG_ENABLE([logging],
+	AS_HELP_STRING([--enable-logging], [Enable library logging @<:@default=no@:>@]),
+	AS_IF([test "x$enableval" = "xyes"],
+		    AC_DEFINE([ENABLE_LOGGING], [1], [Enable logging])
+		    ),
+	[])
+
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h sys/time.h sys/types.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
 

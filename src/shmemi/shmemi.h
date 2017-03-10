@@ -51,7 +51,6 @@ double shmemi_timer_get_elapsed(void);
 /*
  * message logging
  */
-#include <stdarg.h>
 
 void shmemi_logger_init(void);
 void shmemi_logger_finalize(void);
@@ -67,6 +66,16 @@ typedef enum shmem_log {
 } shmem_log_t;
 
 void shmemi_logger(shmem_log_t level, const char *fmt, ...);
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#ifdef ENABLE_LOGGING
+# define logger(...) shmemi_logger(__VA_ARGS__)
+#else
+# define logger(...)
+#endif /* ENABLE_LOGGING */
 
 /*
  * PE management

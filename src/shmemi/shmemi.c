@@ -75,27 +75,17 @@ shmemi_setup_heaps(void)
 /* -------------------------------------------------------------- */
 
 void
-shmemi_finalize(void)
-{
-    shmemi_logger(LOG_FINALIZE, "finalizing PMI%s", pmi_verstr);
-
-    api.finalize_fn();
-
-    shmemi_malloc_finalize();
-    shmemi_logger_finalize();
-    shmemi_timer_finalize();
-}
-
-void
 shmemi_init(void)
 {
     shmemi_timer_init();
+#ifdef ENABLE_LOGGING
     shmemi_logger_init();
+#endif
     shmemi_malloc_init();
 
     select_pmi_version();
 
-    shmemi_logger(LOG_INIT, "using PMI%s", pmi_verstr);
+    logger(LOG_INIT, "using PMI%s", pmi_verstr);
 
     switch (pmi_version) {
     case PMI_VERSION_1:
@@ -120,9 +110,23 @@ shmemi_init(void)
         };
         break;
     default:
-        shmemi_logger(LOG_FATAL, "Unknown or missing PMI version");
+        logger(LOG_FATAL, "Unknown or missing PMI version");
         break;
     }
 
     api.init_fn();
+}
+
+void
+shmemi_finalize(void)
+{
+    logger(LOG_FINALIZE, "finalizing PMI%s", pmi_verstr);
+
+    api.finalize_fn();
+
+    shmemi_malloc_finalize();
+#ifdef ENABLE_LOGGING
+    shmemi_logger_finalize();
+#endif
+    shmemi_timer_finalize();
 }

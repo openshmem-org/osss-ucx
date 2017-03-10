@@ -147,8 +147,7 @@ shmemi_malloc(size_t s)
 {
     void *p = api->malloc_fn(DEFAULT_HEAP, s);
 
-    shmemi_logger(LOG_MEMORY, "leave %s(%lu) -> %p",
-                  __func__, s, p);
+    logger(LOG_MEMORY, "leave %s(%lu) -> %p", __func__, s, p);
 
     return p;
 }
@@ -158,7 +157,7 @@ shmemi_free(void *p)
 {
     api->free_fn(DEFAULT_HEAP, p);
 
-    shmemi_logger(LOG_MEMORY, "leave %s(%p)", __func__, p);
+    logger(LOG_MEMORY, "leave %s(%p)", __func__, p);
 }
 
 void *
@@ -166,8 +165,7 @@ shmemi_realloc(void *p, size_t s)
 {
     void *new_p = api->realloc_fn(DEFAULT_HEAP, p, s);
 
-    shmemi_logger(LOG_MEMORY, "leave %s(%p, %lu) -> %p",
-                  __func__, p, s, new_p);
+    logger(LOG_MEMORY, "leave %s(%p, %lu) -> %p", __func__, p, s, new_p);
 
     return new_p;
 }
@@ -177,8 +175,7 @@ shmemi_align(size_t a, size_t s)
 {
     void *p = api->align_fn(DEFAULT_HEAP, a, s);
 
-    shmemi_logger(LOG_MEMORY, "leave %s(%lu, %lu) -> %p",
-                  __func__, a, s, p);
+    logger(LOG_MEMORY, "leave %s(%lu, %lu) -> %p", __func__, a, s, p);
 
     return p;
 }
