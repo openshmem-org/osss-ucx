@@ -1,6 +1,6 @@
-LIBSHMEM_SOURCES       = init.c malloc.c version.c
-
 SUBDIRS                = shmemi
+
+LIBSHMEM_SOURCES       = init.c malloc.c version.c
 
 lib_LTLIBRARIES        = libshmem.la
 libshmem_la_SOURCES    = $(LIBSHMEM_SOURCES)

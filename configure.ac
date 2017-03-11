@@ -68,6 +68,7 @@ AC_SUBST(SHMEM_VENDOR_STRING, '"OSSS/SBU Reference Implementation"')
 AC_CONFIG_FILES([Makefile
 		src/Makefile src/shmemi/Makefile
 		src/shmem.h src/version.h
-		scripts/Makefile scripts/noshcc scripts/noshrun])
+		scripts/Makefile scripts/noshcc scripts/noshrun
+		src/shmemi/dlmalloc/Makefile])
 
 AC_OUTPUT
