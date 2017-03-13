@@ -2,6 +2,10 @@ SUBDIRS                = shmemi
 
 LIBSHMEM_SOURCES       = init.c malloc.c version.c
 
+if ENABLE_EXPERIMENTAL
+LIBSHMEM_SOURCES      += wtime.c
+endif
+
 lib_LTLIBRARIES        = libshmem.la
 libshmem_la_SOURCES    = $(LIBSHMEM_SOURCES)
 libshmem_la_CFLAGS     = $(AM_CFLAGS)

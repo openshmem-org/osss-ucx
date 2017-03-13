@@ -1,0 +1,57 @@
+#ifndef _SHMEMX_H
+#define _SHMEMX_H 1
+
+#include <shmem.h>
+
+/*
+ * if enabled-experimental-features test...
+ */
+#if @ENABLE_EXPERIMENTAL@
+
+/*
+ * no symbol-mangling (closing brace near EOF)
+ */
+#ifdef __cplusplus
+extern "C"
+{
+#endif  /* __cplusplus */
+
+    /**
+     * @brief returns the number of seconds since the program
+     * started running
+     *
+     * @section Synopsis:
+     *
+     * @substitute c C/C++
+     * @code
+     double shmemx_wtime(void);
+     * @endcode
+     *
+     * @subsection f Fortran
+     * @code
+     double precision shmemx_wtime()
+     * @endcode
+     *
+     * @return Returns the number of seconds since the program started (epoch).
+     *
+     * @section Note: shmemx_wtime does not indicate any error code; if it
+     * is unable to detect the elapsed time, the return value is
+     * undefined.  The time may be different on each PE, but the epoch
+     * from which the time is measured will not change while OpenSHMEM is
+     * active.
+     *
+     */
+
+    double shmemx_wtime(void);
+
+    /*
+     * --end--
+     */
+
+#ifdef __cplusplus
+}
+#endif  /* __cplusplus */
+
+#endif  /* experimental feature test */
+
+#endif  /* ! _SHMEMX_H */

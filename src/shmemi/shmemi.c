@@ -78,7 +78,7 @@ void
 shmemi_init(void)
 {
     shmemi_timer_init();
-#ifdef ENABLE_LOGGING
+#ifdef ENABLE_DEBUG
     shmemi_logger_init();
 #endif
     shmemi_malloc_init();
@@ -125,7 +125,7 @@ shmemi_finalize(void)
     api.finalize_fn();
 
     shmemi_malloc_finalize();
-#ifdef ENABLE_LOGGING
+#ifdef ENABLE_DEBUG
     shmemi_logger_finalize();
 #endif
     shmemi_timer_finalize();

@@ -1,6 +1,10 @@
 #ifndef _SHMEMI_H
 #define _SHMEMI_H 1
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 /*
  * setup/teardown
  */
@@ -67,15 +71,11 @@ typedef enum shmem_log {
 
 void shmemi_logger(shmem_log_t level, const char *fmt, ...);
 
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif /* HAVE_CONFIG_H */
-
-#ifdef ENABLE_LOGGING
+#ifdef ENABLE_DEBUG
 # define logger(...) shmemi_logger(__VA_ARGS__)
 #else
 # define logger(...)
-#endif /* ENABLE_LOGGING */
+#endif /* ENABLE_DEBUG */
 
 /*
  * PE management

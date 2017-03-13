@@ -38,12 +38,21 @@ AS_IF([test -d $with_pmix],
 	)
 
 # Feature checks
-AC_ARG_ENABLE([logging],
-	AS_HELP_STRING([--enable-logging], [Enable library logging @<:@default=no@:>@]),
+AC_ARG_ENABLE([debug],
+	AS_HELP_STRING([--enable-debug], [Enable library debug @<:@default=no@:>@]),
 	AS_IF([test "x$enableval" = "xyes"],
-		    AC_DEFINE([ENABLE_LOGGING], [1], [Enable logging])
+		    AC_DEFINE([ENABLE_DEBUG], [1], [Enable debug])
 		    ),
 	[])
+AC_ARG_ENABLE([experimental],
+	AS_HELP_STRING([--enable-experimental],
+			[Enable non-standard extensions @<:@default=no@:>@]))
+AS_IF([test "x$enable_experimental" = "xyes"],
+	[AC_SUBST([ENABLE_EXPERIMENTAL], [1])],
+	[AC_SUBST([ENABLE_EXPERIMENTAL], [0])]
+	)
+
+AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h string.h sys/time.h sys/types.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
@@ -67,7 +76,7 @@ AC_SUBST(SHMEM_VENDOR_STRING, '"OSSS/SBU Reference Implementation"')
 
 AC_CONFIG_FILES([Makefile
 		src/Makefile src/shmemi/Makefile
-		src/shmem.h src/version.h
+		src/shmem.h src/shmemx.h src/version.h
 		scripts/Makefile scripts/noshcc scripts/noshrun
 		src/shmemi/dlmalloc/Makefile])
 
