@@ -1,5 +1,5 @@
 #ifndef _SHMEMX_H
-#define _SHMEMX1_H 1
+#define _SHMEMX_H 1
 
 #include <shmem.h>
 
