@@ -60,7 +60,7 @@ AS_IF([test "x$enable_experimental" = "xyes"],
 AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h string.h sys/time.h sys/types.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
+AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/types.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

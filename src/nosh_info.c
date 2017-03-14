@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
+#include <sys/param.h>
 
 #include "version.h"
 
@@ -31,15 +33,23 @@ output_spec_version(void)
 
 static
 void
-output_date(void)
+output_build_env(void)
 {
+    int s;
     const time_t t = time(NULL);
-    char *now = ctime(&t);
+    char *now;
+    char host[MAXHOSTNAMELEN];
 
-    /* chomp */
-    now[strlen(now) - 1] = '\0';
+    now = ctime(&t);
+    if (now != NULL) {
+        now[strlen(now) - 1] = '\0'; /* chomp */
+        output("Build date", now);
+    }
 
-    output("Build date", now);
+    s = gethostname(host, MAXHOSTNAMELEN);
+    if (s == 0) {
+        output("Build host", host);
+    }
 }
 
 int
@@ -64,7 +74,7 @@ main(void)
 
     output_spec_version();
 
-    output_date();
+    output_build_env();
 
     output("Run debugging",
 #ifdef ENABLE_DEBUG
@@ -72,7 +82,7 @@ main(void)
 #else
            "off"
 #endif /* ENABLE_DEBUG */
-        );
+           );
 
     output("Experimental API",
 #ifdef ENABLE_EXPERIMENTAL
@@ -80,7 +90,15 @@ main(void)
 #else
            "off"
 #endif /* ENABLE_EXPERIMENTAL */
-        );
+           );
+
+    output("Fortran support",
+#ifdef ENABLE_FORTRAN
+           "on"
+#else
+           "off"
+#endif /* ENABLE_FORTRAN */
+           );
 
     return 0;
 }
