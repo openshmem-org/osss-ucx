@@ -16,3 +16,6 @@ libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
 
 # retain tree
 nobase_include_HEADERS = shmem.h mpp/shmem.h shmemx.h mpp/shmemx.h
+
+bin_PROGRAMS           = nosh_info
+nosh_info_SOURCES      = nosh_info.c

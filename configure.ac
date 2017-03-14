@@ -2,7 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([osss-openshmem-library], [1.3], [anthony.curtis@stonybrook.edu])
+AC_INIT([OSSS/SBU Reference Implementation],
+	[1.0],
+	[anthony.curtis@stonybrook.edu],
+	[],
+	[https://github.com/openshmem-org/])
 AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
 dnl AC_CONFIG_MACRO_DIRS([m4])
@@ -70,10 +74,13 @@ AC_CHECK_FUNCS([atexit gettimeofday])
 
 AM_INIT_AUTOMAKE
 
-AC_SUBST(SHMEM_MAJOR_VERSION, 1)
-AC_SUBST(SHMEM_MINOR_VERSION, 3)
-AC_SUBST(SHMEM_MAX_NAME_LEN, 64)
-AC_SUBST(SHMEM_VENDOR_STRING, '"OSSS/SBU Reference Implementation"')
+#
+# the header file constants
+#
+AC_SUBST([SHMEM_MAJOR_VERSION], 1)
+AC_SUBST([SHMEM_MINOR_VERSION], 3)
+AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
+AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 AC_CONFIG_FILES([Makefile
 		src/Makefile src/shmemi/Makefile
