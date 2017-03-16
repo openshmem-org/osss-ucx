@@ -34,6 +34,27 @@ level_to_string(shmem_log_t level)
     }
 }
 
+/*
+ * for private use before up and running
+ */
+static
+void
+fatal(const char *fmt, ...)
+{
+        va_list ap;
+
+        va_start(ap, fmt);
+        {
+            fprintf(stderr, "FATAL: ");
+            vfprintf(stderr, fmt, ap);
+            fprintf(stderr, "\n");
+            fflush(stderr);
+        }
+        va_end(ap);
+
+        exit(EXIT_FAILURE);
+}
+
 void
 shmemi_logger_init(void)
 {
@@ -41,6 +62,7 @@ shmemi_logger_init(void)
 
     e = getenv("SHMEM_LOG_LEVEL");
     if (e == NULL) {
+        /* nothing to do */
         return;
     }
 
@@ -52,6 +74,10 @@ shmemi_logger_init(void)
     e = getenv("SHMEM_LOG_FILE");
     if (e != NULL) {
         log_stream = fopen(e, "a");
+        if (log_stream == NULL) {
+            fatal("can't open log file \"%s\"", e);
+            /* NOT REACHED */
+        }
     }
     else {
         log_stream = stderr;
