@@ -87,8 +87,10 @@ shmemi_logger_init(void)
 void
 shmemi_logger_finalize(void)
 {
-    if (log_stream != NULL) {
-        fclose(log_stream);
+    if (logging) {
+        if (log_stream != NULL) {
+            fclose(log_stream);
+        }
     }
 }
 
