@@ -27,8 +27,8 @@ output_spec_version(void)
 
         snprintf(buf, 8, "%d.%d", SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
         output("Specification", buf);
-#endif /* spec. version check */
     }
+#endif /* spec. version check */
 }
 
 static
@@ -90,6 +90,14 @@ main(void)
 #else
            "off"
 #endif /* ENABLE_EXPERIMENTAL */
+           );
+
+    output("Profiling interface",
+#ifdef ENABLE_PSHMEM
+           "on"
+#else
+           "off"
+#endif /* ENABLE_PSHMEM */
            );
 
     output("Fortran support",

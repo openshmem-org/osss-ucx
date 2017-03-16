@@ -56,8 +56,17 @@ AS_IF([test "x$enable_experimental" = "xyes"],
 	[AC_SUBST([ENABLE_EXPERIMENTAL], [1])],
 	[AC_SUBST([ENABLE_EXPERIMENTAL], [0])]
 	)
+AC_ARG_ENABLE([pshmem],
+	AS_HELP_STRING([--enable-pshmem],
+			[Enable Profiling interface @<:@default=no@:>@]))
+AS_IF([test "x$enable_pshmem" = "xyes"],
+	[AC_DEFINE([ENABLE_PSHMEM], [1], [Enable profiling interface])
+	 AC_SUBST([ENABLE_PSHMEM], [1])],
+	[AC_SUBST([ENABLE_PSHMEM], [0])]
+	)
 
 AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
+AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/types.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
