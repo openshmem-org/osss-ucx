@@ -100,6 +100,14 @@ main(void)
 #endif /* ENABLE_PSHMEM */
            );
 
+    output("C++ support",
+#ifdef ENABLE_CXX
+           "on"
+#else
+           "off"
+#endif /* ENABLE_CXX */
+           );
+
     output("Fortran support",
 #ifdef ENABLE_FORTRAN
            "on"

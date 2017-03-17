@@ -65,9 +65,27 @@ AS_IF([test "x$enable_pshmem" = "xyes"],
 	 AC_SUBST([ENABLE_PSHMEM], [1])],
 	[AC_SUBST([ENABLE_PSHMEM], [0])]
 	)
+AC_ARG_ENABLE([fortran],
+	AS_HELP_STRING([--enable-fortran],
+			[Enable Fortran API support @<:@default=no@:>@]))
+AS_IF([test "x$enable_fortran" = "xyes"],
+	[AC_DEFINE([ENABLE_FORTRAN], [1], [Enable Fortran API])
+	 AC_SUBST([ENABLE_FORTRAN], [1])],
+	[AC_SUBST([ENABLE_FORTRAN], [0])]
+	)
+AC_ARG_ENABLE([cxx],
+	AS_HELP_STRING([--enable-cxx],
+			[Enable C++ API support @<:@default=no@:>@]))
+AS_IF([test "x$enable_cxx" = "xyes"],
+	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ API])
+	 AC_SUBST([ENABLE_CXX], [1])],
+	[AC_SUBST([ENABLE_CXX], [0])]
+	)
 
 AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
 AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
+AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
+AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" = "xyes"])
 
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h  sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
