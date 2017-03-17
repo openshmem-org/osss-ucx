@@ -96,11 +96,12 @@ AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
 AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 AC_CONFIG_FILES([Makefile
-		man/Makefile
-		man/oshcc.1 man/oshrun.1
-		src/Makefile src/shmemi/Makefile
-		scripts/Makefile scripts/oshcc scripts/oshrun
 		src/shmemi/dlmalloc/Makefile
+		man/oshcc.1 man/oshcxx.1 man/oshrun.1
+		src/Makefile src/shmemi/Makefile
+		scripts/Makefile
+		man/Makefile
+		scripts/oshcc scripts/oshcxx scripts/oshrun
 		src/shmem.h src/shmemx.h src/version.h
 		])
 
