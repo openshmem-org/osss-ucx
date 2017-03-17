@@ -14,7 +14,8 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # Checks for programs.
 AC_PROG_CC_C99
-AM_PROG_CC_C_O
+AC_PROG_CC_C_O
+AC_PROG_CXX
 AC_PROG_INSTALL
 
 # Checks for libraries.
@@ -69,17 +70,20 @@ AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
 AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/types.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
+AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h  sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_SIZE_T
 
+AC_CHECK_TYPES([ptrdiff_t])
+
 # Checks for library functions.
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
-AC_CHECK_FUNCS([atexit gettimeofday])
+AC_FUNC_MMAP
+AC_CHECK_FUNCS([atexit gettimeofday gethostname getpagesize memset])
 
 AM_INIT_AUTOMAKE
 
@@ -92,9 +96,12 @@ AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
 AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 AC_CONFIG_FILES([Makefile
+		man/Makefile
+		man/noshcc.1
 		src/Makefile src/shmemi/Makefile
-		src/shmem.h src/shmemx.h src/version.h
 		scripts/Makefile scripts/noshcc scripts/noshrun
-		src/shmemi/dlmalloc/Makefile])
+		src/shmemi/dlmalloc/Makefile
+		src/shmem.h src/shmemx.h src/version.h
+		])
 
 AC_OUTPUT

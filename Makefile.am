@@ -1,3 +1,3 @@
 ACLOCAL_AMFLAGS = -Im4
 
-SUBDIRS = src scripts
+SUBDIRS = man src scripts
