@@ -206,8 +206,13 @@ shmemi_init_pmix(void)
     assert(p.npes > 0);
     assert(p.me < p.npes);
 
+    /*
+     * what's on this node?
+     */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
+
+    PMIX_VALUE_RELEASE(vp);
 
     s = atexit(shmemi_finalize_atexit_pmix);
     assert(s == 0);
