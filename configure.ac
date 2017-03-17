@@ -97,9 +97,9 @@ AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 AC_CONFIG_FILES([Makefile
 		man/Makefile
-		man/noshcc.1
+		man/oshcc.1 man/oshrun.1
 		src/Makefile src/shmemi/Makefile
-		scripts/Makefile scripts/noshcc scripts/noshrun
+		scripts/Makefile scripts/oshcc scripts/oshrun
 		src/shmemi/dlmalloc/Makefile
 		src/shmem.h src/shmemx.h src/version.h
 		])

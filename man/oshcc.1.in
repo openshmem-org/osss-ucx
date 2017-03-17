@@ -1,8 +1,8 @@
-.TH noshcc 1 ""
+.TH oshcc 1 ""
 .SH NAME
-\fBnoshcc\fP - compile an OpenSHMEM C program
+\fBoshcc\fP - compile an OpenSHMEM C program
 .SH SYNOPSIS
-\fBnoshcc\fP
+\fBoshcc\fP
 .RS
 .br
 [ underlying compiler flags ]
@@ -10,14 +10,14 @@
 file.c [file.c ...]
 .RE
 .SH DESCRIPTION
-\fBnoshcc\fP is a wrapper in the vein of mpicc that compiles
+\fBoshcc\fP is a wrapper in the vein of mpicc that compiles
 an OpenSHMEM program.  The wrapper hides implementation
 details from the user.
 .SH EXAMPLES
 The command
 .LP
 .RS
-$ noshcc -g -o foo.exe foo.c
+$ oshcc -g -o foo.exe foo.c
 .RE
 .LP
 compiles foo.c into the OpenSHMEM executable foo.exe.
@@ -36,10 +36,10 @@ how OpenSHMEM programs are compiled, linked and launched.
 These wrapper programs are supplied as part of the Reference
 Library for convenience.
 .SH SEE ALSO
-noshcxx(1),
+oshcxx(1),
 .br
-noshfort(1),
+oshfort(1),
 .br
-noshrun(1).
+oshrun(1).
 .SH OPENSHMEM
 http://www.openshmem.org/

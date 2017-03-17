@@ -1,1 +1,1 @@
-man1_MANS = noshcc.1
+man1_MANS = oshcc.1 oshrun.1
