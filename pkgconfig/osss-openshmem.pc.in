@@ -1,0 +1,12 @@
+Name: @PACKAGE@
+Description: @PACKAGE_NAME@
+Version: @PACKAGE_VERSION@
+URL: @PACKAGE_URL@
+#
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+#
+Libs: -L@libdir@ -Wl,-rpath,@libdir@ -lshmem -lshmemi
+Cflags: -I@includedir@
+#
+Provides: openshmem

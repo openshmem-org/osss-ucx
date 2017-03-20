@@ -1,3 +1,3 @@
 ACLOCAL_AMFLAGS = -Im4
 
-SUBDIRS = man src scripts
+SUBDIRS = man src scripts pkgconfig
