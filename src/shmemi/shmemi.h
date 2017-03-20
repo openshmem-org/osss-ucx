@@ -91,4 +91,10 @@ typedef struct pe {
 
 extern pe_t p;
 
+/*
+ * Ordering
+ */
+void shmemi_quiet(void);
+void shmemi_fence(void);
+
 #endif /* ! _SHMEMI_H */
