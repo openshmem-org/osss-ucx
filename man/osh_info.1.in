@@ -1,0 +1,14 @@
+.TH osh_info 1 ""
+.SH NAME
+\fBosh_info\fP - provide information about this OpenSHMEM installation
+.SH SYNOPSIS
+\fBosh_info\fP
+.SH DESCRIPTION
+\fBosh_info\fP displays information about this implementation of OpenSHMEM.  Output
+can include compile-time options, build system, supported features.
+.SH SEE ALSO
+oshcc(1),
+.br
+oshrun(1).
+.SH OPENSHMEM
+http://www.openshmem.org/
