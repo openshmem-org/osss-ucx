@@ -92,7 +92,7 @@ AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
 AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" = "xyes"])
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h  sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
+AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -105,7 +105,7 @@ AC_CHECK_TYPES([ptrdiff_t])
 AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([atexit gettimeofday gethostname getpagesize memset])
+AC_CHECK_FUNCS([atexit gettimeofday gethostname uname getpagesize memset])
 
 AM_INIT_AUTOMAKE
 
