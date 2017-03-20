@@ -7,6 +7,10 @@ AC_INIT([OSSS/SBU Reference Implementation],
 	[anthony.curtis@stonybrook.edu],
 	[],
 	[https://github.com/openshmem-org/])
+
+config_flags="$*"
+AC_DEFINE_UNQUOTED([CONFIG_FLAGS],["$config_flags"],[Flags passed to configure])
+
 AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
 dnl AC_CONFIG_MACRO_DIRS([m4])

@@ -55,6 +55,10 @@ output_build_env(void)
     if (s == 0) {
         output("Build host", host);
     }
+
+#ifdef CONFIG_FLAGS
+    output("Configure", CONFIG_FLAGS);
+#endif /* CONFIG_FLAGS */
 }
 
 int
