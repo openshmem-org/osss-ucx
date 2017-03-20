@@ -6,7 +6,7 @@ URL: @PACKAGE_URL@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 #
-Libs: -L@libdir@ -Wl,-rpath,@libdir@ -lshmem -lshmemi
+Libs: -L@libdir@ -Wl,-rpath,@libdir@ -lshmem -lshmemi @PMIX_LDFLAGS@
 Cflags: -I@includedir@
 #
 Provides: openshmem

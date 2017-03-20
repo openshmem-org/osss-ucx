@@ -36,10 +36,12 @@ AS_IF([test -d $with_pmix],
 		PMIX_CPPFLAGS="-I$with_pmix/include"
 		save_cppflags="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $PMIX_CPPFLAGS"
+		pmix_libdir="$with_pmix/lib"
+		PMIX_LDFLAGS="-L$pmix_libdir -Wl,-rpath,$pmix_libdir -lpmix"
 		AC_CHECK_HEADER([$with_pmix/include/pmix.h],
 				[AC_DEFINE([HAVE_PMIX_H], [1])
 				AC_SUBST(PMIX_CPPFLAGS)
-				AC_SUBST(PMIX_LIBDIR, $with_pmix/lib)],
+				AC_SUBST(PMIX_LDFLAGS)],
 				[AC_MSG_ERROR([Cannot find PMIx include file])]
 				)
 		CPPFLAGS="$save_cppflags"

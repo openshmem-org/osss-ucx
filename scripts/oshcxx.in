@@ -1,7 +1,6 @@
 #!/bin/sh
 
 compiler="@CXX@"
-pmix_libdir="@PMIX_LIBDIR@"
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -9,7 +8,6 @@ shmem_dir=@prefix@
 shmem_include=@includedir@
 shmem_lib=@libdir@
 
-pmix_stanza="-L$pmix_libdir -Wl,-rpath,$pmix_libdir -lpmix"
 shmemlib_stanza="-L$shmem_lib -Wl,-rpath,$shmem_lib -lshmem -lshmemi"
 
 # check to see if linking required: if not, throw away link args
@@ -17,7 +15,6 @@ for c in $@
 do
     case $c in
         -[cES])
-            pmix_stanza=""
             shmemlib_stanza=""
             ;;
         *)
@@ -28,5 +25,4 @@ done
 $compiler \
     -I$shmem_include \
     $@ \
-    $pmix_stanza \
     $shmemlib_stanza
