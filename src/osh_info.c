@@ -15,6 +15,7 @@
 #include "version.h"
 
 static const int tag_width = 20;
+static const char *unknown = "unknown";
 
 static
 void
@@ -31,7 +32,7 @@ output_package(void)
 #ifdef PACKAGE_NAME
            PACKAGE_NAME
 #else
-           "unknown"
+           unknown
 #endif /* PACKAGE_NAME */
            );
 
@@ -39,7 +40,7 @@ output_package(void)
 #ifdef PACKAGE_VERSION
             PACKAGE_VERSION
 #else
-           "unknown"
+           unknown
 #endif /* PACKAGE_VERSION */
            );
 
@@ -47,7 +48,7 @@ output_package(void)
 #ifdef PACKAGE_URL
             PACKAGE_URL
 #else
-           "unknown"
+           unknown
 #endif /* PACKAGE_URL */
            );
 
@@ -55,7 +56,7 @@ output_package(void)
 #ifdef PACKAGE_BUGREPORT
            PACKAGE_BUGREPORT
 #else
-           "unknown"
+           unknown
 #endif /* PACKAGE_BUGREPORT */
            );
 }
@@ -65,15 +66,14 @@ void
 output_spec_version(void)
 {
 #if defined(SHMEM_MAJOR_VERSION) && defined(SHMEM_MINOR_VERSION)
-#define BUFMAX 8
-    {
-        char buf[BUFMAX];
 
-        snprintf(buf, BUFMAX,
-                 "%d.%d",
-                 SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
-        output("Specification", buf);
-    }
+#define BUFMAX 8
+    char buf[BUFMAX];
+
+    snprintf(buf, BUFMAX,
+             "%d.%d",
+             SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
+    output("Specification", buf);
 #endif /* spec. version check */
 }
 
@@ -88,7 +88,7 @@ output_build_env(void)
     if (now != NULL) {
         now[strlen(now) - 1] = '\0'; /* chomp */
     } else {
-        now = "unknown";
+        now = unknown;
     }
 
     output("Build date", now);
@@ -98,17 +98,17 @@ output_build_env(void)
         char host[MAXHOSTNAMELEN];
         int s = gethostname(host, MAXHOSTNAMELEN);
 
-        output("Build host", (s == 0) ? host : "unknown");
+        output("Build host", (s == 0) ? host : unknown);
     }
 #elif defined(HAVE_UNAME)
     {
         struct utsname u;
         int s = uname(&u);
 
-        output("Build host", (s == 0) ? u.nodename : "unknown");
+        output("Build host", (s == 0) ? u.nodename : unknown);
     }
 #else
-    output("Build host", "unknown");
+    output("Build host", unknown);
 #endif /* hostname check */
 
     /* command-line that built the library */
