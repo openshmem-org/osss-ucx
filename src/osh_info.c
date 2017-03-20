@@ -10,11 +10,13 @@
 
 #include "version.h"
 
+static const int tag_width = 20;
+
 static
 void
 output(const char *tag, const char *val)
 {
-    printf("%20s: %s\n", tag, val);
+    printf("%*s: %s\n", tag_width, tag, val);
 }
 
 static
@@ -22,10 +24,13 @@ void
 output_spec_version(void)
 {
 #if defined(SHMEM_MAJOR_VERSION) && defined(SHMEM_MINOR_VERSION)
+#define BUFMAX 8
     {
-        char buf[8];
+        char buf[BUFMAX];
 
-        snprintf(buf, 8, "%d.%d", SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
+        snprintf(buf, BUFMAX,
+                 "%d.%d",
+                 SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
         output("Specification", buf);
     }
 #endif /* spec. version check */
