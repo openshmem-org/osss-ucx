@@ -1,9 +1,9 @@
 SUBDIRS                = shmemi
 
-LIBSHMEM_SOURCES       = init.c malloc.c version.c
+LIBSHMEM_SOURCES       = init.c malloc.c version.c atomics.c
 
 if ENABLE_EXPERIMENTAL
-LIBSHMEM_SOURCES      += wtime.c
+LIBSHMEM_SOURCES      += wtime.c xor.c
 endif
 
 lib_LTLIBRARIES        = libshmem.la
