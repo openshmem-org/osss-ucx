@@ -60,9 +60,12 @@ AC_ARG_ENABLE([experimental],
 	AS_HELP_STRING([--enable-experimental],
 			[Enable non-standard extensions @<:@default=no@:>@]))
 AS_IF([test "x$enable_experimental" = "xyes"],
-	[AC_SUBST([ENABLE_EXPERIMENTAL], [1])],
+	[AC_DEFINE([ENABLE_EXPERIMENTAL], [1], [Enable non-standard extensions])
+	AC_SUBST([ENABLE_EXPERIMENTAL], [1])],
 	[AC_SUBST([ENABLE_EXPERIMENTAL], [0])]
 	)
+AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
+
 AC_ARG_ENABLE([pshmem],
 	AS_HELP_STRING([--enable-pshmem],
 			[Enable Profiling interface @<:@default=no@:>@]))
@@ -71,6 +74,8 @@ AS_IF([test "x$enable_pshmem" = "xyes"],
 	 AC_SUBST([ENABLE_PSHMEM], [1])],
 	[AC_SUBST([ENABLE_PSHMEM], [0])]
 	)
+AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
+
 AC_ARG_ENABLE([fortran],
 	AS_HELP_STRING([--enable-fortran],
 			[Enable Fortran API support @<:@default=no@:>@]))
@@ -79,6 +84,8 @@ AS_IF([test "x$enable_fortran" = "xyes"],
 	 AC_SUBST([ENABLE_FORTRAN], [1])],
 	[AC_SUBST([ENABLE_FORTRAN], [0])]
 	)
+AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
+
 AC_ARG_ENABLE([cxx],
 	AS_HELP_STRING([--enable-cxx],
 			[Enable C++ API support @<:@default=no@:>@]))
@@ -87,10 +94,6 @@ AS_IF([test "x$enable_cxx" = "xyes"],
 	 AC_SUBST([ENABLE_CXX], [1])],
 	[AC_SUBST([ENABLE_CXX], [0])]
 	)
-
-AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
-AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
-AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
 AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" = "xyes"])
 
 # Checks for header files.
