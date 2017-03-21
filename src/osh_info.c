@@ -15,7 +15,7 @@
 #include "version.h"
 
 static const int tag_width = 20;
-static const char *unknown = "unknown";
+static char *unknown = "unknown";
 
 static
 void
