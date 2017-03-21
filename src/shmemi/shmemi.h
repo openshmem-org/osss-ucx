@@ -8,8 +8,8 @@
 /*
  * setup/teardown
  */
-int shmemi_finalize(void);
-int shmemi_init(void);
+void shmemi_finalize(void);
+void shmemi_init(void);
 
 /*
  * heap creation

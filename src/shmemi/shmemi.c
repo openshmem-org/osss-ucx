@@ -74,9 +74,7 @@ shmemi_setup_heaps(void)
 
 /* -------------------------------------------------------------- */
 
-static int init_ref_count = 0;
-
-int
+void
 shmemi_init(void)
 {
     shmemi_timer_init();
@@ -117,13 +115,9 @@ shmemi_init(void)
     }
 
     api.init_fn();
-
-    init_ref_count += 1;
-
-    return init_ref_count;
 }
 
-int
+void
 shmemi_finalize(void)
 {
     logger(LOG_FINALIZE, "finalizing PMI%s", pmi_verstr);
@@ -135,8 +129,4 @@ shmemi_finalize(void)
     shmemi_logger_finalize();
 #endif
     shmemi_timer_finalize();
-
-    init_ref_count -= 1;
-
-    return init_ref_count;
 }
