@@ -74,7 +74,9 @@ shmemi_setup_heaps(void)
 
 /* -------------------------------------------------------------- */
 
-void
+static int init_ref_count = 0;
+
+int
 shmemi_init(void)
 {
     shmemi_timer_init();
@@ -91,14 +93,14 @@ shmemi_init(void)
     case PMI_VERSION_1:
         api = (api_def_t) {
             .init_fn = shmemi_init_pmi1,
-            .heap_setup_fn = shmemi_setup_heaps_pmix,
+            .heap_setup_fn = shmemi_setup_heaps_pmi1,
             .finalize_fn = shmemi_finalize_pmi1
         };
         break;
     case PMI_VERSION_2:
         api = (api_def_t) {
             .init_fn = shmemi_init_pmi2,
-            .heap_setup_fn = shmemi_setup_heaps_pmix,
+            .heap_setup_fn = shmemi_setup_heaps_pmi2,
             .finalize_fn = shmemi_finalize_pmi2
         };
         break;
@@ -115,9 +117,13 @@ shmemi_init(void)
     }
 
     api.init_fn();
+
+    init_ref_count += 1;
+
+    return init_ref_count;
 }
 
-void
+int
 shmemi_finalize(void)
 {
     logger(LOG_FINALIZE, "finalizing PMI%s", pmi_verstr);
@@ -129,4 +135,8 @@ shmemi_finalize(void)
     shmemi_logger_finalize();
 #endif
     shmemi_timer_finalize();
+
+    init_ref_count -= 1;
+
+    return init_ref_count;
 }

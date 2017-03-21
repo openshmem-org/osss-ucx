@@ -4,6 +4,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #include "shmemi.h"
 
@@ -11,24 +12,25 @@
 
 static FILE *log_stream;
 static bool logging = false;
-static shmem_log_t levels = 0;
+static shmem_log_t levels;
 
 static
-inline
 char *
 level_to_string(shmem_log_t level)
 {
     switch (level) {
-    case LOG_FATAL:
-        return "FATAL";
     case LOG_INIT:
         return "INIT";
     case LOG_FINALIZE:
         return "FINALIZE";
     case LOG_MEMORY:
         return "MEMORY";
+    case LOG_HEAP:
+        return "HEAP";
     case LOG_ALL:
         return "ALL";
+    case LOG_FATAL:
+        return "FATAL";
     default:
         return "UNKNOWN";
     }
@@ -67,7 +69,7 @@ shmemi_logger_init(void)
     }
 
     logging = true;
-    levels = LOG_ALL;
+    levels = LOG_INIT | LOG_FINALIZE | LOG_MEMORY | LOG_HEAP;
     /* TODO parse string for which levels to set */
 
     /* TODO "%" modifiers for extra info */
@@ -87,30 +89,35 @@ shmemi_logger_init(void)
 void
 shmemi_logger_finalize(void)
 {
-    if (logging) {
-        if (log_stream != NULL) {
-            fclose(log_stream);
-        }
+    if (! logging) {
+        return;
+    }
+
+    if (log_stream != NULL) {
+        fclose(log_stream);
     }
 }
 
-#define SHMEMI_BIT_TEST(n) (levels & SHMEMI_BIT_SET(n))
+#define SHMEMI_BIT_IS_SET(_level) \
+    (((_level) == LOG_FATAL) || (levels & SHMEMI_BIT_SET(_level)))
 
 void
 shmemi_logger(shmem_log_t level, const char *fmt, ...)
 {
-    /* TODO just do all logging for now */
-#if 1
-    if (logging) {
-#else
-    if (logging && SHMEMI_BIT_TEST(level)) {
-#endif
+    if (! logging) {
+        return;
+    }
+
+    /* TODO if (SHMEMI_BIT_IS_SET(level)) { */
+    if (1) {
         char *tmp1;
         char *tmp2;
         va_list ap;
 
         tmp1 = (char *) malloc(TRACE_MSG_BUF_SIZE * sizeof(*tmp1));
+        assert(tmp1 != NULL);
         tmp2 = (char *) malloc(TRACE_MSG_BUF_SIZE * sizeof(*tmp2));
+        assert(tmp2 != NULL);
 
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
                  "[%4d:%6.6f] %10s: ",
@@ -132,9 +139,9 @@ shmemi_logger(shmem_log_t level, const char *fmt, ...)
 
         free(tmp2);
         free(tmp1);
-    }
 
-    if (level == LOG_FATAL) {
-        exit(1);
+        if (level == LOG_FATAL) {
+            exit(1);            /* maybe not just exit... */
+        }
     }
 }

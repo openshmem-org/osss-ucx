@@ -92,7 +92,7 @@ publish_heap_info(void)
     ps = PMIx_Publish(ia, 2);
     assert(ps == PMIX_SUCCESS);
 
-    logger(LOG_INIT, "PUBLISH: my heap @ %p, %lu bytes",
+    logger(LOG_HEAP, "PUBLISH: my heap @ %p, %lu bytes",
            heapx[p.me].base, heapx[p.me].size);
 
     PMIX_INFO_FREE(ia, 2);
@@ -144,7 +144,7 @@ exchange_heap_info(void)
     PMIX_INFO_FREE(waiter, 1);
 
     for (i = 0; i < p.npes; i += 1) {
-        logger(LOG_INIT, "FETCH: heap %d @ %p, %lu bytes",
+        logger(LOG_HEAP, "FETCH: heap %d @ %p, %lu bytes",
                i, heapx[i].base, heapx[i].size);
     }
 }

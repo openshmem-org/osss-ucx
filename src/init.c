@@ -8,7 +8,7 @@
 void
 shmem_init(void)
 {
-    shmemi_init();
+    (void) shmemi_init();
 
     /* urgh! */
 }
@@ -16,5 +16,5 @@ shmem_init(void)
 void
 shmem_finalize(void)
 {
-    shmemi_finalize();
+    (void) shmemi_finalize();
 }
