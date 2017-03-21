@@ -1,6 +1,6 @@
 SUBDIRS                = shmemi
 
-LIBSHMEM_SOURCES       = init.c malloc.c version.c atomics.c
+LIBSHMEM_SOURCES       = init.c malloc.c version.c atomics.c cache.c
 
 if ENABLE_EXPERIMENTAL
 LIBSHMEM_SOURCES      += wtime.c xor.c
