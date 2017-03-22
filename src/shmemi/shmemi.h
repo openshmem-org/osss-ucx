@@ -92,6 +92,9 @@ typedef struct pe {
 
 extern pe_t p;
 
+#define shmemi_my_pe() (p.me)
+#define shmemi_n_pes() (p.npes)
+
 /*
  * Ordering
  */
