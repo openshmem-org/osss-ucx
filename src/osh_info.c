@@ -13,6 +13,7 @@
 #endif /* HAVE_UNAME */
 
 #include "version.h"
+#include "shmemu/shmemu.h"
 
 static const int tag_width = 20;
 static char *unknown = "unknown";
@@ -83,6 +84,8 @@ output_build_env(void)
 {
     const time_t t = time(NULL);
     char *now;
+    char host[MAXHOSTNAMELEN];
+    int s;
 
     now = ctime(&t);
     if (now != NULL) {
@@ -93,23 +96,8 @@ output_build_env(void)
 
     output("Build date", now);
 
-#ifdef HAVE_GETHOSTNAME
-    {
-        char host[MAXHOSTNAMELEN];
-        int s = gethostname(host, MAXHOSTNAMELEN);
-
-        output("Build host", (s == 0) ? host : unknown);
-    }
-#elif defined(HAVE_UNAME)
-    {
-        struct utsname u;
-        int s = uname(&u);
-
-        output("Build host", (s == 0) ? u.nodename : unknown);
-    }
-#else
-    output("Build host", unknown);
-#endif /* hostname check */
+    s = shmemu_gethostname(host, MAXHOSTNAMELEN);
+    output("Build host", (s == 0) ? host : unknown);
 
     /* command-line that built the library */
 #ifdef CONFIG_FLAGS

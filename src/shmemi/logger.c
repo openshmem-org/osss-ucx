@@ -1,18 +1,22 @@
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
 #include <sys/time.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <sys/param.h>
 
 #include "shmemi.h"
+#include "shmemu.h"
 
 #define TRACE_MSG_BUF_SIZE 256
 
 static FILE *log_stream;
 static bool logging = false;
 static shmem_log_t levels;
+static char host[MAXHOSTNAMELEN];
 
 static
 char *
@@ -84,6 +88,8 @@ shmemi_logger_init(void)
     else {
         log_stream = stderr;
     }
+
+    shmemu_gethostname(host, MAXHOSTNAMELEN);
 }
 
 void

@@ -125,7 +125,8 @@ AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 AC_CONFIG_FILES([Makefile
 		src/shmemi/dlmalloc/Makefile
 		man/oshcc.1 man/oshcxx.1 man/oshrun.1 man/osh_info.1
-		src/Makefile src/shmemi/Makefile
+		src/Makefile
+		src/shmemi/Makefile src/shmemu/Makefile
 		scripts/Makefile
 		man/Makefile
 		scripts/oshcc scripts/oshcxx scripts/oshrun

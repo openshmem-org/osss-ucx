@@ -8,7 +8,8 @@ shmem_dir=@prefix@
 shmem_include=@includedir@
 shmem_lib=@libdir@
 
-shmemlib_stanza="-L$shmem_lib -Wl,-rpath,$shmem_lib -lshmem -lshmemi"
+shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
+shmemlib_libs="-lshmem -lshmemi -lshmemu"
 
 # check to see if linking required: if not, throw away link args
 for c in $@
@@ -25,4 +26,4 @@ done
 $compiler \
     -I$shmem_include \
     $@ \
-    $shmemlib_stanza
+    $shmemlib_ldflags $shmemlib_libs
