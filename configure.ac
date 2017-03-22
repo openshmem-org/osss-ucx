@@ -129,7 +129,7 @@ AC_CONFIG_FILES([Makefile
 		src/shmemi/Makefile src/shmemu/Makefile
 		scripts/Makefile
 		man/Makefile
-		scripts/oshcc scripts/oshcxx scripts/oshrun
+		scripts/oshcc scripts/oshcxx scripts/oshc++ scripts/oshrun
 		src/shmem.h src/shmemx.h src/version.h
 		pkgconfig/Makefile
 		pkgconfig/osss-openshmem.pc

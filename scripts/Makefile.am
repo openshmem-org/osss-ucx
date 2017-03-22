@@ -1,1 +1,1 @@
-bin_SCRIPTS = oshcc oshcxx oshrun
+bin_SCRIPTS = oshcc oshcxx oshc++ oshrun
