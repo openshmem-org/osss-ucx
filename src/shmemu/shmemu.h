@@ -1,6 +1,11 @@
 #ifndef _SHMEM_SHEMMU_H
 #define _SHMEM_SHEMMU_H 1
 
-int shmemu_gethostname(char *name, int maxlen);
+void shmemu_init(void);
+void shmemu_finalize(void);
+
+double shmemu_timer(void);
+
+char *shmemu_gethostname(void);
 
 #endif /* ! _SHMEM_SHEMMU_H */

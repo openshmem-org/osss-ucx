@@ -6,7 +6,6 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <sys/param.h>
 
 #ifdef HAVE_UNAME
 # include <sys/utsname.h>
@@ -84,7 +83,7 @@ output_build_env(void)
 {
     const time_t t = time(NULL);
     char *now;
-    char host[MAXHOSTNAMELEN];
+    char *host;
     int s;
 
     now = ctime(&t);
@@ -96,8 +95,8 @@ output_build_env(void)
 
     output("Build date", now);
 
-    s = shmemu_gethostname(host, MAXHOSTNAMELEN);
-    output("Build host", (s == 0) ? host : unknown);
+    host = shmemu_gethostname();
+    output("Build host", (host != NULL) ? host : unknown);
 
     /* command-line that built the library */
 #ifdef CONFIG_FLAGS

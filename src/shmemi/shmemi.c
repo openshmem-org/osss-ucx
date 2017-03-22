@@ -77,7 +77,6 @@ shmemi_setup_heaps(void)
 void
 shmemi_init(void)
 {
-    shmemi_timer_init();
 #ifdef ENABLE_DEBUG
     shmemi_logger_init();
 #endif
@@ -128,5 +127,6 @@ shmemi_finalize(void)
 #ifdef ENABLE_DEBUG
     shmemi_logger_finalize();
 #endif
-    shmemi_timer_finalize();
+
+    shmemu_finalize();
 }

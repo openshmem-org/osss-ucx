@@ -4,11 +4,13 @@
 #include <string.h>
 
 #include "shmemi/shmemi.h"
+#include "shmemu/shmemu.h"
 
 void
 shmem_init(void)
 {
-    (void) shmemi_init();
+    shmemu_init();
+    shmemi_init();
 
     /* urgh! */
 }
@@ -16,5 +18,6 @@ shmem_init(void)
 void
 shmem_finalize(void)
 {
-    (void) shmemi_finalize();
+    shmemi_finalize();
+    shmemu_finalize();
 }

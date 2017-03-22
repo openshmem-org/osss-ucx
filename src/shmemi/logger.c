@@ -1,12 +1,16 @@
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
-#include <unistd.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <string.h>
-#include <sys/time.h>
 #include <stdbool.h>
-#include <assert.h>
+#include <string.h>
+#include <unistd.h>
 #include <sys/param.h>
+#include <sys/time.h>
+#include <assert.h>
 
 #include "shmemi.h"
 #include "shmemu.h"
@@ -16,7 +20,6 @@
 static FILE *log_stream;
 static bool logging = false;
 static shmem_log_t levels;
-static char host[MAXHOSTNAMELEN];
 
 static
 char *
@@ -88,8 +91,6 @@ shmemi_logger_init(void)
     else {
         log_stream = stderr;
     }
-
-    shmemu_gethostname(host, MAXHOSTNAMELEN);
 }
 
 void
@@ -128,7 +129,7 @@ shmemi_logger(shmem_log_t level, const char *fmt, ...)
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
                  "[%4d:%6.6f] %10s: ",
                  p.me,
-                 shmemi_timer_get_elapsed(),
+                 shmemu_timer(),
                  level_to_string(level)
                  );
 

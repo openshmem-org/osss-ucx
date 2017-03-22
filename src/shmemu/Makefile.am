@@ -1,4 +1,4 @@
-LIBSHMEMU_SOURCES      = hostname.c
+LIBSHMEMU_SOURCES      = shmemu.c
 
 # lib_LTLIBRARIES        = libshmemu.la
 # libshmemu_la_SOURCES   = $(LIBSHMEMU_SOURCES)

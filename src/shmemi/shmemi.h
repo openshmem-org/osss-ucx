@@ -46,13 +46,6 @@ void *shmemi_realloc(void *p, size_t s);
 void *shmemi_align(size_t a, size_t s);
 
 /*
- * timers
- */
-void shmemi_timer_init(void);
-void shmemi_timer_finalize(void);
-double shmemi_timer_get_elapsed(void);
-
-/*
  * message logging
  */
 
@@ -88,6 +81,7 @@ typedef struct pe {
     int me;
     int npes;
     bool running;
+    char *hostname;
 } pe_t;
 
 extern pe_t p;
