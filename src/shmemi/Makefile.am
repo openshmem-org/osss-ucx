@@ -2,7 +2,8 @@ SUBDIRS                = dlmalloc
 
 LIBSHMEMI_SOURCES      = shmemi.c \
 				pmi1-client.c pmi2-client.c pmix-client.c \
-				malloc.c logger.c heapx.c timer.c pe.c
+				malloc.c logger.c heapx.c timer.c pe.c \
+				ptr.c
 
 lib_LTLIBRARIES        = libshmemi.la
 libshmemi_la_SOURCES   = $(LIBSHMEMI_SOURCES)
