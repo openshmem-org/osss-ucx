@@ -1,0 +1,17 @@
+.TH oshc++ 1 ""
+.SH NAME
+\fBooshc++\fP - compile an OpenSHMEM C++ program
+.SH SYNOPSIS
+\fBoshc++\fP
+.RS
+.br
+[ underlying compiler flags ]
+.br
+file.cxx [file.cxx ...]
+.RE
+.SH DESCRIPTION
+\fBoshc++\fP is an alternate name for \fBoshcxx\fP.
+.SH SEE ALSO
+oshcxx(1)
+.SH OPENSHMEM
+http://www.openshmem.org/
