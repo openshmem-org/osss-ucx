@@ -26,7 +26,7 @@ The underlying compiler/linker invoked by this wrapper is determined
 when the OpenSHMEM library is built.  To override, set the
 .LP
 .RS
-\f(CRNOSH_CC\fP
+\f(CROSH_CC\fP
 .RE
 .LP
 environment variable.
