@@ -84,7 +84,6 @@ output_build_env(void)
     const time_t t = time(NULL);
     char *now;
     char *host;
-    int s;
 
     now = ctime(&t);
     if (now != NULL) {
