@@ -1,12 +1,6 @@
-#ifdef HAVE_CONFIG_H
-# include "config.h"
-#endif /* HAVE_CONFIG_H */
-
 /*
  * TODO these are all just stubs, of course, for now
  */
-
-#ifdef ENABLE_EXPERIMENTAL
 
 /*
  * exclusive-xor
@@ -21,5 +15,3 @@
 SHMEMX_TYPE_XOR(int, int);
 SHMEMX_TYPE_XOR(long, long);
 SHMEMX_TYPE_XOR(longlong, long long);
-
-#endif /* ENABLE_EXPERIMENTAL */

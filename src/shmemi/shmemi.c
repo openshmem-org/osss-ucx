@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "shmemi.h"
+#include "shmemu.h"
 
 #include "pmix-client.h"
 #include "pmi2-client.h"
@@ -77,6 +78,8 @@ shmemi_setup_heaps(void)
 void
 shmemi_init(void)
 {
+    shmemu_init();
+
 #ifdef ENABLE_DEBUG
     shmemi_logger_init();
 #endif
