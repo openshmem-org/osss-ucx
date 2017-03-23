@@ -124,6 +124,8 @@ AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 now="`date`"
 AC_DEFINE_UNQUOTED([CONFIG_BUILD_DATE],["$now"],[When this package was compiled])
+host="`hostname`"
+AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compiled])
 
 AC_CONFIG_FILES([Makefile
 		src/shmemi/dlmalloc/Makefile

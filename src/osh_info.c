@@ -99,8 +99,16 @@ output_build_env(void)
 #endif /* CONFIG_BUILD_DATE */
            );
 
+    output("Build host",
+#ifdef CONFIG_BUILD_HOST
+           CONFIG_BUILD_HOST
+#else
+           unknown
+#endif /* CONFIG_BUILD_HOST */
+           );
+
     host = shmemu_gethostname();
-    output("Build host", (host != NULL) ? host : unknown);
+    output("Execution host", (host != NULL) ? host : unknown);
 
     /* command-line that built the library */
 #ifdef CONFIG_FLAGS
