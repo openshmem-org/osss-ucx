@@ -122,6 +122,9 @@ AC_SUBST([SHMEM_MINOR_VERSION], 3)
 AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
 AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
+now="`date`"
+AC_DEFINE_UNQUOTED([CONFIG_BUILD_DATE],["$now"],[When this package was compiled])
+
 AC_CONFIG_FILES([Makefile
 		src/shmemi/dlmalloc/Makefile
 		man/oshcc.1 man/oshcxx.1 man/oshrun.1 man/osh_info.1

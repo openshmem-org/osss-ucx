@@ -59,6 +59,14 @@ output_package(void)
            unknown
 #endif /* PACKAGE_BUGREPORT */
            );
+
+    output("Package bug report",
+#ifdef PACKAGE_BUGREPORT
+           PACKAGE_BUGREPORT
+#else
+           unknown
+#endif /* PACKAGE_BUGREPORT */
+           );
 }
 
 static
@@ -81,18 +89,15 @@ static
 void
 output_build_env(void)
 {
-    const time_t t = time(NULL);
-    char *now;
     char *host;
 
-    now = ctime(&t);
-    if (now != NULL) {
-        now[strlen(now) - 1] = '\0'; /* chomp */
-    } else {
-        now = unknown;
-    }
-
-    output("Build date", now);
+    output("Build date",
+#ifdef CONFIG_BUILD_DATE
+           CONFIG_BUILD_DATE
+#else
+           unknown
+#endif /* CONFIG_BUILD_DATE */
+           );
 
     host = shmemu_gethostname();
     output("Build host", (host != NULL) ? host : unknown);
