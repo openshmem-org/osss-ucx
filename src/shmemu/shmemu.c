@@ -1,5 +1,6 @@
 #include "shmemu.h"
 
+void
 shmemu_init(void)
 {
     shmemu_timer_init();
