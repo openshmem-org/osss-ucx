@@ -87,8 +87,6 @@ shmemi_init(void)
 
     select_pmi_version();
 
-    logger(LOG_INIT, "using PMI%s", pmi_verstr);
-
     switch (pmi_version) {
     case PMI_VERSION_1:
         api = (api_def_t) {
@@ -117,6 +115,8 @@ shmemi_init(void)
     }
 
     api.init_fn();
+
+    logger(LOG_INIT, "using PMI%s", pmi_verstr);
 }
 
 void
