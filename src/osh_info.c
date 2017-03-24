@@ -59,14 +59,6 @@ output_package(void)
            unknown
 #endif /* PACKAGE_BUGREPORT */
            );
-
-    output("Package bug report",
-#ifdef PACKAGE_BUGREPORT
-           PACKAGE_BUGREPORT
-#else
-           unknown
-#endif /* PACKAGE_BUGREPORT */
-           );
 }
 
 static
