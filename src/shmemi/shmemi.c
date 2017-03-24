@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "shmemi.h"
 #include "shmemu.h"
@@ -76,11 +76,11 @@ shmemi_setup_heaps(void)
 
 /* -------------------------------------------------------------- */
 
+static int call_count = 0;
+
 void
 shmemi_init(void)
 {
-    shmemu_init();
-
 #ifdef ENABLE_DEBUG
     shmemi_logger_init();
 #endif
@@ -117,13 +117,21 @@ shmemi_init(void)
 
     api.init_fn();
 
-    logger(LOG_INIT, "using PMI%s", pmi_verstr);
+    call_count += 1;
+    assert(call_count > 0);
+
+    logger(LOG_INIT, "using PMI%s (call #%d)",
+           pmi_verstr, call_count);
 }
 
 void
 shmemi_finalize(void)
 {
-    logger(LOG_FINALIZE, "finalizing PMI%s", pmi_verstr);
+    logger(LOG_FINALIZE, "finalizing PMI%s (call #%d)",
+           pmi_verstr, call_count);
+
+    assert(call_count > 0);
+    call_count -= 1;
 
     api.finalize_fn();
 
@@ -131,6 +139,4 @@ shmemi_finalize(void)
 #ifdef ENABLE_DEBUG
     shmemi_logger_finalize();
 #endif
-
-    shmemu_finalize();
 }
