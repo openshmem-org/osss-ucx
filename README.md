@@ -1,1 +1,0 @@
-The all-new shinier OSSS OpenSHMEM Implementation
