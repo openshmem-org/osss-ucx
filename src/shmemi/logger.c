@@ -20,7 +20,6 @@
 
 static FILE *log_stream;
 static bool logging = false;
-static shmemi_log_t levels;
 
 typedef struct shmemi_log_table {
     shmemi_log_t level;
@@ -104,24 +103,26 @@ shmemi_logger_init(void)
         /* nothing to do */
         return;
     }
-    if ((tolower(e[0]) == 'n') || (atoi(e) == 0)) {
-        /* nothing to do */
-        return;
-    }
 
-    logging = true;
+    /* enable if: "y[es]", "on" or positive number */
+    if ((strncasecmp(e, "y", 1) == 0) ||
+        (strncasecmp(e, "on", 2) == 0) ||
+        (atoi(e) > 0)) {
 
-    /* TODO "%" modifiers for extra info */
-    e = getenv("SHMEM_LOG_FILE");
-    if (e != NULL) {
-        log_stream = fopen(e, "a");
-        if (log_stream == NULL) {
-            fatal("can't open log file \"%s\"", e);
-            /* NOT REACHED */
+        logging = true;
+
+        /* TODO "%" modifiers for extra info */
+        e = getenv("SHMEM_LOG_FILE");
+        if (e != NULL) {
+            log_stream = fopen(e, "a");
+            if (log_stream == NULL) {
+                fatal("can't open log file \"%s\"", e);
+                /* NOT REACHED */
+            }
         }
-    }
-    else {
-        log_stream = stderr;
+        else {
+            log_stream = stderr;
+        }
     }
 }
 
