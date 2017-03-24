@@ -76,10 +76,10 @@ shmemi_setup_heaps(void)
 
 /* -------------------------------------------------------------- */
 
-static int call_count = 0;
-
+static
+inline
 void
-shmemi_init(void)
+shmemi_init_real(void)
 {
 #ifdef ENABLE_DEBUG
     shmemi_logger_init();
@@ -116,27 +116,52 @@ shmemi_init(void)
     }
 
     api.init_fn();
-
-    call_count += 1;
-    assert(call_count > 0);
-
-    logger(LOG_INIT, "using PMI%s (call #%d)",
-           pmi_verstr, call_count);
 }
 
+static
+inline
 void
-shmemi_finalize(void)
+shmemi_finalize_real(void)
 {
-    logger(LOG_FINALIZE, "finalizing PMI%s (call #%d)",
-           pmi_verstr, call_count);
-
-    assert(call_count > 0);
-    call_count -= 1;
-
     api.finalize_fn();
 
     shmemi_malloc_finalize();
 #ifdef ENABLE_DEBUG
     shmemi_logger_finalize();
 #endif
+}
+
+static int ref_count = 0;
+
+void
+shmemi_finalize(void)
+{
+    logger(LOG_FINALIZE, "enter finalize PMI%s (ref #%d)",
+           pmi_verstr, ref_count);
+
+    if (ref_count == 1) {
+        logger(LOG_FINALIZE, "finalizing PMI%s",
+               pmi_verstr);
+        shmemi_finalize_real();
+    }
+
+    ref_count -= 1;
+}
+
+void
+shmemi_init(void)
+{
+    int s;
+
+    logger(LOG_INIT, "using PMI%s (ref #%d)",
+           pmi_verstr, ref_count);
+
+    if (ref_count == 0) {
+        shmemi_init_real();
+    }
+
+    ref_count += 1;
+
+    s = atexit(shmemi_finalize);
+    assert(s == 0);
 }

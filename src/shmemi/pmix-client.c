@@ -171,7 +171,6 @@ shmemi_init_pmix(void)
     pmix_value_t v;
     pmix_value_t *vp = &v;
     pmix_status_t ps;
-    int s;
 
     ps = PMIx_Init(&my_proc, NULL, 0);
     assert(ps == PMIX_SUCCESS);
@@ -213,9 +212,6 @@ shmemi_init_pmix(void)
     assert(ps == PMIX_SUCCESS);
 
     PMIX_VALUE_RELEASE(vp);
-
-    s = atexit(shmemi_finalize_atexit_pmix);
-    assert(s == 0);
 
     barrier_all_pmix();
 
