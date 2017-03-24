@@ -11,6 +11,7 @@
 #include <sys/param.h>
 #include <sys/time.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "shmemi.h"
 #include "shmemu.h"
@@ -19,28 +20,57 @@
 
 static FILE *log_stream;
 static bool logging = false;
-static shmem_log_t levels;
+static shmemi_log_t levels;
+
+typedef struct shmemi_log_table {
+    shmemi_log_t level;
+    char *name;
+} shmemi_log_table_t;
+
+#define LOG_LEVEL_EMIT(_level) { LOG_##_level, #_level }
+
+static shmemi_log_table_t table[] =
+    {
+        LOG_LEVEL_EMIT(INIT),
+        LOG_LEVEL_EMIT(FINALIZE),
+        LOG_LEVEL_EMIT(MEMORY),
+        LOG_LEVEL_EMIT(HEAP),
+        LOG_LEVEL_EMIT(FATAL),
+        LOG_LEVEL_EMIT(UNKNOWN)
+    };
 
 static
 char *
-level_to_string(shmem_log_t level)
+level_to_name(shmemi_log_t level)
 {
-    switch (level) {
-    case LOG_INIT:
-        return "INIT";
-    case LOG_FINALIZE:
-        return "FINALIZE";
-    case LOG_MEMORY:
-        return "MEMORY";
-    case LOG_HEAP:
-        return "HEAP";
-    case LOG_ALL:
-        return "ALL";
-    case LOG_FATAL:
-        return "FATAL";
-    default:
-        return "UNKNOWN";
+    shmemi_log_table_t *tp = table;
+
+    while (tp->level != LOG_UNKNOWN) {
+        if (level == tp->level) {
+            return tp->name;
+            /* NOT REACHED */
+        }
+        tp += 1;
     }
+
+    return "UNKNOWN";
+}
+
+static
+shmemi_log_t
+name_to_level(const char *name)
+{
+    shmemi_log_table_t *tp = table;
+
+    while (tp->level != LOG_UNKNOWN) {
+        if (strncmp(name, tp->name, strlen(tp->name)) == 0) {
+            return tp->level;
+            /* NOT REACHED */
+        }
+        tp += 1;
+    }
+
+    return LOG_UNKNOWN;
 }
 
 /*
@@ -69,15 +99,17 @@ shmemi_logger_init(void)
 {
     char *e;
 
-    e = getenv("SHMEM_LOG_LEVEL");
+    e = getenv("SHMEM_LOGGING");
     if (e == NULL) {
+        /* nothing to do */
+        return;
+    }
+    if ((tolower(e[0]) == 'n') || (atoi(e) == 0)) {
         /* nothing to do */
         return;
     }
 
     logging = true;
-    levels = LOG_INIT | LOG_FINALIZE | LOG_MEMORY | LOG_HEAP;
-    /* TODO parse string for which levels to set */
 
     /* TODO "%" modifiers for extra info */
     e = getenv("SHMEM_LOG_FILE");
@@ -105,18 +137,10 @@ shmemi_logger_finalize(void)
     }
 }
 
-#define SHMEMI_BIT_IS_SET(_level) \
-    (((_level) == LOG_FATAL) || (levels & SHMEMI_BIT_SET(_level)))
-
 void
-shmemi_logger(shmem_log_t level, const char *fmt, ...)
+shmemi_logger(shmemi_log_t level, const char *fmt, ...)
 {
-    if (! logging) {
-        return;
-    }
-
-    /* TODO if (SHMEMI_BIT_IS_SET(level)) { */
-    if (1) {
+    if (logging) {
         char *tmp1;
         char *tmp2;
         va_list ap;
@@ -130,7 +154,7 @@ shmemi_logger(shmem_log_t level, const char *fmt, ...)
                  "[%4d:%6.6f] %10s: ",
                  p.me,
                  shmemu_timer(),
-                 level_to_string(level)
+                 level_to_name(level)
                  );
 
         va_start(ap, fmt);

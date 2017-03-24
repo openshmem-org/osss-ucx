@@ -54,16 +54,17 @@ void shmemi_logger_finalize(void);
 
 #define SHMEMI_BIT_SET(_level) (1 << (_level))
 
-typedef enum shmem_log {
+typedef enum shmemi_log {
     LOG_FATAL       = SHMEMI_BIT_SET(0),
     LOG_INIT        = SHMEMI_BIT_SET(1),
     LOG_FINALIZE    = SHMEMI_BIT_SET(2),
     LOG_MEMORY      = SHMEMI_BIT_SET(3),
     LOG_HEAP        = SHMEMI_BIT_SET(4),
-    LOG_ALL         = LOG_FATAL|LOG_INIT|LOG_FINALIZE|LOG_MEMORY|LOG_HEAP
-} shmem_log_t;
+    LOG_ALL         = LOG_FATAL|LOG_INIT|LOG_FINALIZE|LOG_MEMORY|LOG_HEAP,
+    LOG_UNKNOWN     = -1
+} shmemi_log_t;
 
-void shmemi_logger(shmem_log_t level, const char *fmt, ...);
+void shmemi_logger(shmemi_log_t level, const char *fmt, ...);
 
 #ifdef ENABLE_DEBUG
 # define logger(...) shmemi_logger(__VA_ARGS__)
