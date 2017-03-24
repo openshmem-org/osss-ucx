@@ -132,7 +132,9 @@ AC_CONFIG_FILES([Makefile
 		man/oshcc.1 man/oshcxx.1 man/oshrun.1 man/osh_info.1
 		src/Makefile
 		src/shmemi/Makefile
-		src/shmemi/shmemc/Makefile
+			src/shmemi/shmemc/Makefile
+				src/shmemi/shmemc/ucx/Makefile
+				src/shmemi/shmemc/gasnet/Makefile
 		src/shmemu/Makefile
 		scripts/Makefile
 		man/Makefile
