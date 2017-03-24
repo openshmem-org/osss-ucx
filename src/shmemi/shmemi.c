@@ -5,6 +5,7 @@
 
 #include "shmemi.h"
 #include "shmemu.h"
+#include "shmemc.h"
 
 #include "pmix-client.h"
 #include "pmi2-client.h"

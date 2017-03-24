@@ -15,6 +15,7 @@
 
 #include "shmemi.h"
 #include "shmemu.h"
+#include "shmemc.h"
 
 #define TRACE_MSG_BUF_SIZE 256
 
