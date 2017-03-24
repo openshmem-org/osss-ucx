@@ -7,6 +7,7 @@
 #include <pmi.h>
 
 #include "shmemi.h"
+#include "shmemc.h"
 
 /*
  * if finalize called through atexit, force a barrier
@@ -62,8 +63,8 @@ shmemi_init_pmi1(void)
     assert(s == PMI_SUCCESS);
 #else
 
-    p.npes = atoi(getenv("PMI_SIZE"));
-    p.me = atoi(getenv("PMI_RANK"));
+    p.npes = atoi(shmemc_getenv("PMI_SIZE"));
+    p.me = atoi(shmemc_getenv("PMI_RANK"));
 #endif
 
     s = atexit(shmemi_finalize_atexit_pmi1);

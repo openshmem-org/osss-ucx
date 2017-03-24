@@ -98,7 +98,7 @@ shmemi_logger_init(void)
 {
     char *e;
 
-    e = getenv("SHMEM_LOGGING");
+    e = shmemc_getenv("SHMEM_LOGGING");
     if (e == NULL) {
         /* nothing to do */
         return;
@@ -112,7 +112,7 @@ shmemi_logger_init(void)
         logging = true;
 
         /* TODO "%" modifiers for extra info */
-        e = getenv("SHMEM_LOG_FILE");
+        e = shmemc_getenv("SHMEM_LOG_FILE");
         if (e != NULL) {
             log_stream = fopen(e, "a");
             if (log_stream == NULL) {

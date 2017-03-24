@@ -1,13 +1,13 @@
-#include "comms/comms.h"
+#include "shmemi.h"
 
 void
 shmem_quiet(void)
 {
-    shmemc_quiet();
+    shmemi_quiet();
 }
 
 void
 shmem_fence(void)
 {
-    shmemc_fence();
+    shmemi_fence();
 }

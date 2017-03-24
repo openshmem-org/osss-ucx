@@ -1,12 +1,14 @@
-shmemu_dir             = ./shmemu
-shmemu_cppflags        = -I$(shmemu_dir)
+shmemu_dir             = shmemu
+shmemu_cppflags        = -I$(srcdir)/$(shmemu_dir)
 shmemu_ldflags         = -L$(shmemu_dir)
 shmemu_libs            = -lshmemu
 
-shmemi_dir             = ./shmemi
+shmemi_dir             = shmemi
+shmemi_cppflags        = -I$(srcdir)/$(shmemi_dir)
+shmemi_ldflags         = -L$(shmemi_dir)
+shmemi_libs            = -lshmemi
 
-SUBDIRS                = $(shmemu_dir) \
-				$(shmemi_dir) # TBD comms
+SUBDIRS                = $(shmemu_dir) $(shmemi_dir)
 
 LIBSHMEM_SOURCES       = init.c malloc.c version.c atomics.c cache.c \
 				pe.c ptr.c accessible.c

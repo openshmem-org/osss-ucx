@@ -43,7 +43,7 @@ select_pmi_version(void)
     pmi_lookup_t *tp = pmi_table;
 
     while (tp->env_var != NULL) {
-        if (getenv(tp->env_var) != NULL) {
+        if (shmemc_getenv(tp->env_var) != NULL) {
             goto out;
             /* NOT REACHED */
         }
