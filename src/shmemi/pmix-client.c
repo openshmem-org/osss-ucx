@@ -224,8 +224,10 @@ shmemi_init_pmix(void)
     assert(p.peers != NULL);
 
     logger(LOG_INIT,
-           "there are %d peers on this node: \"%s\"",
+           "there %s %d peer%s on this node: \"%s\"",
+           (p.npeers > 1) ? "are" : "is",
            p.npeers,
+           (p.npeers > 1) ? "s" : "",
            p.peers
            );
 
