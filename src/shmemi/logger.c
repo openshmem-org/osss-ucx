@@ -19,7 +19,7 @@
 
 #define TRACE_MSG_BUF_SIZE 256
 
-static FILE *log_stream;
+static FILE *log_stream = NULL;
 static bool logging = false;
 static char *host = NULL;
 
