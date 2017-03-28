@@ -5,51 +5,61 @@
 
 #include "shmemi.h"
 
-heap_exchange_t *heapx = NULL;
+heapx_t heapx = NULL;
+int nheaps = 1;
 
 void
-shmemi_heapx_set_pe(int pe, void *p, size_t s)
+shmemi_heapx_set_pe(int idx, int pe, void *p, size_t s)
 {
-    heapx[pe].base = p;
-    heapx[pe].size = s;       /* alignment may change request size */
-    heapx[pe].filled = 1;
+    heapx[idx][pe].base = p;
+    heapx[idx][pe].size = s;   /* alignment may change request size */
+    heapx[idx][pe].filled = 1;
 }
 
 void
-shmemi_heapx_create(size_t s)
+shmemi_heapx_create(int idx, size_t s)
 {
-    heapx = (heap_exchange_t *) calloc(p.npes, sizeof(*heapx));
-    assert(heapx != NULL);
+    heapx[idx] = (heap_exchange_t *) calloc(p.npes, sizeof(*heapx[idx]));
+    assert(heapx[idx] != NULL);
 
-    shmemi_heapx_set_pe(p.me, malloc(s), s);
-}
+    /* TODO malloc is clearly a dummy here */
 
-/*
- * ignore index for now
- */
-int
-shmemi_heapx_initialized(int n)
-{
-    if (heapx == NULL) {
-        return 0;
-    }
-    else {
-        return heapx[p.me].filled;
-    }
+    shmemi_heapx_set_pe(idx, p.me, malloc(s), s);
 }
 
 void
 shmemi_heapx_init(void)
 {
-    shmemi_heapx_create(HEAP_SIZE);
+    int i;
+
+    heapx = (heapx_t) calloc(nheaps, sizeof(*heapx));
+    assert(heapx != NULL);
+
+    for (i = 0; i < nheaps; i += 1) {
+        shmemi_heapx_create(i, HEAP_SIZE);
+    }
     shmemi_setup_heaps();
+}
+
+int
+shmemi_heapx_initialized(int idx)
+{
+    if (heapx != NULL) {
+        return heapx[idx][p.me].filled;
+    }
+
+    return 0;
 }
 
 void
 shmemi_heapx_finalize(void)
 {
     if (heapx != NULL) {
-        free(heapx[p.me].base);
+        int i;
+
+        for (i = 0; i < nheaps; i += 1) {
+            free(heapx[i][p.me].base);
+        }
         free(heapx);
     }
 }

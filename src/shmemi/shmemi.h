@@ -24,16 +24,26 @@ typedef struct heap_exchange {
     short filled;               /* has this been exchanged yet? */
 } heap_exchange_t;
 
-extern heap_exchange_t *heapx;
+/*
+ * npes of these
+ */
+typedef heap_exchange_t *heaps_per_pe_t;
+/*
+ * nheaps of these
+ */
+typedef heaps_per_pe_t *heapx_t;
+
+extern heapx_t heapx;
+extern int nheaps;
 
 void shmemi_heapx_init(void);
 void shmemi_heapx_finalize(void);
-void shmemi_heapx_set_pe(int pe, void *p, size_t s);
-int shmemi_heapx_initialized(int n);
+void shmemi_heapx_set_pe(int idx, int pe, void *p, size_t s);
+int shmemi_heapx_initialized(int idx);
 
 #define HEAP_SIZE (size_t) (4096 * 1024)
 
-void shmemi_heapx_create(size_t s);
+void shmemi_heapx_create(int idx, size_t s);
 
 /*
  * API heap management
