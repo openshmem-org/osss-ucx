@@ -214,6 +214,21 @@ shmemi_init_pmix(void)
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
 
+    p.npeers = (int) vp->data.uint32;
+    assert(p.npeers >= 0);
+
+    ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
+    assert(ps == PMIX_SUCCESS);
+
+    p.peers = strdup(vp->data.string);
+    assert(p.peers != NULL);
+
+    logger(LOG_INIT,
+           "there are %d peers on this node: \"%s\"",
+           p.npeers,
+           p.peers
+           );
+
     PMIX_VALUE_RELEASE(vp);
 
     barrier_all_pmix();

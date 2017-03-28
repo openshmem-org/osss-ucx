@@ -89,9 +89,11 @@ void shmemi_logger(shmemi_log_t level, const char *fmt, ...);
 #include <stdbool.h>
 
 typedef struct pe {
-    int me;
-    int npes;
-    bool running;
+    int me;                     /* this rank */
+    int npes;                   /* total ranks */
+    int npeers;                 /* ranks we share a node with */
+    char *peers;                /* list of peers */
+    bool running;               /* PE initialized? */
 } pe_t;
 
 extern pe_t p;
