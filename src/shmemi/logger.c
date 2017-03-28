@@ -21,6 +21,7 @@
 
 static FILE *log_stream;
 static bool logging = false;
+static char *host = NULL;
 
 typedef struct shmemi_log_table {
     shmemi_log_t level;
@@ -112,6 +113,9 @@ shmemi_logger_init(void)
 
         logging = true;
 
+        host = shmemu_gethostname();
+        assert(host != NULL);
+
         /* TODO "%" modifiers for extra info */
         e = shmemc_getenv("SHMEM_LOG_FILE");
         if (e != NULL) {
@@ -153,7 +157,8 @@ shmemi_logger(shmemi_log_t level, const char *fmt, ...)
         assert(tmp2 != NULL);
 
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
-                 "[%4d:%6.6f] %10s: ",
+                 "[%s:%d:%6.6f] %10s: ",
+                 host,
                  p.me,
                  shmemu_timer(),
                  level_to_name(level)

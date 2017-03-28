@@ -92,7 +92,6 @@ typedef struct pe {
     int me;
     int npes;
     bool running;
-    char *hostname;
 } pe_t;
 
 extern pe_t p;
