@@ -1,6 +1,6 @@
 #!/bin/sh
 
-compiler="@CXX@"
+compiler="${OSH_CXX-@CXX@}"
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@

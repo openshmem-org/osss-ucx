@@ -1,6 +1,6 @@
 #!/bin/sh
 
-compiler="@CC@"
+compiler="${OSH_CC-@CC@}"
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
