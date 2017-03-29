@@ -1,16 +1,11 @@
-shmemc_dir             = shmemc
-shmemc_cppflags        = -I$(srcdir)/$(shmemc_dir)
-shmemc_ldflags         = -L$(shmemc_dir)
-shmemc_libs            = -lshmemc
-
-SUBDIRS                = dlmalloc shmemc
+SUBDIRS                = dlmalloc
 
 LIBSHMEMI_SOURCES      = shmemi.c \
 				pmi1-client.c pmi2-client.c pmix-client.c \
 				malloc.c heapx.c pe.c logger.c \
 				accessible.c
 
-SHMEMX_CPPFLAGS        = -I$(srcdir)/../shmemu $(shmemc_cppflags)
+SHMEMX_CPPFLAGS        = -I$(srcdir)/../shmemu -I$(srcdir)/../shmemc
 
 lib_LTLIBRARIES        = libshmemi.la
 libshmemi_la_SOURCES   = $(LIBSHMEMI_SOURCES)

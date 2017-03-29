@@ -138,14 +138,14 @@ AC_CONFIG_FILES([Makefile
 		man/oshcc.1 man/oshcxx.1 man/oshfort.1
 		man/oshrun.1 man/osh_info.1 man/osh_intro.1
 		src/Makefile
-		src/shmemi/Makefile
-			src/shmemi/shmemc/Makefile
-				src/shmemi/shmemc/ucx/Makefile
-				src/shmemi/shmemc/gasnet/Makefile
 		src/shmemu/Makefile
+		src/shmemc/Makefile
+			src/shmemc/ucx/Makefile
+			src/shmemc/gasnet/Makefile
+		src/shmemi/Makefile
 		scripts/Makefile
 		scripts/oshcc scripts/oshcxx scripts/oshfort scripts/oshrun
-		src/shmem.h src/version.h
+		src/shmem.h src/shmem_defines.h src/version.h
 		src/shmemx.h
 		pkgconfig/Makefile
 		pkgconfig/osss-openshmem.pc

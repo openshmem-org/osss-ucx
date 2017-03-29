@@ -1,6 +1,9 @@
 #ifndef _SHMEM_H
 #define _SHMEM_H 1
 
+#include <sys/types.h>
+#include <stddef.h>               /* ptrdiff_t */
+
 /*
  * for handling the "I" (upper-case eye) macro for complex numbers
  *
@@ -10,85 +13,12 @@
 # define shmemi_h_I_already_defined__
 #endif  /* I */
 
+#include <shmem_defines.h>
 
-#include <sys/types.h>
-#include <stddef.h>               /* ptrdiff_t */
-
-/*
- * C and C++ do complex numbers differently
- *
- */
-
-#ifdef __cplusplus
-# include <complex>
-# define COMPLEXIFY(T) std::complex<T>
-#else  /* _cplusplus */
-# include <complex.h>
-# define COMPLEXIFY(T) T complex
-#endif  /* __cplusplus */
-
-/*
- * no symbol-mangling (closing brace near EOF)
- */
 #ifdef __cplusplus
 extern "C"
 {
 #endif  /* __cplusplus */
-
-    /*
-     * not all compilers support this annotation
-     *
-     */
-#if defined(__GNUC__)                                                   \
-    || defined(__PGIC__)                                                \
-    || defined(__INTEL_COMPILER)                                        \
-    || defined(__OPEN64__)                                              \
-    || defined(__OPENUH__)
-# define _WUR __attribute__((__warn_unused_result__))
-#else
-# define _WUR
-#endif
-
-    /*
-     * TODO: need better detection
-     */
-#if defined(__clang__)
-
-# define _DEPRECATED_BY(...)                                    \
-    __attribute__((deprecated("use '" #__VA_ARGS__ "' instead")))
-# define _DEPRECATED                            \
-    __attribute__((deprecated))
-
-#elif defined(__OPEN64__)
-
-    /* not supported */
-
-# define _DEPRECATED_BY(...)
-# define _DEPRECATED
-
-#elif defined(__GNUC__)
-
-#define _DEPRECATED                             \
-    __attribute__((deprecated))
-
-    /* GCC has extended attribute syntax from 4.5 onward */
-
-# if (__GNUC__ >= 5) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
-#  define _DEPRECATED_BY(...)                                   \
-    __attribute__((deprecated("use '" #__VA_ARGS__ "' instead")))
-#else
-# define _DEPRECATED_BY(...)                    \
-    _DEPRECATED
-#endif
-
-#else
-
-    /* fallback */
-
-# define _DEPRECATED_BY(...)
-# define _DEPRECATED
-
-#endif  /* compiler deprecation check */
 
     /*
      * start/stop & query
@@ -275,14 +205,6 @@ extern "C"
      */
     int shmem_n_pes (void) _WUR;
 
-    /*
-     * OpenSHMEM release
-     */
-#define SHMEM_MAJOR_VERSION @SHMEM_MAJOR_VERSION@
-#define SHMEM_MINOR_VERSION @SHMEM_MINOR_VERSION@
-#define SHMEM_MAX_NAME_LEN @SHMEM_MAX_NAME_LEN@
-#define SHMEM_VENDOR_STRING "@SHMEM_VENDOR_STRING@"
-
     /**
      * @brief determines the major.minor version numbers of this release.
      *
@@ -291,12 +213,12 @@ extern "C"
      * @subsection c C
      @code
      void shmem_info_get_version (int *major,
-                                  int *minor);
+     int *minor);
      @endcode
      * @subsection c C++
      @code
      void shmem_info_get_version (int * major,
-                                  int * minor);
+     int * minor);
      @endcode
      *
      * @subsection f Fortran
@@ -551,77 +473,77 @@ extern "C"
 
     /* see \ref shmem_long_put_nbi () */
     void shmem_double_put_nbi (double *dest, const double *source,
-                                size_t nelems, int pe);
+                               size_t nelems, int pe);
     /* see \ref shmem_long_put_nbi () */
     void shmem_float_put_nbi (float *dest, const float *source, size_t nelems,
-                               int pe);
+                              int pe);
     /* see \ref shmem_long_put_nbi () */
     void shmem_char_put_nbi (char *dest, const char *source, size_t nelems,
                              int pe);
     /* see \ref shmem_long_put_nbi () */
     void shmem_int_put_nbi (int *dest, const int *source, size_t nelems,
-                             int pe);
+                            int pe);
 
     void shmem_long_put_nbi (long *dest, const long *source, size_t nelems,
-                              int pe);
+                             int pe);
     /* see \ref shmem_long_put_nbi () */
     void shmem_longdouble_put_nbi (long double *dest, const long double *source,
-                                    size_t nelems, int pe);
+                                   size_t nelems, int pe);
     /* see \ref shmem_long_put_nbi () */
     void shmem_longlong_put_nbi (long long *dest, const long long *source,
-                                  size_t nelems, int pe);
+                                 size_t nelems, int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_put32_nbi (void *dest, const void *source, size_t nelems,
-                           int pe);
+                          int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_put64_nbi (void *dest, const void *source, size_t nelems,
-                           int pe);
+                          int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_put128_nbi (void *dest, const void *source, size_t nelems,
-                            int pe);
+                           int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_putmem_nbi (void *dest, const void *source, size_t nelems,
-                            int pe);
+                           int pe);
     /* see \ref shmem_long_put_nbi () */
     void shmem_short_put_nbi (short *dest, const short *source, size_t nelems,
-                               int pe);
+                              int pe);
 
     /* see \ref shmem_long_get__nbi () */
     void shmem_double_get_nbi (double *dest, const double *source,
-                                size_t nelems, int pe);
+                               size_t nelems, int pe);
     /* see \ref shmem_long_get_nbi () */
     void shmem_float_get_nbi (float *dest, const float *source, size_t nelems,
-                               int pe);
+                              int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_get32_nbi (void *dest, const void *source, size_t nelems,
-                           int pe);
+                          int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_get64_nbi (void *dest, const void *source, size_t nelems,
-                           int pe);
+                          int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_get128_nbi (void *dest, const void *source, size_t nelems,
-                            int pe);
+                           int pe);
     /* see \ref shmem_long_nbi () */
     void shmem_getmem_nbi (void *dest, const void *source, size_t nelems,
-                            int pe);
+                           int pe);
     /* see \ref shmem_long_get_nbi () */
     void shmem_int_get_nbi (int *dest, const int *source, size_t nelems,
-                             int pe);
+                            int pe);
     /* see \ref shmem_long_get_nbi () */
     void shmem_char_get_nbi (char *dest, const char *source, size_t nelems,
                              int pe);
 
     void shmem_long_get_nbi (long *dest, const long *source, size_t nelems,
-                              int pe);
+                             int pe);
     /* see \ref shmem_long_get_nbi () */
     void shmem_longdouble_get_nbi (long double *dest, const long double *source,
-                                    size_t nelems, int pe);
+                                   size_t nelems, int pe);
     /* see \ref shmem_long_get_nbi () */
     void shmem_longlong_get_nbi (long long *dest, const long long *source,
-                                  size_t nelems, int pe);
+                                 size_t nelems, int pe);
     /* see \ref shmem_get_nbi () */
     void shmem_short_get_nbi (short *dest, const short *source, size_t nelems,
-                               int pe);
+                              int pe);
 
 
     /*
@@ -839,20 +761,6 @@ extern "C"
      * symmetric memory management
      */
 
-    /* lower numbers match Fortran return values */
-
-    enum shmem_fortran_errors {
-        SHMEM_MALLOC_OK                  = (0L),
-        SHMEM_MALLOC_BAD_SIZE            = (-1L),
-        SHMEM_MALLOC_FAIL                = (-2L),
-        SHMEM_MALLOC_NOT_IN_SYMM_HEAP    = (-3L),
-        SHMEM_MALLOC_ALREADY_FREE        = (-4L),
-        SHMEM_MALLOC_NOT_ALIGNED         = (-5L),
-        SHMEM_MALLOC_MEMALIGN_FAILED     = (-11L),
-        SHMEM_MALLOC_REALLOC_FAILED      = (-12L),
-        SHMEM_MALLOC_SYMMSIZE_FAILED     = (-10L)
-    };
-
 #if 0
     long malloc_error;
 #endif  /* not present in SGI version */
@@ -987,19 +895,6 @@ extern "C"
     /*
      * wait operations
      */
-
-    /*
-     * values aren't important
-     */
-
-    enum shmem_cmp_constants {
-        SHMEM_CMP_EQ = 0,
-        SHMEM_CMP_NE,
-        SHMEM_CMP_GT,
-        SHMEM_CMP_LE,
-        SHMEM_CMP_LT,
-        SHMEM_CMP_GE
-    };
 
     /**
      * @brief wait for symmetric variable to change value
@@ -1432,21 +1327,6 @@ extern "C"
      * reductions
      */
 
-     /**
-     * cf. Fortran values are multiples of these (different types)
-     */
-#define SHMEM_INTERNAL_F2C_SCALE        ( sizeof (long) / sizeof (int) )
-
-#define SHMEM_BCAST_SYNC_SIZE           (128L / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_BARRIER_SYNC_SIZE         (128L / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_REDUCE_SYNC_SIZE          (256L / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_REDUCE_MIN_WRKDATA_SIZE   (128L / SHMEM_INTERNAL_F2C_SCALE)
-
-    /*
-     * Initialize sync arrays to this
-     */
-#define SHMEM_SYNC_VALUE (-1L)
-
     void shmem_long_sum_to_all (long *target, long *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, long *pWrk, long *pSync);
@@ -1702,8 +1582,6 @@ extern "C"
      * collects
      */
 
-#define SHMEM_COLLECT_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
-
     void shmem_fcollect64 (void *target, const void *source,
                            size_t nelems, int PE_start, int logPE_stride,
                            int PE_size, long *pSync);
@@ -1724,9 +1602,6 @@ extern "C"
     /**
      * all-to-all collectives
      */
-
-#define SHMEM_ALLTOALL_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_ALLTOALLS_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
 
     /* see \ref shmem_alltoall64 () */
     void shmem_alltoall32 (void *target, const void *source, size_t nelems,
@@ -2145,28 +2020,6 @@ extern "C"
 
 #endif   /* __STDC_VERSION__ >= 201112L test */
 #endif /* __STDC_VERSION__ defined test */
-
-
-    /*
-     * deprecated shmem constants
-     */
-#define _SHMEM_MAJOR_VERSION            SHMEM_MAJOR_VERSION
-#define _SHMEM_MINOR_VERSION            SHMEM_MINOR_VERSION
-#define _SHMEM_MAX_NAME_LEN             SHMEM_MAX_NAME_LEN
-#define _SHMEM_VENDOR_STRING            SHMEM_VENDOR_STRING
-#define _SHMEM_BCAST_SYNC_SIZE          SHMEM_BCAST_SYNC_SIZE
-#define _SHMEM_BARRIER_SYNC_SIZE        SHMEM_BARRIER_SYNC_SIZE
-#define _SHMEM_REDUCE_SYNC_SIZE         SHMEM_REDUCE_SYNC_SIZE
-#define _SHMEM_REDUCE_MIN_WRKDATA_SIZE  SHMEM_REDUCE_MIN_WRKDATA_SIZE
-#define _SHMEM_SYNC_VALUE               SHMEM_SYNC_VALUE
-#define _SHMEM_COLLECT_SYNC_SIZE        SHMEM_COLLECT_SYNC_SIZE
-#define _SHMEM_CMP_EQ                   SHMEM_CMP_EQ
-#define _SHMEM_CMP_NE                   SHMEM_CMP_NE
-#define _SHMEM_CMP_GT                   SHMEM_CMP_GT
-#define _SHMEM_CMP_LE                   SHMEM_CMP_LE
-#define _SHMEM_CMP_LT                   SHMEM_CMP_LT
-#define _SHMEM_CMP_GE                   SHMEM_CMP_GE
-
 
     /*
      * --end--

@@ -1,0 +1,132 @@
+#ifndef _SHMEM_DEFINES_H
+#define _SHMEM_DEFINES_H 1
+
+/*
+ * C and C++ do complex numbers differently
+ *
+ */
+
+#ifdef __cplusplus
+# include <complex>
+# define COMPLEXIFY(T) std::complex<T>
+#else  /* _cplusplus */
+# include <complex.h>
+# define COMPLEXIFY(T) T complex
+#endif  /* __cplusplus */
+
+/*
+ * not all compilers support this annotation
+ *
+ */
+#if defined(__GNUC__)                           \
+    || defined(__PGIC__)                        \
+    || defined(__INTEL_COMPILER)                \
+    || defined(__OPEN64__)                      \
+    || defined(__OPENUH__)
+# define _WUR __attribute__((__warn_unused_result__))
+#else
+# define _WUR
+#endif
+
+/*
+ * TODO: need better detection
+ */
+#if defined(__clang__)
+
+# define _DEPRECATED_BY(...)                                        \
+    __attribute__((deprecated("use '" #__VA_ARGS__ "' instead")))
+# define _DEPRECATED                            \
+    __attribute__((deprecated))
+
+#elif defined(__OPEN64__)
+
+/* not supported */
+
+# define _DEPRECATED_BY(...)
+# define _DEPRECATED
+
+#elif defined(__GNUC__)
+
+#define _DEPRECATED                             \
+    __attribute__((deprecated))
+
+/* GCC has extended attribute syntax from 4.5 onward */
+
+# if (__GNUC__ >= 5) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+#  define _DEPRECATED_BY(...)                                       \
+    __attribute__((deprecated("use '" #__VA_ARGS__ "' instead")))
+#else
+# define _DEPRECATED_BY(...)                    \
+    _DEPRECATED
+#endif
+
+#else
+
+/* fallback */
+
+# define _DEPRECATED_BY(...)
+# define _DEPRECATED
+
+#endif  /* compiler deprecation check */
+
+#define SHMEM_MAJOR_VERSION @SHMEM_MAJOR_VERSION@
+#define SHMEM_MINOR_VERSION @SHMEM_MINOR_VERSION@
+#define SHMEM_MAX_NAME_LEN @SHMEM_MAX_NAME_LEN@
+#define SHMEM_VENDOR_STRING "@SHMEM_VENDOR_STRING@"
+
+enum shmem_fortran_errors {
+    SHMEM_MALLOC_OK                  = (0L),
+    SHMEM_MALLOC_BAD_SIZE            = (-1L),
+    SHMEM_MALLOC_FAIL                = (-2L),
+    SHMEM_MALLOC_NOT_IN_SYMM_HEAP    = (-3L),
+    SHMEM_MALLOC_ALREADY_FREE        = (-4L),
+    SHMEM_MALLOC_NOT_ALIGNED         = (-5L),
+    SHMEM_MALLOC_MEMALIGN_FAILED     = (-11L),
+    SHMEM_MALLOC_REALLOC_FAILED      = (-12L),
+    SHMEM_MALLOC_SYMMSIZE_FAILED     = (-10L)
+};
+
+enum shmem_cmp_constants {
+    SHMEM_CMP_EQ = 0,
+    SHMEM_CMP_NE,
+    SHMEM_CMP_GT,
+    SHMEM_CMP_LE,
+    SHMEM_CMP_LT,
+    SHMEM_CMP_GE
+};
+
+#define SHMEM_INTERNAL_F2C_SCALE        ( sizeof (long) / sizeof (int) )
+
+#define SHMEM_BCAST_SYNC_SIZE           (128L / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_BARRIER_SYNC_SIZE         (128L / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_REDUCE_SYNC_SIZE          (256L / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_REDUCE_MIN_WRKDATA_SIZE   (128L / SHMEM_INTERNAL_F2C_SCALE)
+
+#define SHMEM_SYNC_VALUE (-1L)
+
+#define SHMEM_COLLECT_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
+
+#define SHMEM_ALLTOALL_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_ALLTOALLS_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
+
+/*
+ * deprecated shmem constants
+ */
+#define _SHMEM_MAJOR_VERSION            SHMEM_MAJOR_VERSION
+#define _SHMEM_MINOR_VERSION            SHMEM_MINOR_VERSION
+#define _SHMEM_MAX_NAME_LEN             SHMEM_MAX_NAME_LEN
+#define _SHMEM_VENDOR_STRING            SHMEM_VENDOR_STRING
+#define _SHMEM_BCAST_SYNC_SIZE          SHMEM_BCAST_SYNC_SIZE
+#define _SHMEM_BARRIER_SYNC_SIZE        SHMEM_BARRIER_SYNC_SIZE
+#define _SHMEM_REDUCE_SYNC_SIZE         SHMEM_REDUCE_SYNC_SIZE
+#define _SHMEM_REDUCE_MIN_WRKDATA_SIZE  SHMEM_REDUCE_MIN_WRKDATA_SIZE
+#define _SHMEM_SYNC_VALUE               SHMEM_SYNC_VALUE
+#define _SHMEM_COLLECT_SYNC_SIZE        SHMEM_COLLECT_SYNC_SIZE
+#define _SHMEM_CMP_EQ                   SHMEM_CMP_EQ
+#define _SHMEM_CMP_NE                   SHMEM_CMP_NE
+#define _SHMEM_CMP_GT                   SHMEM_CMP_GT
+#define _SHMEM_CMP_LE                   SHMEM_CMP_LE
+#define _SHMEM_CMP_LT                   SHMEM_CMP_LT
+#define _SHMEM_CMP_GE                   SHMEM_CMP_GE
+
+#endif  /* _SHMEM_DEFINES_HH */

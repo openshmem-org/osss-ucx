@@ -3,15 +3,21 @@ shmemu_cppflags        = -I$(srcdir)/$(shmemu_dir)
 shmemu_ldflags         = -L$(shmemu_dir)
 shmemu_libs            = -lshmemu
 
+shmemc_dir             = shmemc
+shmemc_cppflags        = -I$(srcdir)/$(shmemc_dir)
+shmemc_ldflags         = -L$(shmemc_dir)
+shmemc_libs            = -lshmemc
+
 shmemi_dir             = shmemi
 shmemi_cppflags        = -I$(srcdir)/$(shmemi_dir)
 shmemi_ldflags         = -L$(shmemi_dir)
 shmemi_libs            = -lshmemi
 
-SUBDIRS                = $(shmemu_dir) $(shmemi_dir)
+SUBDIRS                = $(shmemu_dir) $(shmemc_dir) $(shmemi_dir)
 
 LIBSHMEM_SOURCES       = init.c malloc.c version.c atomics.c cache.c \
-				pe.c ptr.c accessible.c
+				pe.c ptr.c accessible.c \
+				put.c get.c
 
 if ENABLE_EXPERIMENTAL
 LIBSHMEM_SOURCES      += wtime.c xor.c
@@ -29,7 +35,9 @@ libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
 libshmem_a_CPPFLAGS    = $(shmemu_cppflags)
 
 # retain tree
-nobase_include_HEADERS = shmem.h mpp/shmem.h shmemx.h mpp/shmemx.h
+nobase_include_HEADERS = shmem_defines.h \
+				shmem.h mpp/shmem.h \
+				shmemx.h mpp/shmemx.h
 
 bin_PROGRAMS           = osh_info
 osh_info_SOURCES       = osh_info.c
