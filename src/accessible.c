@@ -1,15 +1,13 @@
-/*
- * trivial stubs
- */
+#include "shmemi/shmemi.h"
 
 int
 shmem_pe_accessible(int pe)
 {
-    return 1;
+    return shmemi_pe_accessible(pe);
 }
 
 int
 shmem_addr_accessible(const void *addr, int pe)
 {
-    return 0;
+    return shmemi_addr_accessible(addr, pe);
 }

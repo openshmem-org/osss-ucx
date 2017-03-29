@@ -91,7 +91,7 @@ void shmemi_logger(shmemi_log_t level, const char *fmt, ...);
 typedef struct pe {
     int me;                     /* this rank */
     int npes;                   /* total ranks */
-    int npeers;                 /* ranks we share a node with */
+    int npeers;                 /* ranks on a node (> 0, I am my own peer) */
     char *peers;                /* list of peers */
     bool running;               /* PE initialized? */
 } pe_t;
@@ -106,5 +106,11 @@ extern pe_t p;
  */
 void shmemi_quiet(void);
 void shmemi_fence(void);
+
+/*
+ * Accessibility
+ */
+int shmemi_pe_accessible(int pe);
+int shmemi_addr_accessible(const void *addr, int pe);
 
 #endif /* ! _SHMEMI_H */
