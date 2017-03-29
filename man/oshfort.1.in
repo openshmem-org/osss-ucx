@@ -1,32 +1,32 @@
-.TH oshcc 1 "" "OSSS"
+.TH oshfort 1 "" "OSSS"
 .SH NAME
-\fBoshcc\fP \- compile an OpenSHMEM C program
+\fBoshfort\fP \- compile an OpenSHMEM Fortran program
 .SH SYNOPSIS
-\fBoshcc\fP
+\fBoshfort\fP
 .RS
 .br
 [ underlying compiler flags ]
 .br
-file.c [file.c ...]
+file.f [file.f ...]
 .RE
 .SH DESCRIPTION
-\fBoshcc\fP is a wrapper in the vein of mpicc that compiles
+\fBoshfort\fP is a wrapper in the vein of mpifort that compiles
 an OpenSHMEM program.  The wrapper hides implementation
 details from the user.
 .SH EXAMPLES
 The command
 .LP
 .RS
-$ oshcc -g -o foo.exe foo.c
+$ oshfort -g -o foo.exe foo.f
 .RE
 .LP
-compiles foo.c into the OpenSHMEM executable foo.exe.
+compiles foo.f into the OpenSHMEM executable foo.exe.
 .SH ENVIRONMENT
 The underlying compiler/linker invoked by this wrapper is determined
 when the OpenSHMEM library is built.  To override, set the
 .LP
 .RS
-\f(CROSH_CC\fP
+\f(CROSH_FC\fP
 .RE
 .LP
 environment variable.
@@ -36,6 +36,6 @@ how OpenSHMEM programs are compiled, linked and launched.
 These wrapper programs are supplied as part of the Reference
 Library for convenience.
 .SH SEE ALSO
-osh_intro(1).
+osh_info(1).
 .SH OPENSHMEM
 http://www.openshmem.org/

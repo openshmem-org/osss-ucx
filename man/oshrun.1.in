@@ -1,6 +1,6 @@
-.TH oshrun 1 ""
+.TH oshrun 1 "" "OSSS"
 .SH NAME
-\fBoshrun\fP - run an OpenSHMEM program
+\fBoshrun\fP \- run an OpenSHMEM program
 .SH SYNOPSIS
 \fBoshrun\fP
 .RS
@@ -40,8 +40,6 @@ are supplied as part of the Reference Library for convenience.
 To disambiguate launcher and program options/arguments, use "--" to
 signal end-of-launcher arguments.
 .SH SEE ALSO
-oshcc(1)
-.br
-oshfort(1).
+osh_intro(1).
 .SH OPENSHMEM
 http://www.openshmem.org/

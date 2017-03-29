@@ -20,6 +20,11 @@ dnl AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_CC_C99
 AC_PROG_CC_C_O
 AC_PROG_CXX
+AC_PROG_FC
+AC_PROG_FC_C_O
+AC_FC_LIBRARY_LDFLAGS
+AC_FC_MAIN
+AC_FC_WRAPPERS
 AC_PROG_INSTALL
 
 # Checks for libraries.
@@ -129,7 +134,9 @@ AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compile
 
 AC_CONFIG_FILES([Makefile
 		src/shmemi/dlmalloc/Makefile
-		man/oshcc.1 man/oshcxx.1 man/oshrun.1 man/osh_info.1
+		man/Makefile
+		man/oshcc.1 man/oshcxx.1 man/oshfort.1
+		man/oshrun.1 man/osh_info.1 man/osh_intro.1
 		src/Makefile
 		src/shmemi/Makefile
 			src/shmemi/shmemc/Makefile
@@ -137,8 +144,7 @@ AC_CONFIG_FILES([Makefile
 				src/shmemi/shmemc/gasnet/Makefile
 		src/shmemu/Makefile
 		scripts/Makefile
-		man/Makefile
-		scripts/oshcc scripts/oshcxx scripts/oshrun
+		scripts/oshcc scripts/oshcxx scripts/oshfort scripts/oshrun
 		src/shmem.h src/version.h
 		src/shmemx.h
 		pkgconfig/Makefile
