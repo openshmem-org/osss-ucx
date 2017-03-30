@@ -1,22 +1,5 @@
       include 'shmem_defines.fh'
 
-!
-!     waits
-!
-      integer SHMEM_CMP_EQ
-      parameter ( SHMEM_CMP_EQ = 0 )
-      integer SHMEM_CMP_NE
-      parameter ( SHMEM_CMP_NE = 1 )
-      integer SHMEM_CMP_GT
-      parameter ( SHMEM_CMP_GT = 2 )
-      integer SHMEM_CMP_LE
-      parameter ( SHMEM_CMP_LE = 3 )
-      integer SHMEM_CMP_LT
-      parameter ( SHMEM_CMP_LT = 4 )
-      integer SHMEM_CMP_GE
-      parameter ( SHMEM_CMP_GE = 5 )
-
-
 !     For routines that return values (Currently adding only those that
 !     are in the SGI header file, the rest are here but commented out for
 !     now)
