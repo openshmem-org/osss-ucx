@@ -133,26 +133,28 @@ host="`hostname`"
 AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compiled])
 
 AC_CONFIG_FILES([Makefile
-		src/shmemi/dlmalloc/Makefile
 		man/Makefile
 		man/oshcc.1 man/oshcxx.1 man/oshfort.1
 		man/oshrun.1 man/osh_info.1 man/osh_intro.1
 		include/Makefile
-		include/shmem.h
 		include/shmemx.h include/null-shmemx.h
-		include/shmem_defines.fh include/shmem.fh
+		include/shmem_defines.h
+		include/shmem_depr.h
+		include/shmem_api.h
+		include/shmem.h
+		include/shmem_defines.fh
 		src/Makefile
 		src/shmemu/Makefile
 		src/shmemc/Makefile
 			src/shmemc/ucx/Makefile
 			src/shmemc/gasnet/Makefile
 		src/shmemi/Makefile
-		scripts/Makefile
-		scripts/oshcc scripts/oshcxx scripts/oshfort scripts/oshrun
+			src/shmemi/dlmalloc/Makefile
 		src/version.h
-		src/shmem_defines.h
 		pkgconfig/Makefile
 		pkgconfig/osss-openshmem.pc
+		scripts/Makefile
+		scripts/oshcc scripts/oshcxx scripts/oshfort scripts/oshrun
 		])
 
 AC_OUTPUT
