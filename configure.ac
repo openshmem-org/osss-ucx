@@ -146,7 +146,7 @@ AC_CONFIG_FILES([Makefile
 		scripts/Makefile
 		scripts/oshcc scripts/oshcxx scripts/oshfort scripts/oshrun
 		src/shmem.h src/shmem_defines.h src/version.h
-		src/shmemx.h
+		src/shmemx.h src/null-shmemx.h
 		pkgconfig/Makefile
 		pkgconfig/osss-openshmem.pc
 		])

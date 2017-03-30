@@ -35,9 +35,17 @@ libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
 libshmem_a_CPPFLAGS    = $(shmemu_cppflags)
 
 # retain tree
-nobase_include_HEADERS = shmem_defines.h \
-				shmem.h mpp/shmem.h \
-				shmemx.h mpp/shmemx.h
+nobase_include_HEADERS = shmem_defines.h shmem.h \
+				mpp/shmem.h mpp/shmemx.h
+
+if ENABLE_EXPERIMENTAL
+SHMEMX_HEADER          = shmemx.h
+else
+SHMEMX_HEADER          = null-shmemx.h
+endif
+
+install-data-hook:
+	cp -p $(SHMEMX_HEADER) $(includedir)/shmemx.h
 
 bin_PROGRAMS           = osh_info
 osh_info_SOURCES       = osh_info.c
