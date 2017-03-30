@@ -23,7 +23,8 @@ LIBSHMEM_SOURCES       = init.c malloc.c version.c atomics.c cache.c \
 
 
 if ENABLE_FORTRAN
-LIBSHMEM_SOURCES      += fortran.c fortran-mem.c
+LIBSHMEM_SOURCES      += fortran/fortran.c \
+				fortran/fortran-mem.c
 endif
 
 if ENABLE_EXPERIMENTAL
