@@ -17,16 +17,21 @@ AC_CONFIG_MACRO_DIRS([m4])
 dnl AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([subdir-objects])
 
-# Checks for programs.
+# C/C++
 AC_PROG_CC_C99
 AC_PROG_CC_C_O
 AC_PROG_CXX
+AC_PROG_CXX_C_O
+AC_PROG_CXXCPP
+AC_PROG_INSTALL
+
+# Fortran-specific checks
 AC_PROG_FC
 AC_PROG_FC_C_O
 AC_FC_LIBRARY_LDFLAGS
 AC_FC_MAIN
+AC_FC_DUMMY_MAIN
 AC_FC_WRAPPERS
-AC_PROG_INSTALL
 
 # Checks for libraries.
 # for building shared libraries
