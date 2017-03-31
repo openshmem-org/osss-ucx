@@ -138,18 +138,32 @@ AC_DEFINE_UNQUOTED([CONFIG_BUILD_DATE],["$now"],[When this package was compiled]
 host="`hostname`"
 AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compiled])
 
-AC_CONFIG_FILES([Makefile
-		man/Makefile
+AC_CONFIG_FILES([Makefile])
+
+AC_CONFIG_FILES([man/Makefile
 		man/oshcc.1 man/oshcxx.1 man/oshfort.1
 		man/oshrun.1 man/osh_info.1 man/osh_intro.1
-		include/Makefile
+		])
+
+AC_CONFIG_FILES([include/Makefile
 		include/shmemx.h include/null-shmemx.h
 		include/shmem_defines.h
 		include/shmem_depr.h
 		include/shmem_api.h
 		include/shmem.h
 		include/shmem_defines.fh
-		src/Makefile
+		])
+
+AC_CONFIG_FILES([pkgconfig/Makefile
+		pkgconfig/osss-openshmem.pc
+		])
+
+AC_CONFIG_FILES([scripts/Makefile
+		scripts/oshcc scripts/oshcxx scripts/oshfort
+		scripts/oshrun
+		])
+
+AC_CONFIG_FILES([src/Makefile
 		src/shmemu/Makefile
 		src/shmemc/Makefile
 			src/shmemc/ucx/Makefile
@@ -157,10 +171,6 @@ AC_CONFIG_FILES([Makefile
 		src/shmemi/Makefile
 			src/shmemi/dlmalloc/Makefile
 		src/version.h
-		pkgconfig/Makefile
-		pkgconfig/osss-openshmem.pc
-		scripts/Makefile
-		scripts/oshcc scripts/oshcxx scripts/oshfort scripts/oshrun
 		])
 
 AC_OUTPUT
