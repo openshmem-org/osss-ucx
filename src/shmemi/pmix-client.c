@@ -14,7 +14,7 @@
 
 static
 void
-shmemi_finalize_handler_pmix(bool need_barrier)
+shmemi_finalize_handler_pmix(int need_barrier)
 {
     if (p.running) {
         pmix_info_t *bar;
@@ -27,8 +27,8 @@ shmemi_finalize_handler_pmix(bool need_barrier)
 
         PMIX_INFO_CREATE(bar, 1);
         PMIX_INFO_LOAD(bar, PMIX_EMBED_BARRIER, &need_barrier, PMIX_BOOL);
-
         ps = PMIx_Finalize(bar, 1);
+
         assert(ps == PMIX_SUCCESS);
 
         PMIX_INFO_FREE(bar, 1);
