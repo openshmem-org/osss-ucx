@@ -117,7 +117,7 @@ exchange_heap_info(void)
     int i;
 
     PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
 
     PMIX_PDATA_CONSTRUCT(&fetch_base);
     PMIX_PDATA_CONSTRUCT(&fetch_size);
