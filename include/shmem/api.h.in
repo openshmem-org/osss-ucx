@@ -4,8 +4,8 @@
 #include <sys/types.h>
 #include <stddef.h>               /* ptrdiff_t */
 
-#include "shmem_defines.h"
-#include "shmem_depr.h"
+#include "shmem/defs.h"
+#include "shmem/depr.h"
 
 /*
  * for handling the "I" (upper-case eye) macro for complex numbers

@@ -1,11 +1,11 @@
-SHMEM_HDRS             =  shmem_defines.h \
-				shmem_depr.h \
-				shmem_api.h \
+SHMEM_HDRS             =  shmem/defs.h \
+				shmem/depr.h \
+				shmem/api.h \
 				shmem.h
 SHMEM_HDRS            += mpp/shmem.h mpp/shmemx.h
 
 if ENABLE_FORTRAN
-SHMEM_HDRS            += shmem_defines.fh shmem.fh mpp/shmem.fh
+SHMEM_HDRS            += shmem/defs.fh shmem.fh mpp/shmem.fh
 endif
 
 if ENABLE_EXPERIMENTAL

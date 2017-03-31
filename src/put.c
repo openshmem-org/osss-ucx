@@ -1,4 +1,4 @@
-#include "shmem_defines.h"
+#include "shmem/defs.h"
 #include "shmemc/shmemc.h"
 
 #define SHMEM_TYPED_PUT(_name, _type)                                   \

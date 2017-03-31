@@ -1,4 +1,4 @@
-      include 'shmem_defines.fh'
+      include 'shmem/defs.fh'
 
 !     For routines that return values (Currently adding only those that
 !     are in the SGI header file, the rest are here but commented out for

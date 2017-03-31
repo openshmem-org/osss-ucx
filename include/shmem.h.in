@@ -1,8 +1,8 @@
 #ifndef _SHMEM_H
 #define _SHMEM_H 1
 
-#include <shmem_defines.h>
-#include <shmem_depr.h>
-#include <shmem_api.h>
+#include <shmem/defs.h>
+#include <shmem/depr.h>
+#include <shmem/api.h>
 
 #endif  /* ! _SHMEM_H */
