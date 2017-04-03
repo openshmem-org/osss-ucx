@@ -181,10 +181,7 @@ shmemi_init_pmix(void)
     /*
      * we can get our rank immediately
      */
-    ps = PMIx_Get(&my_proc, PMIX_RANK, NULL, 0, &vp);
-    assert(ps == PMIX_SUCCESS);
-
-    p.me = (int) vp->data.rank;
+    p.me = (int) my_proc.rank;
     assert(p.me >= 0);
 
     /*
