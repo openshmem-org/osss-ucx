@@ -9,7 +9,7 @@ shmem_include=@includedir@
 shmem_lib=@libdir@
 
 shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
-shmemlib_libs="-lshmem -lshmemi -lshmemu"
+shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemu"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs"
 
 # check to see if linking required: if not, throw away link args
