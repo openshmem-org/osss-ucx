@@ -3,11 +3,16 @@
 
 #include <sys/types.h>
 
-void shmemc_quiet(void);
-void shmemc_fence(void);
+static inline void shmemc_quiet(void)
+{
+}
+static inline void shmemc_fence(void)
+{
+    shmemc_quiet();
+}
 
 /*
- * just so things will build for now
+ * stubs so things will build for now
  */
 
 #include <stdlib.h>
@@ -26,6 +31,22 @@ static inline void
 shmemc_put(void *dest, const void *src, size_t nelems, int pe)
 {
     return;
+}
+
+static inline void
+shmemc_set_lock(volatile long *lock)
+{
+}
+
+static inline void
+shmemc_clear_lock(volatile long *lock)
+{
+}
+
+static inline int
+shmemc_test_lock(volatile long *lock)
+{
+    return 0;
 }
 
 #endif /* ! _SHMEMC_COMMS_H */

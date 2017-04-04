@@ -17,9 +17,16 @@ SUBDIRS                = $(shmemu_dir) \
 				$(shmemc_dir) \
 				$(shmemi_dir)
 
-LIBSHMEM_SOURCES       = init.c malloc.c version.c atomics.c cache.c \
-				pe.c ptr.c accessible.c \
-				put.c get.c
+LIBSHMEM_SOURCES       = \
+				init.c \
+				malloc.c \
+				version.c \
+				atomics.c lock.c \
+				pe.c \
+				ptr.c \
+				accessible.c \
+				put.c get.c \
+				cache.c
 
 
 if ENABLE_FORTRAN
