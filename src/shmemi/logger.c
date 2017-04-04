@@ -100,7 +100,7 @@ shmemi_logger_init(void)
 {
     char *e;
 
-    e = shmemc_getenv("SHMEM_LOGGING");
+    e = shmemc_getenv("SHMEM_DEBUG");
     if (e == NULL) {
         /* nothing to do */
         return;
@@ -117,11 +117,11 @@ shmemi_logger_init(void)
         assert(host != NULL);
 
         /* TODO "%" modifiers for extra info */
-        e = shmemc_getenv("SHMEM_LOG_FILE");
+        e = shmemc_getenv("SHMEM_DEBUG_FILE");
         if (e != NULL) {
             log_stream = fopen(e, "a");
             if (log_stream == NULL) {
-                fatal("can't open log file \"%s\"", e);
+                fatal("can't open debug log file \"%s\"", e);
                 /* NOT REACHED */
             }
         }
