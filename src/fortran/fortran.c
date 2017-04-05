@@ -14,7 +14,7 @@
  * stop deprecation warnings
  */
 #define _SHMEM_IN_SOURCE_TREE_ 123321
-#include "shmem_api.h"
+#include "shmem/api.h"
 #undef _SHMEM_IN_SOURCE_TREE_
 
 #include "fortran-common.h"

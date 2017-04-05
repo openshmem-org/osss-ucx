@@ -5,7 +5,7 @@
 
 #include "fortran-common.h"
 
-#include "shmem_api.h"
+#include "shmem/api.h"
 #include "shmemi/shmemi.h"
 
 #ifdef HAVE_FEATURE_PSHMEM
