@@ -9,14 +9,6 @@
 
 #include "shmemi/shmemi.h"
 
-static
-void
-inline
-deprecate(const char *fn)
-{
-    logger(LOG_INFO, "\"%s\" is deprecated", fn);
-}
-
 /*
  * Compatibility no-op cache routines
  */

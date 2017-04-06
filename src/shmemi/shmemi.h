@@ -84,6 +84,12 @@ void shmemi_logger(shmemi_log_t level, const char *fmt, ...);
 # define logger(...)
 #endif /* ENABLE_DEBUG */
 
+static void inline
+deprecate(const char *fn)
+{
+    logger(LOG_INFO, "\"%s\" is deprecated", fn);
+}
+
 /*
  * PE management
  */
