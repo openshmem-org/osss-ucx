@@ -70,7 +70,9 @@ typedef enum shmemi_log {
     LOG_FINALIZE    = SHMEMI_BIT_SET(2),
     LOG_MEMORY      = SHMEMI_BIT_SET(3),
     LOG_HEAP        = SHMEMI_BIT_SET(4),
-    LOG_ALL         = LOG_FATAL|LOG_INIT|LOG_FINALIZE|LOG_MEMORY|LOG_HEAP,
+    LOG_INFO        = SHMEMI_BIT_SET(5),
+    LOG_ALL         = LOG_FATAL | LOG_INIT | LOG_FINALIZE
+                         | LOG_MEMORY | LOG_HEAP | LOG_INFO,
     LOG_UNKNOWN     = -1
 } shmemi_log_t;
 

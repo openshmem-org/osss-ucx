@@ -36,6 +36,7 @@ static shmemi_log_table_t table[] =
         LOG_LEVEL_EMIT(FINALIZE),
         LOG_LEVEL_EMIT(MEMORY),
         LOG_LEVEL_EMIT(HEAP),
+        LOG_LEVEL_EMIT(INFO),
         LOG_LEVEL_EMIT(FATAL),
         LOG_LEVEL_EMIT(UNKNOWN)
     };

@@ -35,7 +35,8 @@ LIBSHMEM_SOURCES      += fortran/fortran.c \
 endif
 
 if ENABLE_EXPERIMENTAL
-LIBSHMEM_SOURCES      += wtime.c xor.c
+LIBSHMEM_SOURCES      += wtime.c xor.c \
+				fortran/fortranx.c
 endif
 
 MY_INCLUDE             = -I../include
