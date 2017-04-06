@@ -71,6 +71,7 @@ typedef enum shmemi_log {
     LOG_MEMORY      = SHMEMI_BIT_SET(3),
     LOG_HEAP        = SHMEMI_BIT_SET(4),
     LOG_INFO        = SHMEMI_BIT_SET(5),
+    LOG_REDUCTION   = SHMEMI_BIT_SET(5),
     LOG_ALL         = LOG_FATAL | LOG_INIT | LOG_FINALIZE
                          | LOG_MEMORY | LOG_HEAP | LOG_INFO,
     LOG_UNKNOWN     = -1

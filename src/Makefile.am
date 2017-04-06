@@ -26,6 +26,7 @@ LIBSHMEM_SOURCES       = \
 				ptr.c \
 				accessible.c \
 				put.c get.c \
+				reductions.c \
 				cache.c
 
 
