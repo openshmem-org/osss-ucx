@@ -20,8 +20,8 @@ static malloc_api_t *api;
 
 /* ---------------------------------------------------------------- */
 
-static
 inline
+static
 void
 init_check(int heap_no)
 {

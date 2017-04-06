@@ -58,8 +58,8 @@ shmemi_finalize_pmix(void)
  * this is purely for internal use with PMIx,
  * nothing to do with SHMEM/UCX
  */
-static
 inline
+static
 void
 barrier_all_pmix(void)
 {

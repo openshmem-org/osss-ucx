@@ -54,7 +54,7 @@ enum shmem_cmp_constants {
     SHMEM_CMP_GE
 };
 
-#define SHMEM_INTERNAL_F2C_SCALE        ( sizeof (long) / sizeof (int) )
+#define SHMEM_INTERNAL_F2C_SCALE        (int) (sizeof(long) / sizeof(int))
 
 #define SHMEM_BCAST_SYNC_SIZE           (128L / SHMEM_INTERNAL_F2C_SCALE)
 #define SHMEM_BARRIER_SYNC_SIZE         (128L / SHMEM_INTERNAL_F2C_SCALE)

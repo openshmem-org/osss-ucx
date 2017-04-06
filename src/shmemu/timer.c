@@ -3,8 +3,8 @@
 
 static double epoch;
 
-static
 inline
+static
 double
 read_time(void)
 {

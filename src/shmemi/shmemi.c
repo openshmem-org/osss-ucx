@@ -76,8 +76,8 @@ shmemi_setup_heaps(void)
 
 /* -------------------------------------------------------------- */
 
-static
 inline
+static
 void
 shmemi_init_real(void)
 {
@@ -118,8 +118,8 @@ shmemi_init_real(void)
     api.init_fn();
 }
 
-static
 inline
+static
 void
 shmemi_finalize_real(void)
 {
