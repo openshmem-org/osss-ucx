@@ -42,3 +42,29 @@ shmem_putmem(void *dest, const void *src,
 {
     shmemc_put(dest, src, nelems, pe);
 }
+
+#if 0
+
+/* TODO */
+
+#define SHMEM_TYPE_P_WRAPPER(_name, _type)                          \
+    _type                                                           \
+    shmem_##_name##_p(_type *addr, int pe)                          \
+    {                                                               \
+        _type retval;                                               \
+        shmem_##_name##_put(&retval, addr, 1, pe);                  \
+        return retval;                                              \
+    }
+
+SHMEM_TYPE_P_WRAPPER(float, float)
+SHMEM_TYPE_P_WRAPPER(double, double)
+SHMEM_TYPE_P_WRAPPER(longlong, long long)
+SHMEM_TYPE_P_WRAPPER(longdouble, long double)
+SHMEM_TYPE_P_WRAPPER(char, char)
+SHMEM_TYPE_P_WRAPPER(short, short)
+SHMEM_TYPE_P_WRAPPER(int, int)
+SHMEM_TYPE_P_WRAPPER(long, long)
+SHMEM_TYPE_P_WRAPPER(complexf, COMPLEXIFY(float))
+SHMEM_TYPE_P_WRAPPER(complexd, COMPLEXIFY(double))
+
+#endif

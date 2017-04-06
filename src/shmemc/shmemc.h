@@ -24,11 +24,17 @@ shmemc_getenv(const char *name)
 }
 
 /*
- * aligned (or not) puts
+ * aligned (or not) puts & gets
  */
 
 static inline void
 shmemc_put(void *dest, const void *src, size_t nelems, int pe)
+{
+    return;
+}
+
+static inline void
+shmemc_get(void *dest, const void *src, size_t nelems, int pe)
 {
     return;
 }
