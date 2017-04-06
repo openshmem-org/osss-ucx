@@ -122,7 +122,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
         const int nloops = nreduce / SHMEM_REDUCE_MIN_WRKDATA_SIZE;     \
         const int nrem = nreduce % SHMEM_REDUCE_MIN_WRKDATA_SIZE;       \
         const int snred = sizeof(_type) * nreduce;                      \
-        const int overlap = OVERLAP_CHECK (target, source, snred);      \
+        const int overlap = OVERLAP_CHECK(target, source, snred);       \
         size_t nget;                                                    \
         int i, j;                                                       \
         int pe;                                                         \
@@ -130,7 +130,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
         _type *write_to;                                                \
         if (overlap) {                                                  \
             /* use temp target in case source/target overlap/same */    \
-            tmptrg = (_type *) malloc (snred);                          \
+            tmptrg = (_type *) malloc(snred);                           \
             if (tmptrg == (_type *) NULL) {                             \
                 logger(LOG_FATAL,                                       \
                        "internal error: out of memory"                  \
@@ -161,12 +161,12 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
         shmemc_barrier(PE_start, logPE_stride, PE_size, pSync);         \
         /* now go through other PEs and get source */                   \
         pe = PE_start;                                                  \
-        for (i = 0; i < PE_size; i+= 1) {                               \
+        for (i = 0; i < PE_size; i += 1) {                              \
             if (p.me != pe) {                                           \
                 int k;                                                  \
                 int ti = 0, si = 0; /* target & source index walk */    \
                 /* pull in all the full chunks */                       \
-                nget = SHMEM_REDUCE_MIN_WRKDATA_SIZE * sizeof (_type);  \
+                nget = SHMEM_REDUCE_MIN_WRKDATA_SIZE * sizeof(_type);   \
                 for (k = 0; k < nloops; k += 1) {                       \
                     shmemc_get(pWrk, & (source[si]), nget, pe);         \
                     for (j = 0; j < SHMEM_REDUCE_MIN_WRKDATA_SIZE;      \
@@ -177,12 +177,12 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
                     }                                                   \
                     si += SHMEM_REDUCE_MIN_WRKDATA_SIZE;                \
                 }                                                       \
-                nget = nrem * sizeof (_type);                           \
+                nget = nrem * sizeof(_type);                            \
                 /* now get remaining part of source */                  \
                 shmemc_get(pWrk, & (source[si]), nget, pe);             \
                 for (j = 0; j < nrem; j += 1) {                         \
                     write_to[ti] =                                      \
-                        (*the_op) (write_to[ti], pWrk[j]);              \
+                        (*the_op)(write_to[ti], pWrk[j]);               \
                     ti += 1;                                            \
                 }                                                       \
             }                                                           \
@@ -219,15 +219,18 @@ SHMEM_UDR_TYPE_OP(complexf, float complex)
 
 #define SHMEM_REDUCE_TYPE_OP(_opcall, _init, _name, _type)              \
     void                                                                \
-    shmem_##_name##_##_opcall##_to_all(_type *target, _type *source, int nreduce, \
+    shmem_##_name##_##_opcall##_to_all(_type *target, _type *source,    \
+                                       int nreduce,                     \
                                        int PE_start, int logPE_stride,  \
                                        int PE_size,                     \
                                        _type *pWrk, long *pSync)        \
     {                                                                   \
         shmemi_udr_##_name##_to_all(_opcall##_##_name##_func,           \
                                     _init,                              \
-                                    target, source, nreduce,            \
-                                    PE_start, logPE_stride, PE_size,    \
+                                    target, source,                     \
+                                    nreduce,                            \
+                                    PE_start, logPE_stride,             \
+                                    PE_size,                            \
                                     pWrk, pSync);                       \
     }
 
