@@ -27,6 +27,7 @@ LIBSHMEM_SOURCES       = \
 				accessible.c \
 				put.c get.c \
 				reductions.c \
+				barrier.c \
 				cache.c
 
 

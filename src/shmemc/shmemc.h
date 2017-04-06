@@ -1,6 +1,7 @@
 #ifndef _SHMEMC_COMMS_H
 #define _SHMEMC_COMMS_H 1
 
+#include <unistd.h>
 #include <sys/types.h>
 
 inline static void shmemc_quiet(void)
@@ -66,6 +67,7 @@ shmemc_test_lock(volatile long *lock)
 inline static void
 shmemc_barrier_all(void)
 {
+    sleep(1);
 }
 
 inline static void
