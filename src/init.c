@@ -21,3 +21,10 @@ shmem_finalize(void)
     shmemi_finalize();
     shmemu_finalize();
 }
+
+void
+start_pes(int n /* unused */)
+{
+    deprecate(__func__);
+    shmem_init();
+}
