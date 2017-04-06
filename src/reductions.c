@@ -12,23 +12,23 @@
 #define SHMEM_MATH_FUNC(_name, _type)           \
     static                                      \
     _type                                       \
-    sum_##_name##_func(_type a, _type b)        \
+    sum_##_name##_func(_type _a, _type _b)      \
     {                                           \
-        return (a) + (b);                       \
+        return (_a) + (_b);                     \
     }                                           \
     static                                      \
     _type                                       \
-    prod_##_name##_func(_type a, _type b)       \
+    prod_##_name##_func(_type _a, _type _b)     \
     {                                           \
-        return (a) * (b);                       \
+        return (_a) * (_b);                     \
     }
 
 SHMEM_MATH_FUNC(short, short)
 SHMEM_MATH_FUNC(int, int)
 SHMEM_MATH_FUNC(long, long)
-SHMEM_MATH_FUNC(double, double)
-SHMEM_MATH_FUNC(float, float)
 SHMEM_MATH_FUNC(longlong, long long)
+SHMEM_MATH_FUNC(float, float)
+SHMEM_MATH_FUNC(double, double)
 SHMEM_MATH_FUNC(longdouble, long double)
 SHMEM_MATH_FUNC(complexd, double complex)
 SHMEM_MATH_FUNC(complexf, float complex)
@@ -41,27 +41,27 @@ SHMEM_MATH_FUNC(complexf, float complex)
 #define SHMEM_LOGIC_FUNC(_name, _type)          \
     static                                      \
     _type                                       \
-    and_##_name##_func(_type a, _type b)        \
+    and_##_name##_func(_type _a, _type _b)      \
     {                                           \
-        return (a) & (b);                       \
+        return (_a) & (_b);                     \
     }                                           \
     static                                      \
     _type                                       \
-    or_##_name##_func(_type a, _type b)         \
+    or_##_name##_func(_type _a, _type _b)       \
     {                                           \
-        return (a) | (b);                       \
+        return (_a) | (_b);                     \
     }                                           \
     static                                      \
     _type                                       \
-    xor_##_name##_func(_type a, _type b)        \
+    xor_##_name##_func(_type _a, _type _b)      \
     {                                           \
-        return (a) ^ (b);                       \
+        return (_a) ^ (_b);                     \
     }
 
-SHMEM_LOGIC_FUNC (short, short)
-SHMEM_LOGIC_FUNC (int, int)
-SHMEM_LOGIC_FUNC (long, long)
-SHMEM_LOGIC_FUNC (longlong, long long)
+SHMEM_LOGIC_FUNC(short, short)
+SHMEM_LOGIC_FUNC(int, int)
+SHMEM_LOGIC_FUNC(long, long)
+SHMEM_LOGIC_FUNC(longlong, long long)
 
 /**
  * these are the minima/maxima operations
@@ -71,23 +71,23 @@ SHMEM_LOGIC_FUNC (longlong, long long)
 #define SHMEM_MINIMAX_FUNC(_name, _type)        \
     static                                      \
     _type                                       \
-    min_##_name##_func(_type a, _type b)        \
+    min_##_name##_func(_type _a, _type _b)      \
     {                                           \
-        return (a) < (b) ? (a) : (b);           \
+        return (_a) < (_b) ? (_a) : (_b);       \
     }                                           \
     static                                      \
     _type                                       \
-    max_##_name##_func(_type a, _type b)        \
+    max_##_name##_func(_type _a, _type _b)      \
     {                                           \
-        return (a) > (b) ? (a) : (b);           \
+        return (_a) > (_b) ? (_a) : (_b);       \
     }
 
 SHMEM_MINIMAX_FUNC(short, short)
 SHMEM_MINIMAX_FUNC(int, int)
 SHMEM_MINIMAX_FUNC(long, long)
 SHMEM_MINIMAX_FUNC(longlong, long long)
-SHMEM_MINIMAX_FUNC(double, double)
 SHMEM_MINIMAX_FUNC(float, float)
+SHMEM_MINIMAX_FUNC(double, double)
 SHMEM_MINIMAX_FUNC(longdouble, long double)
 
 /**
@@ -128,6 +128,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
         int pe;                                                         \
         _type *tmptrg = NULL;                                           \
         _type *write_to;                                                \
+                                                                        \
         if (overlap) {                                                  \
             /* use temp target in case source/target overlap/same */    \
             tmptrg = (_type *) malloc(snred);                           \
@@ -177,8 +178,8 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
                     }                                                   \
                     si += SHMEM_REDUCE_MIN_WRKDATA_SIZE;                \
                 }                                                       \
-                nget = nrem * sizeof(_type);                            \
                 /* now get remaining part of source */                  \
+                nget = nrem * sizeof(_type);                            \
                 shmemc_get(pWrk, & (source[si]), nget, pe);             \
                 for (j = 0; j < nrem; j += 1) {                         \
                     write_to[ti] =                                      \
@@ -195,7 +196,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
             memcpy(target, tmptrg, snred);                              \
             free(tmptrg);                                               \
             tmptrg = NULL;                                              \
-            /* shmemi_barrier(PE_start, logPE_stride, PE_size, pSync); */ \
+            /* shmemc_barrier(PE_start, logPE_stride, PE_size, pSync); */ \
             /* shmemc_quiet(); */                                        \
         }                                                               \
     }
@@ -204,11 +205,11 @@ SHMEM_UDR_TYPE_OP(short, short)
 SHMEM_UDR_TYPE_OP(int, int)
 SHMEM_UDR_TYPE_OP(long, long)
 SHMEM_UDR_TYPE_OP(longlong, long long)
-SHMEM_UDR_TYPE_OP(double, double)
 SHMEM_UDR_TYPE_OP(float, float)
+SHMEM_UDR_TYPE_OP(double, double)
 SHMEM_UDR_TYPE_OP(longdouble, long double)
-SHMEM_UDR_TYPE_OP(complexd, double complex)
 SHMEM_UDR_TYPE_OP(complexf, float complex)
+SHMEM_UDR_TYPE_OP(complexd, double complex)
 
 
 /**
@@ -217,7 +218,7 @@ SHMEM_UDR_TYPE_OP(complexf, float complex)
  *
  */
 
-#define SHMEM_REDUCE_TYPE_OP(_opcall, _init, _name, _type)              \
+#define SHMEM_REDUCE_TYPE_OP(_opcall, _initval, _name, _type)           \
     void                                                                \
     shmem_##_name##_##_opcall##_to_all(_type *target, _type *source,    \
                                        int nreduce,                     \
@@ -226,7 +227,7 @@ SHMEM_UDR_TYPE_OP(complexf, float complex)
                                        _type *pWrk, long *pSync)        \
     {                                                                   \
         shmemi_udr_##_name##_to_all(_opcall##_##_name##_func,           \
-                                    _init,                              \
+                                    _initval,                           \
                                     target, source,                     \
                                     nreduce,                            \
                                     PE_start, logPE_stride,             \
@@ -238,43 +239,49 @@ SHMEM_REDUCE_TYPE_OP(sum, 0, short, short)
 SHMEM_REDUCE_TYPE_OP(sum, 0, int, int)
 SHMEM_REDUCE_TYPE_OP(sum, 0, long, long)
 SHMEM_REDUCE_TYPE_OP(sum, 0, longlong, long long)
-SHMEM_REDUCE_TYPE_OP(sum, 0, double, double)
-SHMEM_REDUCE_TYPE_OP(sum, 0, float, float)
-SHMEM_REDUCE_TYPE_OP(sum, 0, longdouble, long double)
-SHMEM_REDUCE_TYPE_OP(sum, 0, complexd, double complex)
-SHMEM_REDUCE_TYPE_OP(sum, 0, complexf, float complex)
+SHMEM_REDUCE_TYPE_OP(sum, 0.0, float, float)
+SHMEM_REDUCE_TYPE_OP(sum, 0.0, double, double)
+SHMEM_REDUCE_TYPE_OP(sum, 0.0, longdouble, long double)
+SHMEM_REDUCE_TYPE_OP(sum, 0.0, complexf, float complex)
+SHMEM_REDUCE_TYPE_OP(sum, 0.0, complexd, double complex)
+
 SHMEM_REDUCE_TYPE_OP(prod, 1, short, short)
 SHMEM_REDUCE_TYPE_OP(prod, 1, int, int)
 SHMEM_REDUCE_TYPE_OP(prod, 1, long, long)
 SHMEM_REDUCE_TYPE_OP(prod, 1, longlong, long long)
-SHMEM_REDUCE_TYPE_OP(prod, 1.0, double, double)
 SHMEM_REDUCE_TYPE_OP(prod, 1.0, float, float)
+SHMEM_REDUCE_TYPE_OP(prod, 1.0, double, double)
 SHMEM_REDUCE_TYPE_OP(prod, 1.0, longdouble, long double)
-SHMEM_REDUCE_TYPE_OP(prod, 1.0, complexd, double complex)
 SHMEM_REDUCE_TYPE_OP(prod, 1.0, complexf, float complex)
+SHMEM_REDUCE_TYPE_OP(prod, 1.0, complexd, double complex)
+
 SHMEM_REDUCE_TYPE_OP(and, 1, short, short)
 SHMEM_REDUCE_TYPE_OP(and, 1, int, int)
 SHMEM_REDUCE_TYPE_OP(and, 1, long, long)
 SHMEM_REDUCE_TYPE_OP(and, 1, longlong, long long)
+
 SHMEM_REDUCE_TYPE_OP(or, 0, short, short)
 SHMEM_REDUCE_TYPE_OP(or, 0, int, int)
 SHMEM_REDUCE_TYPE_OP(or, 0, long, long)
 SHMEM_REDUCE_TYPE_OP(or, 0, longlong, long long)
+
 SHMEM_REDUCE_TYPE_OP(xor, 0, short, short)
 SHMEM_REDUCE_TYPE_OP(xor, 0, int, int)
 SHMEM_REDUCE_TYPE_OP(xor, 0, long, long)
 SHMEM_REDUCE_TYPE_OP(xor, 0, longlong, long long)
+
 SHMEM_REDUCE_TYPE_OP(max, 0, short, short)
 SHMEM_REDUCE_TYPE_OP(max, 0, int, int)
 SHMEM_REDUCE_TYPE_OP(max, 0, long, long)
 SHMEM_REDUCE_TYPE_OP(max, 0, longlong, long long)
-SHMEM_REDUCE_TYPE_OP(max, 0.0, double, double)
 SHMEM_REDUCE_TYPE_OP(max, 0.0, float, float)
-SHMEM_REDUCE_TYPE_OP(max, 0, longdouble, long double)
+SHMEM_REDUCE_TYPE_OP(max, 0.0, double, double)
+SHMEM_REDUCE_TYPE_OP(max, 0.0, longdouble, long double)
+
 SHMEM_REDUCE_TYPE_OP(min, 0, short, short)
 SHMEM_REDUCE_TYPE_OP(min, 0, int, int)
 SHMEM_REDUCE_TYPE_OP(min, 0, long, long)
 SHMEM_REDUCE_TYPE_OP(min, 0, longlong, long long)
-SHMEM_REDUCE_TYPE_OP(min, 0.0, double, double)
 SHMEM_REDUCE_TYPE_OP(min, 0.0, float, float)
+SHMEM_REDUCE_TYPE_OP(min, 0.0, double, double)
 SHMEM_REDUCE_TYPE_OP(min, 0.0, longdouble, long double)
