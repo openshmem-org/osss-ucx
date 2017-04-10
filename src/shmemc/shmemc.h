@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include <sys/types.h>
+#include <stddef.h>
 
 inline static void shmemc_quiet(void)
 {
@@ -36,6 +37,24 @@ shmemc_put(void *dest, const void *src, size_t nelems, int pe)
 
 inline static void
 shmemc_get(void *dest, const void *src, size_t nelems, int pe)
+{
+    return;
+}
+
+/*
+ * aligned (or not) strided puts & gets
+ */
+
+inline static void
+shmemc_iput(void *dest, const void *src, size_t nelems,
+            ptrdiff_t tst, ptrdiff_t sst, int pe)
+{
+    return;
+}
+
+inline static void
+shmemc_iget(void *dest, const void *src, size_t nelems,
+            ptrdiff_t tst, ptrdiff_t sst, int pe)
 {
     return;
 }

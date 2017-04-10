@@ -23,8 +23,8 @@ SHMEM_TYPED_PUT(complexd, COMPLEXIFY (double))
 
 #define SHMEM_SIZED_PUT(_name, _size)                                   \
     void                                                                \
-    shmem_put_##_name(void *dest, const void *src,                      \
-                       size_t nelems, int pe)                           \
+    shmem_put##_name(void *dest, const void *src,                       \
+                     size_t nelems, int pe)                             \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
         shmemc_put(dest, src, sized_nelems, pe);                        \
@@ -45,22 +45,20 @@ shmem_putmem(void *dest, const void *src,
 
 /* TODO */
 
-#define SHMEM_TYPE_P_WRAPPER(_name, _type)                          \
-    _type                                                           \
-    shmem_##_name##_p(_type *addr, int pe)                          \
-    {                                                               \
-        _type retval;                                               \
-        shmem_##_name##_put(&retval, addr, 1, pe);                  \
-        return retval;                                              \
+#define SHMEM_TYPED_P_WRAPPER(_name, _type)                          \
+    void                                                             \
+    shmem_##_name##_p(_type *addr, _type val, int pe)                \
+    {                                                                \
+        shmem_##_name##_put(addr, &val, 1, pe);                      \
     }
 
-SHMEM_TYPE_P_WRAPPER(float, float)
-SHMEM_TYPE_P_WRAPPER(double, double)
-SHMEM_TYPE_P_WRAPPER(longlong, long long)
-SHMEM_TYPE_P_WRAPPER(longdouble, long double)
-SHMEM_TYPE_P_WRAPPER(char, char)
-SHMEM_TYPE_P_WRAPPER(short, short)
-SHMEM_TYPE_P_WRAPPER(int, int)
-SHMEM_TYPE_P_WRAPPER(long, long)
-SHMEM_TYPE_P_WRAPPER(complexf, COMPLEXIFY(float))
-SHMEM_TYPE_P_WRAPPER(complexd, COMPLEXIFY(double))
+SHMEM_TYPED_P_WRAPPER(char, char)
+SHMEM_TYPED_P_WRAPPER(short, short)
+SHMEM_TYPED_P_WRAPPER(int, int)
+SHMEM_TYPED_P_WRAPPER(long, long)
+SHMEM_TYPED_P_WRAPPER(longlong, long long)
+SHMEM_TYPED_P_WRAPPER(float, float)
+SHMEM_TYPED_P_WRAPPER(double, double)
+SHMEM_TYPED_P_WRAPPER(longdouble, long double)
+SHMEM_TYPED_P_WRAPPER(complexf, COMPLEXIFY(float))
+SHMEM_TYPED_P_WRAPPER(complexd, COMPLEXIFY(double))
