@@ -30,13 +30,13 @@ shmemc_getenv(const char *name)
  */
 
 inline static void
-shmemc_put(void *dest, const void *src, size_t nelems, int pe)
+shmemc_put(void *dest, const void *src, size_t nbytes, int pe)
 {
     return;
 }
 
 inline static void
-shmemc_get(void *dest, const void *src, size_t nelems, int pe)
+shmemc_get(void *dest, const void *src, size_t nbytes, int pe)
 {
     return;
 }
@@ -46,14 +46,14 @@ shmemc_get(void *dest, const void *src, size_t nelems, int pe)
  */
 
 inline static void
-shmemc_iput(void *dest, const void *src, size_t nelems,
+shmemc_iput(void *dest, const void *src, size_t nbytes,
             ptrdiff_t tst, ptrdiff_t sst, int pe)
 {
     return;
 }
 
 inline static void
-shmemc_iget(void *dest, const void *src, size_t nelems,
+shmemc_iget(void *dest, const void *src, size_t nbytes,
             ptrdiff_t tst, ptrdiff_t sst, int pe)
 {
     return;
