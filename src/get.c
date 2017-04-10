@@ -43,8 +43,6 @@ shmem_getmem(void *dest, const void *src,
     shmemc_get(dest, src, nelems, pe);
 }
 
-#if 0
-
 /* TODO */
 
 #define SHMEM_TYPE_G_WRAPPER(_name, _type)                          \
@@ -66,5 +64,3 @@ SHMEM_TYPE_G_WRAPPER(int, int)
 SHMEM_TYPE_G_WRAPPER(long, long)
 SHMEM_TYPE_G_WRAPPER(complexf, COMPLEXIFY(float))
 SHMEM_TYPE_G_WRAPPER(complexd, COMPLEXIFY(double))
-
-#endif
