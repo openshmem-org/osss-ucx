@@ -112,6 +112,22 @@ static
 void
 output_features(void)
 {
+    output("Static libraries",
+#ifdef ENABLE_STATIC
+           "on"
+#else
+           "off"
+#endif /* ENABLE_STATIC */
+           );
+
+    output("Shared libraries",
+#ifdef ENABLE_SHARED
+           "on"
+#else
+           "off"
+#endif /* ENABLE_SHARED */
+           );
+
     output("Run debugging",
 #ifdef ENABLE_DEBUG
            "on"

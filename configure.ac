@@ -107,6 +107,14 @@ AS_IF([test "x$enable_cxx" = "xyes"],
 	)
 AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" = "xyes"])
 
+# static and shared library detection
+AS_IF([test "x$enable_static" = "xyes"],
+	    [AC_DEFINE([ENABLE_STATIC], [1], [Enable static libraries])]
+	    )
+AS_IF([test "x$enable_shared" = "xyes"],
+	    [AC_DEFINE([ENABLE_SHARED], [1], [Enable shared libraries])]
+	    )
+
 # Checks for header files.
 AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
 
