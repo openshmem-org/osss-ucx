@@ -128,7 +128,7 @@ output_features(void)
 #endif /* ENABLE_SHARED */
            );
 
-    output("Run debugging",
+    output("Debug messages",
 #ifdef ENABLE_DEBUG
            "on"
 #else
