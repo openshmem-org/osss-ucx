@@ -121,10 +121,10 @@ void
 shmemi_malloc_init(void)
 {
     once_api = (malloc_api_t) {
-        .malloc_fn  = shmemi_malloc_once,
-        .free_fn    = shmemi_free_once,
-        .realloc_fn = shmemi_realloc_once,
-        .align_fn   = shmemi_align_once
+        .malloc_fn   = shmemi_malloc_once,
+        .free_fn     = shmemi_free_once,
+        .realloc_fn  = shmemi_realloc_once,
+        .align_fn    = shmemi_align_once
     };
 
     run_api = (malloc_api_t) {
