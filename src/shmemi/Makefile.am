@@ -1,6 +1,6 @@
 SUBDIRS                = dlmalloc
 
-LIBSHMEMI_SOURCES      = shmemi.c \
+LIBSHMEMI_SOURCES      = init.c \
 				pmi1-client.c pmi2-client.c pmix-client.c \
 				malloc.c heapx.c pe.c logger.c \
 				accessible.c
