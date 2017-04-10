@@ -7,10 +7,6 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifdef HAVE_UNAME
-# include <sys/utsname.h>
-#endif /* HAVE_UNAME */
-
 #include "version.h"
 #include "shmemu/shmemu.h"
 
