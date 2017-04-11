@@ -42,6 +42,22 @@ shmemc_get(void *dest, const void *src, size_t nbytes, int pe)
 }
 
 /*
+ * aligned (or not) non-blocking puts & gets
+ */
+
+inline static void
+shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe)
+{
+    return;
+}
+
+inline static void
+shmemc_get_nbi(void *dest, const void *src, size_t nbytes, int pe)
+{
+    return;
+}
+
+/*
  * aligned (or not) strided puts & gets
  */
 
