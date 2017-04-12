@@ -29,71 +29,36 @@ shmemc_getenv(const char *name)
  * aligned (or not) puts & gets
  */
 
-inline static void
-shmemc_put(void *dest, const void *src, size_t nbytes, int pe)
-{
-    return;
-}
-
-inline static void
-shmemc_get(void *dest, const void *src, size_t nbytes, int pe)
-{
-    return;
-}
+void shmemc_put(void *dest, const void *src,
+                size_t nbytes, int pe);
+void shmemc_get(void *dest, const void *src,
+                size_t nbytes, int pe);
 
 /*
  * aligned (or not) non-blocking puts & gets
  */
 
-inline static void
-shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe)
-{
-    return;
-}
-
-inline static void
-shmemc_get_nbi(void *dest, const void *src, size_t nbytes, int pe)
-{
-    return;
-}
+void shmemc_put_nbi(void *dest, const void *src,
+                    size_t nbytes, int pe);
+void shmemc_get_nbi(void *dest, const void *src,
+                    size_t nbytes, int pe);
 
 /*
  * aligned (or not) strided puts & gets
  */
 
-inline static void
-shmemc_iput(void *dest, const void *src, size_t nbytes,
-            ptrdiff_t tst, ptrdiff_t sst, int pe)
-{
-    return;
-}
-
-inline static void
-shmemc_iget(void *dest, const void *src, size_t nbytes,
-            ptrdiff_t tst, ptrdiff_t sst, int pe)
-{
-    return;
-}
+void shmemc_iput(void *dest, const void *src, size_t nbytes,
+                 ptrdiff_t tst, ptrdiff_t sst, int pe);
+void shmemc_iget(void *dest, const void *src, size_t nbytes,
+                 ptrdiff_t tst, ptrdiff_t sst, int pe);
 
 /*
  * locks
  */
 
-inline static void
-shmemc_set_lock(volatile long *lock)
-{
-}
-
-inline static void
-shmemc_clear_lock(volatile long *lock)
-{
-}
-
-inline static int
-shmemc_test_lock(volatile long *lock)
-{
-    return 0;
-}
+void shmemc_set_lock(volatile long *lock);
+void shmemc_clear_lock(volatile long *lock);
+int  shmemc_test_lock(volatile long *lock);
 
 /*
  * barriers
