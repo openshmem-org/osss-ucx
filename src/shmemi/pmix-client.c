@@ -76,32 +76,36 @@ static
 void
 publish_heap_info(void)
 {
-    pmix_info_t *ia;
-    pmix_status_t ps;
-    int i;
+    /* only publish if multiple PEs */
 
-    PMIX_INFO_CREATE(ia, 2);    /* base, size */
+    if (p.npes > 1) {
+        pmix_info_t *ia;
+        pmix_status_t ps;
+        int i;
 
-    /*
-     * everyone publishes their info
-     */
-    for (i = 0; i < nheaps; i += 1) {
-        snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, p.me, i);
-        ia[0].value.type = PMIX_UINT64;
-        ia[0].value.data.uint64 = (uint64_t) heapx[i][p.me].base;
+        PMIX_INFO_CREATE(ia, 2);    /* base, size */
 
-        snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, p.me, i);
-        ia[1].value.type = PMIX_SIZE;
-        ia[1].value.data.size = heapx[i][p.me].size;
+        /*
+         * everyone publishes their info
+         */
+        for (i = 0; i < nheaps; i += 1) {
+            snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, p.me, i);
+            ia[0].value.type = PMIX_UINT64;
+            ia[0].value.data.uint64 = (uint64_t) heapx[i][p.me].base;
 
-        ps = PMIx_Publish(ia, 2);
-        assert(ps == PMIX_SUCCESS);
+            snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, p.me, i);
+            ia[1].value.type = PMIX_SIZE;
+            ia[1].value.data.size = heapx[i][p.me].size;
 
-        logger(LOG_HEAP, "PUBLISH: my heap #%d @ %p, %lu bytes",
-               i, heapx[i][p.me].base, heapx[i][p.me].size);
+            ps = PMIx_Publish(ia, 2);
+            assert(ps == PMIX_SUCCESS);
+
+            logger(LOG_HEAP, "PUBLISH: my heap #%d @ %p, %lu bytes",
+                   i, heapx[i][p.me].base, heapx[i][p.me].size);
+        }
+
+        PMIX_INFO_FREE(ia, 2);
     }
-
-    PMIX_INFO_FREE(ia, 2);
 }
 
 static
@@ -144,10 +148,12 @@ exchange_heap_info(void)
         }
     }
 
-    for (i = 0; i < nheaps; i += 1) {
-        for (pn = 0; pn < p.npes; pn += 1) {
-            logger(LOG_HEAP, "FETCH: heap #%d from PE %d @ %p, %lu bytes",
-                   i, pn, heapx[i][pn].base, heapx[i][pn].size);
+    for (pn = 0; pn < p.npes; pn += 1) {
+        if (pn != p.me) {
+            for (i = 0; i < nheaps; i += 1) {
+                logger(LOG_HEAP, "FETCH: heap #%d from PE %d @ %p, %lu bytes",
+                       i, pn, heapx[i][pn].base, heapx[i][pn].size);
+            }
         }
     }
 }

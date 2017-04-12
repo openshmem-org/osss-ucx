@@ -1,4 +1,4 @@
-LIBSHMEMC_SOURCES      = put.c get.c lock.c
+LIBSHMEMC_SOURCES      = put.c get.c lock.c getenv.c
 
 lib_LTLIBRARIES        = libshmemc.la
 libshmemc_la_SOURCES   = $(LIBSHMEMC_SOURCES)
