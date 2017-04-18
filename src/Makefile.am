@@ -21,7 +21,7 @@ LIBSHMEM_SOURCES       = \
 				init.c \
 				malloc.c \
 				version.c \
-				atomics.c lock.c \
+				atomics.c lock.c waituntil.c \
 				pe.c \
 				ptr.c \
 				accessible.c \
