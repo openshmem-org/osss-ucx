@@ -30,10 +30,9 @@
             break;                                                      \
         default:                                                        \
             logger(LOG_FATAL,                                           \
-                   "unknown operator (code %d) in"                      \
-                   __func__,                                            \
+                   "unknown operator (code %d) in \"%s\"",              \
                    cmp,                                                 \
-                   #_name                                               \
+                   __func__                                             \
                    );                                                   \
             return;                                                     \
             /* NOT REACHED */                                           \
