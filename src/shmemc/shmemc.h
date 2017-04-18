@@ -49,9 +49,87 @@ void shmemc_iget(void *dest, const void *src, size_t nbytes,
  * atomics and locks
  */
 
-void shmemc_set_lock(volatile long *lock);
-void shmemc_clear_lock(volatile long *lock);
-int  shmemc_test_lock(volatile long *lock);
+inline static int32_t
+shmemc_swap32(int32_t *t, int32_t v, int pe)
+{
+    return v;
+}
+inline static int64_t
+shmemc_swap64(int64_t *t, int64_t v, int pe)
+{
+    return v;
+}
+
+inline static int32_t
+shmemc_cswap32(int32_t *t, int32_t c, int32_t v, int pe)
+{
+    return v;
+}
+inline static int64_t
+shmemc_cswap64(int64_t *t, int64_t c, int64_t v, int pe)
+{
+    return v;
+}
+
+inline static int32_t
+shmemc_fadd32(int32_t *t, int32_t v, int pe)
+{
+    return v;
+}
+inline static int64_t
+shmemc_fadd64(int64_t *t, int64_t v, int pe)
+{
+    return v;
+}
+
+inline static int32_t
+shmemc_finc32(int32_t *t, int pe)
+{
+    return 0;
+}
+inline static int64_t
+shmemc_finc64(int64_t *t, int pe)
+{
+    return 0;
+}
+
+inline static void
+shmemc_add32(int32_t *t, int32_t v, int pe)
+{
+}
+inline static void
+shmemc_add64(int64_t *t, int64_t v, int pe)
+{
+}
+
+inline static void
+shmemc_inc32(int32_t *t, int pe)
+{
+}
+inline static void
+shmemc_inc64(int64_t *t, int pe)
+{
+}
+
+inline static int32_t
+shmemc_fetch32(int32_t *t, int pe)
+{
+    return 0;
+}
+inline static int64_t
+shmemc_fetch64(int64_t *t, int pe)
+{
+    return 0;
+}
+
+inline static void
+shmemc_set32(int32_t *t, int32_t v, int pe)
+{
+}
+inline static void
+shmemc_set64(int64_t *t, int64_t v, int pe)
+{
+}
 
 /*
  * to be zapped
@@ -105,6 +183,10 @@ SHMEMC_WAITUNTIL_TYPE(short, short, ge, >=)
 SHMEMC_WAITUNTIL_TYPE(int, int, ge, >=)
 SHMEMC_WAITUNTIL_TYPE(long, long, ge, >=)
 SHMEMC_WAITUNTIL_TYPE(longlong, long long, ge, >=)
+
+void shmemc_set_lock(volatile long *lock);
+void shmemc_clear_lock(volatile long *lock);
+int  shmemc_test_lock(volatile long *lock);
 
 /*
  * barriers

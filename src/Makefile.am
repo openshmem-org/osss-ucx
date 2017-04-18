@@ -30,6 +30,7 @@ LIBSHMEM_SOURCES       = \
 				put-nbi.c get-nbi.c \
 				reductions.c \
 				fcollect.c collect.c \
+				broadcast.c \
 				barrier.c \
 				cache.c
 
