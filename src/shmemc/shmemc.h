@@ -1,7 +1,8 @@
 #ifndef _SHMEMC_H
 #define _SHMEMC_H 1
 
-#include <sys/types.h>
+#include <sys/types.h>          /* size_t */
+#include <stddef.h>             /* ptrdiff_t */
 
 inline static void shmemc_quiet(void)
 {
@@ -12,13 +13,13 @@ inline static void shmemc_fence(void)
 }
 
 /*
- * query job environment (some can't use system getenv() directly
+ * query job environment; some can't use system getenv directly
  */
 
 char *shmemc_getenv(const char *name);
 
 /*
- * aligned (or not) puts & gets
+ * puts & gets
  */
 
 void shmemc_put(void *dest, const void *src,
@@ -27,7 +28,7 @@ void shmemc_get(void *dest, const void *src,
                 size_t nbytes, int pe);
 
 /*
- * aligned (or not) non-blocking puts & gets
+ * non-blocking puts & gets
  */
 
 void shmemc_put_nbi(void *dest, const void *src,
@@ -36,10 +37,8 @@ void shmemc_get_nbi(void *dest, const void *src,
                     size_t nbytes, int pe);
 
 /*
- * aligned (or not) strided puts & gets
+ * strided puts & gets
  */
-
-#include <stddef.h>
 
 void shmemc_iput(void *dest, const void *src, size_t nbytes,
                  ptrdiff_t tst, ptrdiff_t sst, int pe);
@@ -111,7 +110,7 @@ SHMEMC_WAITUNTIL_TYPE(longlong, long long, ge, >=)
  * barriers
  */
 
-#include <unistd.h>
+#include <unistd.h>             /* temp for sleep */
 
 inline static void
 shmemc_barrier_all(void)
@@ -124,4 +123,4 @@ shmemc_barrier(int start, int log_stride, int size, long *pSync)
 {
 }
 
-#endif /* ! _SHMEMC__H */
+#endif /* ! _SHMEMC_H */
