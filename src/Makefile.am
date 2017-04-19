@@ -32,6 +32,7 @@ MY_SOURCES             = \
 				reductions.c \
 				fcollect.c collect.c \
 				broadcast.c \
+				alltoall.c \
 				cache.c
 
 if ENABLE_FORTRAN
