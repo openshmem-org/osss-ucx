@@ -17,7 +17,7 @@ SUBDIRS                = $(shmemu_dir) \
 				$(shmemc_dir) \
 				$(shmemi_dir)
 
-LIBSHMEM_SOURCES       = \
+MY_SOURCES             = \
 				init.c \
 				malloc.c \
 				version.c \
@@ -28,25 +28,27 @@ LIBSHMEM_SOURCES       = \
 				put.c get.c \
 				put-strided.c get-strided.c \
 				put-nbi.c get-nbi.c \
+				barrier.c \
 				reductions.c \
 				fcollect.c collect.c \
 				broadcast.c \
-				barrier.c \
 				cache.c
 
 if ENABLE_FORTRAN
-LIBSHMEM_SOURCES      += fortran/fortran.c \
+MY_SOURCES            += fortran/fortran.c \
 				fortran/fortran-mem.c
 endif
 
 if ENABLE_EXPERIMENTAL
-LIBSHMEM_SOURCES      += wtime.c xor.c \
+MY_SOURCES            += wtime.c xor.c \
 				fortran/fortranx.c
 endif
 
 if ENABLE_PSHMEM
-LIBSHMEM_SOURCES      += profiling.c
+MY_SOURCES            += profiling.c
 endif
+
+LIBSHMEM_SOURCES       = $(MY_SOURCES)
 
 MY_INCLUDE             = -I../include
 
