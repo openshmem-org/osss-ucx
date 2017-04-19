@@ -34,7 +34,6 @@ LIBSHMEM_SOURCES       = \
 				barrier.c \
 				cache.c
 
-
 if ENABLE_FORTRAN
 LIBSHMEM_SOURCES      += fortran/fortran.c \
 				fortran/fortran-mem.c
@@ -43,6 +42,10 @@ endif
 if ENABLE_EXPERIMENTAL
 LIBSHMEM_SOURCES      += wtime.c xor.c \
 				fortran/fortranx.c
+endif
+
+if ENABLE_PSHMEM
+LIBSHMEM_SOURCES      += profiling.c
 endif
 
 MY_INCLUDE             = -I../include
