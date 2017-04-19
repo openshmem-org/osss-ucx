@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include <string.h>
 
 #include "version.h"
 
@@ -12,5 +12,5 @@ shmem_info_get_version(int *major, int *minor)
 void
 shmem_info_get_name(char *name)
 {
-    snprintf(name, SHMEM_MAX_NAME_LEN, "%s", SHMEM_VENDOR_STRING);
+    strncpy(name, SHMEM_VENDOR_STRING, SHMEM_MAX_NAME_LEN);
 }
