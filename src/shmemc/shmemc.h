@@ -205,4 +205,13 @@ shmemc_barrier(int start, int log_stride, int size, long *pSync)
 {
 }
 
+/*
+ * zap the program
+ */
+
+inline static int shmemc_global_exit(int status)
+{
+    return 0;
+}
+
 #endif /* ! _SHMEMC_H */
