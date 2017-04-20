@@ -31,6 +31,10 @@ shmem_align(size_t a, size_t s)
     return shmemi_align(a, s);
 }
 
+/*
+ * layer these through top-level API in case we want to insert error
+ * checking above
+ */
 
 void *
 shmalloc(size_t s)
