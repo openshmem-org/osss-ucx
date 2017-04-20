@@ -2,7 +2,10 @@
 #include <sys/types.h>
 #include <stdlib.h>
 
+#include "shmem/defs.h"
 #include "shmemi/shmemi.h"
+
+int malloc_error = SHMEM_MALLOC_OK;
 
 void *
 shmem_malloc(size_t s)
@@ -33,26 +36,26 @@ void *
 shmalloc(size_t s)
 {
     deprecate(__func__);
-    return shmemi_malloc(s);
+    return shmem_malloc(s);
 }
 
 void
 shfree(void *p)
 {
     deprecate(__func__);
-    shmemi_free(p);
+    shmem_free(p);
 }
 
 void *
 shrealloc(void *p, size_t s)
 {
     deprecate(__func__);
-    return shmemi_realloc(p, s);
+    return shmem_realloc(p, s);
 }
 
 void *
 shmemalign(size_t a, size_t s)
 {
     deprecate(__func__);
-    return shmemi_align(a, s);
+    return shmem_align(a, s);
 }

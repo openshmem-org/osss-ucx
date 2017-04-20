@@ -3,7 +3,6 @@
 #include <stdlib.h>
 
 #include "shmemi.h"
-#include "shmemu.h"
 
 static const int DEFAULT_HEAP = 0;
 
@@ -31,8 +30,6 @@ init_check(int heap_no)
     }
 }
 
-/* ---------------------------------------------------------------- */
-
 static
 void *
 shmemi_malloc_run(int heap_no, size_t s)
@@ -48,8 +45,6 @@ shmemi_malloc_once(int heap_no, size_t s)
 
     return api->malloc_fn(heap_no, s);
 }
-
-/* ---------------------------------------------------------------- */
 
 static
 void
@@ -86,8 +81,6 @@ shmemi_realloc_once(int heap_no, void *p, size_t s)
 
     return api->realloc_fn(heap_no, p, s);
 }
-
-/* ---------------------------------------------------------------- */
 
 static
 void *
