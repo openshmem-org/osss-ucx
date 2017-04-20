@@ -1,4 +1,16 @@
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "shmemc/shmemc.h"
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_barrier_all = pshmem_barrier_all
+#define shmem_barrier_all pshmem_barrier_all
+
+#pragma weak shmem_barrier = pshmem_barrier
+#define shmem_barrier pshmem_barrier
+#endif /* ENABLE_PSHMEM */
 
 void
 shmem_barrier_all(void)
