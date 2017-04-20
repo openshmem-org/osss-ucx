@@ -19,12 +19,14 @@ SUBDIRS                = $(shmemu_dir) \
 
 MY_SOURCES             = \
 				init.c \
+				globalexit.c \
 				malloc.c \
 				version.c \
 				atomics.c lock.c waituntil.c \
 				pe.c \
 				ptr.c \
 				accessible.c \
+				quiet.c \
 				put.c get.c \
 				put-strided.c get-strided.c \
 				put-nbi.c get-nbi.c \
