@@ -1,4 +1,16 @@
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <sys/types.h>
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_collect32 = pshmem_collect32
+#define shmem_collect32 pshmem_collect32
+
+#pragma weak shmem_collect64 = pshmem_collect64
+#define shmem_collect64 pshmem_collect64
+#endif /* ENABLE_PSHMEM */
 
 /**
  * Collective concatenation of 32-bit data from participating PEs
