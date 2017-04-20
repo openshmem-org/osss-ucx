@@ -1,13 +1,28 @@
-/*
- * These are compatibility routines for older SGI architectures.  They
- * are now defined in OpenSHMEM to do nothing.
- */
-
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemi/shmemi.h"
+
+/*
+ * These are compatibility routines for older SGI architectures.  They
+ * are now defined in OpenSHMEM to do nothing.
+ */
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_clear_cache_inv = pshmem_clear_cache_inv
+#define shmem_clear_cache_inv pshmem_clear_cache_inv
+#pragma weak shmem_set_cache_inv = pshmem_set_cache_inv
+#define shmem_set_cache_inv pshmem_set_cache_inv
+#pragma weak shmem_set_cache_line_inv = pshmem_set_cache_line_inv
+#define shmem_set_cache_line_inv pshmem_set_cache_line_inv
+#pragma weak shmem_clear_cache_line_inv = pshmem_clear_cache_line_inv
+#define shmem_clear_cache_line_inv pshmem_clear_cache_line_inv
+#pragma weak shmem_udcflush = pshmem_udcflush
+#define shmem_udcflush pshmem_udcflush
+#pragma weak shmem_udcflush_line = pshmem_udcflush_line
+#define shmem_udcflush_line pshmem_udcflush_line
+#endif /* ENABLE_PSHMEM */
 
 /*
  * Compatibility no-op cache routines

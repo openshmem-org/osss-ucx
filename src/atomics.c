@@ -6,6 +6,19 @@
 
 #include <bits/wordsize.h>
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_swap = pshmem_int_swap
+#define shmem_int_swap pshmem_int_swap
+#pragma weak shmem_long_swap = pshmem_long_swap
+#define shmem_long_swap pshmem_long_swap
+#pragma weak shmem_longlong_swap = pshmem_longlong_swap
+#define shmem_longlong_swap pshmem_longlong_swap
+#pragma weak shmem_float_swap = pshmem_float_swap
+#define shmem_float_swap pshmem_float_swap
+#pragma weak shmem_double_swap = pshmem_double_swap
+#define shmem_double_swap pshmem_double_swap
+#endif /* ENABLE_PSHMEM */
+
 /*
  * swap
  */
