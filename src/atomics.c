@@ -24,6 +24,8 @@ SHMEM_TYPE_SWAP(long, long, 64)
 SHMEM_TYPE_SWAP(long, long, 32)
 #endif
 SHMEM_TYPE_SWAP(longlong, long long, 64)
+SHMEM_TYPE_SWAP(float, float, 32)
+SHMEM_TYPE_SWAP(double, double, 32)
 
 /*
  * conditional swap
@@ -43,6 +45,8 @@ SHMEM_TYPE_CSWAP(long, long, 64)
 SHMEM_TYPE_CSWAP(long, long, 32)
 #endif
 SHMEM_TYPE_CSWAP(longlong, long long, 64)
+SHMEM_TYPE_CSWAP(float, float, 32)
+SHMEM_TYPE_CSWAP(double, double, 32)
 
 /*
  * fetch-and-add
