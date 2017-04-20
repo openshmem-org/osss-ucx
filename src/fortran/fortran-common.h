@@ -7,14 +7,14 @@
 
 #define FORTRANIFY(_sym) FC_FUNC_(_sym, _sym)
 
-#define FORTRANIFY_VOID_VOID(F) \
-  void FORTRANIFY(F) (void) { F(); }
+#define FORTRANIFY_VOID_VOID(_f)                \
+    void FORTRANIFY(_f) (void) { _f(); }
 
-#define FORTRANIFY_CACHE(Name)                  \
+#define FORTRANIFY_CACHE(_name)                 \
     void                                        \
-    FORTRANIFY(Name)(void *target)              \
+    FORTRANIFY(_name)(void *target)             \
     {                                           \
-        Name(target);                           \
+        _name(target);                          \
     }
 
 #endif /* ! FORTRAN_COMMON_H */
