@@ -7,18 +7,19 @@
 .br
 [launcher pass-through arguments]
 .br
--n N | -np N
+[ -n N | -np N ]
 .br
 program
 .br
-[ [--] program arguments]
+program [arguments...]
 .RE
 .SH DESCRIPTION
 \fBoshrun\fP runs an OpenSHMEM program on the given number of
 processing elements.
 .SH NUMBER OF PROCESSING ELEMENTS
 .IP "-n N | -np N" 4
-Run the program on N processing elements (processors).
+Run the program on N processing elements (PEs or processors).
+Overrides any PE count from launch environment.
 .IP
 Required.
 .LP
@@ -36,9 +37,6 @@ passes the arguments "-e" and "8192" through to the OpenSHMEM program.
 The OpenSHMEM specification does not say anything about how OpenSHMEM
 programs are compiled, linked and launched.  These wrapper programs
 are supplied as part of the Reference Library for convenience.
-.LP
-To disambiguate launcher and program options/arguments, use "--" to
-signal end-of-launcher arguments.
 .SH SEE ALSO
 osh_intro(1).
 .SH OPENSHMEM
