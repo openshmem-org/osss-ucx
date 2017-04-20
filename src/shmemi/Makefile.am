@@ -2,8 +2,7 @@ SUBDIRS                = dlmalloc
 
 LIBSHMEMI_SOURCES      = init.c \
 				pmi1-client.c pmi2-client.c pmix-client.c \
-				malloc.c heapx.c pe.c logger.c \
-				accessible.c
+				malloc.c heapx.c pe.c logger.c
 
 SHMEMX_CPPFLAGS        = -I$(srcdir)/../shmemu -I$(srcdir)/../shmemc
 

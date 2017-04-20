@@ -214,4 +214,20 @@ inline static int shmemc_global_exit(int status)
     return 0;
 }
 
+/*
+ * accessibility
+ */
+
+inline static int
+shmemc_pe_accessible(int pe)
+{
+    return 1;
+}
+
+inline static int
+shmemc_addr_accessible(const void *addr, int pe)
+{
+    return 0;
+}
+
 #endif /* ! _SHMEMC_H */
