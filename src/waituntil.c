@@ -1,6 +1,32 @@
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "shmem/defs.h"
 #include "shmemi/shmemi.h"
 #include "shmemc/shmemc.h"
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_short_wait_until = pshmem_short_wait_until
+#define shmem_short_wait_until pshmem_short_wait_until
+#pragma weak shmem_int_wait_until = pshmem_int_wait_until
+#define shmem_int_wait_until pshmem_int_wait_until
+#pragma weak shmem_long_wait_until = pshmem_long_wait_until
+#define shmem_long_wait_until pshmem_long_wait_until
+#pragma weak shmem_longlong_wait_until = pshmem_longlong_wait_until
+#define shmem_longlong_wait_until pshmem_longlong_wait_until
+
+
+#pragma weak shmem_short_wait = pshmem_short_wait
+#define shmem_short_wait pshmem_short_wait
+#pragma weak shmem_int_wait = pshmem_int_wait
+#define shmem_int_wait pshmem_int_wait
+#pragma weak shmem_long_wait = pshmem_long_wait
+#define shmem_long_wait pshmem_long_wait
+#pragma weak shmem_longlong_wait = pshmem_longlong_wait
+#define shmem_longlong_wait pshmem_longlong_wait
+#endif /* ENABLE_PSHMEM */
+
 
 /**
  * wait_until with operator dispatchers, type-parameterized.
