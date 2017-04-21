@@ -43,8 +43,12 @@ MY_SOURCES            += fortran/fortran.c \
 endif
 
 if ENABLE_EXPERIMENTAL
-MY_SOURCES            += wtime.c xor.c \
-				fortran/fortranx.c
+MY_SOURCES            += wtime.c xor.c
+
+if ENABLE_FORTRAN
+MY_SOURCES            += fortran/fortranx.c
+endif
+
 endif
 
 if ENABLE_PSHMEM
