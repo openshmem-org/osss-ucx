@@ -6,9 +6,16 @@
  *
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdint.h>
 #include <stddef.h>             /* ptrdiff_t */
 #include <string.h>
+
+#include "fortran-common.h"
+#include "shmemx.h"
 
 /*
  * atomic xor
@@ -36,6 +43,8 @@ FORTRANIFY(shmemx_int8_xor)(long *target, long *value, int *pe)
     shmemx_long_xor(target, *value, *pe);
 }
 
+#if 0
+
 /*
  * WORK IN PROGRESS
  *
@@ -44,22 +53,22 @@ FORTRANIFY(shmemx_int8_xor)(long *target, long *value, int *pe)
  * non-blocking putss
  */
 
-#define SHMEMX_FORTRAN_PUT_NB(FName, CName, CType)                      \
+#define SHMEMX_FORTRAN_PUT_NB(_fname, _cname, _ctype)                   \
     void                                                                \
-    FORTRANIFY(shmemx_##FName##_put_nb)(CType *target, const CType *source, \
-                                        int *size, int *pe,             \
-                                        shmemx_request_handle_t *desc)  \
+    FORTRANIFY(shmemx_##_fname##_put_nb)(_ctype *target, const _ctype *source, \
+                                         int *size, int *pe,            \
+                                         shmemx_request_handle_t *desc) \
     {                                                                   \
-        shmemx_##CName##_put_nb(target, source, *size, *pe, desc);      \
+        shmemx_##_cname##_put_nb(target, source, *size, *pe, desc);     \
     }
 
-#define SHMEMX_FORTRAN_PUT_SIZE_NB(Size, CName, CType)                  \
+#define SHMEMX_FORTRAN_PUT_SIZE_NB(Size, _cname, _ctype)                \
     void                                                                \
-    FORTRANIFY(shmemx_put##Size##_nb)(CType *target, const CType *source, \
+    FORTRANIFY(shmemx_put##Size##_nb)(_ctype *target, const _ctype *source, \
                                       int *size, int *pe,               \
                                       shmemx_request_handle_t *desc)    \
     {                                                                   \
-        shmemx_##CName##_put_nb(target, source, *size, *pe, desc);      \
+        shmemx_##_cname##_put_nb(target, source, *size, *pe, desc);     \
     }
 
 /* SHMEMX_FORTRAN_PUT_NB(character, char, char) */
@@ -78,22 +87,22 @@ SHMEMX_FORTRAN_PUT_SIZE_NB(128, longlong, long long)
  * non-blocking gets
  */
 
-#define SHMEMX_FORTRAN_GET_NB(FName, CName, CType)                      \
+#define SHMEMX_FORTRAN_GET_NB(_fname, _cname, _ctype)                   \
     void                                                                \
-    FORTRANIFY(shmemx_##FName##_get_nb)(CType *target, const CType *source, \
-                                        int *size, int *pe,             \
-                                        shmemx_request_handle_t *desc)  \
+    FORTRANIFY(shmemx_##_fname##_get_nb)(_ctype *target, const _ctype *source, \
+                                         int *size, int *pe,            \
+                                         shmemx_request_handle_t *desc) \
     {                                                                   \
-        shmemx_##CName##_get_nb(target, source, *size, *pe, desc);      \
+        shmemx_##_cname##_get_nb(target, source, *size, *pe, desc);     \
     }
 
-#define SHMEMX_FORTRAN_GET_SIZE_NB(Size, CName, CType)                  \
+#define SHMEMX_FORTRAN_GET_SIZE_NB(Size, _cname, _ctype)                \
     void                                                                \
-    FORTRANIFY(shmemx_get##Size##_nb)(CType *target, const CType *source, \
+    FORTRANIFY(shmemx_get##Size##_nb)(_ctype *target, const _ctype *source, \
                                       int *size, int *pe,               \
                                       shmemx_request_handle_t *desc)    \
     {                                                                   \
-        shmemx_##CName##_get_nb(target, source, *size, *pe, desc);      \
+        shmemx_##_cname##_get_nb(target, source, *size, *pe, desc);     \
     }
 
 /* SHMEMX_FORTRAN_GET_NB(character, char, char) */
@@ -108,11 +117,15 @@ SHMEMX_FORTRAN_GET_SIZE_NB(32, int, int)
 SHMEMX_FORTRAN_GET_SIZE_NB(64, long, long)
 SHMEMX_FORTRAN_GET_SIZE_NB(128, longlong, long long)
 
+#endif
+
 double
 FORTRANIFY(shmemx_wtime)(void)
 {
     return shmemx_wtime();
 }
+
+#if 0
 
 uintptr_t *
 FORTRANIFY(shmemx_lookup_remote_addr)(uintptr_t *addr, int *pe)
@@ -131,3 +144,5 @@ FORTRANIFY(shmemx_quiet_test)(void)
 {
     return shmemx_quiet_test();
 }
+
+#endif
