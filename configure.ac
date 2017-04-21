@@ -154,13 +154,15 @@ AC_CONFIG_FILES([man/Makefile
 		])
 
 AC_CONFIG_FILES([include/Makefile
-		include/shmemx.h include/null-shmemx.h
 		include/shmem/defs.h
 		include/shmem/depr.h
 		include/shmem/api.h
 		include/shmem.h
+		include/pshmem.h include/pshmemx.h
+		include/shmemx.h include/null-shmemx.h
 		include/shmem/defs.fh
-		include/pshmem.h
+		include/shmem.fh include/pshmem.fh
+		include/shmemx.fh include/pshmemx.fh
 		])
 
 AC_CONFIG_FILES([pkgconfig/Makefile
