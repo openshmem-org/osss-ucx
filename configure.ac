@@ -105,7 +105,7 @@ AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
 #
 AC_ARG_ENABLE([cxx],
 	AS_HELP_STRING([--disable-cxx],
-			[Disable C++ API support @<:@default=enabled@:>@]))
+			[Disable C++ API support @<:@default=yes@:>@]))
 AS_IF([test "x$enable_cxx" != "xno"],
 	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ API])
 	 AC_SUBST([ENABLE_CXX], [1])],
