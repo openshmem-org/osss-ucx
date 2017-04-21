@@ -160,6 +160,7 @@ AC_CONFIG_FILES([include/Makefile
 		include/shmem/api.h
 		include/shmem.h
 		include/shmem/defs.fh
+		include/pshmem.h
 		])
 
 AC_CONFIG_FILES([pkgconfig/Makefile
