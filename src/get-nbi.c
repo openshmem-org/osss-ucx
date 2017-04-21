@@ -67,8 +67,8 @@ SHMEM_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
 
 #define SHMEM_SIZED_GET_NBI(_name, _size)                               \
     void                                                                \
-    shmem_get_##_name##_nbi(void *dest, const void *src,                \
-                            size_t nelems, int pe)                      \
+    shmem_get##_name##_nbi(void *dest, const void *src,                 \
+                           size_t nelems, int pe)                       \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
         shmemc_get_nbi(dest, src, sized_nelems, pe);                    \

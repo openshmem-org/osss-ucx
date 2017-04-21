@@ -6,11 +6,11 @@
 #include "shmemc/shmemc.h"
 
 #ifdef ENABLE_PSHMEM
-extern void shmem_complexf_put_nbi(COMPLEXIFY (float) * dest,
-                                   const COMPLEXIFY (float) * src,
+extern void shmem_complexf_put_nbi(COMPLEXIFY(float) * dest,
+                                   const COMPLEXIFY(float) * src,
                                    size_t nelems, int pe); /* ! API */
-extern void shmem_complexd_put_nbi(COMPLEXIFY (double) * dest,
-                                   const COMPLEXIFY (double) * src,
+extern void shmem_complexd_put_nbi(COMPLEXIFY(double) * dest,
+                                   const COMPLEXIFY(double) * src,
                                    size_t nelems, int pe); /* ! API */
 #pragma weak shmem_short_put_nbi = pshmem_short_put_nbi
 #define shmem_short_put_nbi pshmem_short_put_nbi
@@ -66,7 +66,7 @@ SHMEM_TYPED_PUT_NBI(complexd, COMPLEXIFY(double))
 
 #define SHMEM_SIZED_PUT_NBI(_name, _size)                               \
     void                                                                \
-    shmem_put_##_name##_nbi(void *dest, const void *src,                \
+    shmem_put##_name##_nbi(void *dest, const void *src,                 \
                             size_t nelems, int pe)                      \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
