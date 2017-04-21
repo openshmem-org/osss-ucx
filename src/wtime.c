@@ -1,5 +1,14 @@
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <sys/time.h>
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmemx_wtime = pshmemx_wtime
+#define shmemx_wtime pshmemx_wtime
+#endif /* ENABLE_PSHMEM */
 
 double
 shmemx_wtime(void)
