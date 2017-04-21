@@ -3,10 +3,10 @@
 
 #ifdef ENABLE_PSHMEM
 extern void shmem_complexf_get(COMPLEXIFY(float) * dest,
-                               const COMPLEXIFY (float) * src,
+                               const COMPLEXIFY(float) * src,
                                size_t nelems, int pe);  /* ! API */
 extern void shmem_complexd_get(COMPLEXIFY(double) * dest,
-                               const COMPLEXIFY (double) * src,
+                               const COMPLEXIFY(double) * src,
                                size_t nelems, int pe);    /* ! API */
 
 #pragma weak shmem_short_get = pshmem_short_get
