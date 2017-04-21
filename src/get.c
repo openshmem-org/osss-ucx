@@ -1,6 +1,46 @@
 #include "shmem/defs.h"
 #include "shmemc/shmemc.h"
 
+#ifdef ENABLE_PSHMEM
+extern void shmem_complexf_get(COMPLEXIFY (float) * dest,
+                               const COMPLEXIFY (float) * src,
+                               size_t nelems, int pe);  /* ! API */
+extern void shmem_complexd_get(COMPLEXIFY (double) * dest,
+                               const COMPLEXIFY (double) * src,
+                               size_t nelems, int pe);    /* ! API */
+
+#pragma weak shmem_short_get = pshmem_short_get
+#define shmem_short_get pshmem_short_get
+#pragma weak shmem_int_get = pshmem_int_get
+#define shmem_int_get pshmem_int_get
+#pragma weak shmem_char_get = pshmem_char_get
+#define shmem_char_get pshmem_char_get
+#pragma weak shmem_long_get = pshmem_long_get
+#define shmem_long_get pshmem_long_get
+#pragma weak shmem_longdouble_get = pshmem_longdouble_get
+#define shmem_longdouble_get pshmem_longdouble_get
+#pragma weak shmem_longlong_get = pshmem_longlong_get
+#define shmem_longlong_get pshmem_longlong_get
+#pragma weak shmem_double_get = pshmem_double_get
+#define shmem_double_get pshmem_double_get
+#pragma weak shmem_float_get = pshmem_float_get
+#define shmem_float_get pshmem_float_get
+#pragma weak shmem_complexf_get = pshmem_complexf_get
+#define shmem_complexf_get pshmem_complexf_get
+#pragma weak shmem_complexd_get = pshmem_complexd_get
+#define shmem_complexd_get pshmem_complexd_get
+#pragma weak shmem_getmem = pshmem_getmem
+#define shmem_getmem pshmem_getmem
+#pragma weak shmem_get32 = pshmem_get32
+#define shmem_get32 pshmem_get32
+#pragma weak shmem_get64 = pshmem_get64
+#define shmem_get64 pshmem_get64
+#pragma weak shmem_get128 = pshmem_get128
+#define shmem_get128 pshmem_get128
+/* # pragma weak pshmem_get = pshmem_long_get */
+/* # pragma weak shmem_get = pshmem_get */
+#endif /* ENABLE_PSHMEM */
+
 #define SHMEM_TYPED_GET(_name, _type)                            \
     void                                                        \
     shmem_##_name##_get(_type *dest, const _type *src,          \

@@ -1,5 +1,50 @@
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "shmem/defs.h"
 #include "shmemc/shmemc.h"
+
+#ifdef ENABLE_PSHMEM
+extern void shmem_complexf_put(COMPLEXIFY(float) * dest,
+                               const COMPLEXIFY(float) * src,
+                               size_t nelems, int pe);  /* ! API */
+extern void shmem_complexd_put(COMPLEXIFY(double) * dest,
+                               const COMPLEXIFY(double) * src,
+                               size_t nelems, int pe);    /* ! API */
+
+#pragma weak shmem_short_put = pshmem_short_put
+#define shmem_short_put pshmem_short_put
+#pragma weak shmem_int_put = pshmem_int_put
+#define shmem_int_put pshmem_int_put
+#pragma weak shmem_char_put = pshmem_char_put
+#define shmem_char_put pshmem_char_put
+#pragma weak shmem_long_put = pshmem_long_put
+#define shmem_long_put pshmem_long_put
+#pragma weak shmem_longdouble_put = pshmem_longdouble_put
+#define shmem_longdouble_put pshmem_longdouble_put
+#pragma weak shmem_longlong_put = pshmem_longlong_put
+#define shmem_longlong_put pshmem_longlong_put
+#pragma weak shmem_double_put = pshmem_double_put
+#define shmem_double_put pshmem_double_put
+#pragma weak shmem_float_put = pshmem_float_put
+#define shmem_float_put pshmem_float_put
+#pragma weak shmem_complexf_put = pshmem_complexf_put
+#define shmem_complexf_put pshmem_complexf_put
+#pragma weak shmem_complexd_put = pshmem_complexd_put
+#define shmem_complexd_put pshmem_complexd_put
+#pragma weak shmem_putmem = pshmem_putmem
+#define shmem_putmem pshmem_putmem
+#pragma weak shmem_put32 = pshmem_put32
+#define shmem_put32 pshmem_put32
+#pragma weak shmem_put64 = pshmem_put64
+#define shmem_put64 pshmem_put64
+#pragma weak shmem_put128 = pshmem_put128
+#define shmem_put128 pshmem_put128
+/* # pragma weak pshmem_put = pshmem_long_put */
+/* # pragma weak shmem_put = pshmem_put */
+#endif /* ENABLE_PSHMEM */
+
 
 #define SHMEM_TYPED_PUT(_name, _type)                                   \
     void                                                                \
@@ -18,8 +63,8 @@ SHMEM_TYPED_PUT(longlong, long long)
 SHMEM_TYPED_PUT(longdouble, long double)
 SHMEM_TYPED_PUT(double, double)
 SHMEM_TYPED_PUT(float, float)
-SHMEM_TYPED_PUT(complexf, COMPLEXIFY (float))
-SHMEM_TYPED_PUT(complexd, COMPLEXIFY (double))
+SHMEM_TYPED_PUT(complexf, COMPLEXIFY(float))
+SHMEM_TYPED_PUT(complexd, COMPLEXIFY(double))
 
 #define SHMEM_SIZED_PUT(_name, _size)                                   \
     void                                                                \
