@@ -1,3 +1,7 @@
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -6,6 +10,26 @@
 #include "shmemi/shmemi.h"
 
 int malloc_error = SHMEM_MALLOC_OK;
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_malloc = pshmem_malloc
+#define shmem_malloc pshmem_malloc
+#pragma weak shmem_free = pshmem_free
+#define shmem_free pshmem_free
+#pragma weak shmem_realloc = pshmem_realloc
+#define shmem_realloc pshmem_realloc
+#pragma weak shmem_align = pshmem_align
+#define shmem_align pshmem_align
+
+#pragma weak shmalloc = pshmalloc
+#define shmalloc pshmalloc
+#pragma weak shfree = pshfree
+#define shfree pshfree
+#pragma weak shrealloc = pshrealloc
+#define shrealloc pshrealloc
+#pragma weak shmemalign = pshmemalign
+#define shmemalign pshmemalign
+#endif /* ENABLE_PSHMEM */
 
 void *
 shmem_malloc(size_t s)
