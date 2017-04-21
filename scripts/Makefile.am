@@ -1,8 +1,8 @@
-bin_SCRIPTS      = oshcc oshrun
+MY_WRAPPERS       = oshcc oshrun
 
 if ENABLE_CXX
 
-bin_SCRIPTS     += oshcxx
+MY_WRAPPERS      += oshcxx
 
 install-exec-hook:
 	cd $(bindir); \
@@ -12,6 +12,9 @@ endif
 
 if ENABLE_FORTRAN
 
-bin_SCRIPTS     += oshfort
+MY_WRAPPERS      += oshfort
 
 endif
+
+
+bin_SCRIPTS       = $(MY_WRAPPERS)

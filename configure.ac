@@ -87,6 +87,9 @@ AS_IF([test "x$enable_pshmem" = "xyes"],
 	)
 AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
 
+#
+# disabled by default
+#
 AC_ARG_ENABLE([fortran],
 	AS_HELP_STRING([--enable-fortran],
 			[Enable Fortran API support @<:@default=no@:>@]))
@@ -97,15 +100,18 @@ AS_IF([test "x$enable_fortran" = "xyes"],
 	)
 AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
 
+#
+# enabled by default
+#
 AC_ARG_ENABLE([cxx],
-	AS_HELP_STRING([--enable-cxx],
-			[Enable C++ API support @<:@default=no@:>@]))
-AS_IF([test "x$enable_cxx" = "xyes"],
+	AS_HELP_STRING([--disable-cxx],
+			[Disable C++ API support @<:@default=enabled@:>@]))
+AS_IF([test "x$enable_cxx" != "xno"],
 	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ API])
 	 AC_SUBST([ENABLE_CXX], [1])],
 	[AC_SUBST([ENABLE_CXX], [0])]
 	)
-AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" = "xyes"])
+AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" != "xno"])
 
 # static and shared library detection
 AS_IF([test "x$enable_static" = "xyes"],
