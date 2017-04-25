@@ -41,9 +41,8 @@ LT_INIT
 AC_ARG_WITH([pmix],
 	[AS_HELP_STRING([--with-pmix], [Use PMIx library])])
 AS_IF([test "x$with_pmix" = "xyes"], [
-	    	    PKG_CHECK_MODULES([PMIX], [pmix], [], [])
-	    ],
-	    [AC_MSG_ERROR([PMIx library required])]
+	    	    PKG_CHECK_MODULES([PMIX], [pmix])
+		    ]
 	    )
 AC_DEFINE([HAVE_PMIX], [1], [Using PMIx])
 AC_SUBST(PMIX_CFLAGS)
@@ -56,7 +55,7 @@ AC_SUBST(PMIX_LIBS)
 AC_ARG_WITH([ucx],
 	[AS_HELP_STRING([--with-ucx], [Use UCX library])])
 AS_IF([test "x$with_ucx" = "xyes"], [
-	    		 PKG_CHECK_MODULES([UCX], [ucx], [], [])
+	    		 PKG_CHECK_MODULES([UCX], [ucx])
 	    ],
 	    [AC_MSG_ERROR([UCX library required])]
 	    )
