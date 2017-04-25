@@ -39,26 +39,58 @@ LT_INIT
 
 # package checks
 AC_ARG_WITH([pmix],
-		[AS_HELP_STRING([--with-pmix@<:@=DIR@:>@], [PMIx library location])],
-		[with_pmix=$withval],
-		[AC_MSG_ERROR([Cannot find PMIx])])
-AS_IF([test -d $with_pmix],
-	[
-		PMIX_CPPFLAGS="-I$with_pmix/include"
-		save_cppflags="$CPPFLAGS"
-		CPPFLAGS="$CPPFLAGS $PMIX_CPPFLAGS"
-		pmix_libdir="$with_pmix/lib"
-		PMIX_LDFLAGS="-L$pmix_libdir -Wl,-rpath,$pmix_libdir -lpmix"
-		AC_CHECK_HEADER([$with_pmix/include/pmix.h],
-				[AC_DEFINE([HAVE_PMIX_H], [1])
-				AC_SUBST(PMIX_CPPFLAGS)
-				AC_SUBST(PMIX_LDFLAGS)],
-				[AC_MSG_ERROR([Cannot find PMIx include file])]
-				)
-		CPPFLAGS="$save_cppflags"
-	],
-	[AC_MSG_ERROR([Cannot find PMIx])]
-	)
+	[AS_HELP_STRING([--with-pmix], [Use PMIx library])])
+AS_IF([test "x$with_pmix" = "xyes"], [
+	    	    PKG_CHECK_MODULES([PMIX], [pmix], [], [])
+	    ],
+	    [AC_MSG_ERROR([PMIx library required])]
+	    )
+AC_DEFINE([HAVE_PMIX], [1], [Using PMIx])
+AC_SUBST(PMIX_CFLAGS)
+AC_SUBST(PMIX_LIBS)
+
+#
+# TODO make this optional because we might choose to use GASNet
+# instead.  But we *will* need one of them.
+#
+AC_ARG_WITH([ucx],
+	[AS_HELP_STRING([--with-ucx], [Use UCX library])])
+AS_IF([test "x$with_ucx" = "xyes"], [
+	    		 PKG_CHECK_MODULES([UCX], [ucx], [], [])
+	    ],
+	    [AC_MSG_ERROR([UCX library required])]
+	    )
+AC_DEFINE([HAVE_UCX], [1], [Using UCX])
+AC_SUBST([UCX_CFLAGS])
+AC_SUBST([UCX_LIBS])
+
+# AC_ARG_WITH([gasnet],
+# 	[AS_HELP_STRING([--with-gasnet], [Use GASNet library])])
+# AS_IF([test "x$with_gasnet" = "xyes"], [
+# 	    		    PKG_CHECK_MODULES([GASNET], [gasnet], [], [])
+# 		],
+# 		[AC_MSG_ERROR([GASNet library required])]
+# 		)
+# AC_DEFINE([HAVE_GASNET], [1], [Using GASNet])
+# AC_SUBST([GASNET_CFLAGS])
+# AC_SUBST([GASNET_LIBS])
+
+# AC_ARG_WITH([gasnet-conduit],
+# 		[AS_HELP_STRING([--with-gasnet-conduit@<:@=NAME@:>@], [GASNet conduit choice])],
+# 		[with_gasnet_conduit=$withval]
+# 		)
+# AS_IF([test -d $with_gasnet_conduit],
+# 	[
+# 		GASENET_CONDUIT="$with_gasnet_conduit"
+# 		AC_CHECK_HEADER([$with_gasnet/include/$with_gasnet_conduit-conduit/gasnet_core.h],
+# 				[AC_DEFINE([GASNET_CONDUIT_H], [1])
+# 				AC_SUBST(GASNET_CONDUIT)],
+# 				[AC_MSG_ERROR([Cannot find GASNet conduit header file])]
+# 				)
+# 		CPPFLAGS="$save_cppflags"
+# 	],
+# 	[AC_MSG_ERROR([Cannot find GASNet conduit header file])]
+# 	)
 
 # Feature checks
 AC_ARG_ENABLE([debug],
@@ -122,7 +154,7 @@ AS_IF([test "x$enable_shared" = "xyes"],
 	    )
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h pmi.h pmi2.h pmix.h])
+AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

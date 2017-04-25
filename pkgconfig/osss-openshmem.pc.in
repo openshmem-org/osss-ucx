@@ -6,7 +6,7 @@ URL: @PACKAGE_URL@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 #
-Libs: -L@libdir@ -Wl,-rpath,@libdir@ -lshmem -lshmemi -lshmemc -lshmemu @PMIX_LDFLAGS@
+Libs: -L@libdir@ -Wl,-rpath,@libdir@ -lshmem -lshmemi -lshmemc -lshmemu @PMIX_LIBS@
 Cflags: -I@includedir@
 #
 Provides: @PACKAGE@
