@@ -40,7 +40,7 @@ if ENABLE_FORTRAN
 
 MY_WRAPPERS      += oshfort
 
-oshfort:	oshcc.tmpl
+oshfort:	oshfort.tmpl
 	sed \
 		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
 		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
