@@ -1,0 +1,118 @@
+#!/bin/sh
+#
+# Copyright (c) 2014 Intel Corporation. All rights reserved.
+#
+# generated from OpenSHMEM src directory, don't edit installed version
+#
+
+progname="`basename $0`"
+
+show_usage_and_exit()
+{
+    if [ $# -gt 0 ]
+    then
+        echo "Error: $@"
+        echo ""
+    fi
+    cat <<EOF
+Usage: $progname [launcher pass-through options]
+                 -n|-np N
+                 program
+                 [ [--] program args]
+       Where
+
+         -n|-np N     is the number of processing elements to launch
+
+EOF
+    exit 1
+}
+
+if [ $# -eq 0 ]
+then
+    show_usage_and_exit
+fi
+
+#
+# pass through args, trap -np N
+#
+
+npes=""
+launcher_args=""
+app_args=""
+gotmm=0
+
+while [ $# -gt 0 ]
+do
+    case $gotmm in
+        0)
+            case "$1" in
+                --)
+                    gotmm=1
+                    ;;
+                -n | -np)
+                    shift
+                    npes=$1
+                    ;;
+                *)
+                    launcher_args="$launcher_args $1"
+                    ;;
+            esac
+            ;;
+        1)
+            app_args="$app_args $1"
+            ;;
+    esac
+    shift
+done
+
+# make sure npes is something sensible
+
+if [ -z "$npes" ]
+then
+    show_usage_and_exit
+fi
+
+case "$npes" in
+    *[!0-9]*)
+        show_usage_and_exit "NPEs ($npes) is not an integer"
+        ;;
+    *)
+        # otherwise good
+        ;;
+esac
+
+# given something to run?
+
+if [ -z "$launcher_args" -a -z "$all_args" ]
+then
+    show_usage_and_exit
+fi
+
+all_args="$launcher_args $app_args"
+
+# now find the correct launcher
+
+OPENSHMEM_GASNET_CONDUIT="@GASNET_CONDUIT@"
+export OPENSHMEM_GASNET_CONDUIT
+
+case "$OPENSHMEM_GASNET_CONDUIT" in
+    smp)
+        RUN_IT="env GASNET_PSHM_NODES=$npes $launcher_args $app_args"
+        ;;
+    udp)
+        RUN_IT="$launcher_args $npes $app_args"
+        ;;
+    # delegate to a GASNet launcher, if found
+    *)
+        # conduit-specific launcher
+        launcher="%GASNET_PREFIX%/bin/gasnetrun_$OPENSHMEM_GASNET_CONDUIT"
+        if [ ! -x "$launcher" ]
+        then
+            show_usage_and_exit "GASNet launcher for \"$OPENSHMEM_GASNET_CONDUIT\" not found"
+        fi
+        # pass number of PEs & other args
+        RUN_IT="$launcher -n $npes $launcher_args $app_args"
+        ;;
+esac
+
+exec $RUN_IT
