@@ -1,3 +1,5 @@
+SUBDIRS                = gasnet
+
 LIBSHMEMC_SOURCES      = put.c get.c lock.c getenv.c
 
 lib_LTLIBRARIES        = libshmemc.la

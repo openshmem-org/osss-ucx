@@ -1,0 +1,38 @@
+#!/bin/sh
+
+compiler="${OSH_CC-@CC@}"
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+shmem_dir=@prefix@
+shmem_include=@includedir@
+shmem_lib=@libdir@
+
+pmixlib_stanza="@PMIX_LIBS@"
+
+shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
+shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemu"
+shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
+
+# set to whichever comms library chosen
+comms_stanza="@COMMS_LIBS@"
+
+# and make it available
+shmemlib_stanza="$shmemlib_stanza $comms_stanza"
+
+# check to see if linking required: if not, throw away link args
+for c in $@
+do
+    case $c in
+        -[cES])
+            shmemlib_stanza=""
+            ;;
+        *)
+            ;;
+    esac
+done
+    
+$compiler \
+    -I$shmem_include \
+    $@ \
+    $shmemlib_stanza

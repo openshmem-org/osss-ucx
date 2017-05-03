@@ -38,8 +38,8 @@ AC_FC_WRAPPERS
 LT_INIT
 
 m4_include([config/m4/pmix.m4])
-m4_include([config/m4/ucx.m4])
-# TODO m4_include([config/m4/gasnet.m4])
+dnl m4_include([config/m4/ucx.m4])
+m4_include([config/m4/gasnet.m4])
 
 # Feature checks
 AC_ARG_ENABLE([debug],
@@ -156,19 +156,26 @@ AC_CONFIG_FILES([pkgconfig/Makefile
 		pkgconfig/osss-openshmem.pc
 		])
 
-AC_CONFIG_FILES([scripts/Makefile
-		scripts/oshcc scripts/oshcxx scripts/oshfort
-		scripts/oshrun
-		])
-
 AC_CONFIG_FILES([src/Makefile
 		src/shmemu/Makefile
 		src/shmemc/Makefile
-			src/shmemc/ucx/Makefile
-			src/shmemc/gasnet/Makefile
 		src/shmemi/Makefile
 			src/shmemi/dlmalloc/Makefile
 		src/version.h
 		])
+
+AC_CONFIG_FILES([src/shmemc/gasnet/Makefile
+                 src/shmemc/gasnet/oshcc.tmpl
+                 src/shmemc/gasnet/oshcxx.tmpl
+                 src/shmemc/gasnet/oshfort.tmpl
+                 src/shmemc/gasnet/oshrun.tmpl
+               ])
+
+AC_CONFIG_FILES([src/shmemc/ucx/Makefile
+                 src/shmemc/ucx/oshcc.tmpl
+                 src/shmemc/ucx/oshcxx.tmpl
+                 src/shmemc/ucx/oshfort.tmpl
+                 src/shmemc/ucx/oshrun.tmpl
+               ])
 
 AC_OUTPUT

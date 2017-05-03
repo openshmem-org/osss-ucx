@@ -1,6 +1,6 @@
 #!/bin/sh
 
-compiler="${OSH_CXX-@CXX@}"
+compiler="${OSH_FC-@FC@}"
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -10,11 +10,15 @@ shmem_lib=@libdir@
 
 pmixlib_stanza="@PMIX_LIBS@"
 
-ucx_stanza="@UCX_LIBS@"
-
 shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
-shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemu"
-shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza $ucx_stanza"
+shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemu -lshmemc-gasnet"
+shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
+
+# set to whichever comms library chosen
+comms_stanza="@COMMS_LIBS@"
+
+# and make it available
+shmemlib_stanza="$shmemlib_stanza $comms_stanza"
 
 # check to see if linking required: if not, throw away link args
 for c in $@
