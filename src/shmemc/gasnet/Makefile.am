@@ -17,6 +17,7 @@ oshcc:		oshcc.tmpl
 oshrun:		oshrun.tmpl
 	sed \
 		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
+		-e 's,%GASNET_PREFIX%,$(GASNET_PREFIX),' \
 		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
 		< $< > $@
 
