@@ -14,7 +14,7 @@ shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
 shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemu -lshmemc-gasnet"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
 
-comms_stanza="@GASNET_LDFLAGS@"
+comms_stanza="%GASNET_LDFLAGS% %GASNET_LIBS%"
 
 shmemlib_stanza="$shmemlib_stanza $comms_stanza"
 

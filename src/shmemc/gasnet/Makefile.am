@@ -9,15 +9,15 @@ MY_WRAPPERS       = oshcc oshrun
 
 oshcc:		oshcc.tmpl
 	sed \
-		-e 's,@GASNET_LDFLAGS@,$(GASNET_LDFLAGS),' \
-		-e 's,@GASNET_LIBS@,$(GASNET_LIBS),' \
+		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
+		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
 		< $< > $@
 
 
 oshrun:		oshrun.tmpl
 	sed \
-		-e 's,@GASNET_LDFLAGS@,$(GASNET_LDFLAGS),' \
-		-e 's,@GASNET_LIBS@,$(GASNET_LIBS),' \
+		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
+		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
 		< $< > $@
 
 if ENABLE_CXX
@@ -26,8 +26,8 @@ MY_WRAPPERS      += oshcxx
 
 oshcxx:		oshcxx.tmpl
 	sed \
-		-e 's,@GASNET_LDFLAGS@,$(GASNET_LDFLAGS),' \
-		-e 's,@GASNET_LIBS@,$(GASNET_LIBS),' \
+		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
+		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
 		< $< > $@
 
 install-exec-hook:
@@ -42,8 +42,8 @@ MY_WRAPPERS      += oshfort
 
 oshfort:	oshcc.tmpl
 	sed \
-		-e 's,@GASNET_LDFLAGS@,$(GASNET_LDFLAGS),' \
-		-e 's,@GASNET_LIBS@,$(GASNET_LIBS),' \
+		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
+		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
 		< $< > $@
 
 endif
