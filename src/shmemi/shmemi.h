@@ -95,20 +95,29 @@ deprecate(const char *fn)
  * PE management
  */
 
-#include <stdbool.h>
+typedef enum {
+    PE_UNINITIALIZED = 0,    /* start like this */
+    PE_UNKNOWN,              /* for when we have no information yet */
+    PE_RUNNING,              /* after start_pes() */
+    PE_SHUTDOWN,             /* clean exit */
+    PE_FAILED,               /* something went wrong */
+} pe_status_t;
 
 typedef struct pe {
-    int me;                     /* this rank */
-    int npes;                   /* total ranks */
-    int npeers;                 /* ranks on a node (> 0, I am my own peer) */
-    char *peers;                /* list of peers */
-    bool running;               /* PE initialized? */
+    pe_status_t status;  /* what is this PE doing? */
+    int me;              /* this rank */
+    int npes;            /* total ranks */
+    int npeers;          /* ranks on a node (> 0, I am my own peer) */
+    char *peers;         /* list of node peers */
+    int *locp;           /* locality info in-node and out- */
+    int nheaps;
+    size_t *hsizep;         /* symmetric heaps + sizes (needs work) */
 } pe_t;
 
 extern pe_t p;
 
-#define shmemi_my_pe() (p.me)
-#define shmemi_n_pes() (p.npes)
+inline static int shmemi_my_pe() { return p.me; }
+inline static int shmemi_n_pes() { return p.npes; }
 
 /*
  * Ordering

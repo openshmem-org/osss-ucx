@@ -14,9 +14,9 @@
 
 static
 void
-shmemi_finalize_handler_pmix(int need_barrier)
+shmemi_finalize_handler_pmix(bool need_barrier)
 {
-    if (p.running) {
+    if (need_barrier) {
         pmix_info_t *bar;
         pmix_status_t ps;
 
@@ -35,7 +35,7 @@ shmemi_finalize_handler_pmix(int need_barrier)
 
         shmemi_heapx_finalize();
 
-        p.running = false;
+        p.status = PE_SHUTDOWN;
 
         logger(LOG_FINALIZE, "shut down complete");
     }
@@ -45,7 +45,7 @@ static
 void
 shmemi_finalize_atexit_pmix(void)
 {
-    shmemi_finalize_handler_pmix(p.running);
+    shmemi_finalize_handler_pmix(p.status == PE_RUNNING);
 }
 
 void
@@ -238,5 +238,5 @@ shmemi_init_pmix(void)
 
     barrier_all_pmix();
 
-    p.running = true;
+    p.status = PE_SHUTDOWN;
 }

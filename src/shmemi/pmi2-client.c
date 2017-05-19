@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <pmi2.h>
 
@@ -22,14 +23,14 @@ shmemi_finalize_handler_pmi2(bool need_barrier)
     }
 
 
-    p.running = false;
+    p.status = PE_SHUTDOWN;
 }
 
 static
 void
 shmemi_finalize_atexit_pmi2(void)
 {
-    shmemi_finalize_handler_pmi2(p.running);
+    shmemi_finalize_handler_pmi2(p.status == PE_RUNNING);
 }
 
 void
@@ -46,7 +47,7 @@ shmemi_init_pmi2(void)
     s = atexit(shmemi_finalize_atexit_pmi2);
     assert(s == 0);
 
-    p.running = true;
+    p.status = PE_RUNNING;
 }
 
 void

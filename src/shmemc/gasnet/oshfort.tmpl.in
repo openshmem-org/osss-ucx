@@ -1,7 +1,5 @@
 #!/bin/sh
 
-compiler="${OSH_FC-@FC@}"
-
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 shmem_dir=@prefix@
@@ -11,7 +9,7 @@ shmem_lib=@libdir@
 pmixlib_stanza="@PMIX_LIBS@"
 
 shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
-shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemu -lshmemc-gasnet"
+shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemc-gasnet -lshmemu"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
 
 comms_stanza="%GASNET_LDFLAGS% %GASNET_LIBS%"
@@ -19,6 +17,23 @@ comms_stanza="%GASNET_LDFLAGS% %GASNET_LIBS%"
 shmemlib_stanza="$shmemlib_stanza $comms_stanza"
 
 # check to see if linking required: if not, throw away link args
+
+compiler="${OSH_FC-%GASNET_LD%}"
+
+cname="`basename $compiler`"
+cdir="`dirname $compiler`"
+
+case "$cname" in
+    mpicc)
+        compiler="$cdir/mpif90" # best guess :(
+        ;;
+    gcc)
+        compiler="gfortran"
+        ;;
+    *)
+        ;;
+esac
+
 for c in $@
 do
     case $c in

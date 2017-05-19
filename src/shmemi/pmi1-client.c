@@ -17,25 +17,25 @@ static
 void
 shmemi_finalize_handler_pmi1(bool need_barrier)
 {
-    int s;
+    int ret;
 
     if (need_barrier) {
         logger(LOG_FINALIZE, "PE still alive, add barrier to finalize");
     }
 
 #if 1
-    s = PMI_Finalize();
-    assert(s == PMI_SUCCESS);
+    ret = PMI_Finalize();
+    assert(ret == PMI_SUCCESS);
 #endif
 
-    p.running = false;
+    p.status = PE_SHUTDOWN;
 }
 
 static
 void
 shmemi_finalize_atexit_pmi1(void)
 {
-    shmemi_finalize_handler_pmi1(p.running);
+    shmemi_finalize_handler_pmi1(p.status == PE_RUNNING);
 }
 
 void
@@ -47,30 +47,30 @@ shmemi_finalize_pmi1(void)
 void
 shmemi_init_pmi1(void)
 {
-    int s;
+    int ret;
 
     /* this isn't working, let's try environment instead */
 #if 1
     int spawned = 0;
 
-    s = PMI_Init(&spawned);
-    assert(s == PMI_SUCCESS);
+    ret = PMI_Init(&spawned);
+    assert(ret == PMI_SUCCESS);
 
-    s = PMI_Get_size(&p.npes);
-    assert(s == PMI_SUCCESS);
+    ret = PMI_Get_size(&p.npes);
+    assert(ret == PMI_SUCCESS);
 
-    s = PMI_Get_rank(&p.me);
-    assert(s == PMI_SUCCESS);
+    ret = PMI_Get_rank(&p.me);
+    assert(ret == PMI_SUCCESS);
 #else
 
     p.npes = atoi(shmemc_getenv("PMI_SIZE"));
     p.me = atoi(shmemc_getenv("PMI_RANK"));
 #endif
 
-    s = atexit(shmemi_finalize_atexit_pmi1);
-    assert(s == 0);
+    ret = atexit(shmemi_finalize_atexit_pmi1);
+    assert(ret == 0);
 
-    p.running = true;
+    p.status = PE_RUNNING;
 }
 
 void

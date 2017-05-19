@@ -1,8 +1,11 @@
 include @GASNET_MAKE_FRAGMENT@
 
 lib_LIBRARIES          = libshmemc-gasnet.a
-libshmemc_gasnet_a_SOURCES    = comms.c
-libshmemc_gasnet_a_CPPFLAGS = $(GASNET_CPPFLAGS)
+libshmemc_gasnet_a_SOURCES    = bail.c service.c comms.c gvhack.c # lock.c
+libshmemc_gasnet_a_CPPFLAGS = $(GASNET_CPPFLAGS) \
+				-I$(top_srcdir)/src/shmemi \
+				-I$(top_srcdir)/src/shmemu \
+				-I$(top_srcdir)/src/shmemc
 # libshmemc_gasnet_a_CFLAGS = $(GASNET_CFLAGS)
 
 MY_WRAPPERS       = oshcc oshrun
@@ -11,6 +14,8 @@ oshcc:		oshcc.tmpl
 	sed \
 		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
 		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
+		-e 's,%GASNET_LD%,$(GASNET_LD),' \
+		-e 's,%GASNET_CC%,$(GASNET_CC),' \
 		< $< > $@
 
 
@@ -29,6 +34,8 @@ oshcxx:		oshcxx.tmpl
 	sed \
 		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
 		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
+		-e 's,%GASNET_LD%,$(GASNET_LD),' \
+		-e 's,%GASNET_CXX%,$(GASNET_CXX),' \
 		< $< > $@
 
 install-exec-hook:
@@ -45,6 +52,7 @@ oshfort:	oshfort.tmpl
 	sed \
 		-e 's,%GASNET_LDFLAGS%,$(GASNET_LDFLAGS),' \
 		-e 's,%GASNET_LIBS%,$(GASNET_LIBS),' \
+		-e 's,%GASNET_LD%,$(GASNET_LD),' \
 		< $< > $@
 
 endif
