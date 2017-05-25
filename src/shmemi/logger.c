@@ -161,7 +161,7 @@ shmemi_logger(shmemi_log_t level, const char *fmt, ...)
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
                  "[%s:%d:%6.6f] %10s: ",
                  host,
-                 p.me,
+                 proc.rank,
                  shmemu_timer(),
                  level_to_name(level)
                  );

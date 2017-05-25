@@ -23,14 +23,14 @@ shmemi_finalize_handler_pmi2(bool need_barrier)
     }
 
 
-    p.status = PE_SHUTDOWN;
+    proc.status = PE_SHUTDOWN;
 }
 
 static
 void
 shmemi_finalize_atexit_pmi2(void)
 {
-    shmemi_finalize_handler_pmi2(p.status == PE_RUNNING);
+    shmemi_finalize_handler_pmi2(proc.status == PE_RUNNING);
 }
 
 void
@@ -47,7 +47,7 @@ shmemi_init_pmi2(void)
     s = atexit(shmemi_finalize_atexit_pmi2);
     assert(s == 0);
 
-    p.status = PE_RUNNING;
+    proc.status = PE_RUNNING;
 }
 
 void

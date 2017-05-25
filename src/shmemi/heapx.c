@@ -19,12 +19,12 @@ shmemi_heapx_set_pe(int idx, int pe, void *p, size_t s)
 void
 shmemi_heapx_create(int idx, size_t s)
 {
-    heapx[idx] = (heap_exchange_t *) calloc(p.npes, sizeof(*heapx[idx]));
+    heapx[idx] = (heap_exchange_t *) calloc(proc.nranks, sizeof(*heapx[idx]));
     assert(heapx[idx] != NULL);
 
     /* TODO malloc is clearly a dummy here */
 
-    shmemi_heapx_set_pe(idx, p.me, malloc(s), s);
+    shmemi_heapx_set_pe(idx, proc.rank, malloc(s), s);
 }
 
 void
@@ -45,7 +45,7 @@ int
 shmemi_heapx_initialized(int idx)
 {
     if (heapx != NULL) {
-        return heapx[idx][p.me].filled;
+        return heapx[idx][proc.rank].filled;
     }
 
     return 0;
@@ -58,7 +58,7 @@ shmemi_heapx_finalize(void)
         int i;
 
         for (i = 0; i < nheaps; i += 1) {
-            free(heapx[i][p.me].base);
+            free(heapx[i][proc.rank].base);
         }
         free(heapx);
     }

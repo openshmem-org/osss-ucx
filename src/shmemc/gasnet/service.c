@@ -118,14 +118,14 @@ static bool thread_starter;
 static bool
 check_if_thread_starter(void)
 {
-    const int *where = p.locp;
+    const int *where = proc.locp;
 
     /* PE 0 always starts a thread */
-    if (p.me == 0) {
+    if (proc.rank == 0) {
         return true;
     }
 
-    if (where[p.me - 1] < where[p.me]) {
+    if (where[proc.rank - 1] < where[proc.rank]) {
         return true;
     }
 

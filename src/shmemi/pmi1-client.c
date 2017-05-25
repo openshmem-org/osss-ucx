@@ -28,14 +28,14 @@ shmemi_finalize_handler_pmi1(bool need_barrier)
     assert(ret == PMI_SUCCESS);
 #endif
 
-    p.status = PE_SHUTDOWN;
+    proc.status = PE_SHUTDOWN;
 }
 
 static
 void
 shmemi_finalize_atexit_pmi1(void)
 {
-    shmemi_finalize_handler_pmi1(p.status == PE_RUNNING);
+    shmemi_finalize_handler_pmi1(proc.status == PE_RUNNING);
 }
 
 void
@@ -56,21 +56,21 @@ shmemi_init_pmi1(void)
     ret = PMI_Init(&spawned);
     assert(ret == PMI_SUCCESS);
 
-    ret = PMI_Get_size(&p.npes);
+    ret = PMI_Get_size(&proc.nranks);
     assert(ret == PMI_SUCCESS);
 
-    ret = PMI_Get_rank(&p.me);
+    ret = PMI_Get_rank(&proc.rank);
     assert(ret == PMI_SUCCESS);
 #else
 
-    p.npes = atoi(shmemc_getenv("PMI_SIZE"));
-    p.me = atoi(shmemc_getenv("PMI_RANK"));
+    proc.nranks = atoi(shmemc_getenv("PMI_SIZE"));
+    proc.rank = atoi(shmemc_getenv("PMI_RANK"));
 #endif
 
     ret = atexit(shmemi_finalize_atexit_pmi1);
     assert(ret == 0);
 
-    p.status = PE_RUNNING;
+    proc.status = PE_RUNNING;
 }
 
 void

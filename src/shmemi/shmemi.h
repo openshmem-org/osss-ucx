@@ -105,8 +105,8 @@ typedef enum {
 
 typedef struct pe {
     pe_status_t status;  /* what is this PE doing? */
-    int me;              /* this rank */
-    int npes;            /* total ranks */
+    int rank;            /* this rank */
+    int nranks;          /* total ranks */
     int npeers;          /* ranks on a node (> 0, I am my own peer) */
     char *peers;         /* list of node peers */
     int *locp;           /* locality info in-node and out- */
@@ -114,10 +114,10 @@ typedef struct pe {
     size_t *hsizep;         /* symmetric heaps + sizes (needs work) */
 } pe_t;
 
-extern pe_t p;
+extern pe_t proc;
 
-inline static int shmemi_my_pe() { return p.me; }
-inline static int shmemi_n_pes() { return p.npes; }
+inline static int shmemi_my_pe() { return proc.rank; }
+inline static int shmemi_n_pes() { return proc.nranks; }
 
 /*
  * Ordering

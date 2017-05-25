@@ -194,7 +194,7 @@ shmemi_symmetric_addr_lookup(void *dest, int pe)
     /* symmetric if inside of heap */
     {
         const size_t al =
-            (size_t) SHMEM_SYMMETRIC_HEAP_BASE(p.me); /* lower bound */
+            (size_t) SHMEM_SYMMETRIC_HEAP_BASE(proc.rank); /* lower bound */
         const size_t aao = (size_t) dest; /* my addr as offset */
         const long offset = aao - al;
 
@@ -202,7 +202,7 @@ shmemi_symmetric_addr_lookup(void *dest, int pe)
         if (offset < 0) {
             return NULL;
         }
-        if (offset > SHMEM_SYMMETRIC_HEAP_SIZE(p.me)) {
+        if (offset > SHMEM_SYMMETRIC_HEAP_SIZE(proc.rank)) {
             return NULL;
         }
 
@@ -392,8 +392,8 @@ handler_segsetup_bak(gasnet_token_t token, void *buf, size_t bufsiz)
 void
 shmemi_symmetric_memory_init(void)
 {
-    const int me = p.me;
-    const int npes = p.npes;
+    const int me = proc.rank;
+    const int npes = proc.nranks;
 
     /*
      * calloc zeroes for us
@@ -420,7 +420,7 @@ shmemi_symmetric_memory_init(void)
 
 #else
 
-        const size_t heapsize = p.heapsize;
+        const size_t heapsize = proc.heapsize;
         int pm_r;
 
         /* allocate the heap - has to be pagesize aligned */
@@ -1289,7 +1289,7 @@ AMO_XOR_REQ_EMIT(longlong, long long)
 int
 shmemc_ping_request(int pe)
 {
-    if ( (pe >= 0) && (pe < p.npes) ) {
+    if ( (pe >= 0) && (pe < proc.nranks) ) {
         return 1;
     } else {
         return 0;
@@ -1908,9 +1908,9 @@ shmemc_globalexit_request(int status)
 {
     int pe;
 
-    for (pe = 0; pe < p.npes; pe += 1) {
+    for (pe = 0; pe < proc.nranks; pe += 1) {
         /* send to everyone else */
-        if (pe != p.me) {
+        if (pe != proc.rank) {
             gasnet_AMRequestMedium0(pe, GASNET_HANDLER_globalexit_out,
                                     &status, sizeof(status)
                                     );
@@ -2111,7 +2111,7 @@ shmemc_exit(int status)
     /*
      * calling multiple times is undefined, I'm just going to do nothing
      */
-    if (p.status == PE_SHUTDOWN) {
+    if (proc.status == PE_SHUTDOWN) {
         return;
     }
 
@@ -2142,7 +2142,7 @@ shmemc_exit(int status)
     shmemi_elapsed_clock_finalize();
 
     /* update our state */
-    p.status = PE_SHUTDOWN;
+    proc.status = PE_SHUTDOWN;
 
     logger(LOG_FINALIZE,
            "finalizing shutdown, handing off to communications layer");
@@ -2186,11 +2186,11 @@ shmemc_init(void)
     GASNET_SAFE(gasnet_init(&argc, &argv));
 
     /* now we can ask about the node count & heap */
-    p.me = (int) gasnet_mynode();
-    p.npes = (int) gasnet_nodes();
-    p.nheaps = 1;
-    p.hsizep = (size_t *) malloc(p.nheaps * sizeof(*p.hsizep));
-    p.hsizep[0] = shmemc_get_segment_size();
+    proc.rank = (int) gasnet_mynode();
+    proc.nranks = (int) gasnet_nodes();
+    proc.nheaps = 1;
+    proc.hsizep = (size_t *) malloc(proc.nheaps * sizeof(*proc.hsizep));
+    proc.hsizep[0] = shmemc_get_segment_size();
 
     /*
      * not guarding the attach for different gasnet models,
@@ -2198,7 +2198,7 @@ shmemc_init(void)
      */
     GASNET_SAFE(gasnet_attach(handlers,
                               nhandlers,
-                              p.hsizep[0],
+                              proc.hsizep[0],
                               0 /* min offset */
                               )
                 );
@@ -2251,7 +2251,7 @@ shmemc_init(void)
         /* NOT REACHED */
     }
 
-    p.status = PE_RUNNING;
+    proc.status = PE_RUNNING;
 
     /* Up and running! */
 }

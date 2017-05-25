@@ -3,4 +3,4 @@
 /*
  * shared state
  */
-pe_t p;
+pe_t proc;

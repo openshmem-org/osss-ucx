@@ -35,7 +35,7 @@ shmemi_finalize_handler_pmix(bool need_barrier)
 
         shmemi_heapx_finalize();
 
-        p.status = PE_SHUTDOWN;
+        proc.status = PE_SHUTDOWN;
 
         logger(LOG_FINALIZE, "shut down complete");
     }
@@ -45,7 +45,7 @@ static
 void
 shmemi_finalize_atexit_pmix(void)
 {
-    shmemi_finalize_handler_pmix(p.status == PE_RUNNING);
+    shmemi_finalize_handler_pmix(proc.status == PE_RUNNING);
 }
 
 void
@@ -78,7 +78,7 @@ publish_heap_info(void)
 {
     /* only publish if multiple PEs */
 
-    if (p.npes > 1) {
+    if (proc.nranks > 1) {
         pmix_info_t *ia;
         pmix_status_t ps;
         int i;
@@ -89,19 +89,19 @@ publish_heap_info(void)
          * everyone publishes their info
          */
         for (i = 0; i < nheaps; i += 1) {
-            snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, p.me, i);
+            snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, proc.rank, i);
             ia[0].value.type = PMIX_UINT64;
-            ia[0].value.data.uint64 = (uint64_t) heapx[i][p.me].base;
+            ia[0].value.data.uint64 = (uint64_t) heapx[i][proc.rank].base;
 
-            snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, p.me, i);
+            snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, proc.rank, i);
             ia[1].value.type = PMIX_SIZE;
-            ia[1].value.data.size = heapx[i][p.me].size;
+            ia[1].value.data.size = heapx[i][proc.rank].size;
 
             ps = PMIx_Publish(ia, 2);
             assert(ps == PMIX_SUCCESS);
 
             logger(LOG_HEAP, "PUBLISH: my heap #%d @ %p, %lu bytes",
-                   i, heapx[i][p.me].base, heapx[i][p.me].size);
+                   i, heapx[i][proc.rank].base, heapx[i][proc.rank].size);
         }
 
         PMIX_INFO_FREE(ia, 2);
@@ -127,8 +127,8 @@ exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
     for (i = 0; i < nheaps; i += 1) {
-        for (pn = 0; pn < p.npes; pn += 1) {
-            if (pn != p.me) {
+        for (pn = 0; pn < proc.nranks; pn += 1) {
+            if (pn != proc.rank) {
 
                 snprintf(fetch_base.key, PMIX_MAX_KEYLEN, base_fmt, pn, i);
                 snprintf(fetch_size.key, PMIX_MAX_KEYLEN, size_fmt, pn, i);
@@ -148,8 +148,8 @@ exchange_heap_info(void)
         }
     }
 
-    for (pn = 0; pn < p.npes; pn += 1) {
-        if (pn != p.me) {
+    for (pn = 0; pn < proc.nranks; pn += 1) {
+        if (pn != proc.rank) {
             for (i = 0; i < nheaps; i += 1) {
                 logger(LOG_HEAP, "FETCH: heap #%d from PE %d @ %p, %lu bytes",
                        i, pn, heapx[i][pn].base, heapx[i][pn].size);
@@ -187,8 +187,8 @@ shmemi_init_pmix(void)
     /*
      * we can get our rank immediately
      */
-    p.me = (int) my_proc.rank;
-    assert(p.me >= 0);
+    proc.rank = (int) my_proc.rank;
+    assert(proc.rank >= 0);
 
     /*
      * make a new proc to query things not linked to a specific rank
@@ -203,13 +203,13 @@ shmemi_init_pmix(void)
     /*
      * this is the program size / number of ranks/PEs
      */
-    p.npes = (int) vp->data.uint32;
+    proc.nranks = (int) vp->data.uint32;
 
     /*
      * is the world a sane size?
      */
-    assert(p.npes > 0);
-    assert(p.me < p.npes);
+    assert(proc.nranks > 0);
+    assert(proc.rank < proc.nranks);
 
     /*
      * what's on this node?
@@ -217,26 +217,26 @@ shmemi_init_pmix(void)
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
 
-    p.npeers = (int) vp->data.uint32;
-    assert(p.npeers >= 0);
+    proc.npeers = (int) vp->data.uint32;
+    assert(proc.npeers >= 0);
 
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
 
-    p.peers = strdup(vp->data.string);
-    assert(p.peers != NULL);
+    proc.peers = strdup(vp->data.string);
+    assert(proc.peers != NULL);
 
     logger(LOG_INIT,
            "there %s %d peer%s on this node: \"%s\"",
-           (p.npeers > 1) ? "are" : "is",
-           p.npeers,
-           (p.npeers > 1) ? "s" : "",
-           p.peers
+           (proc.npeers > 1) ? "are" : "is",
+           proc.npeers,
+           (proc.npeers > 1) ? "s" : "",
+           proc.peers
            );
 
     PMIX_VALUE_RELEASE(vp);
 
     barrier_all_pmix();
 
-    p.status = PE_SHUTDOWN;
+    proc.status = PE_SHUTDOWN;
 }

@@ -167,7 +167,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
         /* now go through other PEs and get source */                   \
         pe = PE_start;                                                  \
         for (i = 0; i < PE_size; i += 1) {                              \
-            if (p.me != pe) {                                           \
+            if (proc.rank != pe) {                                      \
                 int k;                                                  \
                 int ti = 0, si = 0; /* target & source index walk */    \
                 /* pull in all the full chunks */                       \

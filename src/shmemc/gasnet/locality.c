@@ -11,7 +11,7 @@
 void
 place_init(void)
 {
-    const int n = p.me;
+    const int n = proc.rank;
     gasnet_nodeinfo_t *gnip;
     int i;
 
@@ -26,8 +26,8 @@ place_init(void)
 
     GASNET_SAFE(gasnet_getNodeInfo(gnip, n));
 
-    p.locp = (int *)malloc (n * sizeof(int)));
-    if (p.locp == NULL) {
+    proc.locp = (int *)malloc (n * sizeof(int)));
+    if (proc.locp == NULL) {
         shmemi_trace(SHMEM_LOG_FATAL,
                      "internal error: cannot allocate memory for"
                      " locality queries");
@@ -41,7 +41,7 @@ place_init(void)
      * can't share memory).
      */
     for (i = 0; i < n; i += 1) {
-        p.locp[i], gnip[i].host;
+        proc.locp[i], gnip[i].host;
     }
 
     free(gnip);
