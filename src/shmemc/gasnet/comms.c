@@ -392,17 +392,14 @@ handler_segsetup_bak(gasnet_token_t token, void *buf, size_t bufsiz)
 void
 shmemi_symmetric_memory_init(void)
 {
-    const int me = proc.rank;
-    const int npes = proc.nranks;
-
     /*
      * calloc zeroes for us
      */
     seginfo_table =
-        (gasnet_seginfo_t *) calloc(npes, sizeof(gasnet_seginfo_t));
+        (gasnet_seginfo_t *) calloc(proc.nranks, sizeof(gasnet_seginfo_t));
     if (seginfo_table == NULL) {
         shmemc_bailout("could not allocate GASNet segments (%s)",
-                       strerror (errno)
+                       strerror(errno)
                        );
         /* NOT REACHED */
     }
@@ -416,7 +413,7 @@ shmemi_symmetric_memory_init(void)
 #ifdef HAVE_MANAGED_SEGMENTS
 
         /* gasnet handles the segment allocation for us */
-        GASNET_SAFE(gasnet_getSegmentInfo(seginfo_table, npes));
+        GASNET_SAFE(gasnet_getSegmentInfo(seginfo_table, proc.nranks));
 
 #else
 
@@ -429,7 +426,7 @@ shmemi_symmetric_memory_init(void)
             shmemc_bailout("unable to allocate "
                            "symmetric heap"
                            "(%s)",
-                           strerror (pm_r)
+                           strerror(pm_r)
                            );
             /* NOT REACHED */
         }
@@ -438,8 +435,8 @@ shmemi_symmetric_memory_init(void)
         shmemc_barrier_all();
 
         /* store my own heap entry */
-        seginfo_table[me].addr = great_big_heap;
-        seginfo_table[me].size = heapsize;
+        seginfo_table[proc.rank].addr = great_big_heap;
+        seginfo_table[proc.rank].size = heapsize;
 
         {
             gasnet_seginfo_t gs;
@@ -448,9 +445,9 @@ shmemi_symmetric_memory_init(void)
             gs.addr = great_big_heap;
             gs.size = heapsize;
 
-            for (pe = 0; pe < npes; pe += 1) {
+            for (pe = 0; pe < proc.nranks; pe += 1) {
                 /* send to everyone else */
-                if (me != pe) {
+                if (proc.rank != pe) {
                     gasnet_AMRequestMedium0(pe, GASNET_HANDLER_setup_out,
                                             &gs, sizeof(gs)
                                             );
@@ -458,7 +455,7 @@ shmemi_symmetric_memory_init(void)
             }
 
             /* now wait on the AM replies (0-based AND don't count myself) */
-            GASNET_BLOCKUNTIL(seg_setup_replies_received == npes - 1);
+            GASNET_BLOCKUNTIL(seg_setup_replies_received == proc.nranks - 1);
         }
 
 #endif /* HAVE_MANAGED_SEGMENTS */
