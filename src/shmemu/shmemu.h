@@ -12,7 +12,7 @@ double shmemu_timer(void);
 
 char *shmemu_gethostname(void);
 
-void shmemu_parse_size(char *size_str, size_t *bytes_p, int *ok_p);
+int shmemu_parse_size(char *size_str, size_t *bytes_p);
 
 /*
  * how many elements in array T?

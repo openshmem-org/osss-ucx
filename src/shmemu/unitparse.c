@@ -14,20 +14,20 @@ static char *units_string = "kmgtpe";
 static const size_t multiplier = 1024;
 
 /**
- * Take a scaling unit and work out its numeric value.
+ * Take a scaling unit and work out its numeric value, in *sp
  *
- * Return scaled value if known, otherwise 0
+ * Return 0 if good, -1 if not
  *
  */
 
-static void
-parse_unit(char u, size_t * sp, int *ok)
+static int
+parse_unit(char u, size_t *sp)
 {
     int foundit = 0;
     char *usp = units_string;
     size_t bytes = 1;
 
-    u = tolower (u);
+    u = tolower(u);
     while (*usp != '\0') {
         bytes *= multiplier;
         if (*usp == u) {
@@ -38,53 +38,38 @@ parse_unit(char u, size_t * sp, int *ok)
         usp += 1;
     }
 
-    if (foundit) {
-        *sp = bytes;
-        *ok = 1;
-    }
-    else {
-        *sp = 0;
-        *ok = 0;
-    }
+    *sp = foundit ? bytes : 0;
+
+    return foundit ? 0 : -1;
 }
 
 /**
  * segment size can be expressed with scaling units.  Parse those.
  *
- * Return segment size, scaled where necessary by unit
+ * *bytes_p is scaled segment size
+ *
+ * Return 0 if parsed, -1 if not
  */
-void
-shmemu_parse_size(char *size_str, size_t *bytes_p, int *ok_p)
+int
+shmemu_parse_size(char *size_str, size_t *bytes_p)
 {
-    char unit = '\0';
-    size_t ret = 0;
-    char *p;
+    char *units;
+    double ret;
+    int s = -1;
 
-    p = size_str;
-    while (*p != '\0') {
-        if (!isdigit(*p)) {
-            unit = *p;
-            break;
-            /* NOT REACHED */
-        }
+    ret = strtod(size_str, &units);
 
-        ret = ret * 10 + (*p - '0');    /* works for ASCII/EBCDIC */
-        p += 1;
-    }
-
-    /* if no unit, we already have value.  Otherwise, do scaling */
-    if (unit == '\0') {
-        *bytes_p = ret;
-        *ok_p = 1;
+    if ((ret == 0) && (units == size_str)) {
+        *bytes_p = 0;
     }
     else {
         size_t b;
-        int ok;
 
-        parse_unit(unit, &b, &ok);
-        if (ok) {
-            *bytes_p = b * ret;
-            *ok_p = 1;
+        if (parse_unit(*units, &b) == 0) {
+            *bytes_p = (size_t) (b * ret);
+            s = 0;
         }
     }
+
+    return s;
 }

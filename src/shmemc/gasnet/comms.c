@@ -310,7 +310,7 @@ shmemc_get_segment_size(void)
 #endif
     }
 
-    shmemu_parse_size(mlss_str, &retval, &ok);
+    ok = shmemu_parse_size(mlss_str, &retval);
     if (ok) {
         /* make sure aligned to page size multiples */
         const size_t mod = retval % GASNET_PAGESIZE;
