@@ -19,22 +19,21 @@ static const size_t multiplier = 1024;
  * Return 0 if good, -1 if not
  *
  */
-
 static int
 parse_unit(char u, size_t *sp)
 {
     int foundit = 0;
     char *usp = units_string;
-    size_t bytes = 1;
+    size_t bytes = multiplier;
 
     u = tolower(u);
     while (*usp != '\0') {
-        bytes *= multiplier;
         if (*usp == u) {
             foundit = 1;
             break;
             /* NOT REACHED */
         }
+        bytes *= multiplier;
         usp += 1;
     }
 
@@ -53,23 +52,30 @@ parse_unit(char u, size_t *sp)
 int
 shmemu_parse_size(char *size_str, size_t *bytes_p)
 {
-    char *units;
-    double ret;
-    int s = -1;
+    char *units;                /* scaling factor if given */
+    double ret;                 /* return value */
 
     ret = strtod(size_str, &units);
-
-    if ((ret == 0) && (units == size_str)) {
-        *bytes_p = 0;
+    if (ret < 0.0) {
+        return -1;
+        /* NOT REACHED */
     }
-    else {
+
+    *bytes_p = (size_t) ret;
+
+    if (*units != '\0') {
+        /* something that looks like a unit left over */
         size_t b;
 
-        if (parse_unit(*units, &b) == 0) {
-            *bytes_p = (size_t) (b * ret);
-            s = 0;
+        /* but we don't know what that unit is */
+        if (parse_unit(*units, &b) != 0) {
+            return -1;
+            /* NOT REACHED */
         }
+
+        /* scale for return */
+        *bytes_p *= b;
     }
 
-    return s;
+    return 0;
 }
