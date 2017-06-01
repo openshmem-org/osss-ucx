@@ -5,21 +5,17 @@ libshmemc_ucx_a_CFLAGS = $(UCX_CFLAGS)
 MY_WRAPPERS       = oshcc oshrun
 
 oshcc:		oshcc.tmpl
-	sed \
-		< $< > $@
-
+	cp $^ $@
 
 oshrun:		oshrun.tmpl
-	sed \
-		< $< > $@
+	cp $^ $@
 
 if ENABLE_CXX
 
 MY_WRAPPERS      += oshcxx
 
 oshcxx:		oshcxx.tmpl
-	sed \
-		< $< > $@
+	cp $^ $@
 
 install-exec-hook:
 	cd $(bindir); \
@@ -32,8 +28,7 @@ if ENABLE_FORTRAN
 MY_WRAPPERS      += oshfort
 
 oshfort:	oshcc.tmpl
-	sed \
-		< $< > $@
+	cp $^ $@
 
 endif
 
