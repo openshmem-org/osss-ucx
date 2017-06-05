@@ -165,6 +165,26 @@ output_features(void)
            );
 }
 
+static
+void
+output_comms(void)
+{
+#ifdef HAVE_UCX
+    output("UCX", "on");
+    output("UCX Install", UCX_DIR);
+#else
+    output("UCX", "off");
+#endif /* HAVE_UCX */
+
+#ifdef HAVE_GASNET
+    output("GASNet", "on");
+    output("GASNet Install", GASNET_DIR);
+    output("GASNet Conduit", GASNET_CONDUIT);
+#else
+    output("GASNet", "off");
+#endif /* HAVE_GASNET */
+}
+
 int
 main(void)
 {
@@ -175,6 +195,8 @@ main(void)
     output_build_env();
 
     output_features();
+
+    output_comms();
 
     return 0;
 }
