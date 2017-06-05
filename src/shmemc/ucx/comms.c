@@ -28,7 +28,11 @@ pe_info_t proc = {
  */
 static comms_info_t *c_p = & proc.comms;
 
+/*
+ * shortcut to look up the UCP endpoint
+ */
 #define LOOKUP_UCP_EP(pe) (endpoints[(pe)].remote_ep)
+
 /*
  * where globals/statics/commons/saves live
  *
@@ -38,7 +42,7 @@ static ucp_mem_h global_segment;
 /*
  * some memory to play with registering
  *
- * TODO multiple heap support
+ * TODO: multiple heap support
  */
 static ucp_mem_h symm_heap;
 
@@ -155,8 +159,9 @@ make_remote_endpoints(void)
 inline static void
 do_flush(void)
 {
-    const ucs_status_t s = ucp_worker_flush(c_p->wrkr);
+    ucs_status_t s;
 
+    s = ucp_worker_flush(c_p->wrkr);
     assert(s == UCS_OK);
 }
 
@@ -376,7 +381,7 @@ void shmemc_get(void *dest, const void *src,
     assert(s == UCS_OK);
 }
 
-/* AND SO ON */
+/* TODO: AND SO ON */
 
 /*
  * -- atomics ------------------------------------------------------------
@@ -390,7 +395,7 @@ inline static
 uint32_t
 helper_fadd32(uint32_t *t, uint32_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     uint32_t ret;
     ucs_status_t s;
@@ -405,7 +410,7 @@ inline static
 uint64_t
 helper_fadd64(uint64_t *t, uint64_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     uint64_t ret;
     ucs_status_t s;
@@ -420,7 +425,7 @@ inline static
 void
 helper_add32(uint32_t *t, uint32_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     ucs_status_t s;
 
@@ -432,7 +437,7 @@ inline static
 void
 helper_add64(uint64_t *t, uint64_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     ucs_status_t s;
 
@@ -444,7 +449,7 @@ inline static
 uint32_t
 helper_swap32(uint32_t *t, uint32_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     uint32_t ret;
     ucs_status_t s;
@@ -459,7 +464,7 @@ inline static
 uint64_t
 helper_swap64(uint64_t *t, uint64_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     uint64_t ret;
     ucs_status_t s;
@@ -474,7 +479,7 @@ inline static
 uint32_t
 helper_cswap32(uint32_t *t, uint32_t c, uint32_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     uint32_t ret;
     ucs_status_t s;
@@ -489,7 +494,7 @@ inline static
 uint64_t
 helper_cswap64(uint64_t *t, uint64_t c, uint64_t v, int pe)
 {
-    uint64_t r_t = (uint64_t) t; /* address on other PE */
+    uint64_t r_t = (uint64_t) t;
     ucp_rkey_h rkey;
     uint64_t ret;
     ucs_status_t s;
