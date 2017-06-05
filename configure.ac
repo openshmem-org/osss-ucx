@@ -38,7 +38,7 @@ AC_FC_WRAPPERS
 LT_INIT
 
 m4_include([config/m4/pmix.m4])
-dnl m4_include([config/m4/ucx.m4])
+m4_include([config/m4/ucx.m4])
 m4_include([config/m4/gasnet.m4])
 
 # Feature checks

@@ -1,4 +1,8 @@
+if HAVE_UCX
+SUBDIRS                = ucx
+else
 SUBDIRS                = gasnet
+endif
 
 LIBSHMEMC_SOURCES      = put.c get.c lock.c
 
