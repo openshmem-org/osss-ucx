@@ -597,3 +597,34 @@ shmemc_cswap64(uint64_t *t, uint64_t c, uint64_t v, int pe)
 {
     return helper_cswap64(t, c, v, pe);
 }
+
+/*
+ * fetch & set
+ *
+ * TODO: silly impl. for now
+ *
+ */
+
+uint32_t
+shmemc_fetch32(uint32_t *t, int pe)
+{
+    return helper_fadd32(t, 0, pe);
+}
+
+uint64_t
+shmemc_fetch64(uint64_t *t, int pe)
+{
+    return helper_fadd64(t, 0, pe);
+}
+
+void
+shmemc_set32(uint32_t *t, uint32_t v, int pe)
+{
+    *t = v;
+}
+
+void
+shmemc_set64(uint64_t *t, uint64_t v, int pe)
+{
+    *t = v;
+}

@@ -80,6 +80,12 @@ uint64_t shmemc_swap64(uint64_t *t, uint64_t v, int pe);
 uint32_t shmemc_cswap32(uint32_t *t, uint32_t c, uint32_t v, int pe);
 uint64_t shmemc_cswap64(uint64_t *t, uint64_t c, uint64_t v, int pe);
 
+uint32_t shmemc_fetch32(uint32_t *t, int pe);
+uint64_t shmemc_fetch64(uint64_t *t, int pe);
+
+void shmemc_set32(uint32_t *t, uint32_t v, int pe);
+void shmemc_set64(uint64_t *t, uint64_t v, int pe);
+
 /*
  * locks
  */
