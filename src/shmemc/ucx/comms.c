@@ -512,14 +512,19 @@ helper_cswap64(uint64_t *t, uint64_t c, uint64_t v, int pe)
 /*
  * add
  */
-void
-shmemc_add32(uint32_t *t, uint32_t v, int pe)
+void shmemc_add_int(int *t, int v, int pe)
 {
     helper_add32(t, v, pe);
 }
 
 void
-shmemc_add64(uint64_t *t, uint64_t v, int pe)
+shmemc_add_long(long *t, long v, int pe)
+{
+    helper_add64(t, v, pe);
+}
+
+void
+shmemc_add_longlong(long long *t, long long v, int pe)
 {
     helper_add64(t, v, pe);
 }
@@ -528,13 +533,19 @@ shmemc_add64(uint64_t *t, uint64_t v, int pe)
  * inc is just "add 1"
  */
 void
-shmemc_inc32(uint32_t *t, int pe)
+shmemc_inc_int(int *t, int pe)
 {
     helper_add32(t, 1, pe);
 }
 
 void
-shmemc_inc64(uint64_t *t, int pe)
+shmemc_inc_long(long *t, int pe)
+{
+    helper_add64(t, 1, pe);
+}
+
+void
+shmemc_inc_longlong(long long *t, int pe)
 {
     helper_add64(t, 1, pe);
 }
@@ -542,14 +553,20 @@ shmemc_inc64(uint64_t *t, int pe)
 /*
  * fetch-and-add
  */
-uint32_t
-shmemc_fadd32(uint32_t *t, uint32_t v, int pe)
+int
+shmemc_fadd_int(int *t, int v, int pe)
 {
     return helper_fadd32(t, v, pe);
 }
 
-uint64_t
-shmemc_fadd64(uint64_t *t, uint64_t v, int pe)
+long
+shmemc_fadd_long(long *t, long v, int pe)
+{
+    return helper_fadd64(t, v, pe);
+}
+
+long long
+shmemc_fadd_longlong(long long *t, long long v, int pe)
 {
     return helper_fadd64(t, v, pe);
 }
@@ -558,14 +575,20 @@ shmemc_fadd64(uint64_t *t, uint64_t v, int pe)
  * finc is just "fadd 1"
  */
 
-uint32_t
-shmemc_finc32(uint32_t *t, int pe)
+int
+shmemc_finc_int(int *t, int pe)
 {
     return helper_fadd32(t, 1, pe);
 }
 
-uint64_t
-shmemc_finc64(uint64_t *t, int pe)
+long
+shmemc_finc_long(long *t, int pe)
+{
+    return helper_fadd64(t, 1, pe);
+}
+
+long long
+shmemc_finc_longlong(long *t, int pe)
 {
     return helper_fadd64(t, 1, pe);
 }
@@ -574,26 +597,38 @@ shmemc_finc64(uint64_t *t, int pe)
  * swaps
  */
 
-uint32_t
-shmemc_swap32(uint32_t *t, uint32_t v, int pe)
+int
+shmemc_swap_int(int *t, int v, int pe)
 {
     return helper_swap32(t, v, pe);
 }
 
-uint64_t
-shmemc_swap64(uint64_t *t, uint64_t v, int pe)
+long
+shmemc_swap_long(long *t, long v, int pe)
 {
     return helper_swap64(t, v, pe);
 }
 
-uint32_t
-shmemc_cswap32(uint32_t *t, uint32_t c, uint32_t v, int pe)
+long long
+shmemc_swap_longlong(long long *t, long long v, int pe)
+{
+    return helper_swap64(t, v, pe);
+}
+
+int
+shmemc_cswap_int(int *t, int c, int v, int pe)
 {
     return helper_cswap32(t, c, v, pe);
 }
 
-uint64_t
-shmemc_cswap64(uint64_t *t, uint64_t c, uint64_t v, int pe)
+long
+shmemc_cswap_long(long *t, long c, long v, int pe)
+{
+    return helper_cswap64(t, c, v, pe);
+}
+
+long long
+shmemc_cswap_longlong(long long *t, long long c, long long v, int pe)
 {
     return helper_cswap64(t, c, v, pe);
 }
@@ -605,26 +640,38 @@ shmemc_cswap64(uint64_t *t, uint64_t c, uint64_t v, int pe)
  *
  */
 
-uint32_t
-shmemc_fetch32(uint32_t *t, int pe)
+int
+shmemc_fetch_int(int *t, int pe)
 {
     return helper_fadd32(t, 0, pe);
 }
 
-uint64_t
-shmemc_fetch64(uint64_t *t, int pe)
+long
+shmemc_fetch_long(long *t, int pe)
+{
+    return helper_fadd64(t, 0, pe);
+}
+
+long long
+shmemc_fetch_longlong(long long *t, int pe)
 {
     return helper_fadd64(t, 0, pe);
 }
 
 void
-shmemc_set32(uint32_t *t, uint32_t v, int pe)
+shmemc_set_int(int *t, int v, int pe)
 {
     *t = v;
 }
 
 void
-shmemc_set64(uint64_t *t, uint64_t v, int pe)
+shmemc_set_long(long *t, long v, int pe)
+{
+    *t = v;
+}
+
+void
+shmemc_set_longlong(long long *t, long long v, int pe)
 {
     *t = v;
 }

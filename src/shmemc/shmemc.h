@@ -1,3 +1,12 @@
+/**
+ *
+ *
+ * TO BE PROVIDED BY REAL COMMS LAYER
+ *
+ *
+ */
+
+
 #ifndef _SHMEMC_H
 #define _SHMEMC_H 1
 
