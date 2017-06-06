@@ -19,7 +19,7 @@ PKG_CHECK_MODULES([PMIX], [pmix], [
 						PMIX_LIBS="-L$with_pmix/lib -lpmix"
 						PMIX_DIR="$with_pmix"
 						pmix_happy=yes
-						AC_MSG_NOTICE([Using PMIx for process management])
+						AC_MSG_NOTICE([PMIx: no pkg-config, but found installation directory])
 					]
 				)
 				], [
