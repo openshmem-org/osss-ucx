@@ -18,7 +18,7 @@ AS_IF([test -d "$with_gasnet"], [
     	GASNET_MAKE_FRAGMENT="$conduit_dir/$with_gasnet_conduit-$threnv.mak"
     	AS_IF([test -r "$gasnet_h_dir/gasnet.h"],
             [gasnet_happy=yes
-	     AC_MSG_NOTICE([Selecting GASNet])
+	     AC_MSG_NOTICE([Selecting GASNet as communications layer])
 	     AC_DEFINE_UNQUOTED([GASNET_DIR], ["$GASNET_DIR"], [GASNet installation directory])
              AC_DEFINE_UNQUOTED([GASNET_CONDUIT], ["$with_gasnet_conduit"], [GASNet conduit in use])
              AC_SUBST(GASNET_MAKE_FRAGMENT)

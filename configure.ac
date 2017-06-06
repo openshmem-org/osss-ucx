@@ -41,6 +41,16 @@ m4_include([config/m4/pmix.m4])
 m4_include([config/m4/ucx.m4])
 m4_include([config/m4/gasnet.m4])
 
+#
+# Can't have both gasnet and ucx, but we do need one of them
+#
+AS_IF([test "x$ucx_happy" = "xyes" -a "x$gasnet_happy" = "xyes"],
+	    [AC_MSG_ERROR([Cannot select both GASNet and UCX as communications layer])]
+	    )
+AS_IF([test "x$ucx_happy" != "xyes" -a "x$gasnet_happy" != "xyes"],
+	    [AC_MSG_ERROR([Must select one of GASNet and UCX as communications layer])]
+	    )
+
 # Feature checks
 AC_ARG_ENABLE([debug],
 	AS_HELP_STRING([--enable-debug], [Enable library debug @<:@default=no@:>@]),
