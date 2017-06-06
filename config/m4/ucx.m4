@@ -1,8 +1,3 @@
-#
-# TODO make this optional because we might choose to use GASNet
-# instead.  But we *will* need one of them.
-#
-
 ucx_happy=no
 
 AC_ARG_WITH([ucx], AS_HELP_STRING([--with-ucx], [Use UCX library])])

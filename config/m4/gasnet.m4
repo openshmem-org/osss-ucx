@@ -1,6 +1,6 @@
-AC_ARG_WITH([gasnet], [AS_HELP_STRING([--with-gasnet@<:@=DIR@:>@], [Use GASNet library])])
-
 gasnet_happy=no
+
+AC_ARG_WITH([gasnet], [AS_HELP_STRING([--with-gasnet@<:@=DIR@:>@], [Use GASNet library])])
 
 AS_IF([test -d "$with_gasnet"], [
     AC_ARG_WITH([gasnet-conduit],
