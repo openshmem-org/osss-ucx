@@ -26,7 +26,7 @@ place_init(void)
 
     GASNET_SAFE(gasnet_getNodeInfo(gnip, n));
 
-    proc.locp = (int *)malloc (n * sizeof(int)));
+    proc.locp = (int *)malloc (n * sizeof(int));
     if (proc.locp == NULL) {
         shmemi_trace(SHMEM_LOG_FATAL,
                      "internal error: cannot allocate memory for"
