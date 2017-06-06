@@ -2148,7 +2148,7 @@ shmemc_exit(int status)
  * detect explicit call and not terminate program until exit.
  *
  */
-static void
+void
 shmemc_finalize(void)
 {
     shmemc_exit(EXIT_SUCCESS);
