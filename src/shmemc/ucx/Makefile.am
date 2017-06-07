@@ -1,6 +1,14 @@
+PMIX_CFLAGS            = @PMIX_CFLAGS@
+
+OTHER_CPPFLAGS         = -I$(srcdir)/../../shmemu -I$(srcdir)/../../shmemi
+
 lib_LIBRARIES          = libshmemc-ucx.a
-libshmemc_ucx_a_SOURCES    = comms.c
-libshmemc_ucx_a_CFLAGS = $(UCX_CFLAGS)
+libshmemc_ucx_a_SOURCES    = comms.c \
+				pmix-client.c
+#				pmi1-client.c
+#				pmi2-client.c
+
+libshmemc_ucx_a_CFLAGS = $(UCX_CFLAGS) $(PMIX_CFLAGS) $(OTHER_CPPFLAGS)
 
 MY_WRAPPERS       = oshcc oshrun
 

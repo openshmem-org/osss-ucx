@@ -119,16 +119,4 @@ extern pe_t proc;
 inline static int shmemi_my_pe() { return proc.rank; }
 inline static int shmemi_n_pes() { return proc.nranks; }
 
-/*
- * Ordering
- */
-void shmemi_quiet(void);
-void shmemi_fence(void);
-
-/*
- * Accessibility
- */
-int shmemi_pe_accessible(int pe);
-int shmemi_addr_accessible(const void *addr, int pe);
-
 #endif /* ! _SHMEMI_H */
