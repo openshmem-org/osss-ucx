@@ -10,8 +10,7 @@
 # include <complex>
 # define COMPLEXIFY(T) std::complex<T>
 #else  /* _cplusplus */
-# include <complex.h>
-# define COMPLEXIFY(T) T complex
+# define COMPLEXIFY(T) T _Complex
 #endif  /* __cplusplus */
 
 /*
