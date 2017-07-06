@@ -157,8 +157,6 @@ void *shmemi_symmetric_addr_lookup(void *dest, int pe);
 void
 shmemc_barrier_all(void)
 {
-    /* GASNET_BEGIN_FUNCTION(); */
-
     /* use gasnet's global barrier */
     gasnet_barrier_notify(barcount, barflag);
     GASNET_SAFE(gasnet_barrier_wait(barcount, barflag));
