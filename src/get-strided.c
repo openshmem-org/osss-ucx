@@ -63,7 +63,7 @@ SHMEM_EMIT_IGET(double, double)
 SHMEM_EMIT_IGET(longlong, long long)
 SHMEM_EMIT_IGET(longdouble, long double)
 SHMEM_EMIT_IGET(complexf, COMPLEXIFY(float))
-SHMEM_EMIT_IGET(complexifyd, COMPLEXIFY(double))
+SHMEM_EMIT_IGET(complexd, COMPLEXIFY(double))
 
 #define SHMEM_SIZED_IGET(_name, _size)                                  \
     void                                                                \
