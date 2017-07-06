@@ -49,7 +49,7 @@ extern void shmem_complexd_put_nbi(COMPLEXIFY(double) * dest,
     shmem_##_name##_put_nbi(_type *dest, const _type *src,              \
                             size_t nelems, int pe)                      \
     {                                                                   \
-        const size_t typed_nelems = nelems * sizeof (_type);            \
+        const size_t typed_nelems = nelems * sizeof(_type);             \
         shmemc_put_nbi(dest, src, typed_nelems, pe);                    \
     }
 

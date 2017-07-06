@@ -27,7 +27,7 @@
     _type                                                               \
     shmem_##_name##_swap(_type *target, _type value, int pe)            \
     {                                                                   \
-        return shmemc_swap_##_name(target, value, pe);                  \
+        return shmemc_##_name##_swap(target, value, pe);                \
     }
 
 SHMEM_TYPE_SWAP(int, int, 32)
@@ -49,7 +49,7 @@ SHMEM_TYPE_SWAP(double, double, 32)
     shmem_##_name##_cswap(_type *target, _type cond, _type value,       \
                           int pe)                                       \
     {                                                                   \
-        return shmemc_cswap_##_name(target, cond, value, pe);           \
+        return shmemc_##_name##_cswap(target, cond, value, pe);         \
     }
 
 SHMEM_TYPE_CSWAP(int, int, 32)
@@ -68,7 +68,7 @@ SHMEM_TYPE_CSWAP(longlong, long long, 64)
     _type                                                               \
     shmem_##_name##_fadd(_type *target, _type value, int pe)            \
     {                                                                   \
-        return shmemc_fadd_##_name(target, value, pe);                  \
+        return shmemc_##_name##_fadd(target, value, pe);                 \
     }
 
 SHMEM_TYPE_FADD(int, int, 32)
@@ -87,7 +87,7 @@ SHMEM_TYPE_FADD(longlong, long long, 64)
     _type                                                               \
     shmem_##_name##_finc(_type *target, int pe)                         \
     {                                                                   \
-        return shmemc_finc_##_name(target, pe);                         \
+        return shmemc_##_name##_finc(target, pe);                       \
     }
 
 SHMEM_TYPE_FINC(int, int, 32)
@@ -106,7 +106,7 @@ SHMEM_TYPE_FINC(longlong, long long, 64)
     void                                                                \
     shmem_##_name##_add(_type *target, _type value, int pe)             \
     {                                                                   \
-        shmemc_add_##_name(target, value, pe);                          \
+        shmemc_##_name##_add(target, value, pe);                        \
     }
 
 SHMEM_TYPE_ADD(int, int, 32)
@@ -125,7 +125,7 @@ SHMEM_TYPE_ADD(longlong, long long, 64)
     void                                                                \
     shmem_##_name##_inc(_type *target, int pe)                          \
     {                                                                   \
-        shmemc_inc_##_name(target, pe);                                 \
+        shmemc_##_name##_inc(target, pe);                               \
     }
 
 SHMEM_TYPE_INC(int, int, 32)
@@ -144,7 +144,7 @@ SHMEM_TYPE_INC(longlong, long long, 64)
     _type                                                               \
     shmem_##_name##_fetch(_type *target, int pe)                        \
     {                                                                   \
-        return shmemc_fetch_##_name(target, pe);                        \
+        return shmemc_##_name##_fetch(target, pe);                     \
     }
 
 SHMEM_TYPE_FETCH(int, int, 32)
@@ -165,7 +165,7 @@ SHMEM_TYPE_FETCH(double, double, 64)
     void                                                                \
     shmem_##_name##_set(_type *target, _type value, int pe)             \
     {                                                                   \
-        shmemc_set_##_name(target, value, pe);                          \
+        shmemc_##_name##_set(target, value, pe);                        \
     }
 
 SHMEM_TYPE_SET(int, int, 32)
