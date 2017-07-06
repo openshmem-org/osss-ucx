@@ -583,7 +583,7 @@ AMO_SWAP_OUT_EMIT(double, double)
  */
 #define AMO_SWAP_REQ_EMIT(_name, _type)                                 \
     _type                                                               \
-    shmemc_swap_##_name(_type *t, _type v, int pe)                      \
+    shmemc_##_name##_swap(_type *target, _type value, int pe)           \
     {                                                                   \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
@@ -594,8 +594,8 @@ AMO_SWAP_OUT_EMIT(double, double)
                  "swap"                                                 \
                  " payload memory");                                    \
         }                                                               \
-        p->r_symm_addr = shmemi_symmetric_addr_lookup(t, pe);           \
-        p->value = v;                                                   \
+        p->r_symm_addr = shmemi_symmetric_addr_lookup(target, pe);      \
+        p->value = value;                                               \
         p->value_addr = &(p->value);                                    \
         p->completed = 0;                                               \
         p->completed_addr = &(p->completed);                            \
@@ -667,9 +667,9 @@ AMO_CSWAP_BAK_EMIT(longlong, long long)
  */
 #define AMO_CSWAP_REQ_EMIT(_name, _type)                                \
     _type                                                               \
-    shmemc_cswap_##_name(_type *target, _type cond,                     \
-                         _type value,                                   \
-                         int pe)                                        \
+    shmemc_##_name##_cswap(_type *target, _type cond,                   \
+                           _type value,                                 \
+                           int pe)                                      \
     {                                                                   \
         amo_payload_##_name##_t *cp =                                   \
             (amo_payload_##_name##_t *) malloc(sizeof(*cp));            \
@@ -754,7 +754,7 @@ AMO_FADD_BAK_EMIT(longlong, long long)
  */
 #define AMO_FADD_REQ_EMIT(_name, _type)                                 \
     _type                                                               \
-    shmemc_fadd_##_name(_type *target, _type value, int pe)             \
+    shmemc_##_name##_fadd(_type *target, _type value, int pe)           \
     {                                                                   \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
@@ -835,7 +835,7 @@ AMO_FINC_BAK_EMIT(longlong, long long)
  */
 #define AMO_FINC_REQ_EMIT(_name, _type)                                 \
     _type                                                               \
-    shmemc_finc_##_name(_type *target, int pe)                          \
+    shmemc_##_name##_finc(_type *target, int pe)                        \
     {                                                                   \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
@@ -911,7 +911,7 @@ AMO_ADD_BAK_EMIT(longlong, long long)
  */
 #define AMO_ADD_REQ_EMIT(_name, _type)                              \
     void                                                            \
-    shmemc_add_##_name(_type *target, _type value, int pe)          \
+    shmemc_##_name##_add(_type *target, _type value, int pe)        \
     {                                                               \
         amo_payload_##_name##_t *p =                                \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));         \
@@ -987,7 +987,7 @@ AMO_INC_BAK_EMIT(longlong, long long)
  */
 #define AMO_INC_REQ_EMIT(_name, _type)                              \
     void                                                            \
-    shmemc_inc_##_name(_type *target, int pe)                       \
+    shmemc_##_name##_inc(_type *target, int pe)                     \
     {                                                               \
         amo_payload_##_name##_t *p =                                \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));         \
@@ -1069,7 +1069,7 @@ AMO_FETCH_BAK_EMIT(double, double)
  */
 #define AMO_FETCH_REQ_EMIT(_name, _type)                                \
     _type                                                               \
-    shmemc_fetch_##_name(_type *target, int pe)                         \
+    shmemc_##_name##_fetch(_type *target, int pe)                       \
     {                                                                   \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
@@ -1149,7 +1149,7 @@ AMO_SET_BAK_EMIT(double, double)
  */
 #define AMO_SET_REQ_EMIT(_name, _type)                                  \
     void                                                                \
-    shmemc_set_##_name(_type *target, _type value, int pe)              \
+    shmemc_##_name##_set(_type *target, _type value, int pe)            \
     {                                                                   \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
@@ -1231,7 +1231,7 @@ AMO_XOR_BAK_EMIT(longlong, long long)
  */
 #define AMO_XOR_REQ_EMIT(_name, _type)                              \
     void                                                            \
-    shmemc_xor_##_name(_type *target, _type value, int pe)          \
+    shmemc_##_name##_xor(_type *target, _type value, int pe)        \
     {                                                               \
         amo_payload_##_name##_t *p =                                \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));         \
@@ -1296,7 +1296,7 @@ static volatile unsigned long get_counter = 0L;
 static gasnet_hsl_t put_counter_lock = GASNET_HSL_INITIALIZER;
 static gasnet_hsl_t get_counter_lock = GASNET_HSL_INITIALIZER;
 
-void
+static void
 atomic_inc_put_counter (void)
 {
     gasnet_hsl_lock(&put_counter_lock);
@@ -1304,7 +1304,7 @@ atomic_inc_put_counter (void)
     gasnet_hsl_unlock(&put_counter_lock);
 }
 
-void
+static void
 atomic_dec_put_counter (void)
 {
     gasnet_hsl_lock(&put_counter_lock);
@@ -1312,13 +1312,13 @@ atomic_dec_put_counter (void)
     gasnet_hsl_unlock(&put_counter_lock);
 }
 
-void
+static void
 atomic_wait_put_zero (void)
 {
     WAIT_ON_COMPLETION(put_counter == 0L);
 }
 
-void
+static void
 atomic_inc_get_counter (void)
 {
     gasnet_hsl_lock(&get_counter_lock);
@@ -1326,7 +1326,7 @@ atomic_inc_get_counter (void)
     gasnet_hsl_unlock(&get_counter_lock);
 }
 
-void
+static void
 atomic_dec_get_counter (void)
 {
     gasnet_hsl_lock(&get_counter_lock);
@@ -1334,7 +1334,7 @@ atomic_dec_get_counter (void)
     gasnet_hsl_unlock(&get_counter_lock);
 }
 
-void
+static void
 atomic_wait_get_zero (void)
 {
     WAIT_ON_COMPLETION(get_counter == 0L);
@@ -1369,10 +1369,11 @@ atomic_wait_get_zero (void)
  *
  */
 
-void
+static void
 allocate_buffer_and_check(void **buf, size_t siz)
 {
     const int r = posix_memalign(buf, GASNET_PAGESIZE, siz);
+
     switch (r) {
     case 0:
         /* all ok, return */
@@ -1436,7 +1437,7 @@ handler_globalvar_put_bak(gasnet_token_t token, void *buf, size_t bufsiz)
  * buffer.
  *
  */
-void
+static void
 put_a_chunk(void *buf, size_t bufsize,
             void *target, void *source,
             size_t offset, size_t bytes_to_send,
@@ -1471,7 +1472,7 @@ put_a_chunk(void *buf, size_t bufsize,
 /**
  * perform the put to a global variable
  */
-void
+static void
 shmemc_globalvar_put_request(void *target, void *source,
                              size_t nbytes,
                              int pe)
@@ -1556,7 +1557,7 @@ handler_globalvar_get_bak(gasnet_token_t token, void *buf, size_t bufsiz)
  * Generate the active message to do a get from a global variable.
  *
  */
-void
+static void
 get_a_chunk(globalvar_payload_t * p, size_t bufsize,
             void *target, void *source,
             size_t offset, size_t bytes_to_send,
@@ -1585,7 +1586,7 @@ get_a_chunk(globalvar_payload_t * p, size_t bufsize,
  * perform the get from a global variable
  */
 
-void
+static void
 shmemc_globalvar_get_request(void *target, void *source,
                              size_t nbytes,
                              int pe)
@@ -1948,12 +1949,6 @@ static gasnet_handlerentry_t handlers[] = {
     AMO_HANDLER_LOOKUP(inc, long),
     AMO_HANDLER_LOOKUP(inc, longlong),
 
-#if defined(HAVE_FEATURE_EXPERIMENTAL)
-    AMO_HANDLER_LOOKUP(xor, int),
-    AMO_HANDLER_LOOKUP(xor, long),
-    AMO_HANDLER_LOOKUP(xor, longlong),
-#endif /* HAVE_FEATURE_EXPERIMENTAL */
-
     AMO_HANDLER_LOOKUP(fetch, int),
     AMO_HANDLER_LOOKUP(fetch, long),
     AMO_HANDLER_LOOKUP(fetch, longlong),
@@ -1966,6 +1961,12 @@ static gasnet_handlerentry_t handlers[] = {
     AMO_HANDLER_LOOKUP(set, float),
     AMO_HANDLER_LOOKUP(set, double),
 
+#if defined(HAVE_FEATURE_EXPERIMENTAL)
+    AMO_HANDLER_LOOKUP(xor, int),
+    AMO_HANDLER_LOOKUP(xor, long),
+    AMO_HANDLER_LOOKUP(xor, longlong),
+#endif /* HAVE_FEATURE_EXPERIMENTAL */
+
 #if defined(HAVE_MANAGED_SEGMENTS)
     {GASNET_HANDLER_globalvar_put_out, handler_globalvar_put_out},
     {GASNET_HANDLER_globalvar_put_bak, handler_globalvar_put_bak},
@@ -1973,7 +1974,7 @@ static gasnet_handlerentry_t handlers[] = {
     {GASNET_HANDLER_globalvar_get_bak, handler_globalvar_get_bak},
 #endif /* HAVE_MANAGED_SEGMENTS */
     {GASNET_HANDLER_globalexit_out, handler_globalexit_out}
-    /* no reply partner for global_exit */
+    /* END: no reply partner for global_exit */
 };
 
 static const int nhandlers = TABLE_SIZE(handlers);
@@ -2006,15 +2007,20 @@ parse_cmdline(void)
     /*
      * try to find this process' command-line:
      * either from short-cut, or from pid
+     *
+     * Linux-specific but know how to do it for e.g. FreeBSD
+     *
      */
     fp = fopen(cmdline, "r");
     if (fp == NULL) {
+        const pid_t pid = getpid();
         char pidname[MAXPATHLEN];
-        snprintf(pidname, MAXPATHLEN, cmdline_fmt, getpid());
+
+        snprintf(pidname, MAXPATHLEN, cmdline_fmt, pid);
         fp = fopen(pidname, "r");
         if (fp == NULL) {
-            shmemc_bailout("could not discover process' command-line (%s)",
-                           strerror(errno)
+            shmemc_bailout("could not discover command-line of process %ld (%s)",
+                           pid, strerror(errno)
                            );
             /* NOT REACHED */
         }
