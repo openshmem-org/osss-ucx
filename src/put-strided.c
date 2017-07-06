@@ -9,8 +9,12 @@
  * these are needed for propagating into Fortran,
  * but aren't actually part of the API
  */
-extern void shmem_complexf_p(complex float *addr, complex float value, int pe);
-extern void shmem_complexd_p(complex double *addr, complex double value, int pe);
+extern void shmem_complexf_p(COMPLEXIFY(float) *addr,
+                             COMPLEXIFY(float) value,
+                             int pe);
+extern void shmem_complexd_p(COMPLEXIFY(double) *addr,
+                             COMPLEXIFY(double) value,
+                             int pe);
 extern void shmem_char_iput(char *target, const char *source, ptrdiff_t tst,
                             ptrdiff_t sst, size_t nelems, int pe);
 

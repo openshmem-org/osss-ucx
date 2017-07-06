@@ -10,8 +10,8 @@
  * these are needed for propagating into Fortran,
  * but aren't actually part of the API
  */
-extern complex float shmem_complexf_g(complex float *addr, int pe);
-extern complex double shmem_complexd_g(complex double *addr, int pe);
+extern COMPLEXIFY(float) shmem_complexf_g(COMPLEXIFY(float) *addr, int pe);
+extern COMPLEXIFY(double) shmem_complexd_g(COMPLEXIFY(double) *addr, int pe);
 extern void shmem_char_iget(char *target, const char *source, ptrdiff_t tst,
                             ptrdiff_t sst, size_t nelems, int pe);
 
@@ -63,7 +63,7 @@ SHMEM_EMIT_IGET(double, double)
 SHMEM_EMIT_IGET(longlong, long long)
 SHMEM_EMIT_IGET(longdouble, long double)
 SHMEM_EMIT_IGET(complexf, COMPLEXIFY(float))
-SHMEM_EMIT_IGET(complexd, COMPLEXIFY(double))
+SHMEM_EMIT_IGET(complexifyd, COMPLEXIFY(double))
 
 #define SHMEM_SIZED_IGET(_name, _size)                                  \
     void                                                                \

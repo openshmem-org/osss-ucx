@@ -764,10 +764,10 @@ REDUCIFY(or, int8, long, long)
 REDUCIFY(xor, int2, short, short)
 REDUCIFY(xor, int4, int, int)
 REDUCIFY(xor, int8, long, long)
-REDUCIFY(sum, comp4, complexf, float complex)
-REDUCIFY(sum, comp8, complexd, double complex)
-REDUCIFY(prod, comp4, complexf, float complex)
-REDUCIFY(prod, comp8, complexd, double complex)
+REDUCIFY(sum, comp4, complexf, COMPLEXIFY(float))
+REDUCIFY(sum, comp8, complexd, COMPLEXIFY(double))
+REDUCIFY(prod, comp4, complexf, COMPLEXIFY(float))
+REDUCIFY(prod, comp8, complexd, COMPLEXIFY(double))
 
 /*
  * alltoall

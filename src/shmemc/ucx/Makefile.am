@@ -4,6 +4,7 @@ OTHER_CPPFLAGS         = -I$(srcdir)/../../shmemu -I$(srcdir)/../../shmemi
 
 lib_LIBRARIES          = libshmemc-ucx.a
 libshmemc_ucx_a_SOURCES    = comms.c \
+				pmi-init.c \
 				pmix-client.c
 #				pmi1-client.c
 #				pmi2-client.c

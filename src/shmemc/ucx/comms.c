@@ -290,8 +290,6 @@ shmemc_init(void)
     /*
      * try registering the data and bss segments
      *
-     * ok, this is wiping out global variables.  What's the
-     * alernative?
      */
     reg_globals();
 
