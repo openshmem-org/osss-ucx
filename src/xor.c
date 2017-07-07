@@ -25,6 +25,6 @@
     {                                                                   \
     }
 
-SHMEMX_TYPE_XOR(int, int);
-SHMEMX_TYPE_XOR(long, long);
-SHMEMX_TYPE_XOR(longlong, long long);
+SHMEMX_TYPE_XOR(int, int)
+SHMEMX_TYPE_XOR(long, long)
+SHMEMX_TYPE_XOR(longlong, long long)
