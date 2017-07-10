@@ -22,60 +22,48 @@ inline static void shmemc_fence(void)
 
 char *shmemc_getenv(const char *);
 
-void shmemc_put(void *dest, const void *src,
-                size_t nbytes, int pe);
-void shmemc_get(void *dest, const void *src,
-                size_t nbytes, int pe);
+void shmemc_put(void *dest, const void *src, size_t nbytes, int pe);
+void shmemc_get(void *dest, const void *src, size_t nbytes, int pe);
 
-void shmemc_put_nbi(void *dest, const void *src,
-                    size_t nbytes, int pe);
+void shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe);
+void shmemc_get_nbi(void *dest, const void *src, size_t nbytes, int pe);
 
 void shmemc_iput(void *dest, const void *src, size_t nbytes,
                  ptrdiff_t tst, ptrdiff_t sst, int pe);
-
-void shmemc_get_nbi(void *dest, const void *src,
-                    size_t nbytes, int pe);
-
 void shmemc_iget(void *dest, const void *src, size_t nbytes,
                  ptrdiff_t tst, ptrdiff_t sst, int pe);
 
-void shmemc_int_add(int *t, int v, int pe);
-void shmemc_long_add(long *t, long v, int pe);
-void shmemc_longlong_add(long long *t, long long v, int pe);
-
-void shmemc_int_inc(int *t, int pe);
-void shmemc_long_inc(long *t, int pe);
-void shmemc_longlong_inc(long long *t, int pe);
-
-int shmemc_int_fadd(int *t, int v, int pe);
-long shmemc_long_fadd(long *t, long v, int pe);
-long long shmemc_longlong_fadd(long long *t, long long v, int pe);
-
-int shmemc_int_finc(int *t, int pe);
-long shmemc_long_finc(long *t, int pe);
+void      shmemc_int_add(int *t, int v, int pe);
+void      shmemc_long_add(long *t, long v, int pe);
+void      shmemc_longlong_add(long long *t, long long v, int pe);
+void      shmemc_int_inc(int *t, int pe);
+void      shmemc_long_inc(long *t, int pe);
+void      shmemc_longlong_inc(long long *t, int pe);
+int       shmemc_int_finc(int *t, int pe);
+long      shmemc_long_finc(long *t, int pe);
 long long shmemc_longlong_finc(long long *t, int pe);
-
-int shmemc_int_swap(int *t, int v, int pe);
-long shmemc_long_swap(long *t, long v, int pe);
+int       shmemc_int_fadd(int *t, int v, int pe);
+long      shmemc_long_fadd(long *t, long v, int pe);
+long long shmemc_longlong_fadd(long long *t, long long v, int pe);
+int       shmemc_int_swap(int *t, int v, int pe);
+long      shmemc_long_swap(long *t, long v, int pe);
 long long shmemc_longlong_swap(long long *t, long long v, int pe);
-float shmemc_float_swap(float *t, float v, int pe);
-double shmemc_double_swap(double *t, double v, int pe);
-
-int shmemc_int_cswap(int *t, int c, int v, int pe);
-long shmemc_long_cswap(long *t, long c, long v, int pe);
+float     shmemc_float_swap(float *t, float v, int pe);
+double    shmemc_double_swap(double *t, double v, int pe);
+int       shmemc_int_cswap(int *t, int c, int v, int pe);
+long      shmemc_long_cswap(long *t, long c, long v, int pe);
 long long shmemc_longlong_cswap(long long *t, long long c, long long v, int pe);
-
-int shmemc_int_fetch(int *t, int pe);
-long shmemc_long_fetch(long *t, int pe);
+int       shmemc_int_fetch(int *t, int pe);
+long      shmemc_long_fetch(long *t, int pe);
 long long shmemc_longlong_fetch(long long *t, int pe);
-float shmemc_float_fetch(float *t, int pe);
-double shmemc_double_fetch(double *t, int pe);
+float     shmemc_float_fetch(float *t, int pe);
+double    shmemc_double_fetch(double *t, int pe);
+int       shmemc_int_set(int *t, int v, int pe);
+long      shmemc_long_set(long *t, long v, int pe);
+long long shmemc_longlong_set(long long *t, long long v, int pe);
+float     shmemc_float_set(float *t, float v, int pe);
+double    shmemc_double_set(double *t, double v, int pe);
 
-void shmemc_int_set(int *t, int v, int pe);
-void shmemc_long_set(long *t, long v, int pe);
-void shmemc_longlong_set(long long *t, long long v, int pe);
-void shmemc_float_set(float *t, float v, int pe);
-void shmemc_double_set(double *t, double v, int pe);
 
 void shmemc_set_lock(volatile long *lock);
 void shmemc_clear_lock(volatile long *lock);

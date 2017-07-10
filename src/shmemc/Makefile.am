@@ -4,7 +4,7 @@ else
 SUBDIRS                = gasnet
 endif
 
-LIBSHMEMC_SOURCES      = put.c get.c lock.c
+LIBSHMEMC_SOURCES      = lock.c # put.c get.c
 
 lib_LTLIBRARIES        = libshmemc.la
 libshmemc_la_SOURCES   = $(LIBSHMEMC_SOURCES)

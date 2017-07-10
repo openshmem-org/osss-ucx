@@ -514,7 +514,7 @@ COMMS_WAIT_TYPE(longlong, long long, ge, >=)
 
 #define WAIT_ON_COMPLETION(Cond)   GASNET_BLOCKUNTIL(Cond)
 
-/* TODO: need a handler per-datatype to get the correct hander lock.
+/* TODO: need a handler per-datatype to get the correct handler lock.
    We can do this easily with a template for the out/bak RPCs and the
    request generator itself. */
 
@@ -1094,7 +1094,7 @@ AMO_FETCH_BAK_EMIT(double, double)
         gasnet_AMRequestMedium0(pe, GASNET_HANDLER_fetch_out_##_name,   \
                                 p, sizeof(*p));                         \
         WAIT_ON_COMPLETION(p->completed);                               \
-        save = ->value;                                                 \
+        save = p->value;                                                \
         free(p);                                                        \
         return save;                                                    \
     }

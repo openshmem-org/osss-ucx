@@ -60,7 +60,7 @@ enum
 #define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % (GET_STATE (numpes)) )
 
 void
-shmemi_comms_lock_acquire (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
+shmemc_lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     SHMEM_LOCK tmp;
     long locked;
@@ -72,14 +72,14 @@ shmemi_comms_lock_acquire (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
     tmp.l_locked = 1;
     tmp.l_next = this_pe;
 
-    LOAD_STORE_FENCE ();
+    LOAD_STORE_FENCE();
 
     /*
      * Swap this_pe into the global lock owner, returning previous
      * value, atomically
      */
     tmp.l_word =
-        shmem_int_swap ((int *) &lock->l_word, tmp.l_word, LOCK_OWNER (lock));
+        shmemc_int_swap((int *) &lock->l_word, tmp.l_word, LOCK_OWNER(lock));
 
     /* Translate old (broken) default lock state */
     if (tmp.l_word == SHMEM_LOCK_FREE) {
@@ -97,21 +97,21 @@ shmemi_comms_lock_acquire (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          */
         node->l_locked = 1;
 
-        LOAD_STORE_FENCE ();
+        LOAD_STORE_FENCE();
 
         /*
          * I'm now next in global linked list, update l_next in the
          * prev_pe process with our vp
          */
-        shmem_short_p ((short *) &node->l_next, this_pe, prev_pe);
+        shmemc_short_p((short *) &node->l_next, this_pe, prev_pe);
 
         /* Wait for flag to be released */
-        GASNET_BLOCKUNTIL (!(node->l_locked));
+        GASNET_BLOCKUNTIL( !(node->l_locked) );
     }
 }
 
 void
-shmemi_comms_lock_release (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
+shmemc_lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     /* Is there someone on the linked list ? */
     if (node->l_next == SHMEM_LOCK_FREE) {
@@ -125,9 +125,9 @@ shmemi_comms_lock_release (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * If global lock owner value still equals this_pe, load RESET
          * into it & return prev value
          */
-        tmp.l_word = shmem_int_cswap ((int *) &lock->l_word,
+        tmp.l_word = shmemc_int_cswap((int *) &lock->l_word,
                                       tmp.l_word,
-                                      SHMEM_LOCK_RESET, LOCK_OWNER (lock));
+                                      SHMEM_LOCK_RESET, LOCK_OWNER(lock));
 
         if (tmp.l_next == this_pe) {
             /* We were still the only requestor, all done */
@@ -143,22 +143,22 @@ shmemi_comms_lock_release (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * are written before we try to use its value below.
          *
          */
-        GASNET_BLOCKUNTIL (!
-                           ((node->l_next == SHMEM_LOCK_FREE) ||
-                            (node->l_next < 0))
-                           );
+        GASNET_BLOCKUNTIL(!
+                          ((node->l_next == SHMEM_LOCK_FREE) ||
+                           (node->l_next < 0))
+                          );
 
     }
 
     /* Be more strict about the test above, this memory consistency problem is
        a tricky one */
-    GASNET_BLOCKUNTIL (!(node->l_next < 0));
+    GASNET_BLOCKUNTIL( !(node->l_next < 0) );
 
     /*
      * Release any waiters on the linked list
      */
 
-    shmem_short_p ((short *) &node->l_locked, 0, node->l_next);
+    shmemc_short_p((short *) &node->l_locked, 0, node->l_next);
 }
 
 
@@ -171,13 +171,13 @@ shmemi_comms_lock_release (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
  * (addy 12.10.05)
  */
 int
-shmemi_comms_lock_test (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
+shmemc_lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     SHMEM_LOCK tmp;
     int retval;
 
     /* Read the remote global lock value */
-    tmp.l_word = shmem_int_g ((int *) &lock->l_word, LOCK_OWNER (lock));
+    tmp.l_word = shmemc_int_g((int *) &lock->l_word, LOCK_OWNER(lock));
 
     /* Translate old (broken) default lock state */
     if (tmp.l_word == SHMEM_LOCK_FREE)
@@ -185,7 +185,7 @@ shmemi_comms_lock_test (SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 
     /* If lock already set then return 1, otherwise grab the lock & return 0 */
     if (tmp.l_word == SHMEM_LOCK_RESET) {
-        shmemi_comms_lock_acquire (node, lock, this_pe);
+        shmemc_lock_acquire(node, lock, this_pe);
         retval = 0;
     }
     else {

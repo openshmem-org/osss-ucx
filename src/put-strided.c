@@ -3,7 +3,8 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem/defs.h"
-#include "shmem/api.h"
+
+#include "shmemc/shmemc.h"
 
 /*
  * these are needed for propagating into Fortran,
@@ -46,15 +47,11 @@ extern void shmem_char_iput(char *target, const char *source, ptrdiff_t tst,
 #define SHMEM_EMIT_IPUT(_name, _type)                                   \
     void                                                                \
     shmem_##_name##_iput(_type *target, const _type *source,            \
-                         ptrdiff_t tst, ptrdiff_t sst, size_t nelems, int pe) \
+                         ptrdiff_t tst, ptrdiff_t sst,                  \
+                         size_t nelems, int pe)                         \
     {                                                                   \
-        size_t ti = 0, si = 0;                                          \
-        size_t i;                                                       \
-        for (i = 0; i < nelems; i += 1) {                               \
-            shmem_##_name##_p(& (target[ti]), source[si], pe);         \
-            ti += tst;                                                  \
-            si += sst;                                                  \
-        }                                                               \
+        const size_t sized_nelems = nelems  * sizeof(_type);            \
+        shmemc_iput(target, source, tst, sst, sized_nelems, pe);        \
     }
 
 SHMEM_EMIT_IPUT(char, char)
@@ -65,20 +62,28 @@ SHMEM_EMIT_IPUT(float, float)
 SHMEM_EMIT_IPUT(double, double)
 SHMEM_EMIT_IPUT(longlong, long long)
 SHMEM_EMIT_IPUT(longdouble, long double)
+/* for Fortran */
 SHMEM_EMIT_IPUT(complexf, COMPLEXIFY(float))
 SHMEM_EMIT_IPUT(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_IPUT(_name, _size)                                  \
+#define SHMEM_SIZED_IPUT(_bits, _size)                                  \
     void                                                                \
-    shmem_iput##_name(void *dest, const void *src,                      \
-                      ptrdiff_t tst, ptrdiff_t sst, size_t nelems, int pe) \
+    shmem_iput##_bits(void *target, const void *source,                 \
+                      ptrdiff_t tst, ptrdiff_t sst,                     \
+                      size_t nelems, int pe)                            \
     {                                                                   \
-        const size_t sized_nelems = nelems * _size;                     \
-        shmem_iput##_size(dest, src, tst, sst, sized_nelems, pe);       \
+        const size_t sized_nelems = nelems  * _size;                    \
+        shmemc_iput(target, source, tst, sst, sized_nelems, pe);        \
     }
 
 SHMEM_SIZED_IPUT(32, 32)
 SHMEM_SIZED_IPUT(4, 32)
+#if __WORDSIZE == 64
 SHMEM_SIZED_IPUT(64, 64)
 SHMEM_SIZED_IPUT(8, 64)
+#else
+SHMEM_SIZED_IPUT(32, 32)
+SHMEM_SIZED_IPUT(4, 32)
+#endif
+/* not sure about 128 yet, fake for now */
 SHMEM_SIZED_IPUT(128, 128)

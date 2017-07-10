@@ -4,6 +4,7 @@
 
 #include "shmem/defs.h"
 #include "shmem/api.h"
+
 #include "shmemc/shmemc.h"
 
 /*
@@ -40,42 +41,45 @@ extern void shmem_char_iget(char *target, const char *source, ptrdiff_t tst,
 #define shmem_iget128 pshmem_iget128
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_EMIT_IGET(_name, _type)                                   \
+#define SHMEM_TYPE_IGET(_name, _type)                                   \
     void                                                                \
     shmem_##_name##_iget(_type *target, const _type *source,            \
-                         ptrdiff_t tst, ptrdiff_t sst, size_t nelems, int pe) \
+                         ptrdiff_t tst, ptrdiff_t sst,                  \
+                         size_t nelems, int pe)                         \
     {                                                                   \
-        size_t ti = 0, si = 0;                                          \
-        size_t i;                                                       \
-        for (i = 0; i < nelems; i += 1) {                               \
-            target[ti] = shmem_##_name##_g((_type *) & (source[si]), pe); \
-            ti += tst;                                                  \
-            si += sst;                                                  \
-        }                                                               \
+        const size_t sized_nelems = nelems * sizeof(_type);             \
+        shmemc_iget(target, source, tst, sst, sized_nelems, pe);        \
     }
 
-SHMEM_EMIT_IGET(char, char)
-SHMEM_EMIT_IGET(short, short)
-SHMEM_EMIT_IGET(int, int)
-SHMEM_EMIT_IGET(long, long)
-SHMEM_EMIT_IGET(float, float)
-SHMEM_EMIT_IGET(double, double)
-SHMEM_EMIT_IGET(longlong, long long)
-SHMEM_EMIT_IGET(longdouble, long double)
-SHMEM_EMIT_IGET(complexf, COMPLEXIFY(float))
-SHMEM_EMIT_IGET(complexd, COMPLEXIFY(double))
+SHMEM_TYPE_IGET(char, char)
+SHMEM_TYPE_IGET(short, short)
+SHMEM_TYPE_IGET(int, int)
+SHMEM_TYPE_IGET(long, long)
+SHMEM_TYPE_IGET(float, float)
+SHMEM_TYPE_IGET(double, double)
+SHMEM_TYPE_IGET(longlong, long long)
+SHMEM_TYPE_IGET(longdouble, long double)
+SHMEM_TYPE_IGET(complexf, COMPLEXIFY(float))
+SHMEM_TYPE_IGET(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_IGET(_name, _size)                                  \
+#define SHMEM_SIZED_IGET(_bits, _size)                                  \
     void                                                                \
-    shmem_iget##_name(void *dest, const void *src,                      \
-                      ptrdiff_t tst, ptrdiff_t sst, size_t nelems, int pe) \
+    shmem_iget##_bits(void *target, const void *source,                 \
+                      ptrdiff_t tst, ptrdiff_t sst,                     \
+                      size_t nelems, int pe)                            \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
-        shmemc_iget(dest, src, tst, sst, sized_nelems, pe);             \
+        shmemc_iget(target, source, tst, sst, sized_nelems, pe);        \
     }
 
 SHMEM_SIZED_IGET(32, 32)
 SHMEM_SIZED_IGET(4, 32)
+#if __WORDSIZE == 64
 SHMEM_SIZED_IGET(64, 64)
 SHMEM_SIZED_IGET(8, 64)
+#else
+SHMEM_SIZED_IGET(32, 32)
+SHMEM_SIZED_IGET(4, 32)
+#endif
+/* fake it for now */
 SHMEM_SIZED_IGET(128, 128)
