@@ -414,7 +414,7 @@ shmemi_symmetric_memory_init(void)
         pm_r = posix_memalign(&great_big_heap, GASNET_PAGESIZE, heapsize);
         if (pm_r != 0) {
             shmemc_bailout("unable to allocate "
-                           "symmetric heap"
+                           "symmetric heap "
                            "(%s)",
                            strerror(pm_r)
                            );
@@ -472,7 +472,7 @@ shmemi_symmetric_memory_finalize(void)
 }
 
 /**
- * -- atomics handlers ---------------------------------------------------------
+ * -- atomics handlers ------------------------------------------------------
  */
 
 /*
@@ -583,6 +583,7 @@ AMO_SWAP_OUT_EMIT(double, double)
     _type                                                               \
     shmemc_##_name##_swap(_type *target, _type value, int pe)           \
     {                                                                   \
+        _type save;                                                     \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
                                                                         \
@@ -600,8 +601,9 @@ AMO_SWAP_OUT_EMIT(double, double)
         gasnet_AMRequestMedium0(pe, GASNET_HANDLER_swap_out_##_name,    \
                                 p, sizeof(*p));                         \
         WAIT_ON_COMPLETION(p->completed);                               \
+        save = p->value;                                                \
         free(p);                                                        \
-        return p->value;                                                \
+        return save;                                                    \
     }
 
 AMO_SWAP_REQ_EMIT(int, int)
@@ -669,6 +671,7 @@ AMO_CSWAP_BAK_EMIT(longlong, long long)
                            _type value,                                 \
                            int pe)                                      \
     {                                                                   \
+        _type save;                                                     \
         amo_payload_##_name##_t *cp =                                   \
             (amo_payload_##_name##_t *) malloc(sizeof(*cp));            \
                                                                         \
@@ -688,8 +691,9 @@ AMO_CSWAP_BAK_EMIT(longlong, long long)
         gasnet_AMRequestMedium0(pe, GASNET_HANDLER_cswap_out_##_name,   \
                                 cp, sizeof(*cp));                       \
         WAIT_ON_COMPLETION(cp->completed);                              \
+        save = cp->value;                                               \
         free(cp);                                                       \
-        return cp->value;                                               \
+        return save;                                                    \
     }
 
 AMO_CSWAP_REQ_EMIT(int, int)
@@ -754,6 +758,7 @@ AMO_FADD_BAK_EMIT(longlong, long long)
     _type                                                               \
     shmemc_##_name##_fadd(_type *target, _type value, int pe)           \
     {                                                                   \
+        _type save;                                                     \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
                                                                         \
@@ -771,8 +776,9 @@ AMO_FADD_BAK_EMIT(longlong, long long)
         gasnet_AMRequestMedium0(pe, GASNET_HANDLER_fadd_out_##_name,    \
                                 p, sizeof(*p));                         \
         WAIT_ON_COMPLETION(p->completed);                               \
+        save = p->value;                                                \
         free(p);                                                        \
-        return p->value;                                                \
+        return save;                                                    \
     }
 
 AMO_FADD_REQ_EMIT(int, int)
@@ -835,6 +841,7 @@ AMO_FINC_BAK_EMIT(longlong, long long)
     _type                                                               \
     shmemc_##_name##_finc(_type *target, int pe)                        \
     {                                                                   \
+        _type save;                                                     \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
                                                                         \
@@ -851,8 +858,9 @@ AMO_FINC_BAK_EMIT(longlong, long long)
         gasnet_AMRequestMedium0(pe, GASNET_HANDLER_finc_out_##_name,    \
                                 p, sizeof(*p));                         \
         WAIT_ON_COMPLETION(p->completed);                               \
+        save = p->value;                                                \
         free(p);                                                        \
-        return p->value;                                                \
+        return save;                                                    \
     }
 
 AMO_FINC_REQ_EMIT(int, int)
@@ -1069,6 +1077,7 @@ AMO_FETCH_BAK_EMIT(double, double)
     _type                                                               \
     shmemc_##_name##_fetch(_type *target, int pe)                       \
     {                                                                   \
+        _type save;                                                     \
         amo_payload_##_name##_t *p =                                    \
             (amo_payload_##_name##_t *) malloc(sizeof(*p));             \
                                                                         \
@@ -1085,8 +1094,9 @@ AMO_FETCH_BAK_EMIT(double, double)
         gasnet_AMRequestMedium0(pe, GASNET_HANDLER_fetch_out_##_name,   \
                                 p, sizeof(*p));                         \
         WAIT_ON_COMPLETION(p->completed);                               \
+        save = ->value;                                                 \
         free(p);                                                        \
-        return p->value;                                                \
+        return save;                                                    \
     }
 
 AMO_FETCH_REQ_EMIT(int, int)
