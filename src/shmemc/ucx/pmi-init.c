@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <assert.h>
+
+#include "../shmemc.h"
+#include "../shmemi/shmemi.h"
 
 #include "pmix-client.h"
 #include "pmi2-client.h"

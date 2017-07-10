@@ -12,7 +12,8 @@ libshmemc_gasnet_a_SOURCES    = bail.c \
 libshmemc_gasnet_a_CPPFLAGS = $(GASNET_CPPFLAGS) \
 				-I$(top_srcdir)/src/shmemi \
 				-I$(top_srcdir)/src/shmemu \
-				-I$(top_srcdir)/src/shmemc
+				-I$(top_srcdir)/src/shmemc \
+				-I../../../include
 # libshmemc_gasnet_a_CFLAGS = $(GASNET_CFLAGS)
 
 MY_WRAPPERS       = oshcc oshrun
