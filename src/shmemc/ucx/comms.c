@@ -34,9 +34,14 @@ static comms_info_t *c_p = & proc.comms;
 #define LOOKUP_UCP_EP(pe) (endpoints[(pe)].remote_ep)
 
 /*
+ * shortcut to look up the remote key for address "a"
+ */
+#define LOOKUP_RKEY(a) NULL
+
+/*
  * get remote address "a" on PE "pe"
  */
-#define TRANSLATE_ADDR(a, pe) a
+#define TRANSLATE_ADDR(a, pe) ((uint64_t) a)
 
 /*
  * where globals/statics/commons/saves live
@@ -368,7 +373,7 @@ void shmemc_put(void *dest, const void *src,
                 size_t nbytes, int pe)
 {
     uint64_t r_dest = TRANSLATE_ADDR(dest, pe); /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for this remote address */
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest); /* rkey for remote address */
     ucs_status_t s;
 
     s = ucp_put(LOOKUP_UCP_EP(pe), src, nbytes, r_dest, rkey);
@@ -378,8 +383,8 @@ void shmemc_put(void *dest, const void *src,
 void shmemc_get(void *dest, const void *src,
                 size_t nbytes, int pe)
 {
-    uint64_t r_src = TRANSLATE_ADDR(dest, pe); /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for this remote address */
+    uint64_t r_src = TRANSLATE_ADDR(dest, pe);
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     ucs_status_t s;
 
     s = ucp_get(LOOKUP_UCP_EP(pe), dest, nbytes, r_src, rkey);
@@ -394,8 +399,8 @@ void shmemc_get(void *dest, const void *src,
 void shmemc_put_nbi(void *dest, const void *src,
                     size_t nbytes, int pe)
 {
-    uint64_t r_dest = TRANSLATE_ADDR(dest, pe); /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for this remote address */
+    uint64_t r_dest = TRANSLATE_ADDR(dest, pe);
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     ucs_status_t s;
 
     s = ucp_put_nbi(LOOKUP_UCP_EP(pe), src, nbytes, r_dest, rkey);
@@ -405,8 +410,8 @@ void shmemc_put_nbi(void *dest, const void *src,
 void shmemc_get_nbi(void *dest, const void *src,
                     size_t nbytes, int pe)
 {
-    uint64_t r_src = TRANSLATE_ADDR(dest, pe); /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for this remote address */
+    uint64_t r_src = TRANSLATE_ADDR(dest, pe);
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     ucs_status_t s;
 
     s = ucp_get_nbi(LOOKUP_UCP_EP(pe), dest, nbytes, r_src, rkey);
@@ -426,7 +431,7 @@ uint32_t
 helper_fadd32(uint64_t t, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     uint32_t ret;
     ucs_status_t s;
 
@@ -441,7 +446,7 @@ uint64_t
 helper_fadd64(uint64_t t, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     uint64_t ret;
     ucs_status_t s;
 
@@ -456,7 +461,7 @@ void
 helper_add32(uint64_t t, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     ucs_status_t s;
 
     s = ucp_atomic_add32(LOOKUP_UCP_EP(pe), v, r_t, rkey);
@@ -468,7 +473,7 @@ void
 helper_add64(uint64_t t, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     ucs_status_t s;
 
     s = ucp_atomic_add64(LOOKUP_UCP_EP(pe), v, r_t, rkey);
@@ -480,7 +485,7 @@ uint32_t
 helper_swap32(uint64_t t, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     uint32_t ret;
     ucs_status_t s;
 
@@ -495,7 +500,7 @@ uint64_t
 helper_swap64(uint64_t t, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     uint64_t ret;
     ucs_status_t s;
 
@@ -510,7 +515,7 @@ uint32_t
 helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     uint32_t ret;
     ucs_status_t s;
 
@@ -525,7 +530,7 @@ uint64_t
 helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
-    ucp_rkey_h rkey;
+    ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
     uint64_t ret;
     ucs_status_t s;
 
