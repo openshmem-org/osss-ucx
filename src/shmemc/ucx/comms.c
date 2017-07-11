@@ -513,86 +513,62 @@ helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
 /*
  * add
  */
-void shmemc_int_add(int *t, int v, int pe)
-{
-    helper_add32((uint64_t) t, v, pe);
-}
 
-void
-shmemc_long_add(long *t, long v, int pe)
-{
-    helper_add64((uint64_t) t, v, pe);
-}
+#define SHMEMC_TYPED_ADD(_name, _type, _size)                   \
+    void                                                        \
+    shmemc_##_name##_add(_type *t, _type v, int pe)             \
+    {                                                           \
+        helper_add##_size((uint64_t) t, v, pe);                 \
+    }
 
-void
-shmemc_longlong_add(long long *t, long long v, int pe)
-{
-    helper_add64((uint64_t) t, v, pe);
-}
+SHMEMC_TYPED_ADD(int, int, 32)
+SHMEMC_TYPED_ADD(long, long, 64)
+SHMEMC_TYPED_ADD(longlong, long long, 64)
 
 /*
  * inc is just "add 1"
  */
-void
-shmemc_int_inc(int *t, int pe)
-{
-    helper_add32((uint64_t) t, 1, pe);
-}
 
-void
-shmemc_long_inc(long *t, int pe)
-{
-    helper_add64((uint64_t) t, 1, pe);
-}
+#define SHMEMC_TYPED_INC(_name, _type, _size)                   \
+    void                                                        \
+    shmemc_##_name##_inc(_type *t, int pe)                      \
+    {                                                           \
+        helper_add##_size((uint64_t) t, 1, pe);                 \
+    }
 
-void
-shmemc_longlong_inc(long long *t, int pe)
-{
-    helper_add64((uint64_t) t, 1, pe);
-}
+SHMEMC_TYPED_INC(int, int, 32)
+SHMEMC_TYPED_INC(long, long, 64)
+SHMEMC_TYPED_INC(longlong, long long, 64)
 
 /*
  * fetch-and-add
  */
-int
-shmemc_int_fadd(int *t, int v, int pe)
-{
-    return helper_fadd32((uint64_t) t, v, pe);
-}
 
-long
-shmemc_long_fadd(long *t, long v, int pe)
-{
-    return helper_fadd64((uint64_t) t, v, pe);
-}
+#define SHMEMC_TYPED_FADD(_name, _type, _size)                  \
+    _type                                                       \
+    shmemc_##_name##_fadd(_type *t, _type v, int pe)            \
+    {                                                           \
+        return (_type) helper_fadd##_size((uint64_t) t, v, pe); \
+    }
 
-long long
-shmemc_longlong_fadd(long long *t, long long v, int pe)
-{
-    return helper_fadd64((uint64_t) t, v, pe);
-}
+SHMEMC_TYPED_FADD(int, int, 32)
+SHMEMC_TYPED_FADD(long, long, 64)
+SHMEMC_TYPED_FADD(longlong, long long, 64)
 
 /*
  * finc is just "fadd 1"
  */
 
-int
-shmemc_int_finc(int *t, int pe)
-{
-    return helper_fadd32((uint64_t) t, 1, pe);
-}
+#define SHMEMC_TYPED_FINC(_name, _type, _size)                  \
+    _type                                                       \
+    shmemc_##_name##_finc(_type *t, int pe)                     \
+    {                                                           \
+        return (_type) helper_fadd##_size((uint64_t) t, 1, pe); \
+    }
 
-long
-shmemc_long_finc(long *t, int pe)
-{
-    return helper_fadd64((uint64_t) t, 1, pe);
-}
-
-long long
-shmemc_longlong_finc(long *t, int pe)
-{
-    return helper_fadd64((uint64_t) t, 1, pe);
-}
+SHMEMC_TYPED_FINC(int, int, 32)
+SHMEMC_TYPED_FINC(long, long, 64)
+SHMEMC_TYPED_FINC(longlong, long long, 64)
 
 /*
  * swaps
