@@ -369,8 +369,9 @@ shmemc_finalize(void)
  * -- puts & gets --------------------------------------------------------
  */
 
-void shmemc_put(void *dest, const void *src,
-                size_t nbytes, int pe)
+void
+shmemc_put(void *dest, const void *src,
+           size_t nbytes, int pe)
 {
     uint64_t r_dest = TRANSLATE_ADDR(dest, pe); /* address on other PE */
     ucp_rkey_h rkey = LOOKUP_RKEY(r_dest); /* rkey for remote address */
@@ -380,8 +381,9 @@ void shmemc_put(void *dest, const void *src,
     assert(s == UCS_OK);
 }
 
-void shmemc_get(void *dest, const void *src,
-                size_t nbytes, int pe)
+void
+shmemc_get(void *dest, const void *src,
+           size_t nbytes, int pe)
 {
     uint64_t r_src = TRANSLATE_ADDR(dest, pe);
     ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
@@ -396,8 +398,9 @@ void shmemc_get(void *dest, const void *src,
  *
  */
 
-void shmemc_put_nbi(void *dest, const void *src,
-                    size_t nbytes, int pe)
+void
+shmemc_put_nbi(void *dest, const void *src,
+               size_t nbytes, int pe)
 {
     uint64_t r_dest = TRANSLATE_ADDR(dest, pe);
     ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
@@ -407,8 +410,9 @@ void shmemc_put_nbi(void *dest, const void *src,
     assert(s == UCS_OK || s == UCS_INPROGRESS);
 }
 
-void shmemc_get_nbi(void *dest, const void *src,
-                    size_t nbytes, int pe)
+void
+shmemc_get_nbi(void *dest, const void *src,
+               size_t nbytes, int pe)
 {
     uint64_t r_src = TRANSLATE_ADDR(dest, pe);
     ucp_rkey_h rkey = LOOKUP_RKEY(r_dest);
@@ -426,8 +430,7 @@ void shmemc_get_nbi(void *dest, const void *src,
  * helpers
  */
 
-inline static
-uint32_t
+inline static uint32_t
 helper_fadd32(uint64_t t, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
@@ -441,8 +444,7 @@ helper_fadd32(uint64_t t, uint32_t v, int pe)
     return ret;
 }
 
-inline static
-uint64_t
+inline static uint64_t
 helper_fadd64(uint64_t t, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
@@ -456,8 +458,7 @@ helper_fadd64(uint64_t t, uint64_t v, int pe)
     return ret;
 }
 
-inline static
-void
+inline static void
 helper_add32(uint64_t t, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
@@ -468,8 +469,7 @@ helper_add32(uint64_t t, uint32_t v, int pe)
     assert(s == UCS_OK);
 }
 
-inline static
-void
+inline static void
 helper_add64(uint64_t t, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
@@ -480,8 +480,7 @@ helper_add64(uint64_t t, uint64_t v, int pe)
     assert(s == UCS_OK);
 }
 
-inline static
-uint32_t
+inline static uint32_t
 helper_swap32(uint64_t t, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
@@ -495,8 +494,7 @@ helper_swap32(uint64_t t, uint32_t v, int pe)
     return ret;
 }
 
-inline static
-uint64_t
+inline static uint64_t
 helper_swap64(uint64_t t, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
@@ -510,8 +508,7 @@ helper_swap64(uint64_t t, uint64_t v, int pe)
     return ret;
 }
 
-inline static
-uint32_t
+inline static uint32_t
 helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
@@ -525,8 +522,7 @@ helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
     return ret;
 }
 
-inline static
-uint64_t
+inline static uint64_t
 helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
 {
     uint64_t r_t = TRANSLATE_ADDR(t, pe);
