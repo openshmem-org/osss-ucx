@@ -11,11 +11,11 @@ shmem_lib=@libdir@
 pmixlib_stanza="@PMIX_LIBS@"
 
 shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
-shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemu"
+shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemc-ucx -lshmemu"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
 
 # set to whichever comms library chosen
-comms_stanza="@COMMS_LIBS@"
+comms_stanza="@UCX_LIBS@"
 
 # and make it available
 shmemlib_stanza="$shmemlib_stanza $comms_stanza"

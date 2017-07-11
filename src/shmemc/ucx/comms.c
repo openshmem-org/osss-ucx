@@ -598,41 +598,29 @@ shmemc_longlong_finc(long *t, int pe)
  * swaps
  */
 
-int
-shmemc_int_swap(int *t, int v, int pe)
-{
-    return helper_swap32((uint64_t) t, v, pe);
-}
+#define SHMEMC_TYPED_SWAP(_name, _type, _size)                  \
+    _type                                                       \
+    shmemc_##_name##_swap(_type *t, _type v, int pe)            \
+    {                                                           \
+        return (_type) helper_swap##_size((uint64_t) t, v, pe); \
+    }                                                           \
 
-long
-shmemc_long_swap(long *t, long v, int pe)
-{
-    return helper_swap64((uint64_t) t, v, pe);
-}
+SHMEMC_TYPED_SWAP(int, int, 32)
+SHMEMC_TYPED_SWAP(long, long, 64)
+SHMEMC_TYPED_SWAP(longlong, long long, 64)
+SHMEMC_TYPED_SWAP(float, float, 32)
+SHMEMC_TYPED_SWAP(double, double, 64)
 
-long long
-shmemc_longlong_swap(long long *t, long long v, int pe)
-{
-    return helper_swap64((uint64_t) t, v, pe);
-}
+#define SHMEMC_TYPED_CSWAP(_name, _type, _size)                     \
+    _type                                                           \
+    shmemc_##_name##_cswap(_type *t, _type c, _type v, int pe)      \
+    {                                                               \
+        return (_type) helper_cswap##_size((uint64_t) t, c, v, pe); \
+    }                                                               \
 
-int
-shmemc_int_cswap(int *t, int c, int v, int pe)
-{
-    return helper_cswap32((uint64_t) t, c, v, pe);
-}
-
-long
-shmemc_long_cswap(long *t, long c, long v, int pe)
-{
-    return helper_cswap64((uint64_t) t, c, v, pe);
-}
-
-long long
-shmemc_longlong_cswap(long long *t, long long c, long long v, int pe)
-{
-    return helper_cswap64((uint64_t) t, c, v, pe);
-}
+SHMEMC_TYPED_CSWAP(int, int, 32)
+SHMEMC_TYPED_CSWAP(long, long, 64)
+SHMEMC_TYPED_CSWAP(longlong, long long, 64)
 
 /*
  * fetch & set
@@ -641,38 +629,28 @@ shmemc_longlong_cswap(long long *t, long long c, long long v, int pe)
  *
  */
 
-int
-shmemc_int_fetch(int *t, int pe)
-{
-    return helper_fadd32((uint64_t) t, 0, pe);
-}
+#define SHMEMC_TYPED_FETCH(_name, _type, _size)                 \
+    _type                                                       \
+    shmemc_##_name##_fetch(_type *t, int pe)                    \
+    {                                                           \
+        return (_type) helper_fadd##_size((uint64_t) t, 0, pe); \
+    }
 
-long
-shmemc_long_fetch(long *t, int pe)
-{
-    return helper_fadd64((uint64_t) t, 0, pe);
-}
+SHMEMC_TYPED_FETCH(int, int, 32)
+SHMEMC_TYPED_FETCH(long, long, 64)
+SHMEMC_TYPED_FETCH(longlong, long long, 64)
+SHMEMC_TYPED_FETCH(float, float, 32)
+SHMEMC_TYPED_FETCH(double, double, 64)
 
-long long
-shmemc_longlong_fetch(long long *t, int pe)
-{
-    return helper_fadd64((uint64_t) t, 0, pe);
-}
+#define SHMEMC_TYPED_SET(_name, _type, _size)       \
+    void                                            \
+    shmemc_##_name##_set(_type *t, _type v, int pe) \
+    {                                               \
+        *t = v;                                     \
+    }
 
-void
-shmemc_int_set(int *t, int v, int pe)
-{
-    *t = v;
-}
-
-void
-shmemc_long_set(long *t, long v, int pe)
-{
-    *t = v;
-}
-
-void
-shmemc_longlong_set(long long *t, long long v, int pe)
-{
-    *t = v;
-}
+SHMEMC_TYPED_SET(int, int, 32)
+SHMEMC_TYPED_SET(long, long, 64)
+SHMEMC_TYPED_SET(longlong, long long, 64)
+SHMEMC_TYPED_SET(float, float, 32)
+SHMEMC_TYPED_SET(double, double, 64)
