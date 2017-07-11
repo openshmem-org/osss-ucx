@@ -34,6 +34,11 @@ static comms_info_t *c_p = & proc.comms;
 #define LOOKUP_UCP_EP(pe) (endpoints[(pe)].remote_ep)
 
 /*
+ * get remote address "a" on PE "pe"
+ */
+#define TRANSLATE_ADDR(a, pe) a
+
+/*
  * where globals/statics/commons/saves live
  *
  */
@@ -354,16 +359,15 @@ shmemc_finalize(void)
     proc.status = SHMEM_PE_SHUTDOWN;
 }
 
+
 /*
- *
- * puts & gets
- *
+ * -- puts & gets --------------------------------------------------------
  */
 
 void shmemc_put(void *dest, const void *src,
                 size_t nbytes, int pe)
 {
-    uint64_t r_dest = (uint64_t) dest; /* address on other PE */
+    uint64_t r_dest = TRANSLATE_ADDR(dest, pe); /* address on other PE */
     ucp_rkey_h rkey;            /* rkey for this remote address */
     ucs_status_t s;
 
@@ -374,7 +378,7 @@ void shmemc_put(void *dest, const void *src,
 void shmemc_get(void *dest, const void *src,
                 size_t nbytes, int pe)
 {
-    uint64_t r_src = (uint64_t) src; /* address on other PE */
+    uint64_t r_src = TRANSLATE_ADDR(dest, pe); /* address on other PE */
     ucp_rkey_h rkey;            /* rkey for this remote address */
     ucs_status_t s;
 
@@ -390,26 +394,24 @@ void shmemc_get(void *dest, const void *src,
 void shmemc_put_nbi(void *dest, const void *src,
                     size_t nbytes, int pe)
 {
-    uint64_t r_dest = (uint64_t) dest; /* address on other PE */
+    uint64_t r_dest = TRANSLATE_ADDR(dest, pe); /* address on other PE */
     ucp_rkey_h rkey;            /* rkey for this remote address */
     ucs_status_t s;
 
     s = ucp_put_nbi(LOOKUP_UCP_EP(pe), src, nbytes, r_dest, rkey);
-    assert(s == UCS_OK);
+    assert(s == UCS_OK || s == UCS_INPROGRESS);
 }
 
 void shmemc_get_nbi(void *dest, const void *src,
                     size_t nbytes, int pe)
 {
-    uint64_t r_src = (uint64_t) src; /* address on other PE */
+    uint64_t r_src = TRANSLATE_ADDR(dest, pe); /* address on other PE */
     ucp_rkey_h rkey;            /* rkey for this remote address */
     ucs_status_t s;
 
     s = ucp_get_nbi(LOOKUP_UCP_EP(pe), dest, nbytes, r_src, rkey);
-    assert(s == UCS_OK);
+    assert(s == UCS_OK || s == UCS_INPROGRESS);
 }
-
-
 
 /*
  * -- atomics ------------------------------------------------------------
@@ -423,7 +425,7 @@ inline static
 uint32_t
 helper_fadd32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     uint32_t ret;
     ucs_status_t s;
@@ -438,7 +440,7 @@ inline static
 uint64_t
 helper_fadd64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     uint64_t ret;
     ucs_status_t s;
@@ -453,7 +455,7 @@ inline static
 void
 helper_add32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     ucs_status_t s;
 
@@ -465,7 +467,7 @@ inline static
 void
 helper_add64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     ucs_status_t s;
 
@@ -477,7 +479,7 @@ inline static
 uint32_t
 helper_swap32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     uint32_t ret;
     ucs_status_t s;
@@ -492,7 +494,7 @@ inline static
 uint64_t
 helper_swap64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     uint64_t ret;
     ucs_status_t s;
@@ -507,7 +509,7 @@ inline static
 uint32_t
 helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     uint32_t ret;
     ucs_status_t s;
@@ -522,7 +524,7 @@ inline static
 uint64_t
 helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
 {
-    uint64_t r_t = t;
+    uint64_t r_t = TRANSLATE_ADDR(t, pe);
     ucp_rkey_h rkey;
     uint64_t ret;
     ucs_status_t s;
