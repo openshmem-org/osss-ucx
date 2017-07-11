@@ -2,10 +2,12 @@ PMIX_CFLAGS            = @PMIX_CFLAGS@
 
 OTHER_CPPFLAGS         = -I$(srcdir)/../../shmemu \
 				-I$(srcdir)/../../shmemi \
+				-I$(srcdir)/../../shmemc \
 				-I../../../include
 
 lib_LIBRARIES          = libshmemc-ucx.a
 libshmemc_ucx_a_SOURCES    = comms.c \
+				put-strided.c get-strided.c \
 				pmi-init.c \
 				pmix-client.c
 #				pmi1-client.c
