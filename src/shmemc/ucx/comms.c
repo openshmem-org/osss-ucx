@@ -382,7 +382,34 @@ void shmemc_get(void *dest, const void *src,
     assert(s == UCS_OK);
 }
 
-/* TODO: AND SO ON */
+/**
+ * Return values from put_nbi/get_nbi probably need more handling
+ *
+ */
+
+void shmemc_put_nbi(void *dest, const void *src,
+                    size_t nbytes, int pe)
+{
+    uint64_t r_dest = (uint64_t) dest; /* address on other PE */
+    ucp_rkey_h rkey;            /* rkey for this remote address */
+    ucs_status_t s;
+
+    s = ucp_put_nbi(LOOKUP_UCP_EP(pe), src, nbytes, r_dest, rkey);
+    assert(s == UCS_OK);
+}
+
+void shmemc_get_nbi(void *dest, const void *src,
+                    size_t nbytes, int pe)
+{
+    uint64_t r_src = (uint64_t) src; /* address on other PE */
+    ucp_rkey_h rkey;            /* rkey for this remote address */
+    ucs_status_t s;
+
+    s = ucp_get_nbi(LOOKUP_UCP_EP(pe), dest, nbytes, r_src, rkey);
+    assert(s == UCS_OK);
+}
+
+
 
 /*
  * -- atomics ------------------------------------------------------------
