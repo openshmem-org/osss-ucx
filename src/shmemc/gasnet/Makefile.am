@@ -7,7 +7,8 @@ libshmemc_gasnet_a_SOURCES    = bail.c \
 				comms.c \
 				gvhack.c \
 				put-strided.c \
-				get-strided.c # lock.c
+				get-strided.c \
+				lock.c
 
 libshmemc_gasnet_a_CPPFLAGS = $(GASNET_CPPFLAGS) \
 				-I$(top_srcdir)/src/shmemi \

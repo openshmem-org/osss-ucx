@@ -5,6 +5,8 @@
  *
  */
 
+#include "shmemc.h"
+
 /*
  *    Copyright (c) 1996-2002 by Quadrics Supercomputers World Ltd.
  *    Copyright (c) 2003-2005 by Quadrics Ltd.
@@ -57,10 +59,10 @@ enum
 };
 
 /* Macro to map lock virtual address to owning process vp */
-#define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % (GET_STATE (numpes)) )
+#define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % shmemc_my_pe() )
 
-void
-shmemc_lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
+static void
+lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     SHMEM_LOCK tmp;
     long locked;
@@ -110,8 +112,8 @@ shmemc_lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
     }
 }
 
-void
-shmemc_lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
+static void
+lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     /* Is there someone on the linked list ? */
     if (node->l_next == SHMEM_LOCK_FREE) {
@@ -170,8 +172,8 @@ shmemc_lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
  *
  * (addy 12.10.05)
  */
-int
-shmemc_lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
+static int
+lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     SHMEM_LOCK tmp;
     int retval;
@@ -185,7 +187,7 @@ shmemc_lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 
     /* If lock already set then return 1, otherwise grab the lock & return 0 */
     if (tmp.l_word == SHMEM_LOCK_RESET) {
-        shmemc_lock_acquire(node, lock, this_pe);
+        lock_acquire(node, lock, this_pe);
         retval = 0;
     }
     else {
@@ -193,4 +195,32 @@ shmemc_lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
     }
 
     return retval;
+}
+
+void
+shmemc_set_lock(volatile long *lock)
+{
+    lock_acquire(&((SHMEM_LOCK *) lock)[1],
+                 &((SHMEM_LOCK *) lock)[0],
+                 shmemc_my_pe());
+}
+
+void
+shmemc_clear_lock(volatile long *lock)
+{
+    /* The Cray man pages suggest we also need to do this (addy
+       12.10.05) */
+    shmemc_quiet ();
+
+    lock_release(&((SHMEM_LOCK *) lock)[1],
+                 &((SHMEM_LOCK *) lock)[0],
+                 shmemc_my_pe());
+}
+
+int
+shmemc_test_lock(volatile long *lock)
+{
+    return lock_test(&((SHMEM_LOCK *) lock)[1],
+                     &((SHMEM_LOCK *) lock)[0],
+                     shmemc_my_pe());
 }
