@@ -2,6 +2,8 @@
 
 #include <stdio.h>
 
+#include "shmemi.h"
+
 #include "gasnet-common.h"
 
 /**
@@ -17,22 +19,14 @@ place_init(void)
 
     gnip = (gasnet_nodeinfo_t *) malloc(n * sizeof(*gnip));
     if (gnip == NULL) {
-        shmemi_trace(SHMEM_LOG_FATAL,
-                     "internal error: cannot allocate memory for"
-                     " locality queries");
-        return;
-        /* NOT REACHED */
+        goto fail;
     }
 
     GASNET_SAFE(gasnet_getNodeInfo(gnip, n));
 
-    proc.locp = (int *)malloc (n * sizeof(int));
+    proc.locp = (int *) malloc(n * sizeof(int));
     if (proc.locp == NULL) {
-        shmemi_trace(SHMEM_LOG_FATAL,
-                     "internal error: cannot allocate memory for"
-                     " locality queries");
-        return;
-        /* NOT REACHED */
+        goto fail;
     }
 
     /*
@@ -41,10 +35,15 @@ place_init(void)
      * can't share memory).
      */
     for (i = 0; i < n; i += 1) {
-        proc.locp[i], gnip[i].host;
+        proc.locp[i] = gnip[i].host;
     }
 
     free(gnip);
+
+ fail:
+    logger(LOG_FATAL, "cannot allocate memory for locality queries");
+    return;
+    /* NOT REACHED */
 
     /*
      * TODO: free up the neighborhood table on finalize
