@@ -175,9 +175,9 @@ float     shmemc_float_set(float *t, float v, int pe);
 double    shmemc_double_set(double *t, double v, int pe);
 
 
-void shmemc_set_lock(volatile long *lock);
-void shmemc_clear_lock(volatile long *lock);
-int  shmemc_test_lock(volatile long *lock);
+void shmemc_set_lock(long *lock);
+void shmemc_clear_lock(long *lock);
+int  shmemc_test_lock(long *lock);
 
 /*
  * to be zapped

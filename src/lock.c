@@ -16,17 +16,17 @@
 void
 shmem_set_lock(volatile long *lock)
 {
-    shmemc_set_lock(lock);
+    shmemc_set_lock((long *) lock);
 }
 
 void
 shmem_clear_lock(volatile long *lock)
 {
-    shmemc_clear_lock(lock);
+    shmemc_clear_lock((long *) lock);
 }
 
 int
 shmem_test_lock(volatile long *lock)
 {
-    return shmemc_test_lock(lock);
+    return shmemc_test_lock((long *) lock);
 }
