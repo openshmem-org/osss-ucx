@@ -8,30 +8,9 @@
 #include <pthread.h>
 #include <stdbool.h>
 
-#include "gasnet-common.h"
-
 #include "shmemi.h"
 
-/**
- * choose thread implementation
- */
-
-#undef SHMEM_USE_QTHREADS
-
-#if defined(SHMEM_USE_QTHREADS)
-
-#include <qthread.h>
-
-typedef aligned_t shmem_thread_return_t;
-typedef qthread_f shmem_thread_t;
-
-static shmem_thread_return_t thr_ret;
-
-#else
-
-/* defaulting to pthreads */
-
-#define SHMEM_USE_PTHREADS 1
+#include "gasnet-common.h"
 
 #include <pthread.h>
 
@@ -41,15 +20,11 @@ typedef pthread_t shmem_thread_t;
 /**
  * new thread for progress-o-matic
  */
-
 static shmem_thread_t thr;
-
-#endif /* threading model */
 
 /**
  * for hi-res timer
  */
-
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 199309
 #endif /* _POSIX_C_SOURCE */
@@ -58,14 +33,12 @@ static shmem_thread_t thr;
 /**
  * for refractory back-off
  */
-
 static long delay = 1000L;      /* ns */
 static struct timespec delayspec;
 
 /**
  * polling sentinel
  */
-
 static volatile bool done = false;
 
 /**
@@ -80,7 +53,7 @@ start_service(void *unused)
         pthread_yield();
         nanosleep(&delayspec, NULL);   /* back off */
     }
-    while (!done);
+    while (! done);
 
     return (shmem_thread_return_t) 0;
 }
@@ -137,7 +110,7 @@ check_if_thread_starter(void)
  */
 
 void
-shmemc_service_init(void)
+service_init(void)
 {
     /*
      * Zap this code for now.  Problems with IBV conduit thread if all
@@ -163,6 +136,7 @@ shmemc_service_init(void)
 
     const char *grt_str = "GASNET_RCV_THREAD";
     char *rtv = shmemu_getenv(grt_str);
+
     if (rtv == NULL) {
         use_conduit_thread = true;
     }
@@ -187,7 +161,7 @@ shmemc_service_init(void)
           defined(GASNET_CONDUIT_VAPI)) */
 #endif /* commented out */
 
-    if (!use_conduit_thread) {
+    if (! use_conduit_thread) {
         delayspec.tv_sec = (time_t) 0;
         delayspec.tv_nsec = delay;
 
@@ -198,18 +172,12 @@ shmemc_service_init(void)
 #endif /* GASNET_CONDUIT_MPI */
 
         if (thread_starter) {
-#if defined(SHMEM_USE_PTHREADS)
             const int s = pthread_create(&thr, NULL,
                                          start_service, (void *) 0);
-#elif defined(SHMEM_USE_QTHREADS)
-            qthread_initialize();
-
-            const int s = qthread_fork(start_service, (void *) 0, &thr_ret);
-#endif
 
             if (s != 0) {
                 shmemc_bailout
-                    ("internal error: progress thread creation failed (%s)",
+                    ("progress thread creation failed (%s)",
                      strerror(s)
                      );
                 /* NOT REACHED */
@@ -224,28 +192,21 @@ shmemc_service_init(void)
  */
 
 void
-shmemc_service_finalize(void)
+service_finalize(void)
 {
-    if (!use_conduit_thread) {
+    if (! use_conduit_thread) {
         done = true;
 
         if (thread_starter) {
-#if defined(SHMEM_USE_PTHREADS)
             const int s = pthread_join(thr, NULL);
 
             if (s != 0) {
                 shmemc_bailout
-                    ("internal error: progress thread termination failed (%s)",
-                     strerror(s)
+                    ("progress thread termination failed (%d: %s)",
+                     s, strerror(s)
                      );
                 /* NOT REACHED */
             }
-#elif defined(SHMEM_USE_QTHREADS)
-            /**
-             * not sure if need readFF() here
-             */
-            qthread_finalize();
-#endif
         }
     }
 }
