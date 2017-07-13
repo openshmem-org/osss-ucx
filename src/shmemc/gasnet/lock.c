@@ -5,7 +5,11 @@
  *
  */
 
+#include "shmemi.h"
 #include "shmemc.h"
+#include "memfence.h"
+
+#include "gasnet-common.h"
 
 /*
  *    Copyright (c) 1996-2002 by Quadrics Supercomputers World Ltd.
@@ -53,13 +57,13 @@ typedef struct
 
 enum
 {
-    SHMEM_LOCK_FREE = -1,
+    SHMEM_LOCK_FREE = 0,
     SHMEM_LOCK_RESET,
     SHMEM_LOCK_SET
 };
 
 /* Macro to map lock virtual address to owning process vp */
-#define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % shmemc_my_pe() )
+#define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % proc.rank )
 
 static void
 lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
@@ -105,7 +109,7 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * I'm now next in global linked list, update l_next in the
          * prev_pe process with our vp
          */
-        shmemc_short_p((short *) &node->l_next, this_pe, prev_pe);
+        shmemc_put((short *) &node->l_next, &this_pe, sizeof(short), prev_pe);
 
         /* Wait for flag to be released */
         GASNET_BLOCKUNTIL( !(node->l_locked) );
@@ -160,7 +164,7 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
      * Release any waiters on the linked list
      */
 
-    shmemc_short_p((short *) &node->l_locked, 0, node->l_next);
+    shmemc_put((short *) &node->l_locked, 0, sizeof(short), node->l_next);
 }
 
 
@@ -179,7 +183,10 @@ lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
     int retval;
 
     /* Read the remote global lock value */
-    tmp.l_word = shmemc_int_g((int *) &lock->l_word, LOCK_OWNER(lock));
+    shmemc_get(&tmp.l_word,
+               (int *) &lock->l_word,
+               sizeof(tmp.l_word),
+               LOCK_OWNER(lock));
 
     /* Translate old (broken) default lock state */
     if (tmp.l_word == SHMEM_LOCK_FREE)
@@ -198,15 +205,15 @@ lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 }
 
 void
-shmemc_set_lock(volatile long *lock)
+shmemc_set_lock(long *lock)
 {
     lock_acquire(&((SHMEM_LOCK *) lock)[1],
                  &((SHMEM_LOCK *) lock)[0],
-                 shmemc_my_pe());
+                 proc.rank);
 }
 
 void
-shmemc_clear_lock(volatile long *lock)
+shmemc_clear_lock(long *lock)
 {
     /* The Cray man pages suggest we also need to do this (addy
        12.10.05) */
@@ -214,13 +221,13 @@ shmemc_clear_lock(volatile long *lock)
 
     lock_release(&((SHMEM_LOCK *) lock)[1],
                  &((SHMEM_LOCK *) lock)[0],
-                 shmemc_my_pe());
+                 proc.rank);
 }
 
 int
-shmemc_test_lock(volatile long *lock)
+shmemc_test_lock(long *lock)
 {
     return lock_test(&((SHMEM_LOCK *) lock)[1],
                      &((SHMEM_LOCK *) lock)[0],
-                     shmemc_my_pe());
+                     proc.rank);
 }
