@@ -4,6 +4,7 @@ lib_LIBRARIES          = libshmemc-gasnet.a
 
 libshmemc_gasnet_a_SOURCES    = bail.c \
 				service.c \
+				locality.c \
 				comms.c \
 				gvhack.c \
 				put-strided.c \
