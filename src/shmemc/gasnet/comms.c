@@ -2,6 +2,7 @@
 
 #include "gasnet-common.h"
 #include "service.h"
+#include "locality.h"
 
 #include "shmemu.h"
 #include "shmemi.h"
@@ -2075,6 +2076,7 @@ release_cmdline(void)
 {
     if (argv != NULL) {
         int i;
+
         for (i = 0; i < argc; i += 1) {
             if (argv[i] != NULL) {
                 free(argv[i]);
@@ -2091,6 +2093,7 @@ static void
 maximize_gasnet_timeout(void)
 {
     char buf[32];
+
     snprintf(buf, 32, "%d", INT_MAX - 1);
     setenv("GASNET_ EXITTIMEOUT", buf, 1);
 }
@@ -2112,17 +2115,17 @@ shmemc_exit(int status)
         return;
     }
 
+    /* ok, no more pending I/O ... */
+    shmemc_barrier_all();
+
+    service_finalize();
+
+    release_cmdline();
+
 #if 0
     /**
      * SO THAT WE CAN COMPILE
      **/
-
-    /* ok, no more pending I/O ... */
-    shmemc_barrier_all();
-
-    release_cmdline();
-
-    shmemi_service_finalize();
 
     /* clean up atomics and memory */
     shmemi_atomic_finalize();
@@ -2138,14 +2141,15 @@ shmemc_exit(int status)
     /* stop run time clock */
     shmemi_elapsed_clock_finalize();
 
+#endif
+
     /* update our state */
     proc.status = PE_SHUTDOWN;
 
     logger(LOG_FINALIZE,
            "finalizing shutdown, handing off to communications layer");
 
-    shmemi_tracers_fini();
-#endif
+    shmemi_logger_finalize();
 
     /*
      * TODO, tc: need to be better at cleanup for 1.2, since finalize
@@ -2200,16 +2204,16 @@ shmemc_init(void)
                               )
                 );
 
-#if 0
-    /**
-     * SO THAT WE CAN COMPILE
-     **/
-
     /* set up any locality information */
     place_init();
 
     /* fire up any needed progress management */
-    shmemi_service_init();
+    service_init();
+
+#if 0
+    /**
+     * SO THAT WE CAN COMPILE
+     **/
 
     /* enable messages */
     shmemi_elapsed_clock_init();
@@ -2242,7 +2246,7 @@ shmemc_init(void)
     /* register shutdown handler */
     if (atexit(shmemc_finalize) != 0) {
         logger(LOG_FATAL,
-               "internal error: cannot register "
+               "cannot register "
                "OpenSHMEM finalize handler: \"%s\"",
                strerror(errno));
         /* NOT REACHED */
