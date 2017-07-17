@@ -9,7 +9,7 @@ shmem_lib=@libdir@
 pmixlib_stanza="@PMIX_LIBS@"
 
 shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
-shmemlib_libs="-lshmem -lshmemi -lshmemc -lshmemc-gasnet -lshmemu"
+shmemlib_libs="-lshmem -lshmemi -lshmemc-gasnet -lshmemu"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
 
 comms_stanza="%GASNET_LDFLAGS% %GASNET_LIBS%"
