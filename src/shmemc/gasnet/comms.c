@@ -2149,8 +2149,6 @@ shmemc_exit(int status)
     logger(LOG_FINALIZE,
            "finalizing shutdown, handing off to communications layer");
 
-    shmemi_logger_finalize();
-
     /*
      * TODO, tc: need to be better at cleanup for 1.2, since finalize
      * doesn't imply follow-on exit, merely end of OpenSHMEM portion.

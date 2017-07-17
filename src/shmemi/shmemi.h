@@ -56,42 +56,6 @@ void *shmemi_realloc(void *p, size_t s);
 void *shmemi_align(size_t a, size_t s);
 
 /*
- * message logging
- */
-
-void shmemi_logger_init(void);
-void shmemi_logger_finalize(void);
-
-#define SHMEMI_BIT_SET(_level) (1 << (_level))
-
-typedef enum shmemi_log {
-    LOG_FATAL       = SHMEMI_BIT_SET(0),
-    LOG_INIT        = SHMEMI_BIT_SET(1),
-    LOG_FINALIZE    = SHMEMI_BIT_SET(2),
-    LOG_MEMORY      = SHMEMI_BIT_SET(3),
-    LOG_HEAP        = SHMEMI_BIT_SET(4),
-    LOG_INFO        = SHMEMI_BIT_SET(5),
-    LOG_REDUCTION   = SHMEMI_BIT_SET(5),
-    LOG_ALL         = LOG_FATAL | LOG_INIT | LOG_FINALIZE
-                         | LOG_MEMORY | LOG_HEAP | LOG_INFO,
-    LOG_UNKNOWN     = -1
-} shmemi_log_t;
-
-void shmemi_logger(shmemi_log_t level, const char *fmt, ...);
-
-#ifdef ENABLE_DEBUG
-# define logger(...) shmemi_logger(__VA_ARGS__)
-#else
-# define logger(...)
-#endif /* ENABLE_DEBUG */
-
-inline static void
-deprecate(const char *fn)
-{
-    logger(LOG_INFO, "\"%s\" is deprecated", fn);
-}
-
-/*
  * PE management
  */
 

@@ -3,6 +3,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemi/shmemi.h"
+#include "shmemu/shmemu.h"
 #include "shmemc/shmemc.h"
 #include "shmem/defs.h"
 

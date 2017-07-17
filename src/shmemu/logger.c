@@ -13,8 +13,8 @@
 #include <assert.h>
 #include <ctype.h>
 
-#include "shmemi.h"
 #include "shmemu.h"
+#include "shmemi.h"
 #include "shmemc.h"
 
 #define TRACE_MSG_BUF_SIZE 256
@@ -23,14 +23,14 @@ static FILE *log_stream = NULL;
 static bool logging = false;
 static char *host = NULL;
 
-typedef struct shmemi_log_table {
-    shmemi_log_t level;
+typedef struct shmemu_log_table {
+    shmemu_log_t level;
     char *name;
-} shmemi_log_table_t;
+} shmemu_log_table_t;
 
 #define LOG_LEVEL_EMIT(_level) { LOG_##_level, #_level }
 
-static shmemi_log_table_t table[] =
+static shmemu_log_table_t table[] =
     {
         LOG_LEVEL_EMIT(INIT),
         LOG_LEVEL_EMIT(FINALIZE),
@@ -42,11 +42,10 @@ static shmemi_log_table_t table[] =
         LOG_LEVEL_EMIT(UNKNOWN)
     };
 
-static
-char *
-level_to_name(shmemi_log_t level)
+static char *
+level_to_name(shmemu_log_t level)
 {
-    shmemi_log_table_t *tp = table;
+    shmemu_log_table_t *tp = table;
 
     while (tp->level != LOG_UNKNOWN) {
         if (level == tp->level) {
@@ -59,11 +58,10 @@ level_to_name(shmemi_log_t level)
     return "UNKNOWN";
 }
 
-static
-shmemi_log_t
+static shmemu_log_t
 name_to_level(const char *name)
 {
-    shmemi_log_table_t *tp = table;
+    shmemu_log_table_t *tp = table;
 
     while (tp->level != LOG_UNKNOWN) {
         if (strncmp(name, tp->name, strlen(tp->name)) == 0) {
@@ -79,8 +77,7 @@ name_to_level(const char *name)
 /*
  * for private use before up and running
  */
-static
-void
+static void
 fatal(const char *fmt, ...)
 {
         va_list ap;
@@ -98,7 +95,7 @@ fatal(const char *fmt, ...)
 }
 
 void
-shmemi_logger_init(void)
+shmemu_logger_init(void)
 {
     char *e;
 
@@ -134,7 +131,7 @@ shmemi_logger_init(void)
 }
 
 void
-shmemi_logger_finalize(void)
+shmemu_logger_finalize(void)
 {
     if (! logging) {
         return;
@@ -146,7 +143,7 @@ shmemi_logger_finalize(void)
 }
 
 void
-shmemi_logger(shmemi_log_t level, const char *fmt, ...)
+shmemu_logger(shmemu_log_t level, const char *fmt, ...)
 {
     if (logging) {
         char *tmp1;

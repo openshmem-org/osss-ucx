@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 
+#include "shmemu.h"
 #include "shmemi.h"
-
 #include "gasnet-common.h"
 
 /**

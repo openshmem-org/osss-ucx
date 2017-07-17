@@ -2,8 +2,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "shmemi/shmemi.h"
 #include "shmem/defs.h"
+#include "shmemi/shmemi.h"
+#include "shmemu/shmemu.h"
 #include "shmemi/shmemi.h"
 #include "fortran-common.h"
 

@@ -4,6 +4,7 @@
 
 #include "shmem/defs.h"
 #include "shmemi/shmemi.h"
+#include "shmemu/shmemu.h"
 #include "shmemc/shmemc.h"
 
 #ifdef ENABLE_PSHMEM

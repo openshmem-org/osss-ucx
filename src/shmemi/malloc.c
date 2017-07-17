@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "shmemi.h"
+#include "shmemu.h"
 
 static const int DEFAULT_HEAP = 0;
 

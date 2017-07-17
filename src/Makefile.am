@@ -1,15 +1,15 @@
 shmemu_dir             = shmemu
-shmemu_cppflags        = -I$(srcdir)/$(shmemu_dir)
+shmemu_cppflags        = -I$(top_srcdir)/src/$(shmemu_dir)
 shmemu_ldflags         = -L$(shmemu_dir)
 shmemu_libs            = -lshmemu
 
 shmemc_dir             = shmemc
-shmemc_cppflags        = -I$(srcdir)/$(shmemc_dir)
-shmemc_ldflags         = -L$(shmemc_dir)
-shmemc_libs            = -lshmemc
+shmemc_cppflags        = -I$(top_srcdir)/src/$(shmemc_dir)
+shmemc_ldflags         =
+shmemc_libs            =
 
 shmemi_dir             = shmemi
-shmemi_cppflags        = -I$(srcdir)/$(shmemi_dir)
+shmemi_cppflags        = -I$(top_srcdir)/src/$(shmemi_dir)
 shmemi_ldflags         = -L$(shmemi_dir)
 shmemi_libs            = -lshmemi
 
