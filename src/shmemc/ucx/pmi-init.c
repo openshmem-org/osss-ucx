@@ -3,7 +3,8 @@
 #include <string.h>
 
 #include "../shmemc.h"
-#include "../shmemi/shmemi.h"
+#include "shmemi.h"
+#include "shmemu.h"
 
 #include "pmix-client.h"
 #include "pmi2-client.h"

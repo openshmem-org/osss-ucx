@@ -7,6 +7,7 @@
 #include <pmix.h>
 
 #include "shmemi.h"
+#include "shmemu.h"
 
 /*
  * if finalize called through atexit, force a barrier
