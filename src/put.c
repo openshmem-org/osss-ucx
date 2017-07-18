@@ -6,13 +6,6 @@
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
-extern void shmem_complexf_put(COMPLEXIFY(float) * dest,
-                               const COMPLEXIFY(float) * src,
-                               size_t nelems, int pe);  /* ! API */
-extern void shmem_complexd_put(COMPLEXIFY(double) * dest,
-                               const COMPLEXIFY(double) * src,
-                               size_t nelems, int pe);    /* ! API */
-
 #pragma weak shmem_short_put = pshmem_short_put
 #define shmem_short_put pshmem_short_put
 #pragma weak shmem_int_put = pshmem_int_put
@@ -63,6 +56,7 @@ SHMEM_TYPED_PUT(longlong, long long)
 SHMEM_TYPED_PUT(longdouble, long double)
 SHMEM_TYPED_PUT(double, double)
 SHMEM_TYPED_PUT(float, float)
+/* for Fortran */
 SHMEM_TYPED_PUT(complexf, COMPLEXIFY(float))
 SHMEM_TYPED_PUT(complexd, COMPLEXIFY(double))
 
@@ -105,5 +99,6 @@ SHMEM_TYPED_P_WRAPPER(longlong, long long)
 SHMEM_TYPED_P_WRAPPER(float, float)
 SHMEM_TYPED_P_WRAPPER(double, double)
 SHMEM_TYPED_P_WRAPPER(longdouble, long double)
+/* for Fortran */
 SHMEM_TYPED_P_WRAPPER(complexf, COMPLEXIFY(float))
 SHMEM_TYPED_P_WRAPPER(complexd, COMPLEXIFY(double))

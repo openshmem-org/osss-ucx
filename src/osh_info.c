@@ -167,7 +167,7 @@ output_comms(void)
     output("UCX", "on");
     output("UCX Install", UCX_DIR);
 #else
-    output("UCX", "off");
+    output("UCX", "off [shouldn't happen]");
 #endif /* HAVE_UCX */
 }
 

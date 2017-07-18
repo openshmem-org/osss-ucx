@@ -5,16 +5,18 @@
 #include "shmem/defs.h"
 #include "shmem/api.h"
 
-#include "shmemc.h"
-
 /*
  * these are needed for propagating into Fortran,
  * but aren't actually part of the API
  */
-extern COMPLEXIFY(float) shmem_complexf_g(COMPLEXIFY(float) *addr, int pe);
-extern COMPLEXIFY(double) shmem_complexd_g(COMPLEXIFY(double) *addr, int pe);
-extern void shmem_char_iget(char *target, const char *source, ptrdiff_t tst,
-                            ptrdiff_t sst, size_t nelems, int pe);
+extern void shmem_complexf_get(COMPLEXIFY(float) *dest,
+                               const COMPLEXIFY(float) *src,
+                               size_t nelems,
+                               int pe);
+extern void shmem_complexd_get(COMPLEXIFY(double) *dest,
+                               const COMPLEXIFY(double) *src,
+                               size_t nelems,
+                               int pe);
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_char_iget = pshmem_char_iget
@@ -41,45 +43,58 @@ extern void shmem_char_iget(char *target, const char *source, ptrdiff_t tst,
 #define shmem_iget128 pshmem_iget128
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_TYPE_IGET(_name, _type)                                   \
+#define SHMEM_EMIT_IGET(_name, _type)                                   \
     void                                                                \
     shmem_##_name##_iget(_type *target, const _type *source,            \
                          ptrdiff_t tst, ptrdiff_t sst,                  \
                          size_t nelems, int pe)                         \
     {                                                                   \
-        const size_t sized_nelems = nelems * sizeof(_type);             \
-        shmem_##_name##_iget(target, source, tst, sst, sized_nelems, pe); \
+        size_t ti = 0, si = 0;                                          \
+        size_t i;                                                       \
+                                                                        \
+        for (i = 0; i < nelems; i += 1) {                               \
+            shmem_##_name##_get(target + ti, source + si, 1, pe);       \
+            ti += tst;                                                  \
+            si += sst;                                                  \
+        }                                                               \
     }
 
-SHMEM_TYPE_IGET(char, char)
-SHMEM_TYPE_IGET(short, short)
-SHMEM_TYPE_IGET(int, int)
-SHMEM_TYPE_IGET(long, long)
-SHMEM_TYPE_IGET(float, float)
-SHMEM_TYPE_IGET(double, double)
-SHMEM_TYPE_IGET(longlong, long long)
-SHMEM_TYPE_IGET(longdouble, long double)
-SHMEM_TYPE_IGET(complexf, COMPLEXIFY(float))
-SHMEM_TYPE_IGET(complexd, COMPLEXIFY(double))
+SHMEM_EMIT_IGET(char, char)
+SHMEM_EMIT_IGET(short, short)
+SHMEM_EMIT_IGET(int, int)
+SHMEM_EMIT_IGET(long, long)
+SHMEM_EMIT_IGET(float, float)
+SHMEM_EMIT_IGET(double, double)
+SHMEM_EMIT_IGET(longlong, long long)
+SHMEM_EMIT_IGET(longdouble, long double)
+/* for Fortran */
+SHMEM_EMIT_IGET(complexf, COMPLEXIFY(float))
+SHMEM_EMIT_IGET(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_IGET(_bits, _size)                                  \
+#define SHMEM_SIZED_IGET(_name, _size)                                  \
     void                                                                \
-    shmem_iget##_bits(void *target, const void *source,                 \
+    shmem_iget##_size(void *target, const void *source,                 \
                       ptrdiff_t tst, ptrdiff_t sst,                     \
                       size_t nelems, int pe)                            \
     {                                                                   \
-        const size_t sized_nelems = nelems * _size;                     \
-        shmem_##_name##_iget(target, source, tst, sst, sized_nelems, pe); \
+        size_t ti = 0, si = 0;                                          \
+        size_t i;                                                       \
+                                                                        \
+        for (i = 0; i < nelems; i += 1) {                               \
+            shmem_get##_name(target + ti, source + si, 1, pe);          \
+            ti += tst;                                                  \
+            si += sst;                                                  \
+        }                                                               \
     }
 
 SHMEM_SIZED_IGET(32, 32)
-SHMEM_SIZED_IGET(4, 32)
+SHMEM_SIZED_IGET(32, 4)
 #if __WORDSIZE == 64
 SHMEM_SIZED_IGET(64, 64)
-SHMEM_SIZED_IGET(8, 64)
+SHMEM_SIZED_IGET(64, 8)
 #else
 SHMEM_SIZED_IGET(32, 32)
-SHMEM_SIZED_IGET(4, 32)
+SHMEM_SIZED_IGET(32, 4)
 #endif
-/* fake it for now */
+/* not sure about 128 yet, fake for now */
 SHMEM_SIZED_IGET(128, 128)
