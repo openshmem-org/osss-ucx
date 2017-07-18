@@ -1,6 +1,8 @@
 #ifndef _THISPE_H
 #define _THISPE_H 1
 
+#include "heapx.h"
+
 #include <ucp/api/ucp.h>
 
 typedef struct comms_info {
@@ -19,7 +21,7 @@ typedef struct comms_info {
 
 typedef enum shmem_status {
     SHMEM_PE_SHUTDOWN = 0,
-    SHMEM_PE_UP,
+    SHMEM_PE_RUNNING,
     SHMEM_PE_UNKNOWN
 } shmem_status_t;
 
@@ -33,10 +35,29 @@ typedef struct thispe_info {
 
     int refcount;               /* library initialization count */
 
-    int nheaps;                 /* number of symmetric heaps */
+    char *peers;                /* PEs in a node group */
+    int npeers;
+
+    heapx_t *heaps;             /* nranks * symmetric heaps */
+    int nheaps;                 /* heaps per PE (Assume 1 for now) */
 
 } thispe_info_t;
 
 extern thispe_info_t proc;
+
+/*
+ * shortcut to look up the UCP endpoint
+ */
+#define LOOKUP_UCP_EP(rank) (proc.comms.eps[(rank)])
+
+/*
+ * TODO: shortcut to look up the remote key for address "a"
+ */
+#define LOOKUP_RKEY(a) NULL
+
+/*
+ * TODO: get remote address "a" on PE "pe"
+ */
+#define TRANSLATE_ADDR(a, pe) ((uint64_t) a)
 
 #endif /* ! _THISPE_H */

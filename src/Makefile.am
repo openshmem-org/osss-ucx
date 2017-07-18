@@ -8,14 +8,13 @@ shmemc_cppflags        = -I$(top_srcdir)/src/$(shmemc_dir)
 shmemc_ldflags         =
 shmemc_libs            =
 
-shmemi_dir             = shmemi
-shmemi_cppflags        = -I$(top_srcdir)/src/$(shmemi_dir)
-shmemi_ldflags         = -L$(shmemi_dir)
-shmemi_libs            = -lshmemi
+#shmemi_dir             = shmemi
+#shmemi_cppflags        = -I$(top_srcdir)/src/$(shmemi_dir)
+#shmemi_ldflags         = -L$(shmemi_dir)
+#shmemi_libs            = -lshmemi
 
-SUBDIRS                = $(shmemu_dir) \
-				$(shmemc_dir) \
-				$(shmemi_dir)
+SUBDIRS                = $(shmemu_dir) $(shmemc_dir)
+
 
 MY_SOURCES             = \
 				init.c \

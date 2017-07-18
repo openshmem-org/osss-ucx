@@ -39,7 +39,7 @@ pmix_finalize_handler(_Bool need_barrier)
 static void
 pmix_finalize_atexit(void)
 {
-    pmix_finalize_handler(proc.status == PE_RUNNING);
+    pmix_finalize_handler(proc.status == SHMEM_PE_RUNNING);
 }
 
 /*
@@ -73,20 +73,22 @@ publish_heap_info(void)
         /*
          * everyone publishes their info
          */
-        for (i = 0; i < nheaps; i += 1) {
+        for (i = 0; i < proc.nheaps; i += 1) {
             snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, proc.rank, i);
             ia[0].value.type = PMIX_UINT64;
-            ia[0].value.data.uint64 = (uint64_t) heapx[i][proc.rank].base;
+            ia[0].value.data.uint64 = (uint64_t) proc.heaps[proc.rank][i]->base;
 
             snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, proc.rank, i);
             ia[1].value.type = PMIX_SIZE;
-            ia[1].value.data.size = heapx[i][proc.rank].size;
+            ia[1].value.data.size = proc.heaps[proc.rank][i]->size;
 
             ps = PMIx_Publish(ia, 2);
             assert(ps == PMIX_SUCCESS);
 
             logger(LOG_HEAP, "PUBLISH: my heap #%d @ %p, %lu bytes",
-                   i, heapx[i][proc.rank].base, heapx[i][proc.rank].size);
+                   i,
+                   proc.heaps[proc.rank][i]->base,
+                   proc.heaps[proc.rank][i]->size);
         }
 
         PMIX_INFO_FREE(ia, 2);
@@ -110,9 +112,9 @@ exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_base);
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
-    for (i = 0; i < proc.nheaps; i += 1) {
-        for (pn = 0; pn < proc.nranks; pn += 1) {
-            if (pn != proc.rank) {
+    for (pn = 0; pn < proc.nranks; pn += 1) {
+        if (pn != proc.rank) {
+            for (i = 0; i < proc.nheaps; i += 1) {
 
                 /* can I merge these?  No luck so far */
                 snprintf(fetch_base.key, PMIX_MAX_KEYLEN, base_fmt, pn, i);
@@ -124,20 +126,19 @@ exchange_heap_info(void)
                 ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
                 assert(ps == PMIX_SUCCESS);
 
-                shmemi_heapx_set_pe(i,
-                                    pn,
-                                    (void *) fetch_base.value.data.uint64,
-                                    fetch_size.value.data.size
-                                    );
+                proc.heaps[pn][i]->base = (void *) fetch_base.value.data.uint64;
+                proc.heaps[pn][i]->size = fetch_size.value.data.size;
             }
         }
     }
 
     for (pn = 0; pn < proc.nranks; pn += 1) {
         if (pn != proc.rank) {
-            for (i = 0; i < nheaps; i += 1) {
-                logger(LOG_HEAP, "FETCH: heap #%d from PE %d @ %p, %lu bytes",
-                       i, pn, heapx[i][pn].base, heapx[i][pn].size);
+            for (i = 0; i < proc.nheaps; i += 1) {
+                logger(LOG_HEAP, "FETCH: from PE %d, heap #%d @ %p, %lu bytes",
+                       pn, i,
+                       proc.heaps[proc.rank][i]->base,
+                       proc.heaps[proc.rank][i]->size);
             }
         }
     }

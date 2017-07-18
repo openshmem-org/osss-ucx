@@ -161,10 +161,8 @@ AC_CONFIG_FILES([src/Makefile
 		])
 
 AC_CONFIG_FILES([src/shmemc/Makefile
-                 src/shmemc/oshcc.tmpl
-                 src/shmemc/oshcxx.tmpl
-                 src/shmemc/oshfort.tmpl
-                 src/shmemc/oshrun.tmpl
+		 src/shmemc/oshcc src/shmemc/oshcxx src/shmemc/oshfort
+		 src/shmemc/oshrun
                ])
 
 AC_OUTPUT
