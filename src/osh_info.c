@@ -13,15 +13,13 @@
 static const int tag_width = 20;
 static char *unknown = "unknown";
 
-static
-void
+static void
 output(const char *tag, const char *val)
 {
     printf("%*s: %s\n", tag_width, tag, val);
 }
 
-static
-void
+static void
 output_package(void)
 {
     output("Package name",
@@ -57,8 +55,7 @@ output_package(void)
            );
 }
 
-static
-void
+static void
 output_spec_version(void)
 {
 #if defined(SHMEM_MAJOR_VERSION) && defined(SHMEM_MINOR_VERSION)
@@ -73,8 +70,7 @@ output_spec_version(void)
 #endif /* spec. version check */
 }
 
-static
-void
+static void
 output_build_env(void)
 {
     char *host;
@@ -104,8 +100,7 @@ output_build_env(void)
 #endif /* CONFIG_FLAGS */
 }
 
-static
-void
+static void
 output_features(void)
 {
     output("Static libraries",
@@ -165,8 +160,7 @@ output_features(void)
            );
 }
 
-static
-void
+static void
 output_comms(void)
 {
 #ifdef HAVE_UCX
@@ -175,14 +169,6 @@ output_comms(void)
 #else
     output("UCX", "off");
 #endif /* HAVE_UCX */
-
-#ifdef HAVE_GASNET
-    output("GASNet", "on");
-    output("GASNet Install", GASNET_DIR);
-    output("GASNet Conduit", GASNET_CONDUIT);
-#else
-    output("GASNet", "off");
-#endif /* HAVE_GASNET */
 }
 
 int

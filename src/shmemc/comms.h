@@ -1,7 +1,7 @@
 #ifndef _SHMEMC_H
 #define _SHMEMC_H 1
 
-#include "../shmemc.h"
+#include "shmemc.h"
 
 #include <ucp/api/ucp.h>
 

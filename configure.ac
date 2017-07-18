@@ -39,17 +39,6 @@ LT_INIT
 
 m4_include([config/m4/pmix.m4])
 m4_include([config/m4/ucx.m4])
-m4_include([config/m4/gasnet.m4])
-
-#
-# Can't have both gasnet and ucx, but we do need one of them
-#
-AS_IF([test "x$ucx_happy" = "xyes" -a "x$gasnet_happy" = "xyes"],
-	    [AC_MSG_ERROR([Cannot select both GASNet and UCX as communications layer])]
-	    )
-AS_IF([test "x$ucx_happy" != "xyes" -a "x$gasnet_happy" != "xyes"],
-	    [AC_MSG_ERROR([Must select one of GASNet and UCX as communications layer])]
-	    )
 
 # Feature checks
 AC_ARG_ENABLE([debug],
@@ -146,46 +135,36 @@ AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compile
 AC_CONFIG_FILES([Makefile])
 
 AC_CONFIG_FILES([man/Makefile
-		man/oshcc.1 man/oshcxx.1 man/oshfort.1
-		man/oshrun.1 man/osh_info.1 man/osh_intro.1
+		 man/oshcc.1 man/oshcxx.1 man/oshfort.1
+		 man/oshrun.1 man/osh_info.1 man/osh_intro.1
 		])
 
 AC_CONFIG_FILES([include/Makefile
-		include/shmem/defs.h
-		include/shmem/depr.h
-		include/shmem/api.h
-		include/shmem.h
-		include/pshmem.h include/pshmemx.h
-		include/shmemx.h include/null-shmemx.h
-		include/shmem/defs.fh
-		include/shmem.fh include/pshmem.fh
-		include/shmemx.fh include/pshmemx.fh
+		 include/shmem/defs.h
+		 include/shmem/depr.h
+		 include/shmem/api.h
+		 include/shmem.h
+		 include/pshmem.h include/pshmemx.h
+		 include/shmemx.h include/null-shmemx.h
+		 include/shmem/defs.fh
+		 include/shmem.fh include/pshmem.fh
+		 include/shmemx.fh include/pshmemx.fh
 		])
 
 AC_CONFIG_FILES([pkgconfig/Makefile
-		pkgconfig/osss-openshmem.pc
+		 pkgconfig/osss-openshmem.pc
 		])
 
 AC_CONFIG_FILES([src/Makefile
-		src/shmemu/Makefile
-		src/shmemc/Makefile
-		src/shmemi/Makefile
-			src/shmemi/dlmalloc/Makefile
-		src/version.h
+		 src/version.h
+		 src/shmemu/Makefile
 		])
 
-AC_CONFIG_FILES([src/shmemc/gasnet/Makefile
-                 src/shmemc/gasnet/oshcc.tmpl
-                 src/shmemc/gasnet/oshcxx.tmpl
-                 src/shmemc/gasnet/oshfort.tmpl
-                 src/shmemc/gasnet/oshrun.tmpl
-               ])
-
-AC_CONFIG_FILES([src/shmemc/ucx/Makefile
-                 src/shmemc/ucx/oshcc.tmpl
-                 src/shmemc/ucx/oshcxx.tmpl
-                 src/shmemc/ucx/oshfort.tmpl
-                 src/shmemc/ucx/oshrun.tmpl
+AC_CONFIG_FILES([src/shmemc/Makefile
+                 src/shmemc/oshcc.tmpl
+                 src/shmemc/oshcxx.tmpl
+                 src/shmemc/oshfort.tmpl
+                 src/shmemc/oshrun.tmpl
                ])
 
 AC_OUTPUT
