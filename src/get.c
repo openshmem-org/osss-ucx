@@ -1,5 +1,5 @@
 #include "shmem/defs.h"
-#include "shmemc/shmemc.h"
+#include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
 extern void shmem_complexf_get(COMPLEXIFY(float) * dest,
@@ -42,12 +42,12 @@ extern void shmem_complexd_get(COMPLEXIFY(double) * dest,
 #endif /* ENABLE_PSHMEM */
 
 #define SHMEM_TYPED_GET(_name, _type)                            \
-    void                                                        \
-    shmem_##_name##_get(_type *dest, const _type *src,          \
-                        size_t nelems, int pe)                  \
-    {                                                           \
-        const size_t typed_nelems = nelems * sizeof (_type);    \
-        shmemc_get(dest, src, typed_nelems, pe);                \
+    void                                                         \
+    shmem_##_name##_get(_type *dest, const _type *src,           \
+                        size_t nelems, int pe)                   \
+    {                                                            \
+        const size_t typed_nelems = nelems * sizeof (_type);     \
+        shmemc_get(dest, src, typed_nelems, pe);                 \
     }
 
 SHMEM_TYPED_GET(char, char)
@@ -61,13 +61,13 @@ SHMEM_TYPED_GET(float, float)
 SHMEM_TYPED_GET(complexf, COMPLEXIFY(float))
 SHMEM_TYPED_GET(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_GET(_name, _size)                   \
-    void                                                \
-    shmem_get##_name(void *dest, const void *src,       \
-                     size_t nelems, int pe)             \
-    {                                                   \
-        const size_t sized_nelems = nelems * _size;     \
-        shmemc_get(dest, src, sized_nelems, pe);        \
+#define SHMEM_SIZED_GET(_name, _size)                       \
+    void                                                    \
+    shmem_get##_name(void *dest, const void *src,           \
+                     size_t nelems, int pe)                 \
+    {                                                       \
+        const size_t sized_nelems = nelems * _size;         \
+        shmemc_get(dest, src, sized_nelems, pe);            \
     }
 
 SHMEM_SIZED_GET(32, 32)

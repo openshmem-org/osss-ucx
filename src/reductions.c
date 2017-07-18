@@ -2,9 +2,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemi/shmemi.h"
-#include "shmemu/shmemu.h"
-#include "shmemc/shmemc.h"
+#include "shmemu.h"
+#include "shmemc.h"
 #include "shmem/defs.h"
 
 #include <complex.h>
@@ -115,14 +114,14 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
     ( INRANGE_CHECK(_t, _s, _n) || INRANGE_CHECK(_s, _t, _n) )
 
 #define SHMEM_UDR_TYPE_OP(_name, _type)                                 \
-    static                                                              \
-    void                                                                \
-    shmemi_udr_##_name##_to_all(_type (*the_op)(_type, _type),          \
+    static void                                                         \
+    udr_##_name##_to_all(_type (*the_op)(_type, _type),                 \
                                 _type initval,                          \
                                 _type *target, _type *source, int nreduce, \
                                 int PE_start, int logPE_stride, int PE_size, \
                                 _type *pWrk, long *pSync)               \
     {                                                                   \
+        const int me = shmemc_my_pe();                                  \
         const int step = 1 << logPE_stride;                             \
         const int nloops = nreduce / SHMEM_REDUCE_MIN_WRKDATA_SIZE;     \
         const int nrem = nreduce % SHMEM_REDUCE_MIN_WRKDATA_SIZE;       \
@@ -168,7 +167,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
         /* now go through other PEs and get source */                   \
         pe = PE_start;                                                  \
         for (i = 0; i < PE_size; i += 1) {                              \
-            if (proc.rank != pe) {                                      \
+            if (me != pe) {                                             \
                 int k;                                                  \
                 int ti = 0, si = 0; /* target & source index walk */    \
                 /* pull in all the full chunks */                       \
@@ -231,13 +230,13 @@ SHMEM_UDR_TYPE_OP(complexd, double complex)
                                        int PE_size,                     \
                                        _type *pWrk, long *pSync)        \
     {                                                                   \
-        shmemi_udr_##_name##_to_all(_opcall##_##_name##_func,           \
-                                    _initval,                           \
-                                    target, source,                     \
-                                    nreduce,                            \
-                                    PE_start, logPE_stride,             \
-                                    PE_size,                            \
-                                    pWrk, pSync);                       \
+        udr_##_name##_to_all(_opcall##_##_name##_func,                  \
+                             _initval,                                  \
+                             target, source,                            \
+                             nreduce,                                   \
+                             PE_start, logPE_stride,                    \
+                             PE_size,                                   \
+                             pWrk, pSync);                              \
     }
 
 #ifdef ENABLE_PSHMEM

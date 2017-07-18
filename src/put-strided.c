@@ -4,7 +4,7 @@
 
 #include "shmem/defs.h"
 
-#include "shmemc/shmemc.h"
+#include "shmemc.h"
 
 /*
  * these are needed for propagating into Fortran,
@@ -55,7 +55,7 @@ extern void shmem_char_iput(char *target, const char *source, ptrdiff_t tst,
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_##_name##_put(&(target[ti]), &(source[si]), 1, pe);  \
+            shmem_##_name##_put(&(target[ti]), &(source[si]), 1, pe);   \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
@@ -83,7 +83,7 @@ SHMEM_EMIT_IPUT(complexd, COMPLEXIFY(double))
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_##_name##_put(&(target[ti]), &(source[si]), 1, pe);  \
+            shmem_##_name##_put(&(target[ti]), &(source[si]), 1, pe);   \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \

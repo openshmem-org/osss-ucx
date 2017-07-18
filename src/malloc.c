@@ -3,6 +3,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem/defs.h"
+#include "shmemc.h"
 #include "shmemu.h"
 
 #include <stdio.h>
@@ -34,25 +35,25 @@ int malloc_error = SHMEM_MALLOC_OK;
 void *
 shmem_malloc(size_t s)
 {
-    return shmemi_malloc(s);
+    return shmemc_mem_alloc(s);
 }
 
 void
 shmem_free(void *p)
 {
-    shmemi_free(p);
+    shmemc_mem_free(p);
 }
 
 void *
 shmem_realloc(void *p, size_t s)
 {
-    return shmemi_realloc(p, s);
+    return shmemc_mem_realloc(p, s);
 }
 
 void *
 shmem_align(size_t a, size_t s)
 {
-    return shmemi_align(a, s);
+    return shmemc_mem_align(a, s);
 }
 
 /*

@@ -2,8 +2,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemu/shmemu.h"
-#include "shmemi/shmemi.h"
+#include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak _my_pe = p_my_pe
@@ -20,25 +19,25 @@
 int
 shmem_my_pe(void)
 {
-    return shmemi_my_pe();
+    return shmemc_my_pe();
 }
 
 int
 shmem_n_pes(void)
 {
-    return shmemi_n_pes();
+    return shmemc_n_pes();
 }
 
 int
 _my_pe(void)
 {
     deprecate(__func__);
-    return shmemi_my_pe();
+    return shmemc_my_pe();
 }
 
 int
 _num_pes(void)
 {
     deprecate(__func__);
-    return shmemi_n_pes();
+    return shmemc_n_pes();
 }

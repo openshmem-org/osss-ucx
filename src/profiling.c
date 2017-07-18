@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "shmemu/shmemu.h"
+#include "shmemu.h"
 
 /**
  * stub for the proposed UFL profiling (PSHMEM) interface

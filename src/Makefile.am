@@ -1,7 +1,7 @@
-shmemc_dir             = shmemc
+shmemc_dir             = ./shmemc
 shmemc_cppflags        = -I$(top_srcdir)/src/$(shmemc_dir)
-shmemc_ldflags         =
-shmemc_libs            =
+shmemc_ldflags         = -L$(shmemc_dir)
+shmemc_libs            = -lshmemc-ucx
 
 #shmemi_dir             = shmemi
 #shmemi_cppflags        = -I$(top_srcdir)/src/$(shmemi_dir)
@@ -22,7 +22,6 @@ MY_SOURCES             = \
 				accessible.c \
 				quiet.c \
 				put.c get.c \
-				put-strided.c get-strided.c \
 				put-nbi.c get-nbi.c \
 				barrier.c \
 				reductions.c \
@@ -30,6 +29,8 @@ MY_SOURCES             = \
 				broadcast.c \
 				alltoall.c \
 				cache.c
+
+# 				put-strided.c get-strided.c
 
 if ENABLE_FORTRAN
 MY_SOURCES            += fortran/fortran.c \
@@ -65,4 +66,5 @@ libshmem_a_CPPFLAGS    = $(shmemc_cppflags) $(MY_INCLUDE)
 
 bin_PROGRAMS           = osh_info
 osh_info_SOURCES       = osh_info.c
-osh_info_LDFLAGS       = $(shmemc_ldflags)
+osh_info_CPPFLAGS      = $(shmemc_cppflags)
+osh_info_LDFLAGS       = $(shmemc_ldflags) $(shmemc_libs)

@@ -15,6 +15,11 @@
 void shmemc_init(void);
 void shmemc_finalize(void);
 
+char *shmemc_getenv(const char *name);
+
+int shmemc_my_pe(void);
+int shmemc_n_pes(void);
+
 void shmemc_quiet(void);
 
 inline static void shmemc_fence(void)
@@ -22,8 +27,7 @@ inline static void shmemc_fence(void)
     shmemc_quiet();
 }
 
-char *shmemc_getenv(const char *name);
-
+#if 0
 void shmemc_char_p(char *dest, char value, int pe);
 void shmemc_short_p(short *dest, short value, int pe);
 void shmemc_int_p(int *dest, int value, int pe);
@@ -78,10 +82,15 @@ void shmemc_complexf_get(COMPLEXIFY(float) *dest,
 void shmemc_complexd_get(COMPLEXIFY(double) *dest,
                          const COMPLEXIFY(double) *src,
                          size_t nbytes, int pe);
+#endif
+
+void shmemc_put(void *dest, const void *src, size_t nbytes, int pe);
+void shmemc_get(void *dest, const void *src, size_t nbytes, int pe);
 
 void shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe);
 void shmemc_get_nbi(void *dest, const void *src, size_t nbytes, int pe);
 
+#if 0
 void shmemc_char_iput(char *dest, const char *src,
                       ptrdiff_t tst, ptrdiff_t sst,
                       size_t nbytes, int pe);
@@ -131,6 +140,8 @@ void shmemc_float_iget(float *dest, const float *src,
 void shmemc_double_iget(double *dest, const double *src,
                         ptrdiff_t tst, ptrdiff_t sst,
                         size_t nbytes, int pe);
+#endif
+
 /**
  * these are per-type so we can handle per-type locks
  */
@@ -266,5 +277,16 @@ shmemc_addr_accessible(const void *addr, int pe)
 {
     return 0;
 }
+
+/*
+ * memory allocation
+ */
+void shmemc_mem_init(void *base, size_t capacity);
+void shmemc_mem_finalize(void);
+void *shmemc_mem_base(void);
+void *shmemc_mem_alloc(size_t size);
+void shmemc_mem_free(void *addr);
+void *shmemc_mem_realloc(void *addr, size_t new_size);
+void *shmemc_mem_align(size_t alignment, size_t size);
 
 #endif /* ! _SHMEMC_H */

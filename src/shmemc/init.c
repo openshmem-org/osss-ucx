@@ -148,18 +148,6 @@ make_local_endpoint(void)
     assert(s == UCS_OK);
 }
 
-/*
- * private helper
- */
-inline static void
-do_flush(void)
-{
-    ucs_status_t s;
-
-    s = ucp_worker_flush(cp->wrkr);
-    assert(s == UCS_OK);
-}
-
 static void
 dump_mapped_mem_info(const char *name, const ucp_mem_h *m)
 {
@@ -239,12 +227,6 @@ reg_globals(void)
  * API
  *
  **/
-
-void
-shmemc_quiet(void)
-{
-    do_flush();
-}
 
 void
 shmemc_init(void)

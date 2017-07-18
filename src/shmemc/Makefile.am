@@ -9,7 +9,10 @@ libshmemc_ucx_a_SOURCES    = \
 				pmix-client.c \
 				init.c \
 				heapx.c \
-				comms.c
+				ranks.c \
+				comms.c \
+				dlmalloc.c \
+				memalloc.c
 
 libshmemc_ucx_a_CFLAGS = $(UCX_CFLAGS) $(PMIX_CFLAGS) $(OTHER_CPPFLAGS)
 
@@ -35,3 +38,14 @@ endif
 
 bin_SCRIPTS = $(MY_WRAPPERS)
 
+#
+# special override rule
+#
+DLMALLOC_CPPFLAGS = \
+			-DONLY_MSPACES=1 \
+			-DHAVE_MORECORE=0 \
+			-DHAVE_MMAP=0 \
+			-DUSE_LOCKS=1
+
+libshmemc_ucx_a-dlmalloc.o:	dlmalloc.c
+	$(CC) $(DLMALLOC_CPPFLAGS) -c -o $@ $^

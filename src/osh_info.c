@@ -2,13 +2,13 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "version.h"
+#include "shmemu.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-
-#include "version.h"
-#include "shmemu/shmemu.h"
 
 static const int tag_width = 20;
 static char *unknown = "unknown";

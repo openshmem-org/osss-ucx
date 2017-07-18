@@ -3,9 +3,8 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem/defs.h"
-#include "shmemi/shmemi.h"
-#include "shmemu/shmemu.h"
-#include "shmemc/shmemc.h"
+#include "shmemu.h"
+#include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_short_wait_until = pshmem_short_wait_until

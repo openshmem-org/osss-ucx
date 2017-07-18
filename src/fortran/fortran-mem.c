@@ -3,9 +3,8 @@
 #include <stdint.h>
 
 #include "shmem/defs.h"
-#include "shmemi/shmemi.h"
-#include "shmemu/shmemu.h"
-#include "shmemi/shmemi.h"
+#include "shmemc.h"
+#include "shmemu.h"
 #include "fortran-common.h"
 
 /**
@@ -100,7 +99,7 @@ FORTRANIFY(shpalloc)(uintptr_t **addr, int *length,
         /* NOT REACHED */
     }
 
-    symm_addr = shmemi_malloc(*length * scale);
+    symm_addr = shmemc_mem_alloc(*length * scale);
 
     /* pass back status code */
     *errcode = malloc_error;
@@ -151,7 +150,7 @@ FORTRANIFY(shpdeallc)(uintptr_t **addr, int *errcode, int *abort)
            "shpdeallc(addr = %p, errcode = %d, abort = %d)",
            *addr, *errcode, *abort);
 
-    shmemi_free(*addr);
+    shmemc_mem_free(*addr);
 
     /* pass back status code */
     *errcode = malloc_error;
@@ -191,7 +190,7 @@ void
 FORTRANIFY(shpclmove)(uintptr_t **addr, int *length,
                       int *errcode, int *abort)
 {
-    *addr = shmemi_realloc(*addr, *length);
+    *addr = shmemc_mem_realloc(*addr, *length);
 
     /* pass back status code */
     *errcode = malloc_error;
