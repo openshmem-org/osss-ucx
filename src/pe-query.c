@@ -2,6 +2,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM

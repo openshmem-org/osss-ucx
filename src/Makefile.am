@@ -3,11 +3,6 @@ shmemc_cppflags        = -I$(top_srcdir)/src/$(shmemc_dir)
 shmemc_ldflags         = -L$(shmemc_dir)
 shmemc_libs            = -lshmemc-ucx
 
-#shmemi_dir             = shmemi
-#shmemi_cppflags        = -I$(top_srcdir)/src/$(shmemi_dir)
-#shmemi_ldflags         = -L$(shmemi_dir)
-#shmemi_libs            = -lshmemi
-
 SUBDIRS                = $(shmemc_dir)
 
 
@@ -22,6 +17,7 @@ MY_SOURCES             = \
 				accessible.c \
 				quiet.c \
 				put.c get.c \
+				put-strided.c get-strided.c \
 				put-nbi.c get-nbi.c \
 				barrier.c \
 				reductions.c \
@@ -30,7 +26,6 @@ MY_SOURCES             = \
 				alltoall.c \
 				cache.c
 
-# 				put-strided.c get-strided.c
 
 if ENABLE_FORTRAN
 MY_SOURCES            += fortran/fortran.c \

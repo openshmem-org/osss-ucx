@@ -157,7 +157,6 @@ AC_CONFIG_FILES([pkgconfig/Makefile
 
 AC_CONFIG_FILES([src/Makefile
 		 src/version.h
-		 src/shmemu/Makefile
 		])
 
 AC_CONFIG_FILES([src/shmemc/Makefile
