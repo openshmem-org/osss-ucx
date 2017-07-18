@@ -2,7 +2,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemc/shmemc.h"
+#include "shmemc.h"
 
 /*
  * These are compatibility routines for older SGI architectures.  They

@@ -3,7 +3,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem/defs.h"
-#include "shmemc/shmemc.h"
+#include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
 extern void shmem_complexf_get_nbi(COMPLEXIFY (float) * dest,

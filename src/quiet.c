@@ -2,7 +2,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemc/shmemc.h"
+#include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_quiet = pshmem_quiet
