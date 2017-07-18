@@ -2,13 +2,12 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem/defs.h"
+#include "shmemu.h"
+
 #include <stdio.h>
 #include <sys/types.h>
 #include <stdlib.h>
-
-#include "shmem/defs.h"
-#include "shmemi/shmemi.h"
-#include "shmemu/shmemu.h"
 
 int malloc_error = SHMEM_MALLOC_OK;
 
