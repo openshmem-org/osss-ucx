@@ -1,15 +1,45 @@
-if HAVE_UCX
-SUBDIRS                = ucx
-else
-SUBDIRS                = gasnet
+PMIX_CFLAGS            = @PMIX_CFLAGS@
+
+OTHER_CPPFLAGS         = -I$(srcdir)/../../shmemu \
+				-I../../../include
+
+lib_LIBRARIES          = libshmemc-ucx.a
+libshmemc_ucx_a_SOURCES    = comms.c \
+				put-strided.c get-strided.c \
+				pmi-init.c \
+				pmix-client.c
+
+libshmemc_ucx_a_CFLAGS = $(UCX_CFLAGS) $(PMIX_CFLAGS) $(OTHER_CPPFLAGS)
+
+MY_WRAPPERS       = oshcc oshrun
+
+oshcc:		oshcc.tmpl
+	cp $^ $@
+
+oshrun:		oshrun.tmpl
+	cp $^ $@
+
+if ENABLE_CXX
+
+MY_WRAPPERS      += oshcxx
+
+oshcxx:		oshcxx.tmpl
+	cp $^ $@
+
+install-exec-hook:
+	cd $(bindir); \
+	cp -p oshcxx oshc++
+
 endif
 
-# LIBSHMEMC_SOURCES      =
+if ENABLE_FORTRAN
 
-# lib_LTLIBRARIES        = libshmemc.la
-# libshmemc_la_SOURCES   = $(LIBSHMEMC_SOURCES)
-# libshmemc_la_CFLAGS    = $(AM_CFLAGS)
-# libshmemc_la_LDFLAGS   = -version-info 0:0:0
+MY_WRAPPERS      += oshfort
 
-# lib_LIBRARIES          = libshmemc.a
-# libshmemc_a_SOURCES    = $(LIBSHMEMC_SOURCES)
+oshfort:	oshcc.tmpl
+	cp $^ $@
+
+endif
+
+bin_SCRIPTS = $(MY_WRAPPERS)
+
