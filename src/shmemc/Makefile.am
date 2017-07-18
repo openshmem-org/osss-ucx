@@ -11,6 +11,7 @@ libshmemc_ucx_a_SOURCES    = \
 				heapx.c \
 				ranks.c \
 				comms.c \
+				mcs-lock.c \
 				dlmalloc.c \
 				memalloc.c \
 				shmemu-init.c
