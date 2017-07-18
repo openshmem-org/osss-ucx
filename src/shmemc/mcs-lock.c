@@ -6,7 +6,6 @@
  */
 
 #include "shmemc.h"
-#include "memfence.h"
 
 
 /*
@@ -76,8 +75,6 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
     tmp.l_locked = 1;
     tmp.l_next = this_pe;
 
-    LOAD_STORE_FENCE();
-
     /*
      * Swap this_pe into the global lock owner, returning previous
      * value, atomically
@@ -100,8 +97,6 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * This flag gets cleared (remotely) once the lock is dropped
          */
         node->l_locked = 1;
-
-        LOAD_STORE_FENCE();
 
         /*
          * I'm now next in global linked list, update l_next in the
