@@ -4,11 +4,12 @@ OTHER_CPPFLAGS         = -I$(srcdir)/../shmemu \
 				-I../../include
 
 lib_LIBRARIES          = libshmemc-ucx.a
-libshmemc_ucx_a_SOURCES    = init.c \
+libshmemc_ucx_a_SOURCES    = \
+				hostname.c logger.c \
+				pmix-client.c \
+				init.c \
 				heapx.c \
-				comms.c \
-				put-strided.c get-strided.c \
-				pmix-client.c
+				comms.c
 
 libshmemc_ucx_a_CFLAGS = $(UCX_CFLAGS) $(PMIX_CFLAGS) $(OTHER_CPPFLAGS)
 

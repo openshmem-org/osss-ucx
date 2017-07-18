@@ -2,14 +2,13 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
+#include "shmemc.h"
+
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "shmemu/shmemu.h"
-#include "shmemc/shmemc.h"
-#include "shmemi/shmemi.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_init = pshmem_init
@@ -26,7 +25,6 @@ shmem_init(void)
 {
     shmemu_init();
     shmemc_init();
-    shmemi_init();
 
     /* urgh! */
 }
@@ -34,7 +32,6 @@ shmem_init(void)
 void
 shmem_finalize(void)
 {
-    shmemi_finalize();
     shmemc_finalize();
     shmemu_finalize();
 }

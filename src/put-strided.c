@@ -50,11 +50,17 @@ extern void shmem_char_iput(char *target, const char *source, ptrdiff_t tst,
                          ptrdiff_t tst, ptrdiff_t sst,                  \
                          size_t nelems, int pe)                         \
     {                                                                   \
-        const size_t sized_nelems = nelems  * sizeof(_type);            \
-        shmemc_iput(target, source, tst, sst, sized_nelems, pe);        \
+        const size_t sized_nelems = nelems * sizeof(_type);             \
+        size_t ti = 0, si = 0;                                          \
+        size_t i;                                                       \
+                                                                        \
+        for (i = 0; i < nelems; i += 1) {                               \
+            shmemc_##_name##_put(&(target[ti]), &(source[si]), 1, pe);  \
+            ti += tst;                                                  \
+            si += sst;                                                  \
+        }                                                               \
     }
 
-SHMEM_EMIT_IPUT(char, char)
 SHMEM_EMIT_IPUT(short, short)
 SHMEM_EMIT_IPUT(int, int)
 SHMEM_EMIT_IPUT(long, long)
@@ -66,14 +72,21 @@ SHMEM_EMIT_IPUT(longdouble, long double)
 SHMEM_EMIT_IPUT(complexf, COMPLEXIFY(float))
 SHMEM_EMIT_IPUT(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_IPUT(_bits, _size)                                  \
+#define SHMEM_SIZED_IPUT(_name, _size, _bits)                           \
     void                                                                \
     shmem_iput##_bits(void *target, const void *source,                 \
                       ptrdiff_t tst, ptrdiff_t sst,                     \
                       size_t nelems, int pe)                            \
     {                                                                   \
-        const size_t sized_nelems = nelems  * _size;                    \
-        shmemc_iput(target, source, tst, sst, sized_nelems, pe);        \
+        const size_t sized_nelems = nelems * _size;                     \
+        size_t ti = 0, si = 0;                                          \
+        size_t i;                                                       \
+                                                                        \
+        for (i = 0; i < nelems; i += 1) {                               \
+            shmemc_##_name##_put(&(target[ti]), &(source[si]), 1, pe);  \
+            ti += tst;                                                  \
+            si += sst;                                                  \
+        }                                                               \
     }
 
 SHMEM_SIZED_IPUT(32, 32)

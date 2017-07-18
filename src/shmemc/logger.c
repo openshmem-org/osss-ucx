@@ -2,6 +2,10 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "thispe.h"
+#include "shmemu.h"
+#include "shmemc.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -12,10 +16,6 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <ctype.h>
-
-#include "shmemu.h"
-#include "shmemi.h"
-#include "shmemc.h"
 
 #define TRACE_MSG_BUF_SIZE 256
 

@@ -1,4 +1,4 @@
-LIBSHMEMU_SOURCES      = shmemu.c hostname.c timer.c unitparse.c logger.c
+LIBSHMEMU_SOURCES      = shmemu.c timer.c unitparse.c
 
 SHMEMX_CPPFLAGS        = -I$(srcdir)/../shmemi -I$(srcdir)/../shmemc
 

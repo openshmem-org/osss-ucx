@@ -24,7 +24,6 @@ inline static void shmemc_fence(void)
 
 char *shmemc_getenv(const char *name);
 
-#if 0
 void shmemc_char_p(char *dest, char value, int pe);
 void shmemc_short_p(short *dest, short value, int pe);
 void shmemc_int_p(int *dest, int value, int pe);
@@ -55,6 +54,12 @@ void shmemc_float_put(float *dest, const float *src,
                       size_t nbytes, int pe);
 void shmemc_double_put(double *dest, const double *src,
                        size_t nbytes, int pe);
+void shmemc_complexf_put(COMPLEXIFY(float) *dest,
+                         const COMPLEXIFY(float) *src,
+                         size_t nbytes, int pe);
+void shmemc_complexd_put(COMPLEXIFY(double) *dest,
+                         const COMPLEXIFY(double) *src,
+                         size_t nbytes, int pe);
 
 void shmemc_char_get(char *dest, const char *src, size_t nbytes, int pe);
 void shmemc_short_get(short *dest, const short *src, size_t nbytes, int pe);
@@ -67,20 +72,16 @@ void shmemc_longdouble_get(long double *dest, const long double *src,
 void shmemc_float_get(float *dest, const float *src, size_t nbytes, int pe);
 void shmemc_double_get(double *dest, const double *src,
                        size_t nbytes, int pe);
-void shmemc_complexf_get(COMPLEXIFY(float) *dest, const COMPLEXIFY(float) *src,
+void shmemc_complexf_get(COMPLEXIFY(float) *dest,
+                         const COMPLEXIFY(float) *src,
                          size_t nbytes, int pe);
-void shmemc_complexd_get(COMPLEXIFY(double) *dest, const COMPLEXIFY(double) *src,
+void shmemc_complexd_get(COMPLEXIFY(double) *dest,
+                         const COMPLEXIFY(double) *src,
                          size_t nbytes, int pe);
-#endif
-
-void shmemc_put(void *dest, const void *src, size_t nbytes, int pe);
-void shmemc_get(void *dest, const void *src, size_t nbytes, int pe);
-
 
 void shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe);
 void shmemc_get_nbi(void *dest, const void *src, size_t nbytes, int pe);
 
-#if 0
 void shmemc_char_iput(char *dest, const char *src,
                       ptrdiff_t tst, ptrdiff_t sst,
                       size_t nbytes, int pe);
@@ -130,15 +131,6 @@ void shmemc_float_iget(float *dest, const float *src,
 void shmemc_double_iget(double *dest, const double *src,
                         ptrdiff_t tst, ptrdiff_t sst,
                         size_t nbytes, int pe);
-#endif
-
-void shmemc_iput(void *dest, const void *src,
-                 ptrdiff_t tst, ptrdiff_t sst,
-                 size_t nbytes, int pe);
-void shmemc_iget(void *dest, const void *src,
-                 ptrdiff_t tst, ptrdiff_t sst,
-                 size_t nbytes, int pe);
-
 /**
  * these are per-type so we can handle per-type locks
  */
