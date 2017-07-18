@@ -3,19 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <stdbool.h>
 #include <pmix.h>
 
-#include "shmemi.h"
+#include "thispe.h"
+
 #include "shmemu.h"
 
 /*
  * if finalize called through atexit, force a barrier
  */
 
-static
-void
-shmemi_finalize_handler_pmix(bool need_barrier)
+static void
+pmix_finalize_handler(_Bool need_barrier)
 {
     if (need_barrier) {
         pmix_info_t *bar;
@@ -23,7 +22,7 @@ shmemi_finalize_handler_pmix(bool need_barrier)
 
         if (need_barrier) {
             logger(LOG_FINALIZE,
-                   "still alive, add barrier to finalize");
+                   "PMIx adding intenral barrier to finalize");
         }
 
         PMIX_INFO_CREATE(bar, 1);
@@ -34,35 +33,21 @@ shmemi_finalize_handler_pmix(bool need_barrier)
 
         PMIX_INFO_FREE(bar, 1);
 
-        shmemi_heapx_finalize();
-
-        proc.status = PE_SHUTDOWN;
-
-        logger(LOG_FINALIZE, "shut down complete");
     }
 }
 
-static
-void
-shmemi_finalize_atexit_pmix(void)
+static void
+pmix_finalize_atexit(void)
 {
-    shmemi_finalize_handler_pmix(proc.status == PE_RUNNING);
-}
-
-void
-shmemi_finalize_pmix(void)
-{
-    shmemi_finalize_handler_pmix(false);
+    pmix_finalize_handler(proc.status == PE_RUNNING);
 }
 
 /*
  * this is purely for internal use with PMIx,
  * nothing to do with SHMEM/UCX
  */
-inline
-static
-void
-barrier_all_pmix(void)
+static void
+pmix_barrier_all(void)
 {
     PMIx_Fence(NULL, 0, NULL, 0);
 }
@@ -73,8 +58,7 @@ barrier_all_pmix(void)
 static const char *base_fmt = "%d:heapx:%d:base";
 static const char *size_fmt = "%d:heapx:%d:size";
 
-static
-void
+static void
 publish_heap_info(void)
 {
     /* only publish if multiple PEs */
@@ -109,8 +93,7 @@ publish_heap_info(void)
     }
 }
 
-static
-void
+static void
 exchange_heap_info(void)
 {
     pmix_status_t ps;
@@ -127,10 +110,11 @@ exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_base);
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
-    for (i = 0; i < nheaps; i += 1) {
+    for (i = 0; i < proc.nheaps; i += 1) {
         for (pn = 0; pn < proc.nranks; pn += 1) {
             if (pn != proc.rank) {
 
+                /* can I merge these?  No luck so far */
                 snprintf(fetch_base.key, PMIX_MAX_KEYLEN, base_fmt, pn, i);
                 snprintf(fetch_size.key, PMIX_MAX_KEYLEN, size_fmt, pn, i);
 
@@ -162,19 +146,13 @@ exchange_heap_info(void)
 /* -------------------------------------------------------------- */
 
 void
-shmemi_setup_heaps_pmix(void)
+pmix_client_finalize(void)
 {
-    /*
-     * defer until needed:
-     */
-
-    publish_heap_info();
-
-    exchange_heap_info();
+    pmix_finalize_handler(false);
 }
 
 void
-shmemi_init_pmix(void)
+pmix_client_init(void)
 {
     pmix_proc_t my_proc;        /* about me */
     pmix_proc_t wc_proc;        /* wildcard lookups */
@@ -237,7 +215,5 @@ shmemi_init_pmix(void)
 
     PMIX_VALUE_RELEASE(vp);
 
-    barrier_all_pmix();
-
-    proc.status = PE_SHUTDOWN;
+    pmix_barrier_all();
 }

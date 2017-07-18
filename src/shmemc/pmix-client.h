@@ -1,9 +1,7 @@
 #ifndef _SHMEMI_PMIX_H
 #define _SHMEMI_PMIX_H 1
 
-void shmemi_finalize_pmix(void);
-void shmemi_init_pmix(void);
-
-void shmemi_setup_heaps_pmix(void); /* although maybe int:nheaps? */
+void pmix_client_finalize(void);
+void pmix_client_init(void);
 
 #endif /* ! _SHMEMI_PMIX_H */

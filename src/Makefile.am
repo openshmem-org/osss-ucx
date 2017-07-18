@@ -23,7 +23,7 @@ MY_SOURCES             = \
 				malloc.c \
 				version.c \
 				atomics.c lock.c waituntil.c \
-				pe.c \
+				pe-query.c \
 				ptr.c \
 				accessible.c \
 				quiet.c \

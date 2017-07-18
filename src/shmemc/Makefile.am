@@ -1,7 +1,7 @@
 PMIX_CFLAGS            = @PMIX_CFLAGS@
 
 OTHER_CPPFLAGS         = -I$(srcdir)/../../shmemu \
-				-I../../../include
+				-I../../include
 
 lib_LIBRARIES          = libshmemc-ucx.a
 libshmemc_ucx_a_SOURCES    = comms.c \
