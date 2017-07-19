@@ -1,13 +1,12 @@
+#include "thispe.h"
+#include "shmemu.h"
+
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <pmix.h>
-
-#include "thispe.h"
-
-#include "shmemu.h"
 
 /*
  * if finalize called through atexit, force a barrier
@@ -16,30 +15,29 @@
 static void
 pmix_finalize_handler(_Bool need_barrier)
 {
+    pmix_status_t ps;
+    pmix_info_t *bar;
+
     if (need_barrier) {
-        pmix_info_t *bar;
-        pmix_status_t ps;
-
-        if (need_barrier) {
-            logger(LOG_FINALIZE,
-                   "PMIx adding intenral barrier to finalize");
-        }
-
-        PMIX_INFO_CREATE(bar, 1);
-        PMIX_INFO_LOAD(bar, PMIX_EMBED_BARRIER, &need_barrier, PMIX_BOOL);
-        ps = PMIx_Finalize(bar, 1);
-
-        assert(ps == PMIX_SUCCESS);
-
-        PMIX_INFO_FREE(bar, 1);
-
+        logger(LOG_FINALIZE,
+               "PMIx adding internal barrier to finalize");
     }
+
+    PMIX_INFO_CREATE(bar, 1);
+    PMIX_INFO_LOAD(bar, PMIX_EMBED_BARRIER, &need_barrier, PMIX_BOOL);
+
+    ps = PMIx_Finalize(bar, 1);
+    assert(ps == PMIX_SUCCESS);
+
+    PMIX_INFO_FREE(bar, 1);
 }
 
 static void
 pmix_finalize_atexit(void)
 {
-    pmix_finalize_handler(proc.status == SHMEM_PE_RUNNING);
+    const _Bool needbar = (proc.status == SHMEM_PE_RUNNING);
+
+    pmix_finalize_handler(needbar);
 }
 
 /*
@@ -206,6 +204,8 @@ pmix_client_init(void)
     proc.peers = strdup(vp->data.string);
     assert(proc.peers != NULL);
 
+    PMIX_VALUE_RELEASE(vp);
+
     logger(LOG_INIT,
            "there %s %d peer%s on this node: \"%s\"",
            (proc.npeers > 1) ? "are" : "is",
@@ -213,8 +213,6 @@ pmix_client_init(void)
            (proc.npeers > 1) ? "s" : "",
            proc.peers
            );
-
-    PMIX_VALUE_RELEASE(vp);
 
     pmix_barrier_all();
 }

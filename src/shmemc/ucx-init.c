@@ -1,9 +1,8 @@
 #include "thispe.h"
 #include "shmemc.h"
+#include "pmix-client.h"
 
-// #include <unistd.h>
 #include <stdlib.h>             /* getenv */
-// #include <string.h>
 #include <assert.h>
 
 #include <ucp/api/ucp.h>
@@ -126,13 +125,19 @@ make_init_params(ucp_params_t *p_p)
 }
 
 /*
- * create remote endpoint table
+ * endpoint tables
  */
 static void
-make_remote_endpoints(void)
+allocate_endpoints(void)
 {
     cp->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(*cp->eps));
     assert(cp->eps != NULL);
+}
+
+static void
+deallocate_endpoints(void)
+{
+    free(cp->eps);
 }
 
 static void
@@ -142,7 +147,7 @@ make_local_endpoint(void)
     ucp_ep_params_t epm;
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-    epm.address = proc.comms.addr_p;
+    epm.address = cp->addr_p;
 
     s = ucp_ep_create(cp->wrkr, &epm, &cp->eps[proc.rank]);
     assert(s == UCS_OK);
@@ -236,6 +241,8 @@ shmemc_init(void)
 
     say = stderr;
 
+    pmix_client_init();
+
     proc.refcount += 1;
 
     /* no re-init */
@@ -262,7 +269,7 @@ shmemc_init(void)
      * try registering some implicit memory as symmetric heap
      *
      */
-    reg_symmetric_heap();
+    //    reg_symmetric_heap();
 
     /*
      * try registering the data and bss segments
@@ -270,8 +277,8 @@ shmemc_init(void)
      */
     reg_globals();
 
+    allocate_endpoints();
     make_local_endpoint();
-    make_remote_endpoints();
 
 #ifdef DEBUG
     if (proc.rank == 0) {
@@ -313,18 +320,22 @@ shmemc_finalize(void)
 
     ucp_disconnect_nb(cp->eps[proc.rank]);
 
-    free(cp->eps);
+    deallocate_endpoints();
 
     ucp_worker_release_address(cp->wrkr, cp->addr_p);
 
     ucp_worker_destroy(cp->wrkr);
 
+#if 0
     s = ucp_mem_unmap(cp->ctxt, symm_heap);
     assert(s == UCS_OK);
+#endif
     s = ucp_mem_unmap(cp->ctxt, global_segment);
     assert(s == UCS_OK);
 
     ucp_cleanup(cp->ctxt);
+
+    pmix_client_finalize();
 
     proc.status = SHMEM_PE_SHUTDOWN;
 }
