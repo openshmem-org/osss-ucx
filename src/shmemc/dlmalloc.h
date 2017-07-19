@@ -31,4 +31,4 @@ extern void mspace_free(mspace msp, void *mem);
 
 extern size_t mspace_footprint(mspace msp);
 
-#endif /* _DLMALLOC_H */
+#endif /* ! _DLMALLOC_H */
