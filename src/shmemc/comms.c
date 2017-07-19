@@ -7,6 +7,11 @@
 #include <ucp/api/ucp.h>
 
 /*
+ * private shortcut to communications structure
+ */
+static comms_info_t *cp = & proc.comms;
+
+/*
  * private helper
  */
 inline static void
@@ -14,7 +19,7 @@ do_flush(void)
 {
     ucs_status_t s;
 
-    s = ucp_worker_flush(proc.comms.wrkr);
+    s = ucp_worker_flush(cp->wrkr);
     assert(s == UCS_OK);
 }
 
