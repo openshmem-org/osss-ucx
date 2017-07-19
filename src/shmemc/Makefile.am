@@ -14,7 +14,8 @@ libshmemc_ucx_a_SOURCES    = \
 				mcs-lock.c \
 				dlmalloc.c \
 				memalloc.c \
-				shmemu-init.c
+				shmemu-init.c \
+				shmemc-init.c
 
 libshmemc_ucx_a_CFLAGS = $(UCX_CFLAGS) $(PMIX_CFLAGS) $(OTHER_CPPFLAGS)
 

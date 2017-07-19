@@ -1,6 +1,5 @@
 #include "thispe.h"
 #include "shmemc.h"
-#include "pmix-client.h"
 
 #include <stdlib.h>             /* getenv */
 #include <assert.h>
@@ -16,7 +15,8 @@
  */
 thispe_info_t proc = {
     .status = SHMEM_PE_UNKNOWN,
-    .refcount = 0
+    .refcount = 0,
+    .heaps = NULL
 };
 
 /*
@@ -183,9 +183,11 @@ reg_symmetric_heap(void)
 {
     ucs_status_t s;
     ucp_mem_map_params_t mp;
+    ucp_mem_attr_t attr;
     char *hs_str = shmemc_getenv("SHMEM_SYMMETRIC_HEAP_SIZE");
     size_t len;
 
+    /* first look to see if we request a certain size */
     if (hs_str != NULL) {
         const int r = shmemu_parse_size(hs_str, &len);
         assert(r == 0);
@@ -194,6 +196,7 @@ reg_symmetric_heap(void)
         len = 4 * MB; /* just some usable value */
     }
 
+    /* now register it with UCX */
     mp.field_mask =
         UCP_MEM_MAP_PARAM_FIELD_LENGTH |
         UCP_MEM_MAP_PARAM_FIELD_FLAGS;
@@ -203,6 +206,39 @@ reg_symmetric_heap(void)
         UCP_MEM_MAP_ALLOCATE;
 
     s = ucp_mem_map(cp->ctxt, &mp, &symm_heap);
+    assert(s == UCS_OK);
+
+    /*
+     * query back to find where it is, and its actual size (might be
+     * aligned/padded)
+     */
+
+    /* the attributes we want to inspect */
+    attr.field_mask =
+        UCP_MEM_ATTR_FIELD_ADDRESS |
+        UCP_MEM_ATTR_FIELD_LENGTH;
+
+    s = ucp_mem_query(symm_heap, &attr);
+    assert(s == UCS_OK);
+
+    /* tell the PE what was given */
+    proc.heaps[proc.rank].base = attr.address;
+    proc.heaps[proc.rank].size = attr.length;
+
+    for (int pe = 0; pe < proc.nranks; pe += 1) {
+        fprintf(stderr, "%d: base = %p, size = %lu\n",
+                proc.rank,
+                proc.heaps[proc.rank].base,
+                proc.heaps[proc.rank].size);
+    }
+}
+
+static void
+dereg_symmetric_heap(void)
+{
+    ucs_status_t s;
+
+    s = ucp_mem_unmap(cp->ctxt, symm_heap);
     assert(s == UCS_OK);
 }
 
@@ -228,20 +264,27 @@ reg_globals(void)
     assert(s == UCS_OK);
 }
 
+static void
+dereg_globals(void)
+{
+    ucs_status_t s;
+
+    s = ucp_mem_unmap(cp->ctxt, global_segment);
+    assert(s == UCS_OK);
+}
+
 /**
  * API
  *
  **/
 
 void
-shmemc_init(void)
+shmemc_ucx_init(void)
 {
     ucs_status_t s;
     ucp_params_t pm;
 
     say = stderr;
-
-    pmix_client_init();
 
     proc.refcount += 1;
 
@@ -269,7 +312,7 @@ shmemc_init(void)
      * try registering some implicit memory as symmetric heap
      *
      */
-    //    reg_symmetric_heap();
+    reg_symmetric_heap();
 
     /*
      * try registering the data and bss segments
@@ -298,15 +341,11 @@ shmemc_init(void)
 #endif
     /* don't need config info any more */
     ucp_config_release(cp->cfg);
-
-    proc.status = SHMEM_PE_RUNNING;
 }
 
 void
-shmemc_finalize(void)
+shmemc_ucx_finalize(void)
 {
-    ucs_status_t s;
-
     proc.refcount -= 1;
 
     if (proc.status != SHMEM_PE_RUNNING) {
@@ -326,16 +365,8 @@ shmemc_finalize(void)
 
     ucp_worker_destroy(cp->wrkr);
 
-#if 0
-    s = ucp_mem_unmap(cp->ctxt, symm_heap);
-    assert(s == UCS_OK);
-#endif
-    s = ucp_mem_unmap(cp->ctxt, global_segment);
-    assert(s == UCS_OK);
+    dereg_symmetric_heap();
+    dereg_globals();
 
     ucp_cleanup(cp->ctxt);
-
-    pmix_client_finalize();
-
-    proc.status = SHMEM_PE_SHUTDOWN;
 }

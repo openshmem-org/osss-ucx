@@ -38,8 +38,7 @@ typedef struct thispe_info {
     char *peers;                /* PEs in a node group */
     int npeers;
 
-    heapx_t *heaps;             /* nranks * symmetric heaps */
-    int nheaps;                 /* heaps per PE (Assume 1 for now) */
+    heapx_t *heaps;             /* exchanged symmetric heaps */
 
 } thispe_info_t;
 

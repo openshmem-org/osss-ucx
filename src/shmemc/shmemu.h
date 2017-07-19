@@ -1,5 +1,5 @@
-#ifndef _SHMEM_SHEMMU_H
-#define _SHMEM_SHEMMU_H 1
+#ifndef _SHMEM_SHEMU_H
+#define _SHMEM_SHEMU_H 1
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -60,4 +60,4 @@ deprecate(const char *fn)
     logger(LOG_INFO, "\"%s\" is deprecated", fn);
 }
 
-#endif /* ! _SHMEM_SHEMMU_H */
+#endif /* ! _SHMEM_SHEMU_H */

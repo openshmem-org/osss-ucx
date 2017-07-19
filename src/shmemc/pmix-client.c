@@ -51,50 +51,46 @@ pmix_barrier_all(void)
 }
 
 /*
- * formats are <pe>:heapx:<heap-index>:<key>
+ * formats are <pe>:heapx:<key>
  */
-static const char *base_fmt = "%d:heapx:%d:base";
-static const char *size_fmt = "%d:heapx:%d:size";
+static const char *base_fmt = "%d:heapx:base";
+static const char *size_fmt = "%d:heapx:size";
 
-static void
-publish_heap_info(void)
+void
+pmix_publish_heap_info(void)
 {
     /* only publish if multiple PEs */
 
     if (proc.nranks > 1) {
         pmix_info_t *ia;
         pmix_status_t ps;
-        int i;
 
         PMIX_INFO_CREATE(ia, 2);    /* base, size */
 
         /*
          * everyone publishes their info
          */
-        for (i = 0; i < proc.nheaps; i += 1) {
-            snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, proc.rank, i);
-            ia[0].value.type = PMIX_UINT64;
-            ia[0].value.data.uint64 = (uint64_t) proc.heaps[proc.rank][i]->base;
+        snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, proc.rank);
+        ia[0].value.type = PMIX_UINT64;
+        ia[0].value.data.uint64 = (uint64_t) proc.heaps[proc.rank].base;
 
-            snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, proc.rank, i);
-            ia[1].value.type = PMIX_SIZE;
-            ia[1].value.data.size = proc.heaps[proc.rank][i]->size;
+        snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, proc.rank);
+        ia[1].value.type = PMIX_SIZE;
+        ia[1].value.data.size = proc.heaps[proc.rank].size;
 
-            ps = PMIx_Publish(ia, 2);
-            assert(ps == PMIX_SUCCESS);
+        ps = PMIx_Publish(ia, 2);
+        assert(ps == PMIX_SUCCESS);
 
-            logger(LOG_HEAP, "PUBLISH: my heap #%d @ %p, %lu bytes",
-                   i,
-                   proc.heaps[proc.rank][i]->base,
-                   proc.heaps[proc.rank][i]->size);
-        }
+        logger(LOG_HEAP, "PUBLISH: my heap @ %p, %lu bytes",
+               proc.heaps[proc.rank].base,
+               proc.heaps[proc.rank].size);
 
         PMIX_INFO_FREE(ia, 2);
     }
 }
 
-static void
-exchange_heap_info(void)
+void
+pmix_exchange_heap_info(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch_base;
@@ -102,7 +98,6 @@ exchange_heap_info(void)
     pmix_info_t waiter;
     int all = 0;
     int pn;
-    int i;
 
     PMIX_INFO_CONSTRUCT(&waiter);
     PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
@@ -112,32 +107,29 @@ exchange_heap_info(void)
 
     for (pn = 0; pn < proc.nranks; pn += 1) {
         if (pn != proc.rank) {
-            for (i = 0; i < proc.nheaps; i += 1) {
 
-                /* can I merge these?  No luck so far */
-                snprintf(fetch_base.key, PMIX_MAX_KEYLEN, base_fmt, pn, i);
-                snprintf(fetch_size.key, PMIX_MAX_KEYLEN, size_fmt, pn, i);
+            /* can I merge these?  No luck so far */
+            snprintf(fetch_base.key, PMIX_MAX_KEYLEN, base_fmt, pn);
+            snprintf(fetch_size.key, PMIX_MAX_KEYLEN, size_fmt, pn);
 
-                ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
-                assert(ps == PMIX_SUCCESS);
+            ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
 
-                ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
-                assert(ps == PMIX_SUCCESS);
+            ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
 
-                proc.heaps[pn][i]->base = (void *) fetch_base.value.data.uint64;
-                proc.heaps[pn][i]->size = fetch_size.value.data.size;
-            }
+            proc.heaps[pn].base = (void *) fetch_base.value.data.uint64;
+            proc.heaps[pn].size = fetch_size.value.data.size;
         }
     }
 
+    /* debugging validation */
     for (pn = 0; pn < proc.nranks; pn += 1) {
         if (pn != proc.rank) {
-            for (i = 0; i < proc.nheaps; i += 1) {
-                logger(LOG_HEAP, "FETCH: from PE %d, heap #%d @ %p, %lu bytes",
-                       pn, i,
-                       proc.heaps[proc.rank][i]->base,
-                       proc.heaps[proc.rank][i]->size);
-            }
+                logger(LOG_HEAP, "FETCH: from PE %d, heap @ %p, %lu bytes",
+                       pn,
+                       proc.heaps[proc.rank].base,
+                       proc.heaps[proc.rank].size);
         }
     }
 }
@@ -206,6 +198,7 @@ pmix_client_init(void)
 
     PMIX_VALUE_RELEASE(vp);
 
+#if 0
     logger(LOG_INIT,
            "there %s %d peer%s on this node: \"%s\"",
            (proc.npeers > 1) ? "are" : "is",
@@ -213,6 +206,7 @@ pmix_client_init(void)
            (proc.npeers > 1) ? "s" : "",
            proc.peers
            );
+#endif
 
     pmix_barrier_all();
 }
