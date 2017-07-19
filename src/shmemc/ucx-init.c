@@ -1,5 +1,5 @@
 #include "thispe.h"
-#include "shmemc.h"
+#include "shmemu.h"
 
 #include <stdlib.h>             /* getenv */
 #include <assert.h>
@@ -224,13 +224,6 @@ reg_symmetric_heap(void)
     /* tell the PE what was given */
     proc.heaps[proc.rank].base = attr.address;
     proc.heaps[proc.rank].size = attr.length;
-
-    for (int pe = 0; pe < proc.nranks; pe += 1) {
-        fprintf(stderr, "%d: base = %p, size = %lu\n",
-                proc.rank,
-                proc.heaps[proc.rank].base,
-                proc.heaps[proc.rank].size);
-    }
 }
 
 static void

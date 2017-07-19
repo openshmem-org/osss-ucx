@@ -9,8 +9,6 @@ void
 heapx_init(void)
 {
     if (proc.heaps == NULL) {
-        fprintf(stderr, "%d: ranks = %d\n", proc.rank, proc.nranks);
-
         /* allocate heap stubs for all ranks */
         proc.heaps = (heapx_t *) calloc(proc.nranks,
                                       sizeof(heapx_t));
