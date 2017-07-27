@@ -19,7 +19,7 @@ do_flush(void)
 {
     ucs_status_t s;
 
-    s = ucp_worker_flush(cp->wrkr);
+    s = ucp_worker_flush(cp->wrkrs[proc.rank].wrkr);
     assert(s == UCS_OK);
 }
 

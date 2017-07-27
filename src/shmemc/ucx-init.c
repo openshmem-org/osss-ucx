@@ -86,16 +86,39 @@ check_version(void)
     fprintf(say, "\n");
 }
 
+/*
+ * worker tables
+ */
 static void
-make_worker(void)
+allocate_workers(void)
+{
+    cp->wrkrs = (worker_info_t *) calloc(proc.nranks, sizeof(*(cp->wrkrs)));
+    assert(cp->wrkrs != NULL);
+}
+
+static void
+deallocate_workers(void)
+{
+    free(cp->wrkrs);
+}
+
+static void
+make_local_worker(void)
 {
     ucs_status_t s;
     ucp_worker_params_t wkpm;
+    worker_info_t *this = & (cp->wrkrs[proc.rank]);
 
     wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
     wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
 
-    s = ucp_worker_create(cp->ctxt, &wkpm, &cp->wrkr);
+    s = ucp_worker_create(cp->ctxt, &wkpm, &this->wrkr);
+    assert(s == UCS_OK);
+
+    /* get address for remote access to worker */
+    s = ucp_worker_get_address(this->wrkr,
+                               &this->addr_p,
+                               &this->len);
     assert(s == UCS_OK);
 }
 
@@ -130,7 +153,7 @@ make_init_params(ucp_params_t *p_p)
 static void
 allocate_endpoints(void)
 {
-    cp->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(*cp->eps));
+    cp->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(*(cp->eps)));
     assert(cp->eps != NULL);
 }
 
@@ -143,13 +166,14 @@ deallocate_endpoints(void)
 static void
 make_local_endpoint(void)
 {
+    worker_info_t *this = & (cp->wrkrs[proc.rank]);
     ucs_status_t s;
     ucp_ep_params_t epm;
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-    epm.address = cp->addr_p;
+    epm.address = this->addr_p;
 
-    s = ucp_ep_create(cp->wrkr, &epm, &cp->eps[proc.rank]);
+    s = ucp_ep_create(this->wrkr, &epm, &cp->eps[proc.rank]);
     assert(s == UCS_OK);
 }
 
@@ -272,6 +296,26 @@ dereg_globals(void)
  **/
 
 void
+shmemc_ucx_make_remote_endpoints(void)
+{
+    worker_info_t *this = & (cp->wrkrs[proc.rank]);
+    ucp_ep_params_t epm;
+    ucs_status_t s;
+    int pe;
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        if (pe != proc.rank) {
+
+            epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
+            epm.address = cp->wrkrs[pe].addr_p;
+
+            s = ucp_ep_create(this->wrkr, &epm, &cp->eps[pe]);
+            assert(s == UCS_OK);
+        }
+    }
+}
+
+void
 shmemc_ucx_init(void)
 {
     ucs_status_t s;
@@ -295,24 +339,24 @@ shmemc_ucx_init(void)
     s = ucp_init(&pm, cp->cfg, &cp->ctxt);
     assert(s == UCS_OK);
 
-    make_worker();
-
-    /* get address for remote access to worker */
-    s = ucp_worker_get_address(cp->wrkr, &cp->addr_p, &cp->addr_len);
-    assert(s == UCS_OK);
-
     /*
      * try registering some implicit memory as symmetric heap
-     *
      */
     reg_symmetric_heap();
 
     /*
      * try registering the data and bss segments
-     *
      */
     reg_globals();
 
+    /*
+     * Create worker and space for all
+     */
+    allocate_workers();
+    make_local_worker();
+    /*
+     * Create all EPs
+     */
     allocate_endpoints();
     make_local_endpoint();
 
@@ -339,6 +383,8 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
+    worker_info_t *this = & (cp->wrkrs[proc.rank]);
+
     proc.refcount -= 1;
 
     if (proc.status != SHMEM_PE_RUNNING) {
@@ -353,8 +399,10 @@ shmemc_ucx_finalize(void)
     ucp_disconnect_nb(cp->eps[proc.rank]);
     deallocate_endpoints();
 
-    ucp_worker_release_address(cp->wrkr, cp->addr_p);
-    ucp_worker_destroy(cp->wrkr);
+    ucp_worker_release_address(this->wrkr, this->addr_p);
+    ucp_worker_destroy(this->wrkr); /* and free worker_info_t's ? */
+
+    deallocate_workers();
 
     dereg_globals();
     dereg_symmetric_heap();

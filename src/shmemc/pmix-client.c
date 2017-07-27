@@ -7,6 +7,12 @@
 #include <string.h>
 
 #include <pmix.h>
+#include <ucp/api/ucp.h>
+
+/*
+ * private shortcut to communications structure
+ */
+static comms_info_t *cp = & proc.comms;
 
 /*
  * if finalize called through atexit, force a barrier
@@ -53,8 +59,8 @@ pmix_barrier_all(void)
 /*
  * formats are <pe>:heapx:<key>
  */
-static const char *base_fmt = "%d:heapx:base";
-static const char *size_fmt = "%d:heapx:size";
+static const char *heap_base_fmt = "%d:heap:base";
+static const char *heap_size_fmt = "%d:heap:size";
 
 void
 pmix_publish_heap_info(void)
@@ -62,30 +68,33 @@ pmix_publish_heap_info(void)
     /* only publish if multiple PEs */
 
     if (proc.nranks > 1) {
+        const unsigned int nfields = 2;
         pmix_info_t *ia;
         pmix_status_t ps;
 
-        PMIX_INFO_CREATE(ia, 2);    /* base, size */
+        PMIX_INFO_CREATE(ia, nfields);    /* base, size */
 
         /*
          * everyone publishes their info
          */
-        snprintf(ia[0].key, PMIX_MAX_KEYLEN, base_fmt, proc.rank);
+        snprintf(ia[0].key, PMIX_MAX_KEYLEN, heap_base_fmt, proc.rank);
         ia[0].value.type = PMIX_UINT64;
         ia[0].value.data.uint64 = (uint64_t) proc.heaps[proc.rank].base;
 
-        snprintf(ia[1].key, PMIX_MAX_KEYLEN, size_fmt, proc.rank);
+        snprintf(ia[1].key, PMIX_MAX_KEYLEN, heap_size_fmt, proc.rank);
         ia[1].value.type = PMIX_SIZE;
         ia[1].value.data.size = proc.heaps[proc.rank].size;
 
-        ps = PMIx_Publish(ia, 2);
+        ps = PMIx_Publish(ia, nfields);
         assert(ps == PMIX_SUCCESS);
 
+#if 0
         logger(LOG_HEAP, "PUBLISH: my heap @ %p, %lu bytes",
                proc.heaps[proc.rank].base,
                proc.heaps[proc.rank].size);
+#endif
 
-        PMIX_INFO_FREE(ia, 2);
+        PMIX_INFO_FREE(ia, nfields);
     }
 }
 
@@ -97,7 +106,7 @@ pmix_exchange_heap_info(void)
     pmix_pdata_t fetch_size;
     pmix_info_t waiter;
     int all = 0;
-    int pn;
+    int pe;
 
     PMIX_INFO_CONSTRUCT(&waiter);
     PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
@@ -105,12 +114,12 @@ pmix_exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_base);
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
-    for (pn = 0; pn < proc.nranks; pn += 1) {
-        if (pn != proc.rank) {
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        if (pe != proc.rank) {
 
             /* can I merge these?  No luck so far */
-            snprintf(fetch_base.key, PMIX_MAX_KEYLEN, base_fmt, pn);
-            snprintf(fetch_size.key, PMIX_MAX_KEYLEN, size_fmt, pn);
+            snprintf(fetch_base.key, PMIX_MAX_KEYLEN, heap_base_fmt, pe);
+            snprintf(fetch_size.key, PMIX_MAX_KEYLEN, heap_size_fmt, pe);
 
             ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
             assert(ps == PMIX_SUCCESS);
@@ -118,18 +127,109 @@ pmix_exchange_heap_info(void)
             ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
             assert(ps == PMIX_SUCCESS);
 
-            proc.heaps[pn].base = (void *) fetch_base.value.data.uint64;
-            proc.heaps[pn].size = fetch_size.value.data.size;
+            proc.heaps[pe].base =
+                (void *) fetch_base.value.data.uint64;
+            proc.heaps[pe].size =
+                fetch_size.value.data.size;
+        }
+    }
+
+#if 0
+    /* debugging validation */
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        if (pe != proc.rank) {
+                logger(LOG_HEAP, "FETCH: from PE %d, heap @ %p, %lu bytes",
+                       pe,
+                       proc.heaps[proc.rank].base,
+                       proc.heaps[proc.rank].size);
+        }
+    }
+#endif
+}
+
+/*
+ * formats are <pe>:worker:base, <pe>:worker:size
+ */
+static const char *wrkr_addr_fmt = "%d:wrkr:addr";
+static const char *wrkr_len_fmt = "%d:wrkr:len";
+
+void
+pmix_publish_worker(void)
+{
+    /* only publish if multiple PEs */
+
+    if (proc.nranks > 1) {
+        const unsigned int nfields = 2;
+        pmix_info_t *ia;
+        pmix_status_t ps;
+
+        PMIX_INFO_CREATE(ia, nfields); /* base, size */
+
+        /*
+         * everyone publishes their info
+         */
+        snprintf(ia[0].key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, proc.rank);
+        ia[0].value.type = PMIX_UINT64;
+        ia[0].value.data.uint64 = (uint64_t) cp->wrkrs[proc.rank].addr_p;
+
+        snprintf(ia[1].key, PMIX_MAX_KEYLEN, wrkr_len_fmt, proc.rank);
+        ia[1].value.type = PMIX_SIZE;
+        ia[1].value.data.size = cp->wrkrs[proc.rank].len;
+
+        ps = PMIx_Publish(ia, nfields);
+        assert(ps == PMIX_SUCCESS);
+
+        PMIX_INFO_FREE(ia, nfields);
+
+        logger(LOG_WORKER, "PUBLISH: worker @ %p, %lu bytes",
+               cp->wrkrs[proc.rank].addr_p,
+               cp->wrkrs[proc.rank].len);
+}
+}
+
+void
+pmix_exchange_workers(void)
+{
+    pmix_status_t ps;
+    pmix_pdata_t fetch_addr;
+    pmix_pdata_t fetch_len;
+    pmix_info_t waiter;
+    int all = 0;
+    int pe;
+
+    PMIX_INFO_CONSTRUCT(&waiter);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
+
+    PMIX_PDATA_CONSTRUCT(&fetch_addr);
+    PMIX_PDATA_CONSTRUCT(&fetch_len);
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        if (pe != proc.rank) {
+
+            /* can I merge these?  No luck so far */
+            snprintf(fetch_addr.key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, pe);
+            snprintf(fetch_len.key, PMIX_MAX_KEYLEN, wrkr_len_fmt, pe);
+
+            ps = PMIx_Lookup(&fetch_addr, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
+
+            ps = PMIx_Lookup(&fetch_len, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
+
+            cp->wrkrs[pe].addr_p =
+                (ucp_address_t *) fetch_addr.value.data.uint64;
+            cp->wrkrs[pe].len =
+                fetch_len.value.data.size;
         }
     }
 
     /* debugging validation */
-    for (pn = 0; pn < proc.nranks; pn += 1) {
-        if (pn != proc.rank) {
-                logger(LOG_HEAP, "FETCH: from PE %d, heap @ %p, %lu bytes",
-                       pn,
-                       proc.heaps[proc.rank].base,
-                       proc.heaps[proc.rank].size);
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        if (pe != proc.rank) {
+                logger(LOG_WORKER, "FETCH: from PE %d, worker @ %p, %lu bytes",
+                       pe,
+                       cp->wrkrs[pe].addr_p,
+                       cp->wrkrs[pe].len);
         }
     }
 }
