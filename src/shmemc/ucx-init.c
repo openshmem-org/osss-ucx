@@ -351,15 +351,13 @@ shmemc_ucx_finalize(void)
     /* and clean up */
 
     ucp_disconnect_nb(cp->eps[proc.rank]);
-
     deallocate_endpoints();
 
     ucp_worker_release_address(cp->wrkr, cp->addr_p);
-
     ucp_worker_destroy(cp->wrkr);
 
-    dereg_symmetric_heap();
     dereg_globals();
+    dereg_symmetric_heap();
 
     ucp_cleanup(cp->ctxt);
 }
