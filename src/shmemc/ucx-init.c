@@ -65,6 +65,8 @@ shmemu_round_down_address_to_pagesize(void *addr)
 
 /**
  * no special treatment required here
+ *
+ * TODO put getenv calls all in 1 place
  */
 char *
 shmemc_getenv(const char *name)
@@ -99,7 +101,9 @@ allocate_workers(void)
 static void
 deallocate_workers(void)
 {
-    free(cp->wrkrs);
+    if (cp->wrkrs != NULL) {
+        free(cp->wrkrs);
+    }
 }
 
 static void
@@ -112,11 +116,11 @@ make_local_worker(void)
     wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
     wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
 
-    s = ucp_worker_create(cp->ctxt, &wkpm, &this->wrkr);
+    s = ucp_worker_create(cp->ctxt, &wkpm, &(cp->wrkr));
     assert(s == UCS_OK);
 
     /* get address for remote access to worker */
-    s = ucp_worker_get_address(this->wrkr,
+    s = ucp_worker_get_address(cp->wrkr,
                                &this->addr_p,
                                &this->len);
     assert(s == UCS_OK);
@@ -136,12 +140,12 @@ make_init_params(ucp_params_t *p_p)
      * support because OpenSHMEM wants them
      */
     p_p->features =
-        UCP_FEATURE_WAKEUP |
         UCP_FEATURE_RMA
 #if 1
-    /* while testing so we can play on mlx4 card */
-    |
-        UCP_FEATURE_AMO32 |
+        /* while testing so we can play on mlx4 card */
+        |
+        UCP_FEATURE_AMO32
+        |
         UCP_FEATURE_AMO64
 #endif
         ;
@@ -160,20 +164,21 @@ allocate_endpoints(void)
 static void
 deallocate_endpoints(void)
 {
-    free(cp->eps);
+    if (cp->eps != NULL) {
+        free(cp->eps);
+    }
 }
 
 static void
-make_local_endpoint(void)
+make_an_endpoint(ucp_address_t *addr, int pe)
 {
-    worker_info_t *this = & (cp->wrkrs[proc.rank]);
     ucs_status_t s;
     ucp_ep_params_t epm;
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-    epm.address = this->addr_p;
+    epm.address = addr;
 
-    s = ucp_ep_create(this->wrkr, &epm, &cp->eps[proc.rank]);
+    s = ucp_ep_create(cp->wrkr, &epm, &cp->eps[pe]);
     assert(s == UCS_OK);
 }
 
@@ -298,20 +303,11 @@ dereg_globals(void)
 void
 shmemc_ucx_make_remote_endpoints(void)
 {
-    worker_info_t *this = & (cp->wrkrs[proc.rank]);
-    ucp_ep_params_t epm;
-    ucs_status_t s;
     int pe;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        if (pe != proc.rank) {
-
-            epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-            epm.address = cp->wrkrs[pe].addr_p;
-
-            s = ucp_ep_create(this->wrkr, &epm, &cp->eps[pe]);
-            assert(s == UCS_OK);
-        }
+    for (pe = 0; pe < proc.rank; pe += 1) {
+        make_an_endpoint(cp->wrkrs[pe].addr_p, /* !!! */
+                         pe);
     }
 }
 
@@ -358,7 +354,6 @@ shmemc_ucx_init(void)
      * Create all EPs
      */
     allocate_endpoints();
-    make_local_endpoint();
 
 #ifdef DEBUG
     if (proc.rank == 0) {
@@ -383,7 +378,7 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
-    worker_info_t *this = & (cp->wrkrs[proc.rank]);
+    ucs_status_ptr_t sp;
 
     proc.refcount -= 1;
 
@@ -391,16 +386,28 @@ shmemc_ucx_finalize(void)
         return;
     }
 
+    return;
+
     /* really want a global barrier */
     shmemc_quiet();
 
     /* and clean up */
 
-    ucp_disconnect_nb(cp->eps[proc.rank]);
+    sp = ucp_disconnect_nb(cp->eps[proc.rank]);
+    if (sp != UCS_OK) {
+        ucs_status_t s;
+
+        do {
+            ucp_worker_progress(cp->wrkr);
+            s = ucp_request_test(sp, NULL);
+        } while (s == UCS_INPROGRESS);
+
+        assert(s == UCS_OK);
+    }
     deallocate_endpoints();
 
-    ucp_worker_release_address(this->wrkr, this->addr_p);
-    ucp_worker_destroy(this->wrkr); /* and free worker_info_t's ? */
+    ucp_worker_release_address(cp->wrkr, cp->wrkrs[proc.rank].addr_p);
+    ucp_worker_destroy(cp->wrkr); /* and free worker_info_t's ? */
 
     deallocate_workers();
 

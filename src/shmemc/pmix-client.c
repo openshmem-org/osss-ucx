@@ -115,8 +115,9 @@ pmix_exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
+#if 0
         if (pe != proc.rank) {
-
+#endif
             /* can I merge these?  No luck so far */
             snprintf(fetch_base.key, PMIX_MAX_KEYLEN, heap_base_fmt, pe);
             snprintf(fetch_size.key, PMIX_MAX_KEYLEN, heap_size_fmt, pe);
@@ -131,7 +132,9 @@ pmix_exchange_heap_info(void)
                 (void *) fetch_base.value.data.uint64;
             proc.heaps[pe].size =
                 fetch_size.value.data.size;
+#if 0
         }
+#endif
     }
 
 #if 0
@@ -148,7 +151,7 @@ pmix_exchange_heap_info(void)
 }
 
 /*
- * formats are <pe>:worker:base, <pe>:worker:size
+ * formats are <pe>:wrkr:addr, <pe>:wrkr:len
  */
 static const char *wrkr_addr_fmt = "%d:wrkr:addr";
 static const char *wrkr_len_fmt = "%d:wrkr:len";
@@ -194,7 +197,7 @@ pmix_exchange_workers(void)
     pmix_pdata_t fetch_addr;
     pmix_pdata_t fetch_len;
     pmix_info_t waiter;
-    int all = 0;
+    int all = 1;
     int pe;
 
     PMIX_INFO_CONSTRUCT(&waiter);
@@ -204,8 +207,9 @@ pmix_exchange_workers(void)
     PMIX_PDATA_CONSTRUCT(&fetch_len);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
+#if 0
         if (pe != proc.rank) {
-
+#endif
             /* can I merge these?  No luck so far */
             snprintf(fetch_addr.key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, pe);
             snprintf(fetch_len.key, PMIX_MAX_KEYLEN, wrkr_len_fmt, pe);
@@ -220,17 +224,23 @@ pmix_exchange_workers(void)
                 (ucp_address_t *) fetch_addr.value.data.uint64;
             cp->wrkrs[pe].len =
                 fetch_len.value.data.size;
+#if 0
         }
+#endif
     }
 
     /* debugging validation */
     for (pe = 0; pe < proc.nranks; pe += 1) {
+#if 0
         if (pe != proc.rank) {
-                logger(LOG_WORKER, "FETCH: from PE %d, worker @ %p, %lu bytes",
+#endif
+            logger(LOG_WORKER, "FETCH: from PE %d, worker @ %p, %lu bytes",
                        pe,
                        cp->wrkrs[pe].addr_p,
                        cp->wrkrs[pe].len);
+#if 0
         }
+#endif
     }
 }
 
@@ -307,6 +317,4 @@ pmix_client_init(void)
            proc.peers
            );
 #endif
-
-    pmix_barrier_all();
 }
