@@ -6,20 +6,16 @@
 #include <ucp/api/ucp.h>
 
 typedef struct worker_info {
-    ucp_worker_h wrkr;          /* local worker and its addr info */
     ucp_address_t *addr_p;
     size_t len;
 } worker_info_t;
 
 typedef struct comms_info {
-
-    worker_info_t *wrkrs;       /* nranks workers */
-
-    ucp_ep_h *eps;              /* nranks * endpoints (1 of which is mine) */
-
     ucp_context_h ctxt;         /* local communication context */
-
     ucp_config_t *cfg;          /* local config */
+    ucp_worker_h wrkr;          /* local worker */
+    worker_info_t *wrkrs;       /* nranks workers */
+    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
 
 } comms_info_t;
 
