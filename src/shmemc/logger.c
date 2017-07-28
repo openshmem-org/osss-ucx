@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <stdbool.h>
 #include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <sys/param.h>
 #include <sys/time.h>
@@ -157,9 +158,10 @@ shmemu_logger(shmemu_log_t level, const char *fmt, ...)
         assert(tmp2 != NULL);
 
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
-                 "[%s:%d:%6.6f] %10s: ",
+                 "[%s:%d:%d:%6.6f] %10s: ",
                  host,
                  proc.rank,
+                 (int) getpid(),
                  shmemu_timer(),
                  level_to_name(level)
                  );
