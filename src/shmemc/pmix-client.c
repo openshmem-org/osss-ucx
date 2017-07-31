@@ -10,11 +10,6 @@
 #include <ucp/api/ucp.h>
 
 /*
- * private shortcut to communications structure
- */
-static comms_info_t *cp = & proc.comms;
-
-/*
  * if finalize called through atexit, force a barrier
  */
 
@@ -47,16 +42,6 @@ pmix_finalize_atexit(void)
 }
 
 /*
- * this is purely for internal use with PMIx,
- * nothing to do with SHMEM/UCX
- */
-static void
-pmix_barrier_all(void)
-{
-    PMIx_Fence(NULL, 0, NULL, 0);
-}
-
-/*
  * formats are <pe>:heapx:<key>
  */
 static const char *heap_base_fmt = "%d:heap:base";
@@ -65,37 +50,31 @@ static const char *heap_size_fmt = "%d:heap:size";
 void
 pmix_publish_heap_info(void)
 {
-    /* only publish if multiple PEs */
+    const unsigned int nfields = 2;
+    pmix_info_t *ia;
+    pmix_status_t ps;
 
-    if (proc.nranks > 1) {
-        const unsigned int nfields = 2;
-        pmix_info_t *ia;
-        pmix_status_t ps;
+    PMIX_INFO_CREATE(ia, nfields);    /* base, size */
 
-        PMIX_INFO_CREATE(ia, nfields);    /* base, size */
+    /*
+     * everyone publishes their info
+     */
+    snprintf(ia[0].key, PMIX_MAX_KEYLEN, heap_base_fmt, proc.rank);
+    ia[0].value.type = PMIX_UINT64;
+    ia[0].value.data.uint64 = (uint64_t) proc.heaps[proc.rank].base;
 
-        /*
-         * everyone publishes their info
-         */
-        snprintf(ia[0].key, PMIX_MAX_KEYLEN, heap_base_fmt, proc.rank);
-        ia[0].value.type = PMIX_UINT64;
-        ia[0].value.data.uint64 = (uint64_t) proc.heaps[proc.rank].base;
+    snprintf(ia[1].key, PMIX_MAX_KEYLEN, heap_size_fmt, proc.rank);
+    ia[1].value.type = PMIX_SIZE;
+    ia[1].value.data.size = proc.heaps[proc.rank].size;
 
-        snprintf(ia[1].key, PMIX_MAX_KEYLEN, heap_size_fmt, proc.rank);
-        ia[1].value.type = PMIX_SIZE;
-        ia[1].value.data.size = proc.heaps[proc.rank].size;
-
-        ps = PMIx_Publish(ia, nfields);
-        assert(ps == PMIX_SUCCESS);
+    ps = PMIx_Publish(ia, nfields);
+    assert(ps == PMIX_SUCCESS);
 
 #if 0
-        logger(LOG_HEAP, "PUBLISH: my heap @ %p, %lu bytes",
-               proc.heaps[proc.rank].base,
-               proc.heaps[proc.rank].size);
+    logger(LOG_HEAP, "PUBLISH: my heap @ %p, %lu bytes",
+           proc.heaps[proc.rank].base,
+           proc.heaps[proc.rank].size);
 #endif
-
-        PMIX_INFO_FREE(ia, nfields);
-    }
 }
 
 void
@@ -115,36 +94,30 @@ pmix_exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-#if 0
-        if (pe != proc.rank) {
-#endif
-            /* can I merge these?  No luck so far */
-            snprintf(fetch_base.key, PMIX_MAX_KEYLEN, heap_base_fmt, pe);
-            snprintf(fetch_size.key, PMIX_MAX_KEYLEN, heap_size_fmt, pe);
+        /* can I merge these?  No luck so far */
+        snprintf(fetch_base.key, PMIX_MAX_KEYLEN, heap_base_fmt, pe);
+        snprintf(fetch_size.key, PMIX_MAX_KEYLEN, heap_size_fmt, pe);
 
-            ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
-            assert(ps == PMIX_SUCCESS);
+        ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
+        assert(ps == PMIX_SUCCESS);
 
-            ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
-            assert(ps == PMIX_SUCCESS);
+        ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
+        assert(ps == PMIX_SUCCESS);
 
-            proc.heaps[pe].base =
-                (void *) fetch_base.value.data.uint64;
-            proc.heaps[pe].size =
-                fetch_size.value.data.size;
-#if 0
-        }
-#endif
+        proc.heaps[pe].base =
+            (void *) fetch_base.value.data.uint64;
+        proc.heaps[pe].size =
+            fetch_size.value.data.size;
     }
 
 #if 0
     /* debugging validation */
     for (pe = 0; pe < proc.nranks; pe += 1) {
         if (pe != proc.rank) {
-                logger(LOG_HEAP, "FETCH: from PE %d, heap @ %p, %lu bytes",
-                       pe,
-                       proc.heaps[proc.rank].base,
-                       proc.heaps[proc.rank].size);
+            logger(LOG_HEAP, "FETCH: from PE %d, heap @ %p, %lu bytes",
+                   pe,
+                   proc.heaps[proc.rank].base,
+                   proc.heaps[proc.rank].size);
         }
     }
 #endif
@@ -159,35 +132,31 @@ static const char *wrkr_len_fmt = "%d:wrkr:len";
 void
 pmix_publish_worker(void)
 {
-    /* only publish if multiple PEs */
+    const unsigned int nfields = 2;
+    pmix_info_t *ia;
+    pmix_status_t ps;
 
-    if (proc.nranks > 1) {
-        const unsigned int nfields = 2;
-        pmix_info_t *ia;
-        pmix_status_t ps;
+    PMIX_INFO_CREATE(ia, nfields); /* base, size */
 
-        PMIX_INFO_CREATE(ia, nfields); /* base, size */
+    /*
+     * everyone publishes their info
+     */
+    snprintf(ia[0].key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, proc.rank);
+    ia[0].value.type = PMIX_UINT64;
+    ia[0].value.data.uint64 = (uint64_t) proc.comms.wrkrs[proc.rank].addr;
 
-        /*
-         * everyone publishes their info
-         */
-        snprintf(ia[0].key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, proc.rank);
-        ia[0].value.type = PMIX_UINT64;
-        ia[0].value.data.uint64 = (uint64_t) cp->wrkrs[proc.rank].addr_p;
+    snprintf(ia[1].key, PMIX_MAX_KEYLEN, wrkr_len_fmt, proc.rank);
+    ia[1].value.type = PMIX_SIZE;
+    ia[1].value.data.size = proc.comms.wrkrs[proc.rank].len;
 
-        snprintf(ia[1].key, PMIX_MAX_KEYLEN, wrkr_len_fmt, proc.rank);
-        ia[1].value.type = PMIX_SIZE;
-        ia[1].value.data.size = cp->wrkrs[proc.rank].len;
+    ps = PMIx_Publish(ia, nfields);
+    assert(ps == PMIX_SUCCESS);
 
-        ps = PMIx_Publish(ia, nfields);
-        assert(ps == PMIX_SUCCESS);
+    PMIX_INFO_FREE(ia, nfields);
 
-        PMIX_INFO_FREE(ia, nfields);
-
-        logger(LOG_WORKER, "PUBLISH: worker @ %p, %lu bytes",
-               cp->wrkrs[proc.rank].addr_p,
-               cp->wrkrs[proc.rank].len);
-}
+    logger(LOG_WORKER, "PUBLISH: worker @ %p, %lu bytes",
+           proc.comms.wrkrs[proc.rank].addr,
+           proc.comms.wrkrs[proc.rank].len);
 }
 
 void
@@ -207,44 +176,42 @@ pmix_exchange_workers(void)
     PMIX_PDATA_CONSTRUCT(&fetch_len);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-#if 0
-        if (pe != proc.rank) {
-#endif
-            /* can I merge these?  No luck so far */
-            snprintf(fetch_addr.key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, pe);
-            snprintf(fetch_len.key, PMIX_MAX_KEYLEN, wrkr_len_fmt, pe);
+        /* can I merge these?  No luck so far */
+        snprintf(fetch_addr.key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, pe);
+        snprintf(fetch_len.key, PMIX_MAX_KEYLEN, wrkr_len_fmt, pe);
 
-            ps = PMIx_Lookup(&fetch_addr, 1, &waiter, 1);
-            assert(ps == PMIX_SUCCESS);
+        ps = PMIx_Lookup(&fetch_addr, 1, &waiter, 1);
+        assert(ps == PMIX_SUCCESS);
 
-            ps = PMIx_Lookup(&fetch_len, 1, &waiter, 1);
-            assert(ps == PMIX_SUCCESS);
+        ps = PMIx_Lookup(&fetch_len, 1, &waiter, 1);
+        assert(ps == PMIX_SUCCESS);
 
-            cp->wrkrs[pe].addr_p =
-                (ucp_address_t *) fetch_addr.value.data.uint64;
-            cp->wrkrs[pe].len =
-                fetch_len.value.data.size;
-#if 0
-        }
-#endif
+        proc.comms.wrkrs[pe].addr =
+            (ucp_address_t *) fetch_addr.value.data.uint64;
+        proc.comms.wrkrs[pe].len =
+            fetch_len.value.data.size;
     }
 
     /* debugging validation */
     for (pe = 0; pe < proc.nranks; pe += 1) {
-#if 0
-        if (pe != proc.rank) {
-#endif
-            logger(LOG_WORKER, "FETCH: from PE %d, worker @ %p, %lu bytes",
-                       pe,
-                       cp->wrkrs[pe].addr_p,
-                       cp->wrkrs[pe].len);
-#if 0
-        }
-#endif
+        logger(LOG_WORKER, "FETCH: from PE %d, worker @ %p, %lu bytes",
+               pe,
+               proc.comms.wrkrs[pe].addr,
+               proc.comms.wrkrs[pe].len);
     }
 }
 
 /* -------------------------------------------------------------- */
+
+/*
+ * this is purely for internal use with PMIx,
+ * nothing to do with SHMEM/UCX
+ */
+void
+pmix_barrier_all(void)
+{
+    PMIx_Fence(NULL, 0, NULL, 0);
+}
 
 void
 pmix_client_finalize(void)

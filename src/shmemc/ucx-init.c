@@ -37,11 +37,6 @@ static ucp_mem_h symm_heap;
  */
 static FILE *say;
 
-/*
- * private shortcut to communications structure
- */
-static comms_info_t *cp = & proc.comms;
-
 #if 0
 /*
  * TODO: move to shmemu namespace in real implementation
@@ -88,52 +83,12 @@ check_version(void)
     fprintf(say, "\n");
 }
 
-/*
- * worker tables
- */
-static void
-allocate_workers(void)
-{
-    cp->wrkrs = (worker_info_t *) calloc(proc.nranks, sizeof(*(cp->wrkrs)));
-    assert(cp->wrkrs != NULL);
-}
-
-static void
-deallocate_workers(void)
-{
-    if (cp->wrkrs != NULL) {
-        free(cp->wrkrs);
-    }
-}
-
-static void
-make_local_worker(void)
-{
-    ucs_status_t s;
-    ucp_worker_params_t wkpm;
-    worker_info_t *this = & (cp->wrkrs[proc.rank]);
-
-    wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
-    wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
-
-    s = ucp_worker_create(cp->ctxt, &wkpm, &(cp->wrkr));
-    assert(s == UCS_OK);
-
-    /* get address for remote access to worker */
-    s = ucp_worker_get_address(cp->wrkr,
-                               &this->addr_p,
-                               &this->len);
-    assert(s == UCS_OK);
-}
-
 static void
 make_init_params(ucp_params_t *p_p)
 {
     p_p->field_mask =
         UCP_PARAM_FIELD_FEATURES |
         UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
-
-    p_p->estimated_num_eps = proc.nranks;
 
     /*
      * we'll try at first to get both 32- and 64-bit direct AMO
@@ -149,6 +104,48 @@ make_init_params(ucp_params_t *p_p)
         UCP_FEATURE_AMO64
 #endif
         ;
+    p_p->estimated_num_eps = proc.nranks;
+}
+
+/*
+ * worker tables
+ */
+static void
+allocate_workers(void)
+{
+    proc.comms.wrkrs = (worker_info_t *)
+        calloc(proc.nranks, sizeof(*(proc.comms.wrkrs)));
+    assert(proc.comms.wrkrs != NULL);
+}
+
+static void
+deallocate_workers(void)
+{
+    if (proc.comms.wrkrs != NULL) {
+        free(proc.comms.wrkrs);
+    }
+}
+
+static void
+make_local_worker(void)
+{
+    ucs_status_t s;
+    ucp_worker_params_t wkpm;
+    ucp_address_t *a;
+    size_t l;
+
+    wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
+    wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
+
+    s = ucp_worker_create(proc.comms.ctxt, &wkpm, &proc.comms.wrkr);
+    assert(s == UCS_OK);
+
+    /* get address for remote access to worker */
+    s = ucp_worker_get_address(proc.comms.wrkr, &a, &l);
+    proc.comms.wrkrs[proc.rank].addr = a;
+    proc.comms.wrkrs[proc.rank].len = l;
+
+    assert(s == UCS_OK);
 }
 
 /*
@@ -157,15 +154,16 @@ make_init_params(ucp_params_t *p_p)
 static void
 allocate_endpoints(void)
 {
-    cp->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(*(cp->eps)));
-    assert(cp->eps != NULL);
+    proc.comms.eps = (ucp_ep_h *)
+        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
+    assert(proc.comms.eps != NULL);
 }
 
 static void
 deallocate_endpoints(void)
 {
-    if (cp->eps != NULL) {
-        free(cp->eps);
+    if (proc.comms.eps != NULL) {
+        free(proc.comms.eps);
     }
 }
 
@@ -178,10 +176,13 @@ make_an_endpoint(ucp_address_t *addr, int pe)
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
     epm.address = addr;
 
-    s = ucp_ep_create(cp->wrkr, &epm, &cp->eps[pe]);
+    s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[pe]);
     assert(s == UCS_OK);
 }
 
+/*
+ * debugging output
+ */
 static void
 dump_mapped_mem_info(const char *name, const ucp_mem_h *m)
 {
@@ -234,7 +235,7 @@ reg_symmetric_heap(void)
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(cp->ctxt, &mp, &symm_heap);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &symm_heap);
     assert(s == UCS_OK);
 
     /*
@@ -260,7 +261,7 @@ dereg_symmetric_heap(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(cp->ctxt, symm_heap);
+    s = ucp_mem_unmap(proc.comms.ctxt, symm_heap);
     assert(s == UCS_OK);
 }
 
@@ -282,7 +283,7 @@ reg_globals(void)
     mp.address = base;
     mp.length = len;
 
-    s = ucp_mem_map(cp->ctxt, &mp, &global_segment);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &global_segment);
     assert(s == UCS_OK);
 }
 
@@ -291,7 +292,7 @@ dereg_globals(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(cp->ctxt, global_segment);
+    s = ucp_mem_unmap(proc.comms.ctxt, global_segment);
     assert(s == UCS_OK);
 }
 
@@ -305,9 +306,8 @@ shmemc_ucx_make_remote_endpoints(void)
 {
     int pe;
 
-    for (pe = 0; pe < proc.rank; pe += 1) {
-        make_an_endpoint(cp->wrkrs[pe].addr_p, /* !!! */
-                         pe);
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        make_an_endpoint(proc.comms.wrkrs[pe].addr, pe);
     }
 }
 
@@ -327,14 +327,23 @@ shmemc_ucx_init(void)
     }
 
     /* start initialization */
-    s = ucp_config_read(NULL, NULL, &cp->cfg);
+    s = ucp_config_read(NULL, NULL, &proc.comms.cfg);
     assert(s == UCS_OK);
 
     make_init_params(&pm);
 
-    s = ucp_init(&pm, cp->cfg, &cp->ctxt);
+    s = ucp_init(&pm, proc.comms.cfg, &proc.comms.ctxt);
     assert(s == UCS_OK);
 
+    /*
+     * Create workers and space for EPs
+     */
+    allocate_workers();
+    allocate_endpoints();
+
+    make_local_worker();
+
+#if 0
     /*
      * try registering some implicit memory as symmetric heap
      */
@@ -344,16 +353,7 @@ shmemc_ucx_init(void)
      * try registering the data and bss segments
      */
     reg_globals();
-
-    /*
-     * Create worker and space for all
-     */
-    allocate_workers();
-    make_local_worker();
-    /*
-     * Create all EPs
-     */
-    allocate_endpoints();
+#endif
 
 #ifdef DEBUG
     if (proc.rank == 0) {
@@ -361,18 +361,18 @@ shmemc_ucx_init(void)
             UCS_CONFIG_PRINT_CONFIG |
             UCS_CONFIG_PRINT_HEADER;
 
-        ucp_config_print(cp->cfg, say, "My config", flags);
-        ucp_context_print_info(cp->ctxt, say);
+        ucp_config_print(proc.comms.cfg, say, "My config", flags);
+        ucp_context_print_info(proc.comms.ctxt, say);
         check_version();
         fprintf(say, "----------------------------------------------\n\n");
         fflush(say);
     }
-    ucp_worker_print_info(cp->wrkr, say);
+    ucp_worker_print_info(proc.comms.wrkr, say);
     dump_mapped_mem_info("heap", &symm_heap);
     dump_mapped_mem_info("globals", &global_segment);
 #endif
     /* don't need config info any more */
-    ucp_config_release(cp->cfg);
+    ucp_config_release(proc.comms.cfg);
 }
 
 void
@@ -393,12 +393,12 @@ shmemc_ucx_finalize(void)
 
     /* and clean up */
 
-    sp = ucp_disconnect_nb(cp->eps[proc.rank]);
+    sp = ucp_disconnect_nb(proc.comms.eps[proc.rank]);
     if (sp != UCS_OK) {
         ucs_status_t s;
 
         do {
-            ucp_worker_progress(cp->wrkr);
+            ucp_worker_progress(proc.comms.wrkr);
             s = ucp_request_test(sp, NULL);
         } while (s == UCS_INPROGRESS);
 
@@ -406,13 +406,14 @@ shmemc_ucx_finalize(void)
     }
     deallocate_endpoints();
 
-    ucp_worker_release_address(cp->wrkr, cp->wrkrs[proc.rank].addr_p);
-    ucp_worker_destroy(cp->wrkr); /* and free worker_info_t's ? */
+    ucp_worker_release_address(proc.comms.wrkr,
+                               proc.comms.wrkrs[proc.rank].addr);
+    ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
 
     deallocate_workers();
 
     dereg_globals();
     dereg_symmetric_heap();
 
-    ucp_cleanup(cp->ctxt);
+    ucp_cleanup(proc.comms.ctxt);
 }

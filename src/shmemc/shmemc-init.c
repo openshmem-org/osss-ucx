@@ -21,7 +21,7 @@ shmemc_init(void)
     /* exchange worker info and then create EPs */
     pmix_publish_worker();
     pmix_exchange_workers();
-
+    pmix_barrier_all();
     shmemc_ucx_make_remote_endpoints();
 
     proc.status = SHMEM_PE_RUNNING;

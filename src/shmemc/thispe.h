@@ -5,8 +5,14 @@
 
 #include <ucp/api/ucp.h>
 
+typedef enum shmem_status {
+    SHMEM_PE_SHUTDOWN = 0,
+    SHMEM_PE_RUNNING,
+    SHMEM_PE_UNKNOWN
+} shmem_status_t;
+
 typedef struct worker_info {
-    ucp_address_t *addr_p;
+    ucp_address_t *addr;
     size_t len;
 } worker_info_t;
 
@@ -18,12 +24,6 @@ typedef struct comms_info {
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
 
 } comms_info_t;
-
-typedef enum shmem_status {
-    SHMEM_PE_SHUTDOWN = 0,
-    SHMEM_PE_RUNNING,
-    SHMEM_PE_UNKNOWN
-} shmem_status_t;
 
 typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
