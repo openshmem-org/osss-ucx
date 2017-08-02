@@ -94,8 +94,7 @@ make_init_params(ucp_params_t *p_p)
      * we'll try at first to get both 32- and 64-bit direct AMO
      * support because OpenSHMEM wants them
      */
-    p_p->features =
-        UCP_FEATURE_RMA
+    p_p->features = UCP_FEATURE_RMA
 #if 1
         /* while testing so we can play on mlx4 card */
         |
@@ -164,19 +163,6 @@ deallocate_endpoints(void)
     if (proc.comms.eps != NULL) {
         free(proc.comms.eps);
     }
-}
-
-static void
-make_an_endpoint(ucp_address_t *addr, int pe)
-{
-    ucs_status_t s;
-    ucp_ep_params_t epm;
-
-    epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-    epm.address = addr;
-
-    s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[pe]);
-    assert(s == UCS_OK);
 }
 
 /*
@@ -303,10 +289,19 @@ dereg_globals(void)
 void
 shmemc_ucx_make_remote_endpoints(void)
 {
+    ucs_status_t s;
+    ucp_ep_params_t epm;
     int pe;
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        make_an_endpoint(proc.comms.wrkrs[pe].addr, pe);
+        const int i = (pe + proc.rank) % proc.nranks;
+
+        epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
+        epm.address = (ucp_address_t *) proc.comms.wrkrs[i].buf;
+
+        s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[i]);
+        assert(s == UCS_OK);
+
     }
 }
 
@@ -335,7 +330,7 @@ shmemc_ucx_init(void)
     assert(s == UCS_OK);
 
     reg_symmetric_heap();
-    reg_globals();
+    // reg_globals();
 
     /*
      * Create workers and space for EPs
@@ -345,7 +340,6 @@ shmemc_ucx_init(void)
 
     make_local_worker();
 
-#ifdef DEBUG
     if (proc.rank == 0) {
         const ucs_config_print_flags_t flags =
             UCS_CONFIG_PRINT_CONFIG |
@@ -353,11 +347,12 @@ shmemc_ucx_init(void)
 
         ucp_config_print(proc.comms.cfg, say, "My config", flags);
         ucp_context_print_info(proc.comms.ctxt, say);
-        check_version();
+    ucp_worker_print_info(proc.comms.wrkr, say);
+        // check_version();
         fprintf(say, "----------------------------------------------\n\n");
         fflush(say);
     }
-    ucp_worker_print_info(proc.comms.wrkr, say);
+#if 0
     dump_mapped_mem_info("heap", &symm_heap);
     dump_mapped_mem_info("globals", &global_segment);
 #endif
@@ -406,7 +401,7 @@ shmemc_ucx_finalize(void)
 
     deallocate_workers();
 
-    dereg_globals();
+    // dereg_globals();
     dereg_symmetric_heap();
 
     ucp_cleanup(proc.comms.ctxt);

@@ -13,6 +13,7 @@ typedef enum shmem_status {
 
 typedef struct worker_info {
     ucp_address_t *addr;        /* worker address */
+    char *buf;                  /* allocated to copy remote worker */
     size_t len;                 /* size of worker */
 } worker_info_t;
 
