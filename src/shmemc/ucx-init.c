@@ -371,12 +371,6 @@ shmemc_ucx_finalize(void)
         return;
     }
 
-    /*
-     * DEBUGGING
-     *
-     */
-    return;
-
     /* really want a global barrier */
     shmemc_quiet();
 
