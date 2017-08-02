@@ -15,4 +15,7 @@ typedef struct symmetric_heap {
     size_t size;
 } heapx_t;
 
+void shmemc_heapx_init(void);
+void shmemc_heapx_finalize(void);
+
 #endif /* ! _HEAPX_H */

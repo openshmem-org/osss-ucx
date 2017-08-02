@@ -142,10 +142,9 @@ make_local_worker(void)
 
     /* get address for remote access to worker */
     s = ucp_worker_get_address(proc.comms.wrkr, &a, &l);
+    assert(s == UCS_OK);
     proc.comms.wrkrs[proc.rank].addr = a;
     proc.comms.wrkrs[proc.rank].len = l;
-
-    assert(s == UCS_OK);
 }
 
 /*
@@ -335,6 +334,9 @@ shmemc_ucx_init(void)
     s = ucp_init(&pm, proc.comms.cfg, &proc.comms.ctxt);
     assert(s == UCS_OK);
 
+    reg_symmetric_heap();
+    reg_globals();
+
     /*
      * Create workers and space for EPs
      */
@@ -342,18 +344,6 @@ shmemc_ucx_init(void)
     allocate_endpoints();
 
     make_local_worker();
-
-#if 0
-    /*
-     * try registering some implicit memory as symmetric heap
-     */
-    reg_symmetric_heap();
-
-    /*
-     * try registering the data and bss segments
-     */
-    reg_globals();
-#endif
 
 #ifdef DEBUG
     if (proc.rank == 0) {
@@ -386,6 +376,10 @@ shmemc_ucx_finalize(void)
         return;
     }
 
+    /*
+     * DEBUGGING
+     *
+     */
     return;
 
     /* really want a global barrier */

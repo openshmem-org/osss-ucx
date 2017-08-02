@@ -6,18 +6,18 @@
 #include <assert.h>
 
 void
-heapx_init(void)
+shmemc_heapx_init(void)
 {
     if (proc.heaps == NULL) {
         /* allocate heap stubs for all ranks */
         proc.heaps = (heapx_t *) calloc(proc.nranks,
-                                      sizeof(heapx_t));
+                                      sizeof(*proc.heaps));
         assert(proc.heaps != NULL);
     }
 }
 
 void
-heapx_finalize(void)
+shmemc_heapx_finalize(void)
 {
     if (proc.heaps != NULL) {
         free(proc.heaps);

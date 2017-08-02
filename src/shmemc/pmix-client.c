@@ -48,7 +48,7 @@ static const char *heap_base_fmt = "%d:heap:base";
 static const char *heap_size_fmt = "%d:heap:size";
 
 void
-pmix_publish_heap_info(void)
+shmemc_pmix_publish_heap_info(void)
 {
     const unsigned int nfields = 2;
     pmix_info_t *ia;
@@ -78,7 +78,7 @@ pmix_publish_heap_info(void)
 }
 
 void
-pmix_exchange_heap_info(void)
+shmemc_pmix_exchange_heap_info(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch_base;
@@ -130,7 +130,7 @@ static const char *wrkr_addr_fmt = "%d:wrkr:addr";
 static const char *wrkr_len_fmt = "%d:wrkr:len";
 
 void
-pmix_publish_worker(void)
+shmemc_pmix_publish_worker(void)
 {
     const unsigned int nfields = 2;
     pmix_info_t *ia;
@@ -160,7 +160,7 @@ pmix_publish_worker(void)
 }
 
 void
-pmix_exchange_workers(void)
+shmemc_pmix_exchange_workers(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch_addr;
@@ -176,9 +176,11 @@ pmix_exchange_workers(void)
     PMIX_PDATA_CONSTRUCT(&fetch_len);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
+        const int i = (pe + proc.rank) % proc.nranks;
+
         /* can I merge these?  No luck so far */
-        snprintf(fetch_addr.key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, pe);
-        snprintf(fetch_len.key, PMIX_MAX_KEYLEN, wrkr_len_fmt, pe);
+        snprintf(fetch_addr.key, PMIX_MAX_KEYLEN, wrkr_addr_fmt, i);
+        snprintf(fetch_len.key, PMIX_MAX_KEYLEN, wrkr_len_fmt, i);
 
         ps = PMIx_Lookup(&fetch_addr, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
@@ -186,9 +188,9 @@ pmix_exchange_workers(void)
         ps = PMIx_Lookup(&fetch_len, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
 
-        proc.comms.wrkrs[pe].addr =
+        proc.comms.wrkrs[i].addr =
             (ucp_address_t *) fetch_addr.value.data.uint64;
-        proc.comms.wrkrs[pe].len =
+        proc.comms.wrkrs[i].len =
             fetch_len.value.data.size;
     }
 
@@ -208,19 +210,19 @@ pmix_exchange_workers(void)
  * nothing to do with SHMEM/UCX
  */
 void
-pmix_barrier_all(void)
+shmemc_pmix_barrier_all(void)
 {
     PMIx_Fence(NULL, 0, NULL, 0);
 }
 
 void
-pmix_client_finalize(void)
+shmemc_pmix_client_finalize(void)
 {
     pmix_finalize_handler(false);
 }
 
 void
-pmix_client_init(void)
+shmemc_pmix_client_init(void)
 {
     pmix_proc_t my_proc;        /* about me */
     pmix_proc_t wc_proc;        /* wildcard lookups */

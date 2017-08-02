@@ -12,8 +12,8 @@ typedef enum shmem_status {
 } shmem_status_t;
 
 typedef struct worker_info {
-    ucp_address_t *addr;
-    size_t len;
+    ucp_address_t *addr;        /* worker address */
+    size_t len;                 /* size of worker */
 } worker_info_t;
 
 typedef struct comms_info {
@@ -22,24 +22,17 @@ typedef struct comms_info {
     ucp_worker_h wrkr;          /* local worker */
     worker_info_t *wrkrs;       /* nranks workers */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-
 } comms_info_t;
 
 typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
-
     int rank;                   /* rank info */
     int nranks;
-
     shmem_status_t status;      /* up, down, out to lunch etc */
-
     int refcount;               /* library initialization count */
-
     char *peers;                /* PEs in a node group */
     int npeers;
-
     heapx_t *heaps;             /* exchanged symmetric heaps */
-
 } thispe_info_t;
 
 extern thispe_info_t proc;
