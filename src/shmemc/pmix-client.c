@@ -1,5 +1,6 @@
 #include "thispe.h"
 #include "shmemu.h"
+#include "state.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -35,9 +36,12 @@ pmix_finalize_handler(_Bool need_barrier)
     PMIX_INFO_FREE(bar, 1);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        free(proc.comms.wrkrs[pe].buf);
+        if (proc.comms.wrkrs[pe].buf != NULL) {
+            free(proc.comms.wrkrs[pe].buf);
+        }
     }
 }
+
 
 static void
 pmix_finalize_atexit(void)
@@ -129,12 +133,9 @@ shmemc_pmix_publish_worker(void)
      */
     snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
     pi.value.type = PMIX_BYTE_OBJECT;
-
     bop = &pi.value.data.bo;
-
     bop->bytes = (char *) proc.comms.wrkrs[proc.rank].addr;
     bop->size = proc.comms.wrkrs[proc.rank].len;
-
     ps = PMIx_Publish(&pi, 1);
     assert(ps == PMIX_SUCCESS);
 }
@@ -158,16 +159,110 @@ shmemc_pmix_exchange_workers(void)
         const int i = (pe + proc.rank) % proc.nranks;
 
         snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
-
         ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
-
         bop = &fetch.value.data.bo;
 
         /* save published worker */
         proc.comms.wrkrs[i].buf = (char *) malloc(bop->size);
         assert(proc.comms.wrkrs[i].buf != NULL);
         memcpy(proc.comms.wrkrs[i].buf, bop->bytes, bop->size);
+    }
+}
+
+static void *global_packed_rkey;
+static size_t global_rkey_len;
+
+static void *symm_packed_rkey;
+static size_t symm_rkey_len;
+
+static const char *rkey_exch_fmt = "%d:rkey:%s";
+
+void
+shmemc_pmix_publish_rkey(void)
+{
+    pmix_status_t ps;
+    pmix_info_t pi;
+    pmix_byte_object_t *bop;
+    ucs_status_t s;
+
+    s = ucp_rkey_pack(proc.comms.ctxt,
+                      global_segment,
+                      &global_packed_rkey, &global_rkey_len
+                      );
+    assert(s == UCS_OK);
+
+    s = ucp_rkey_pack(proc.comms.ctxt,
+                      symm_heap,
+                      &symm_packed_rkey, &symm_rkey_len
+                      );
+    assert(s == UCS_OK);
+
+    PMIX_INFO_CONSTRUCT(&pi);
+    snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, "global");
+    pi.value.type = PMIX_BYTE_OBJECT;
+    bop = &pi.value.data.bo;
+    bop->bytes = (char *) global_packed_rkey;
+    bop->size = global_rkey_len;
+    ps = PMIx_Publish(&pi, 1);
+    assert(ps == PMIX_SUCCESS);
+
+    PMIX_INFO_CONSTRUCT(&pi);
+    snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, "symm");
+    pi.value.type = PMIX_BYTE_OBJECT;
+    bop = &pi.value.data.bo;
+    bop->bytes = (char *) symm_packed_rkey;
+    bop->size = symm_rkey_len;
+    ps = PMIx_Publish(&pi, 1);
+    assert(ps == PMIX_SUCCESS);
+}
+
+void
+shmemc_pmix_exchange_rkeys(void)
+{
+    pmix_status_t ps;
+    pmix_pdata_t fetch;
+    pmix_byte_object_t *bop;
+    pmix_info_t waiter;
+    int all = 1;
+    int pe;
+    ucs_status_t s;
+
+    PMIX_INFO_CONSTRUCT(&waiter);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
+
+    PMIX_PDATA_CONSTRUCT(&fetch);
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        const int i = (pe + proc.rank) % proc.nranks;
+
+        snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, "global");
+
+        ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
+        assert(ps == PMIX_SUCCESS);
+        bop = &fetch.value.data.bo;
+        proc.comms.rkeys[i].global = (ucp_rkey_h) malloc(bop->size);
+        assert(proc.comms.rkeys[i].global != NULL);
+
+        s = ucp_ep_rkey_unpack(proc.comms.eps[i],
+                               bop->bytes,
+                               &proc.comms.rkeys[i].global
+                               );
+        assert(s == UCS_OK);
+
+        snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, "symm");
+
+        ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
+        assert(ps == PMIX_SUCCESS);
+        bop = &fetch.value.data.bo;
+        proc.comms.rkeys[i].symm = (ucp_rkey_h) malloc(bop->size);
+        assert(proc.comms.rkeys[i].symm != NULL);
+
+        s = ucp_ep_rkey_unpack(proc.comms.eps[i],
+                               bop->bytes,
+                               &proc.comms.rkeys[i].symm
+                               );
+        assert(s == UCS_OK);
     }
 }
 

@@ -1,4 +1,4 @@
-#include "thispe.h"
+#include "state.h"
 
 int
 shmemc_my_pe(void)

@@ -23,6 +23,10 @@ typedef struct comms_info {
     ucp_worker_h wrkr;          /* local worker */
     worker_info_t *wrkrs;       /* nranks workers */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
+    struct rrrr {
+        ucp_rkey_h global;
+        ucp_rkey_h symm;
+    } *rkeys;
 } comms_info_t;
 
 typedef struct thispe_info {
@@ -35,8 +39,6 @@ typedef struct thispe_info {
     int npeers;
     heapx_t *heaps;             /* exchanged symmetric heaps */
 } thispe_info_t;
-
-extern thispe_info_t proc;
 
 /*
  * shortcut to look up the UCP endpoint

@@ -12,4 +12,7 @@ void shmemc_pmix_exchange_heap_info(void);
 void shmemc_pmix_publish_worker(void);
 void shmemc_pmix_exchange_workers(void);
 
+void shmemc_pmix_publish_rkey(void);
+void shmemc_pmix_exchange_rkeys(void);
+
 #endif /* ! _SHMEMI_PMIX_H */

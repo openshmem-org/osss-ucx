@@ -2,7 +2,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "thispe.h"
+#include "state.h"
 #include "shmemu.h"
 #include "shmemc.h"
 

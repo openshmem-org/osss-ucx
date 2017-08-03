@@ -1,5 +1,5 @@
 #include "shmemu.h"
-#include "thispe.h"
+#include "state.h"
 
 #include <unistd.h>
 #include <string.h>

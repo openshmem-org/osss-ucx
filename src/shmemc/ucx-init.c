@@ -1,6 +1,7 @@
 #include "thispe.h"
 #include "shmemu.h"
 #include "shmemc.h"
+#include "state.h"
 
 #include <stdlib.h>             /* getenv */
 #include <assert.h>
@@ -10,28 +11,6 @@
 #define KB 1024L
 #define MB (KB * KB)
 #define GB (KB * MB)
-
-/*
- * the PE's state
- */
-thispe_info_t proc = {
-    .status = SHMEM_PE_UNKNOWN,
-    .refcount = 0,
-    .heaps = NULL
-};
-
-/*
- * where globals/statics/commons/saves live
- *
- */
-static ucp_mem_h global_segment;
-
-/*
- * some memory to play with registering
- *
- * TODO: multiple heap support
- */
-static ucp_mem_h symm_heap;
 
 /*
  * debugging output stream
@@ -183,16 +162,14 @@ dump_mapped_mem_info(const char *name, const ucp_mem_h *m)
     s = ucp_mem_query(*m, &attr);
     assert(s == UCS_OK);
 
-    fprintf(say,
-            "%d: \"%s\" memory at %p, length %.2f MB (%lu bytes)\n",
-            proc.rank, name,
-            attr.address,
-            (double) attr.length / MB,
-            (unsigned long) attr.length
-            );
+    logger(LOG_MEMORY,
+           "%d: \"%s\" memory at %p, length %.2f MB (%lu bytes)",
+           proc.rank, name,
+           attr.address,
+           (double) attr.length / MB,
+           (unsigned long) attr.length
+           );
 }
-
-extern int shmemu_parse_size(char *size_str, size_t *bytes_p);
 
 static void
 reg_symmetric_heap(void)
@@ -280,6 +257,26 @@ dereg_globals(void)
 
     s = ucp_mem_unmap(proc.comms.ctxt, global_segment);
     assert(s == UCS_OK);
+}
+
+/*
+ * get rkey from symmetric heap
+ */
+
+static void
+allocate_rkeys(void)
+{
+    proc.comms.rkeys = (struct rrrr *)
+        calloc(proc.nranks, sizeof(*(proc.comms.rkeys)));
+    assert(proc.comms.rkeys != NULL);
+}
+
+static void
+deallocate_rkeys(void)
+{
+    if (proc.comms.rkeys != NULL) {
+        free(proc.comms.rkeys);
+    }
 }
 
 /*
@@ -391,6 +388,7 @@ shmemc_ucx_init(void)
      */
     allocate_workers();
     allocate_endpoints();
+    allocate_rkeys();
 
     make_local_worker();
 
@@ -430,6 +428,7 @@ shmemc_ucx_finalize(void)
     disconnect_all_eps_start();
     disconnect_all_eps_stop();
 
+    deallocate_rkeys();
     deallocate_endpoints();
 
     ucp_worker_release_address(proc.comms.wrkr,
