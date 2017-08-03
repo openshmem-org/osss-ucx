@@ -1,3 +1,4 @@
+#include "shmemu.h"
 #include "thispe.h"
 
 #include <unistd.h>
@@ -24,9 +25,25 @@ do_flush(void)
  **/
 
 void
+shmemc_fence(void)
+{
+    do_flush();
+}
+
+void
 shmemc_quiet(void)
 {
     do_flush();
+}
+
+/*
+ * -- barriers -----------------------------------------------------------
+ */
+
+void
+shmemc_barrier_all(void)
+{
+    shmemc_quiet();             /* yeah, yeah, I know */
 }
 
 /*

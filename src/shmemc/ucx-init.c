@@ -1,5 +1,6 @@
 #include "thispe.h"
 #include "shmemu.h"
+#include "shmemc.h"
 
 #include <stdlib.h>             /* getenv */
 #include <assert.h>
@@ -281,6 +282,51 @@ dereg_globals(void)
     assert(s == UCS_OK);
 }
 
+/*
+ * disconnect all endpoints.  Make it slit-phase in case we can set up
+ * overlap later, but for now these are just called in immediate
+ * sequence.
+ *
+ */
+
+static ucs_status_ptr_t *sp;
+
+static void
+disconnect_all_eps_start(void)
+{
+    int pe;
+
+    sp = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*sp));
+    assert(sp != NULL);
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        sp[pe] = ucp_disconnect_nb(proc.comms.eps[pe]);
+    }
+}
+
+/*
+ * can certainly do better than this, but do what works for now
+ */
+static void
+disconnect_all_eps_stop(void)
+{
+    ucs_status_t s;
+    int pe;
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        if (sp[pe] == NULL) {
+            continue;
+        }
+
+        do {
+            (void) ucp_worker_progress(proc.comms.wrkr);
+            s = ucp_request_test(sp[pe], NULL);
+        } while (s == UCS_INPROGRESS);
+    }
+
+    free(sp);
+}
+
 /**
  * API
  *
@@ -330,7 +376,7 @@ shmemc_ucx_init(void)
     assert(s == UCS_OK);
 
     reg_symmetric_heap();
-    // reg_globals();
+    reg_globals();
 
     /*
      * Create workers and space for EPs
@@ -340,6 +386,7 @@ shmemc_ucx_init(void)
 
     make_local_worker();
 
+#if 0
     if (proc.rank == 0) {
         const ucs_config_print_flags_t flags =
             UCS_CONFIG_PRINT_CONFIG |
@@ -347,12 +394,11 @@ shmemc_ucx_init(void)
 
         ucp_config_print(proc.comms.cfg, say, "My config", flags);
         ucp_context_print_info(proc.comms.ctxt, say);
-    ucp_worker_print_info(proc.comms.wrkr, say);
+        ucp_worker_print_info(proc.comms.wrkr, say);
         // check_version();
         fprintf(say, "----------------------------------------------\n\n");
         fflush(say);
     }
-#if 0
     dump_mapped_mem_info("heap", &symm_heap);
     dump_mapped_mem_info("globals", &global_segment);
 #endif
@@ -363,30 +409,19 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
-    ucs_status_ptr_t sp;
-
     proc.refcount -= 1;
 
     if (proc.status != SHMEM_PE_RUNNING) {
         return;
     }
 
-    /* really want a global barrier */
-    shmemc_quiet();
+    shmemc_barrier_all();
 
     /* and clean up */
 
-    sp = ucp_disconnect_nb(proc.comms.eps[proc.rank]);
-    if (sp != UCS_OK) {
-        ucs_status_t s;
+    disconnect_all_eps_start();
+    disconnect_all_eps_stop();
 
-        do {
-            ucp_worker_progress(proc.comms.wrkr);
-            s = ucp_request_test(sp, NULL);
-        } while (s == UCS_INPROGRESS);
-
-        assert(s == UCS_OK);
-    }
     deallocate_endpoints();
 
     ucp_worker_release_address(proc.comms.wrkr,
@@ -395,7 +430,7 @@ shmemc_ucx_finalize(void)
 
     deallocate_workers();
 
-    // dereg_globals();
+    dereg_globals();
     dereg_symmetric_heap();
 
     ucp_cleanup(proc.comms.ctxt);

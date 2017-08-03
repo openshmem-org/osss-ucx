@@ -21,11 +21,7 @@ int shmemc_my_pe(void);
 int shmemc_n_pes(void);
 
 void shmemc_quiet(void);
-
-inline static void shmemc_fence(void)
-{
-    shmemc_quiet();
-}
+void shmemc_fence(void);
 
 #if 0
 void shmemc_char_p(char *dest, char value, int pe);
@@ -239,13 +235,7 @@ SHMEMC_WAITUNTIL_TYPE(longlong, long long, ge, >=)
  * barriers
  */
 
-#include <unistd.h>             /* temp for sleep */
-
-inline static void
-shmemc_barrier_all(void)
-{
-    sleep(1);
-}
+void shmemc_barrier_all(void);
 
 inline static void
 shmemc_barrier(int start, int log_stride, int size, long *pSync)
