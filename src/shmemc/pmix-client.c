@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <pmix.h>
+#include <pmix_common.h>
 #include <ucp/api/ucp.h>
 
 /*
@@ -18,6 +19,7 @@ pmix_finalize_handler(_Bool need_barrier)
 {
     pmix_status_t ps;
     pmix_info_t *bar;
+    int pe;
 
     if (need_barrier) {
         logger(LOG_FINALIZE,
@@ -31,6 +33,10 @@ pmix_finalize_handler(_Bool need_barrier)
     assert(ps == PMIX_SUCCESS);
 
     PMIX_INFO_FREE(bar, 1);
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        free(proc.comms.wrkrs[pe].buf);
+    }
 }
 
 static void
@@ -70,11 +76,7 @@ shmemc_pmix_publish_heap_info(void)
     ps = PMIx_Publish(ia, nfields);
     assert(ps == PMIX_SUCCESS);
 
-#if 0
-    logger(LOG_HEAP, "PUBLISH: my heap @ %p, %lu bytes",
-           proc.heaps[proc.rank].base,
-           proc.heaps[proc.rank].size);
-#endif
+    PMIX_INFO_FREE(ia, nfields);
 }
 
 void
@@ -109,18 +111,6 @@ shmemc_pmix_exchange_heap_info(void)
         proc.heaps[pe].size =
             fetch_size.value.data.size;
     }
-
-#if 0
-    /* debugging validation */
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        if (pe != proc.rank) {
-            logger(LOG_HEAP, "FETCH: from PE %d, heap @ %p, %lu bytes",
-                   pe,
-                   proc.heaps[proc.rank].base,
-                   proc.heaps[proc.rank].size);
-        }
-    }
-#endif
 }
 
 static const char *wrkr_exch_fmt = "%d:wrkr:addr";
@@ -141,16 +131,12 @@ shmemc_pmix_publish_worker(void)
     pi.value.type = PMIX_BYTE_OBJECT;
 
     bop = &pi.value.data.bo;
-    bop->bytes = (char *) malloc(proc.comms.wrkrs[proc.rank].len);
-    memcpy(bop->bytes,
-           proc.comms.wrkrs[proc.rank].addr,
-           proc.comms.wrkrs[proc.rank].len);
+
+    bop->bytes = (char *) proc.comms.wrkrs[proc.rank].addr;
     bop->size = proc.comms.wrkrs[proc.rank].len;
 
     ps = PMIx_Publish(&pi, 1);
     assert(ps == PMIX_SUCCESS);
-
-    free(bop->bytes);
 }
 
 void
@@ -178,22 +164,11 @@ shmemc_pmix_exchange_workers(void)
 
         bop = &fetch.value.data.bo;
 
+        /* save published worker */
         proc.comms.wrkrs[i].buf = (char *) malloc(bop->size);
         assert(proc.comms.wrkrs[i].buf != NULL);
-
-        memcpy(proc.comms.wrkrs[i].buf,
-               bop->bytes,
-               bop->size);
+        memcpy(proc.comms.wrkrs[i].buf, bop->bytes, bop->size);
     }
-
-#if 0
-    /* debugging validation */
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        logger(LOG_WORKER, "FETCH: from PE %d, worker @ %p",
-               pe,
-               proc.comms.wrkrs[pe].buf);
-    }
-#endif
 }
 
 /* -------------------------------------------------------------- */
@@ -269,14 +244,4 @@ shmemc_pmix_client_init(void)
     assert(proc.peers != NULL);
 
     PMIX_VALUE_RELEASE(vp);
-
-#if 0
-    logger(LOG_INIT,
-           "there %s %d peer%s on this node: \"%s\"",
-           (proc.npeers > 1) ? "are" : "is",
-           proc.npeers,
-           (proc.npeers > 1) ? "s" : "",
-           proc.peers
-           );
-#endif
 }
