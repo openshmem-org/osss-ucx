@@ -290,6 +290,7 @@ dereg_globals(void)
  */
 
 static ucs_status_ptr_t *sp;
+static unsigned int remaining;
 
 static void
 disconnect_all_eps_start(void)
@@ -301,27 +302,34 @@ disconnect_all_eps_start(void)
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
         sp[pe] = ucp_disconnect_nb(proc.comms.eps[pe]);
+        if (sp[pe] != NULL) {
+            remaining += 1;
+        }
     }
 }
 
-/*
- * can certainly do better than this, but do what works for now
- */
 static void
 disconnect_all_eps_stop(void)
 {
     ucs_status_t s;
     int pe;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        if (sp[pe] == NULL) {
-            continue;
-        }
+    while (remaining > 0) {
+        for (pe = 0; pe < proc.nranks; pe += 1) {
+            if (sp[pe] == NULL) {
+                remaining -= 1; /* another one down */
+                continue;
+            }
 
-        do {
             (void) ucp_worker_progress(proc.comms.wrkr);
+
             s = ucp_request_test(sp[pe], NULL);
-        } while (s == UCS_INPROGRESS);
+            if (s == UCS_INPROGRESS) {
+                continue;
+            }
+            assert(s == UCS_OK);
+            sp[pe] = NULL;
+        }
     }
 
     free(sp);
