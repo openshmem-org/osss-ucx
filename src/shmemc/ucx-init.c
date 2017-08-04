@@ -287,7 +287,7 @@ deallocate_rkeys(void)
  */
 
 static ucs_status_ptr_t *sp;
-static unsigned int remaining;
+static unsigned int remaining = 0;
 
 static void
 disconnect_all_eps_start(void)
@@ -311,23 +311,20 @@ disconnect_all_eps_stop(void)
     ucs_status_t s;
     int pe;
 
-    while (remaining > 0) {
+    do {
         for (pe = 0; pe < proc.nranks; pe += 1) {
-            if (sp[pe] == NULL) {
-                remaining -= 1; /* another one down */
-                continue;
-            }
 
-            (void) ucp_worker_progress(proc.comms.wrkr);
+            if (sp[pe] != NULL) {
+                (void) ucp_worker_progress(proc.comms.wrkr);
 
-            s = ucp_request_test(sp[pe], NULL);
-            if (s == UCS_INPROGRESS) {
-                continue;
+                s = ucp_request_test(sp[pe], NULL);
+                if (s == UCS_OK) {
+                    sp[pe] = NULL;
+                    remaining -= 1;
+                }
             }
-            assert(s == UCS_OK);
-            sp[pe] = NULL;
         }
-    }
+    } while (remaining > 0);
 
     free(sp);
 }
@@ -363,13 +360,6 @@ shmemc_ucx_init(void)
     ucp_params_t pm;
 
     say = stderr;
-
-    proc.refcount += 1;
-
-    /* no re-init */
-    if (proc.status == SHMEM_PE_RUNNING) {
-        return;
-    }
 
     /* start initialization */
     s = ucp_config_read(NULL, NULL, &proc.comms.cfg);
@@ -415,13 +405,8 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
-    proc.refcount -= 1;
-
-    if (proc.status != SHMEM_PE_RUNNING) {
-        return;
-    }
-
-    shmemc_barrier_all();
+    ucp_worker_flush(proc.comms.wrkr);
+    shmemc_pmix_barrier_all();
 
     /* and clean up */
 

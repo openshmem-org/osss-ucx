@@ -4,6 +4,7 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
+#include "state.h"
 
 #include <stdlib.h>
 #include <assert.h>
@@ -18,6 +19,12 @@
 void
 shmem_finalize(void)
 {
+    proc.refcount -= 1;
+
+    if (proc.status != SHMEM_PE_RUNNING) {
+        return;
+    }
+
     shmemc_finalize();
     shmemu_finalize();
 }
@@ -26,6 +33,13 @@ void
 shmem_init(void)
 {
     int s;
+
+    proc.refcount += 1;
+
+    /* no re-init */
+    if (proc.status == SHMEM_PE_RUNNING) {
+        return;
+    }
 
     shmemu_init();
     shmemc_init();
