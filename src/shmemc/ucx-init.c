@@ -266,7 +266,7 @@ dereg_globals(void)
 static void
 allocate_rkeys(void)
 {
-    proc.comms.rkeys = (struct rrrr *)
+    proc.comms.rkeys = (struct mem_handle *)
         calloc(proc.nranks, sizeof(*(proc.comms.rkeys)));
     assert(proc.comms.rkeys != NULL);
 }
@@ -391,7 +391,7 @@ shmemc_ucx_init(void)
         ucp_config_print(proc.comms.cfg, say, "My config", flags);
         ucp_context_print_info(proc.comms.ctxt, say);
         ucp_worker_print_info(proc.comms.wrkr, say);
-        // check_version();
+        check_version();
         fprintf(say, "----------------------------------------------\n\n");
         fflush(say);
     }
@@ -405,6 +405,7 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
+    /* full barrier here */
     ucp_worker_flush(proc.comms.wrkr);
     shmemc_pmix_barrier_all();
 
