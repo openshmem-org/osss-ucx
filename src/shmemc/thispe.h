@@ -23,7 +23,7 @@ typedef struct comms_info {
     ucp_worker_h wrkr;          /* local worker */
     worker_info_t *wrkrs;       /* nranks workers */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-    struct rrrr {
+    struct mem_handle {
         ucp_rkey_h global;
         ucp_rkey_h symm;
     } *rkeys;
