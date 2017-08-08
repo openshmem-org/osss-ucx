@@ -313,7 +313,6 @@ disconnect_all_eps_stop(void)
 
     do {
         for (pe = 0; pe < proc.nranks; pe += 1) {
-
             if (sp[pe] != NULL) {
                 (void) ucp_worker_progress(proc.comms.wrkr);
 
@@ -409,6 +408,9 @@ shmemc_ucx_finalize(void)
     ucp_worker_flush(proc.comms.wrkr);
     shmemc_pmix_barrier_all();
 
+#if 0
+    /* TODO: MAJOR ISSUES IN HERE SOMEWHERE */
+
     /* and clean up */
 
     disconnect_all_eps_start();
@@ -416,6 +418,7 @@ shmemc_ucx_finalize(void)
 
     deallocate_rkeys();
     deallocate_endpoints();
+#endif
 
     ucp_worker_release_address(proc.comms.wrkr,
                                proc.comms.wrkrs[proc.rank].addr);

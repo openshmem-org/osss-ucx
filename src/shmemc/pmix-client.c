@@ -233,6 +233,7 @@ shmemc_pmix_exchange_rkeys(void)
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
+
     for (pe = 0; pe < proc.nranks; pe += 1) {
         const int i = (pe + proc.rank) % proc.nranks;
 
@@ -240,7 +241,7 @@ shmemc_pmix_exchange_rkeys(void)
 
         ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
-        bop = &fetch.value.data.bo;
+        bop = &fetch.value.data.bo; /* shortcut */
         proc.comms.rkeys[i].global = (ucp_rkey_h) malloc(bop->size);
         assert(proc.comms.rkeys[i].global != NULL);
 
