@@ -149,7 +149,7 @@ deallocate_endpoints(void)
  * debugging output
  */
 static void
-dump_mapped_mem_info(const char *name, const ucp_mem_h *m)
+dump_mapped_mem_info(const char *name, const memory_region_t *mrp)
 {
     ucs_status_t s;
     ucp_mem_attr_t attr;
@@ -159,7 +159,7 @@ dump_mapped_mem_info(const char *name, const ucp_mem_h *m)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(*m, &attr);
+    s = ucp_mem_query(mrp->mh, &attr);
     assert(s == UCS_OK);
 
     logger(LOG_MEMORY,
@@ -198,7 +198,7 @@ reg_symmetric_heap(void)
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &symm_heap);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &symm_segment.mh);
     assert(s == UCS_OK);
 
     /*
@@ -211,7 +211,7 @@ reg_symmetric_heap(void)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(symm_heap, &attr);
+    s = ucp_mem_query(symm_segment.mh, &attr);
     assert(s == UCS_OK);
 
     /* tell the PE what was given */
@@ -224,7 +224,7 @@ dereg_symmetric_heap(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ctxt, symm_heap);
+    s = ucp_mem_unmap(proc.comms.ctxt, symm_segment.mh);
     assert(s == UCS_OK);
 }
 
@@ -243,10 +243,10 @@ reg_globals(void)
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
 
-    mp.address = base;
-    mp.length = len;
+    global_segment.base = p.address = base;
+    global_segment.length = p.length = len;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &global_segment);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &global_segment.mh);
     assert(s == UCS_OK);
 }
 
@@ -255,7 +255,7 @@ dereg_globals(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ctxt, global_segment);
+    s = ucp_mem_unmap(proc.comms.ctxt, global_segment.mh);
     assert(s == UCS_OK);
 }
 
@@ -266,22 +266,30 @@ dereg_globals(void)
 static void
 allocate_rkeys(void)
 {
-    proc.comms.rkeys = (struct mem_handle *)
-        calloc(proc.nranks, sizeof(*(proc.comms.rkeys)));
-    assert(proc.comms.rkeys != NULL);
+    global_segment.rkeys = (ucp_rkey_h *)
+        calloc(proc.nranks, sizeof(*(global_segment.rkeys)));
+    assert(global_segment.rkeys != NULL);
+
+    symm_segment.rkeys = (ucp_rkey_h *)
+        calloc(proc.nranks, sizeof(*(symm_segment.rkeys)));
+    assert(symm_segment.rkeys != NULL);
 }
 
 static void
 deallocate_rkeys(void)
 {
-    if (proc.comms.rkeys != NULL) {
-        free(proc.comms.rkeys);
+    if (global_segment.rkeys != NULL) {
+        free(global_segment.rkeys);
+    }
+
+    if (symm_segment.rkeys != NULL) {
+        free(symm_segment.rkeys);
     }
 }
 
 /*
- * disconnect all endpoints.  Make it slit-phase in case we can set up
- * overlap later, but for now these are just called in immediate
+ * disconnect all endpoints.  Make it split-phase in case we can set
+ * up overlap later, but for now these are just called in immediate
  * sequence.
  *
  */
@@ -394,7 +402,7 @@ shmemc_ucx_init(void)
         fprintf(say, "----------------------------------------------\n\n");
         fflush(say);
     }
-    dump_mapped_mem_info("heap", &symm_heap);
+    dump_mapped_mem_info("heap", &symm_segment);
     dump_mapped_mem_info("globals", &global_segment);
 #endif
     /* don't need config info any more */
@@ -408,8 +416,9 @@ shmemc_ucx_finalize(void)
     ucp_worker_flush(proc.comms.wrkr);
     shmemc_pmix_barrier_all();
 
-#if 0
-    /* TODO: MAJOR ISSUES IN HERE SOMEWHERE */
+    return;
+
+    /* TODO: SOMETHING GOING WRONG AFTER HERE */
 
     /* and clean up */
 
@@ -418,7 +427,6 @@ shmemc_ucx_finalize(void)
 
     deallocate_rkeys();
     deallocate_endpoints();
-#endif
 
     ucp_worker_release_address(proc.comms.wrkr,
                                proc.comms.wrkrs[proc.rank].addr);

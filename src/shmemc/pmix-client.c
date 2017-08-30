@@ -52,7 +52,7 @@ pmix_finalize_atexit(void)
 }
 
 /*
- * formats are <pe>:heapx:<key>
+ * formats are <pe>:heap:<key>
  */
 static const char *heap_base_fmt = "%d:heap:base";
 static const char *heap_size_fmt = "%d:heap:size";
@@ -187,13 +187,13 @@ shmemc_pmix_publish_rkey(void)
     ucs_status_t s;
 
     s = ucp_rkey_pack(proc.comms.ctxt,
-                      global_segment,
+                      global_segment.mh,
                       &global_packed_rkey, &global_rkey_len
                       );
     assert(s == UCS_OK);
 
     s = ucp_rkey_pack(proc.comms.ctxt,
-                      symm_heap,
+                      symm_segment.mh,
                       &symm_packed_rkey, &symm_rkey_len
                       );
     assert(s == UCS_OK);
@@ -233,7 +233,6 @@ shmemc_pmix_exchange_rkeys(void)
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
-
     for (pe = 0; pe < proc.nranks; pe += 1) {
         const int i = (pe + proc.rank) % proc.nranks;
 
@@ -242,12 +241,12 @@ shmemc_pmix_exchange_rkeys(void)
         ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
         bop = &fetch.value.data.bo; /* shortcut */
-        proc.comms.rkeys[i].global = (ucp_rkey_h) malloc(bop->size);
-        assert(proc.comms.rkeys[i].global != NULL);
+        global_segment.rkeys[i] = (ucp_rkey_h) malloc(bop->size);
+        assert(global_segment.rkeys[i] != NULL);
 
         s = ucp_ep_rkey_unpack(proc.comms.eps[i],
                                bop->bytes,
-                               &proc.comms.rkeys[i].global
+                               &global_segment.rkeys[i]
                                );
         assert(s == UCS_OK);
 
@@ -256,12 +255,12 @@ shmemc_pmix_exchange_rkeys(void)
         ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
         bop = &fetch.value.data.bo;
-        proc.comms.rkeys[i].symm = (ucp_rkey_h) malloc(bop->size);
-        assert(proc.comms.rkeys[i].symm != NULL);
+        symm_segment.rkeys[i] = (ucp_rkey_h) malloc(bop->size);
+        assert(symm_segment.rkeys[i] != NULL);
 
         s = ucp_ep_rkey_unpack(proc.comms.eps[i],
                                bop->bytes,
-                               &proc.comms.rkeys[i].symm
+                               &symm_segment.rkeys[i]
                                );
         assert(s == UCS_OK);
     }

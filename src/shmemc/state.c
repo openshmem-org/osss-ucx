@@ -15,11 +15,11 @@ thispe_info_t proc = {
  * where globals/statics/commons/saves live
  *
  */
-ucp_mem_h global_segment;
+memory_region_t global_segment;
 
 /*
  * some memory to play with registering
  *
  * TODO: multiple heap support
  */
-ucp_mem_h symm_heap;
+memory_region_t symm_segment;

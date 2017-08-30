@@ -7,12 +7,14 @@
 
 #include <sys/types.h>
 
+#include <ucp/api/ucp.h>
+
 /*
  * each PE has a symmetric heap, with a start address, and size.
  */
-typedef struct symmetric_heap {
-    void *base;
-    size_t size;
+typedef struct heapx {
+    void *base;                 /* start of this region */
+    size_t length;              /* its size (b) */
 } heapx_t;
 
 void shmemc_heapx_init(void);

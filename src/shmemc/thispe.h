@@ -23,10 +23,8 @@ typedef struct comms_info {
     ucp_worker_h wrkr;          /* local worker */
     worker_info_t *wrkrs;       /* nranks workers */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-    struct mem_handle {
-        ucp_rkey_h global;
-        ucp_rkey_h symm;
-    } *rkeys;
+    ucp_mem_h mh;               /* its memory handle */
+    ucp_rkey_h *rkeys;          /* remote keys for this region everywhere */
 } comms_info_t;
 
 typedef struct thispe_info {
@@ -39,16 +37,6 @@ typedef struct thispe_info {
     int npeers;
     heapx_t *heaps;             /* exchanged symmetric heaps */
 } thispe_info_t;
-
-/*
- * shortcut to look up the UCP endpoint
- */
-#define LOOKUP_UCP_EP(rank) (proc.comms.eps[(rank)])
-
-/*
- * TODO: shortcut to look up the remote key for address "a"
- */
-#define LOOKUP_RKEY(a) NULL
 
 /*
  * TODO: get remote address "a" on PE "pe"
