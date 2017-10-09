@@ -149,7 +149,7 @@ deallocate_endpoints(void)
  * debugging output
  */
 static void
-dump_mapped_mem_info(const char *name, const memory_region_t *mrp)
+dump_mapped_mem_info(const char *name, const heapx_t *hxp)
 {
     ucs_status_t s;
     ucp_mem_attr_t attr;
@@ -159,7 +159,7 @@ dump_mapped_mem_info(const char *name, const memory_region_t *mrp)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(mrp->mh, &attr);
+    s = ucp_mem_query(hxp->acc.mh, &attr);
     assert(s == UCS_OK);
 
     logger(LOG_MEMORY,
@@ -198,7 +198,7 @@ reg_symmetric_heap(void)
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &symm_segment.mh);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &symm_segment->acc.mh);
     assert(s == UCS_OK);
 
     /*
@@ -211,7 +211,7 @@ reg_symmetric_heap(void)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(symm_segment.mh, &attr);
+    s = ucp_mem_query(symm_segment->acc.mh, &attr);
     assert(s == UCS_OK);
 
     /* tell the PE what was given */
@@ -224,29 +224,27 @@ dereg_symmetric_heap(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ctxt, symm_segment.mh);
+    s = ucp_mem_unmap(proc.comms.ctxt, symm_segment->acc.mh);
     assert(s == UCS_OK);
 }
-
-extern char data_start;
-extern char end;
 
 static void
 reg_globals(void)
 {
-    ucs_status_t s;
-    ucp_mem_map_params_t mp;
+    extern char data_start, end; /* from the executable */
     void *base = &data_start;
     const size_t len = (size_t) &end - (size_t) base;
+    ucp_mem_map_params_t mp;
+    ucs_status_t s;
 
     mp.field_mask =
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
 
-    global_segment.base = p.address = base;
-    global_segment.length = p.length = len;
+    global_segment->base = base;
+    proc.comms.heaps[0].length = len;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &global_segment.mh);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &global_segment->acc.mh);
     assert(s == UCS_OK);
 }
 
@@ -255,7 +253,7 @@ dereg_globals(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ctxt, global_segment.mh);
+    s = ucp_mem_unmap(proc.comms.ctxt, global_segment->acc.mh);
     assert(s == UCS_OK);
 }
 
@@ -298,7 +296,7 @@ static ucs_status_ptr_t *sp;
 static unsigned int remaining = 0;
 
 static void
-disconnect_all_eps_start(void)
+disconnect_all_eps_phase1(void)
 {
     int pe;
 
@@ -314,7 +312,7 @@ disconnect_all_eps_start(void)
 }
 
 static void
-disconnect_all_eps_stop(void)
+disconnect_all_eps_phase2(void)
 {
     ucs_status_t s;
     int pe;
@@ -422,8 +420,8 @@ shmemc_ucx_finalize(void)
 
     /* and clean up */
 
-    disconnect_all_eps_start();
-    disconnect_all_eps_stop();
+    disconnect_all_eps_phase1();
+    disconnect_all_eps_phase2();
 
     deallocate_rkeys();
     deallocate_endpoints();
