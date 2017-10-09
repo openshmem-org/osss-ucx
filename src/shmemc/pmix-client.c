@@ -1,7 +1,6 @@
 #include "thispe.h"
 #include "shmemu.h"
 #include "state.h"
-#include "heapx.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -62,10 +61,10 @@ parse_peers(char *peerstr)
 }
 
 /*
- * formats are <pe>:heap:<key>
+ * formats are <pe>:<region-index>:region:<key>
  */
-static const char *heap_base_fmt = "%d:heap:base";
-static const char *heap_size_fmt = "%d:heap:size";
+static const char *region_base_fmt = "%d:%d:mr:base";
+static const char *region_size_fmt = "%d:%d:mr:size";
 
 void
 shmemc_pmix_publish_heap_info(void)
@@ -73,20 +72,24 @@ shmemc_pmix_publish_heap_info(void)
     const unsigned int nfields = 2;
     pmix_info_t *ia;
     pmix_status_t ps;
+    size_t r;
 
     PMIX_INFO_CREATE(ia, nfields);    /* base, size */
 
     /* everyone publishes their info */
-    snprintf(ia[0].key, PMIX_MAX_KEYLEN, heap_base_fmt, proc.rank);
-    ia[0].value.type = PMIX_UINT64;
-    ia[0].value.data.uint64 = (uint64_t) proc.comms.heaps[proc.rank].base;
+    for (r = 0; r < proc.comms.nregions; r += 1) {
+        snprintf(ia[0].key, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.rank);
+        ia[0].value.type = PMIX_UINT64;
+        ia[0].value.data.uint64 =
+            (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
 
-    snprintf(ia[1].key, PMIX_MAX_KEYLEN, heap_size_fmt, proc.rank);
-    ia[1].value.type = PMIX_SIZE;
-    ia[1].value.data.size = proc.comms.heaps[proc.rank].length;
+        snprintf(ia[1].key, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.rank);
+        ia[1].value.type = PMIX_SIZE;
+        ia[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].length;
 
-    ps = PMIx_Publish(ia, nfields);
-    assert(ps == PMIX_SUCCESS);
+        ps = PMIx_Publish(ia, nfields);
+        assert(ps == PMIX_SUCCESS);
+    }
 
     PMIX_INFO_FREE(ia, nfields);
 }
@@ -99,6 +102,7 @@ shmemc_pmix_exchange_heap_info(void)
     pmix_pdata_t fetch_size;
     pmix_info_t waiter;
     int all = 0;
+    size_t r;
     int pe;
 
     PMIX_INFO_CONSTRUCT(&waiter);
@@ -107,21 +111,23 @@ shmemc_pmix_exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_base);
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        /* can I merge these?  No luck so far */
-        snprintf(fetch_base.key, PMIX_MAX_KEYLEN, heap_base_fmt, pe);
-        snprintf(fetch_size.key, PMIX_MAX_KEYLEN, heap_size_fmt, pe);
+    for (r = 0; r < proc.comms.nregions; r += 1) {
+        for (pe = 0; pe < proc.nranks; pe += 1) {
+            /* can I merge these?  No luck so far */
+            snprintf(fetch_base.key, PMIX_MAX_KEYLEN, region_base_fmt, pe, r);
+            snprintf(fetch_size.key, PMIX_MAX_KEYLEN, region_size_fmt, pe, r);
 
-        ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
-        assert(ps == PMIX_SUCCESS);
+            ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
 
-        ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
-        assert(ps == PMIX_SUCCESS);
+            ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
 
-        proc.comms.heaps[pe].base =
-            (void *) fetch_base.value.data.uint64;
-        proc.comms.heaps[pe].length =
-            fetch_size.value.data.size;
+            proc.comms.regions[r].minfo[pe].base =
+                (void *) fetch_base.value.data.uint64;
+            proc.comms.regions[r].minfo[pe].length =
+                fetch_size.value.data.size;
+        }
     }
 }
 
@@ -176,55 +182,42 @@ shmemc_pmix_exchange_workers(void)
     }
 }
 
-static void *global_packed_rkey;
-static size_t global_rkey_len;
-
-static void *symm_packed_rkey;
-static size_t symm_rkey_len;
-
-static const char *rkey_exch_fmt = "%d:rkey:%s";
+/*
+ * PE:rkey:HEAPNO
+ */
+static const char *rkey_exch_fmt = "%d:rkey:%d";
 
 void
-shmemc_pmix_publish_rkey(void)
+shmemc_pmix_publish_my_rkeys(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
     pmix_byte_object_t *bop;
     ucs_status_t s;
+    void *packed_rkey;
+    size_t rkey_len;
+    size_t r;
 
-    s = ucp_rkey_pack(proc.comms.ctxt,
-                      global_segment.mh,
-                      &global_packed_rkey, &global_rkey_len
-                      );
-    assert(s == UCS_OK);
+    for (r = 0; r < proc.comms.nregions; r += 1) {
+        s = ucp_rkey_pack(proc.comms.ctxt,
+                          proc.comms.regions[r].minfo[proc.rank].racc.mh,
+                          &packed_rkey, &rkey_len
+                          );
+        assert(s == UCS_OK);
 
-    s = ucp_rkey_pack(proc.comms.ctxt,
-                      symm_segment.mh,
-                      &symm_packed_rkey, &symm_rkey_len
-                      );
-    assert(s == UCS_OK);
-
-    PMIX_INFO_CONSTRUCT(&pi);
-    snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, "global");
-    pi.value.type = PMIX_BYTE_OBJECT;
-    bop = &pi.value.data.bo;
-    bop->bytes = (char *) global_packed_rkey;
-    bop->size = global_rkey_len;
-    ps = PMIx_Publish(&pi, 1);
-    assert(ps == PMIX_SUCCESS);
-
-    PMIX_INFO_CONSTRUCT(&pi);
-    snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, "symm");
-    pi.value.type = PMIX_BYTE_OBJECT;
-    bop = &pi.value.data.bo;
-    bop->bytes = (char *) symm_packed_rkey;
-    bop->size = symm_rkey_len;
-    ps = PMIx_Publish(&pi, 1);
-    assert(ps == PMIX_SUCCESS);
+        PMIX_INFO_CONSTRUCT(&pi);
+        snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, r);
+        pi.value.type = PMIX_BYTE_OBJECT;
+        bop = &pi.value.data.bo;
+        bop->bytes = (char *) packed_rkey;
+        bop->size = rkey_len;
+        ps = PMIx_Publish(&pi, 1);
+        assert(ps == PMIX_SUCCESS);
+    }
 }
 
 void
-shmemc_pmix_exchange_rkeys(void)
+shmemc_pmix_exchange_all_rkeys(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
@@ -233,42 +226,68 @@ shmemc_pmix_exchange_rkeys(void)
     int all = 1;
     int pe;
     ucs_status_t s;
+    size_t r;
 
     PMIX_INFO_CONSTRUCT(&waiter);
     PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        const int i = (pe + proc.rank) % proc.nranks;
+    for (r = 0; r < proc.comms.nregions; r += 1) {
+        for (pe = 0; pe < proc.nranks; pe += 1) {
+            const int i = (pe + proc.rank) % proc.nranks;
 
-        snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, "global");
+            snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, r);
 
-        ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
-        assert(ps == PMIX_SUCCESS);
-        bop = &fetch.value.data.bo; /* shortcut */
-        global_segment.rkeys[i] = (ucp_rkey_h) malloc(bop->size);
-        assert(global_segment.rkeys[i] != NULL);
+            ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
+            bop = &fetch.value.data.bo; /* shortcut */
+            proc.comms.regions[r].minfo[i].racc.rkey =
+                (ucp_rkey_h) malloc(bop->size);
+            assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL);
 
-        s = ucp_ep_rkey_unpack(proc.comms.eps[i],
-                               bop->bytes,
-                               &global_segment.rkeys[i]
-                               );
-        assert(s == UCS_OK);
+            s = ucp_ep_rkey_unpack(proc.comms.eps[i],
+                                   bop->bytes,
+                                   &proc.comms.regions[r].minfo[i].racc.rkey
+                                   );
+            assert(s == UCS_OK);
 
-        snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, "symm");
+            snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, "symm");
 
-        ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
-        assert(ps == PMIX_SUCCESS);
-        bop = &fetch.value.data.bo;
-        symm_segment.rkeys[i] = (ucp_rkey_h) malloc(bop->size);
-        assert(symm_segment.rkeys[i] != NULL);
+            ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
+            assert(ps == PMIX_SUCCESS);
+            bop = &fetch.value.data.bo;
+            proc.comms.regions[r].minfo[i].racc.rkey =
+                (ucp_rkey_h) malloc(bop->size);
+            assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL);
 
-        s = ucp_ep_rkey_unpack(proc.comms.eps[i],
-                               bop->bytes,
-                               &symm_segment.rkeys[i]
-                               );
-        assert(s == UCS_OK);
+            s = ucp_ep_rkey_unpack(proc.comms.eps[i],
+                                   bop->bytes,
+                                   &proc.comms.regions[r].minfo[i].racc.rkey
+                                   );
+            assert(s == UCS_OK);
+        }
+    }
+}
+
+static void
+init_regions(void)
+{
+    size_t i;
+
+    /* TODO: hardwire for now: globals + default symmetric heap */
+    proc.comms.nregions = 2;
+
+    /* init that many regions on me */
+    proc.comms.regions =
+        (mem_region_t *) malloc(proc.comms.nregions * sizeof(mem_region_t));
+    assert(proc.comms.regions != NULL);
+
+    /* now prep for all PEs to exchange */
+    for (i = 0; i < proc.comms.nregions; i += 1) {
+        proc.comms.regions[i].minfo =
+            (mem_info_t *) malloc(proc.nranks * sizeof(mem_info_t));
+        assert(proc.comms.regions[i].minfo != NULL);
     }
 }
 
@@ -332,6 +351,8 @@ shmemc_pmix_client_init(void)
     assert(ps == PMIX_SUCCESS);
 
     parse_peers(vp->data.string);
+
+    init_regions();
 
     /* and done */
     PMIX_VALUE_RELEASE(vp);

@@ -5,16 +5,13 @@
 #include <stdlib.h>
 #include <assert.h>
 
-heapx_t *global_segment = & proc.comms.heaps[0];
-heapx_t *symm_segment = & proc.comms.heaps[1];
-
 void
 shmemc_heapx_init(void)
 {
     if (proc.heaps == NULL) {
         /* allocate heap stubs for all ranks */
         proc.heaps = (heapx_t *) calloc(proc.nranks,
-                                      sizeof(*proc.heaps));
+                                        sizeof(*proc.heaps));
         assert(proc.heaps != NULL);
     }
 }

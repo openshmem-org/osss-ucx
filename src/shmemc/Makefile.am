@@ -10,7 +10,6 @@ libshmemc_ucx_a_SOURCES    = \
 				hostname.c logger.c timer.c unitparse.c \
 				pmix-client.c \
 				ucx-init.c \
-				heapx.c \
 				ranks.c \
 				comms.c \
 				mcs-lock.c \

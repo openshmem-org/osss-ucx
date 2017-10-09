@@ -1,16 +1,12 @@
 #include "shmemc-ucx.h"
 #include "pmix-client.h"
 #include "state.h"
-#include "heapx.h"
 
 void
 shmemc_init(void)
 {
     /* find launch info */
     shmemc_pmix_client_init();
-
-    /* create heap stubs, 1 per PE for later exchange */
-    shmemc_heapx_init();
 
     /* launch and connect my heap to network resources */
     shmemc_ucx_init();
@@ -25,8 +21,8 @@ shmemc_init(void)
 
     shmemc_ucx_make_remote_endpoints();
 
-    shmemc_pmix_publish_rkey();
-    shmemc_pmix_exchange_rkeys();
+    shmemc_pmix_publish_my_rkeys();
+    shmemc_pmix_exchange_all_rkeys();
 
     proc.status = SHMEM_PE_RUNNING;
  }

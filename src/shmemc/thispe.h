@@ -42,6 +42,7 @@ typedef struct comms_info {
     worker_info_t *wrkrs;       /* nranks workers */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
     mem_region_t *regions;      /* exchanged symmetric regions */
+    size_t nregions;            /* number of symmetric regions per PE */
 } comms_info_t;
 
 typedef enum shmem_status {
@@ -60,9 +61,6 @@ typedef struct thispe_info {
     int *peers;                 /* PEs in a node group */
     int npeers;
 } thispe_info_t;
-
-void shmemc_heapx_init(void);
-void shmemc_heapx_finalize(void);
 
 /*
  * TODO: get remote address "a" on PE "pe"

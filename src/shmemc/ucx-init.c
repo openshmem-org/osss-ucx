@@ -149,7 +149,7 @@ deallocate_endpoints(void)
  * debugging output
  */
 static void
-dump_mapped_mem_info(const char *name, const heapx_t *hxp)
+dump_mapped_mem_info(const char *name, const mem_info_t *mp)
 {
     ucs_status_t s;
     ucp_mem_attr_t attr;
@@ -159,7 +159,7 @@ dump_mapped_mem_info(const char *name, const heapx_t *hxp)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(hxp->acc.mh, &attr);
+    s = ucp_mem_query(mp->racc.mh, &attr);
     assert(s == UCS_OK);
 
     logger(LOG_MEMORY,
@@ -170,6 +170,9 @@ dump_mapped_mem_info(const char *name, const heapx_t *hxp)
            (unsigned long) attr.length
            );
 }
+
+static mem_info_t *globals;
+static mem_info_t *def_symm_heap;
 
 static void
 reg_symmetric_heap(void)
@@ -198,7 +201,7 @@ reg_symmetric_heap(void)
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &symm_segment->acc.mh);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &def_symm_heap->racc.mh);
     assert(s == UCS_OK);
 
     /*
@@ -211,12 +214,12 @@ reg_symmetric_heap(void)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(symm_segment->acc.mh, &attr);
+    s = ucp_mem_query(def_symm_heap->racc.mh, &attr);
     assert(s == UCS_OK);
 
     /* tell the PE what was given */
-    proc.heaps[proc.rank].base = attr.address;
-    proc.heaps[proc.rank].size = attr.length;
+    def_symm_heap->base = attr.address;
+    def_symm_heap->length = attr.length;
 }
 
 static void
@@ -224,7 +227,7 @@ dereg_symmetric_heap(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ctxt, symm_segment->acc.mh);
+    s = ucp_mem_unmap(proc.comms.ctxt, def_symm_heap->racc.mh);
     assert(s == UCS_OK);
 }
 
@@ -241,10 +244,10 @@ reg_globals(void)
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
 
-    global_segment->base = base;
-    proc.comms.heaps[0].length = len;
+    globals->base = base;
+    globals->length = len;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &global_segment->acc.mh);
+    s = ucp_mem_map(proc.comms.ctxt, &mp, &globals->racc.mh);
     assert(s == UCS_OK);
 }
 
@@ -253,36 +256,8 @@ dereg_globals(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ctxt, global_segment->acc.mh);
+    s = ucp_mem_unmap(proc.comms.ctxt, globals->racc.mh);
     assert(s == UCS_OK);
-}
-
-/*
- * get rkey from symmetric heap
- */
-
-static void
-allocate_rkeys(void)
-{
-    global_segment.rkeys = (ucp_rkey_h *)
-        calloc(proc.nranks, sizeof(*(global_segment.rkeys)));
-    assert(global_segment.rkeys != NULL);
-
-    symm_segment.rkeys = (ucp_rkey_h *)
-        calloc(proc.nranks, sizeof(*(symm_segment.rkeys)));
-    assert(symm_segment.rkeys != NULL);
-}
-
-static void
-deallocate_rkeys(void)
-{
-    if (global_segment.rkeys != NULL) {
-        free(global_segment.rkeys);
-    }
-
-    if (symm_segment.rkeys != NULL) {
-        free(symm_segment.rkeys);
-    }
 }
 
 /*
@@ -375,15 +350,18 @@ shmemc_ucx_init(void)
     s = ucp_init(&pm, proc.comms.cfg, &proc.comms.ctxt);
     assert(s == UCS_OK);
 
-    reg_symmetric_heap();
+    /* local shortcuts */
+    globals = & proc.comms.regions[0].minfo[proc.rank];
+    def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
+
     reg_globals();
+    reg_symmetric_heap();
 
     /*
      * Create workers and space for EPs
      */
     allocate_workers();
     allocate_endpoints();
-    allocate_rkeys();
 
     make_local_worker();
 
@@ -400,8 +378,8 @@ shmemc_ucx_init(void)
         fprintf(say, "----------------------------------------------\n\n");
         fflush(say);
     }
-    dump_mapped_mem_info("heap", &symm_segment);
-    dump_mapped_mem_info("globals", &global_segment);
+    dump_mapped_mem_info("heap", def_symm_heap);
+    dump_mapped_mem_info("globals", globals);
 #endif
     /* don't need config info any more */
     ucp_config_release(proc.comms.cfg);
@@ -423,7 +401,6 @@ shmemc_ucx_finalize(void)
     disconnect_all_eps_phase1();
     disconnect_all_eps_phase2();
 
-    deallocate_rkeys();
     deallocate_endpoints();
 
     ucp_worker_release_address(proc.comms.wrkr,

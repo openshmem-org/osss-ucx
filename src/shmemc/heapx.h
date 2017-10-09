@@ -7,7 +7,4 @@
 
 #include <sys/types.h>
 
-extern heapx_t *global_segment;
-extern heapx_t *symm_segment;
-
 #endif /* ! _HEAPX_H */
