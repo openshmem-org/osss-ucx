@@ -11,24 +11,29 @@ typedef struct worker_info {
 } worker_info_t;
 
 /*
- * PEs have various exposed (symmetric) memory regions.  Currently,
- * this means the globals and a default symmetric heap.  But could
- * change in future.
+ * Encapsulate what UCX needs for remote access to a memory region
  */
-typedef struct heap_access {
+typedef struct mem_region_access {
     ucp_mem_h mh;               /* memory handle */
     ucp_rkey_h rkey;            /* remote key for this heap */
-} heap_access_t;
+} mem_region_access_t;
 
-typedef struct heapx {
+/*
+ * each PE has a number of memory regions, which need the following
+ * info:
+ */
+typedef struct mem_info {
     void *base;                 /* start of this heap */
     size_t length;              /* its size (b) */
+    mem_region_access_t racc;   /* for remote access */
+} mem_info_t;
 
-    heap_access_t acc;          /* for remote comms */
-} heapx_t;
-
-void shmemc_heapx_init(void);
-void shmemc_heapx_finalize(void);
+/*
+ * for PE exchange
+ */
+typedef struct mem_region {
+    mem_info_t *minfo;          /* nranks mem info */
+} mem_region_t;
 
 typedef struct comms_info {
     ucp_context_h ctxt;         /* local communication context */
@@ -36,7 +41,7 @@ typedef struct comms_info {
     ucp_worker_h wrkr;          /* local worker */
     worker_info_t *wrkrs;       /* nranks workers */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-    heapx_t *heaps;             /* exchanged heap info */
+    mem_region_t *regions;      /* exchanged symmetric regions */
 } comms_info_t;
 
 typedef enum shmem_status {
@@ -47,6 +52,7 @@ typedef enum shmem_status {
 
 typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
+
     int rank;                   /* rank info */
     int nranks;
     shmem_status_t status;      /* up, down, out to lunch etc */
@@ -54,6 +60,9 @@ typedef struct thispe_info {
     int *peers;                 /* PEs in a node group */
     int npeers;
 } thispe_info_t;
+
+void shmemc_heapx_init(void);
+void shmemc_heapx_finalize(void);
 
 /*
  * TODO: get remote address "a" on PE "pe"
