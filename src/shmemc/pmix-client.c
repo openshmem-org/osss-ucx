@@ -78,12 +78,12 @@ shmemc_pmix_publish_heap_info(void)
 
     /* everyone publishes their info */
     for (r = 0; r < proc.comms.nregions; r += 1) {
-        snprintf(ia[0].key, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.rank);
+        snprintf(ia[0].key, PMIX_MAX_KEYLEN, region_base_fmt, proc.rank, r);
         ia[0].value.type = PMIX_UINT64;
         ia[0].value.data.uint64 =
             (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
 
-        snprintf(ia[1].key, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.rank);
+        snprintf(ia[1].key, PMIX_MAX_KEYLEN, region_size_fmt, proc.rank, r);
         ia[1].value.type = PMIX_SIZE;
         ia[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].length;
 
@@ -242,21 +242,6 @@ shmemc_pmix_exchange_all_rkeys(void)
             ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
             assert(ps == PMIX_SUCCESS);
             bop = &fetch.value.data.bo; /* shortcut */
-            proc.comms.regions[r].minfo[i].racc.rkey =
-                (ucp_rkey_h) malloc(bop->size);
-            assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL);
-
-            s = ucp_ep_rkey_unpack(proc.comms.eps[i],
-                                   bop->bytes,
-                                   &proc.comms.regions[r].minfo[i].racc.rkey
-                                   );
-            assert(s == UCS_OK);
-
-            snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, "symm");
-
-            ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
-            assert(ps == PMIX_SUCCESS);
-            bop = &fetch.value.data.bo;
             proc.comms.regions[r].minfo[i].racc.rkey =
                 (ucp_rkey_h) malloc(bop->size);
             assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL);
