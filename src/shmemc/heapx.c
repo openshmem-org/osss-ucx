@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <assert.h>
 
+heapx_t *global_segment = & proc.comms.heaps[0];
+heapx_t *symm_segment = & proc.comms.heaps[1];
+
 void
 shmemc_heapx_init(void)
 {
