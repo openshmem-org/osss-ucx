@@ -1,6 +1,7 @@
 #include "thispe.h"
 #include "shmemu.h"
 #include "state.h"
+#include "heapx.h"
 
 #include <stdio.h>
 #include <assert.h>
@@ -8,47 +9,56 @@
 #include <string.h>
 
 #include <pmix.h>
-#include <pmix_common.h>
+#include <pmix/pmix_common.h>
 #include <ucp/api/ucp.h>
 
-/*
- * if finalize called through atexit, force a barrier
- */
-
-static void
-pmix_finalize_handler(_Bool need_barrier)
+inline static void
+pmix_finalize_handler(void)
 {
     pmix_status_t ps;
-    pmix_info_t *bar;
     int pe;
 
-    if (need_barrier) {
-        logger(LOG_FINALIZE,
-               "PMIx adding internal barrier to finalize");
-    }
-
-    PMIX_INFO_CREATE(bar, 1);
-    PMIX_INFO_LOAD(bar, PMIX_EMBED_BARRIER, &need_barrier, PMIX_BOOL);
-
-    ps = PMIx_Finalize(bar, 1);
+    ps = PMIx_Finalize();
     assert(ps == PMIX_SUCCESS);
-
-    PMIX_INFO_FREE(bar, 1);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
         if (proc.comms.wrkrs[pe].buf != NULL) {
             free(proc.comms.wrkrs[pe].buf);
         }
     }
-}
 
+    /* clean up memory recording peer PEs */
+    if (proc.peers != NULL) {
+        free(proc.peers);
+    }
+}
 
 static void
 pmix_finalize_atexit(void)
 {
-    const _Bool needbar = (proc.status == SHMEM_PE_RUNNING);
+    pmix_finalize_handler();
+}
 
-    pmix_finalize_handler(needbar);
+/*
+ * read out the peer PE numbers
+ */
+static void
+parse_peers(char *peerstr)
+{
+    int i = 0;
+    char *next;
+    const char *sep = ",";
+
+    /* parse the PE #s out of the string */
+    proc.peers = (int *) calloc(proc.npeers, sizeof(*proc.peers));
+    assert(proc.peers != NULL);
+
+    next = strtok(peerstr, sep);
+    while (next != NULL) {
+        proc.peers[i] = atoi(next);
+        i += 1;
+        next = strtok(NULL, sep);
+    }
 }
 
 /*
@@ -66,16 +76,14 @@ shmemc_pmix_publish_heap_info(void)
 
     PMIX_INFO_CREATE(ia, nfields);    /* base, size */
 
-    /*
-     * everyone publishes their info
-     */
+    /* everyone publishes their info */
     snprintf(ia[0].key, PMIX_MAX_KEYLEN, heap_base_fmt, proc.rank);
     ia[0].value.type = PMIX_UINT64;
-    ia[0].value.data.uint64 = (uint64_t) proc.heaps[proc.rank].base;
+    ia[0].value.data.uint64 = (uint64_t) proc.comms.heaps[proc.rank].base;
 
     snprintf(ia[1].key, PMIX_MAX_KEYLEN, heap_size_fmt, proc.rank);
     ia[1].value.type = PMIX_SIZE;
-    ia[1].value.data.size = proc.heaps[proc.rank].size;
+    ia[1].value.data.size = proc.comms.heaps[proc.rank].length;
 
     ps = PMIx_Publish(ia, nfields);
     assert(ps == PMIX_SUCCESS);
@@ -110,9 +118,9 @@ shmemc_pmix_exchange_heap_info(void)
         ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
 
-        proc.heaps[pe].base =
+        proc.comms.heaps[pe].base =
             (void *) fetch_base.value.data.uint64;
-        proc.heaps[pe].size =
+        proc.comms.heaps[pe].length =
             fetch_size.value.data.size;
     }
 }
@@ -128,9 +136,7 @@ shmemc_pmix_publish_worker(void)
 
     PMIX_INFO_CONSTRUCT(&pi);
 
-    /*
-     * everyone publishes their info
-     */
+    /* everyone publishes their info */
     snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
     pi.value.type = PMIX_BYTE_OBJECT;
     bop = &pi.value.data.bo;
@@ -269,8 +275,8 @@ shmemc_pmix_exchange_rkeys(void)
 /* -------------------------------------------------------------- */
 
 /*
- * this is purely for internal use with PMIx,
- * nothing to do with SHMEM/UCX
+ * this barrier is purely for internal use with PMIx, nothing to do
+ * with SHMEM/UCX
  */
 void
 shmemc_pmix_barrier_all(void)
@@ -281,7 +287,7 @@ shmemc_pmix_barrier_all(void)
 void
 shmemc_pmix_client_finalize(void)
 {
-    pmix_finalize_handler(false);
+    pmix_finalize_handler();
 }
 
 void
@@ -290,21 +296,17 @@ shmemc_pmix_client_init(void)
     pmix_proc_t my_proc;        /* about me */
     pmix_proc_t wc_proc;        /* wildcard lookups */
     pmix_value_t v;
-    pmix_value_t *vp = &v;
+    pmix_value_t *vp = &v;      /* holds things we get from PMIx */
     pmix_status_t ps;
 
-    ps = PMIx_Init(&my_proc, NULL, 0);
+    ps = PMIx_Init(&my_proc);
     assert(ps == PMIX_SUCCESS);
 
-    /*
-     * we can get our rank immediately
-     */
+    /* we can get our own rank immediately */
     proc.rank = (int) my_proc.rank;
     assert(proc.rank >= 0);
 
-    /*
-     * make a new proc to query things not linked to a specific rank
-     */
+    /* make a new proc to query things not linked to a specific rank */
     PMIX_PROC_CONSTRUCT(&wc_proc);
     strncpy(wc_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN);
     wc_proc.rank = PMIX_RANK_WILDCARD;
@@ -312,20 +314,14 @@ shmemc_pmix_client_init(void)
     ps = PMIx_Get(&wc_proc, PMIX_JOB_SIZE, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
 
-    /*
-     * this is the program size / number of ranks/PEs
-     */
+    /* this is the program size / number of ranks/PEs */
     proc.nranks = (int) vp->data.uint32;
 
-    /*
-     * is the world a sane size?
-     */
+    /* is the world a sane size? */
     assert(proc.nranks > 0);
     assert(proc.rank < proc.nranks);
 
-    /*
-     * what's on this node?
-     */
+    /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
 
@@ -335,8 +331,8 @@ shmemc_pmix_client_init(void)
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
 
-    proc.peers = strdup(vp->data.string);
-    assert(proc.peers != NULL);
+    parse_peers(vp->data.string);
 
+    /* and done */
     PMIX_VALUE_RELEASE(vp);
 }
