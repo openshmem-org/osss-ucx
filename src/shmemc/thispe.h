@@ -23,7 +23,8 @@ typedef struct mem_region_access {
  * info:
  */
 typedef struct mem_info {
-    void *base;                 /* start of this heap */
+    uint64_t base;              /* start of this heap */
+    uint64_t end;               /* end of this heap */
     size_t length;              /* its size (b) */
     mem_region_access_t racc;   /* for remote access */
 } mem_info_t;
