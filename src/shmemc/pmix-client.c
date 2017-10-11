@@ -124,7 +124,7 @@ shmemc_pmix_exchange_heap_info(void)
             assert(ps == PMIX_SUCCESS);
 
             proc.comms.regions[r].minfo[pe].base =
-                (void *) fetch_base.value.data.uint64;
+                fetch_base.value.data.uint64;
             proc.comms.regions[r].minfo[pe].length =
                 fetch_size.value.data.size;
         }
