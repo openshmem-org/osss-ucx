@@ -218,7 +218,8 @@ reg_symmetric_heap(void)
     assert(s == UCS_OK);
 
     /* tell the PE what was given */
-    def_symm_heap->base = attr.address;
+    def_symm_heap->base = (uint64_t) attr.address;
+    def_symm_heap->end  = def_symm_heap->base + attr.length;
     def_symm_heap->length = attr.length;
 }
 
@@ -244,7 +245,8 @@ reg_globals(void)
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
 
-    globals->base = base;
+    globals->base = (uint64_t) base;
+    globals->end  = globals->base + len;
     globals->length = len;
 
     s = ucp_mem_map(proc.comms.ctxt, &mp, &globals->racc.mh);

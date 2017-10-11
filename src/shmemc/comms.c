@@ -16,13 +16,41 @@ lookup_ucp_ep(int pe)
     return proc.comms.eps[pe];
 }
 
+inline static int
+in_region(uint64_t addr, int region, int pe)
+{
+    const mem_info_t mi = proc.comms.regions[region].minfo[pe];
+
+    if ( (addr > mi.base) && (addr < mi.end) ) {
+        return 1;
+    }
+
+    return 0;
+}
+
 /*
  * find remote rkey
  */
 inline static ucp_rkey_h
 lookup_rkey(uint64_t addr, int pe)
 {
-    /* first, find which memory segment the address is in */
+    size_t i;
+
+    /* first, find which memory region the address is in:
+     *
+     * need to iterate through regions checking address ranges in
+     * their mem_info_t, if we get a match, return the rkey in the
+     * racc structure.  No match; return NULL
+     *
+     * any hash/memo opps here?
+     */
+    for (i = 0; i < proc.comms.nregions; i += 1) {
+        if (in_region(addr, i, pe)) {
+            return proc.comms.regions[i].minfo[pe].racc.rkey;
+            /* NOT REACHED */
+        }
+    }
+
     return NULL;
 }
 
