@@ -30,8 +30,8 @@ PKG_CHECK_MODULES([PMIX], [pmix], [
 	)
 
 AS_IF([test "x$pmix_happy" != "xno"], [
-			# AC_DEFINE_UNQUOTED([PMIX_DIR], ["$PMIX_DIR"], [PMIx installation directory])
-			# AC_SUBST([PMIX_DIR])
+			AC_DEFINE_UNQUOTED([PMIX_DIR], ["$PMIX_DIR"], [PMIx installation directory])
+			AC_SUBST([PMIX_DIR])
 			AC_DEFINE_UNQUOTED([PMIX_CFLAGS], ["$PMIX_CFLAGS"], [PMIx Compile Flags])
 			AC_DEFINE_UNQUOTED([PMIX_LIBS], ["$PMIX_LIBS"], [PMIx Compile Libraries])
 			AC_SUBST(PMIX_CFLAGS)

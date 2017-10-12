@@ -169,6 +169,13 @@ output_comms(void)
 #else
     output("UCX", "off [shouldn't happen]");
 #endif /* HAVE_UCX */
+
+#ifdef HAVE_PMIX
+    output("PMIx", "on");
+    output("PMIx Install", PMIX_DIR);
+#else
+    output("PMIx", "off [shouldn't happen]");
+#endif /* HAVE_PMIX */
 }
 
 int
