@@ -258,6 +258,10 @@ reg_globals(void)
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
 
+    mp.length = len;
+    mp.flags =
+        UCP_MEM_MAP_ALLOCATE;
+
     globals->base = g_base;
     globals->end  = globals->base + len;
     globals->length = len;
