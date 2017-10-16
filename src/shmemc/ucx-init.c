@@ -122,6 +122,7 @@ make_local_worker(void)
     /* get address for remote access to worker */
     s = ucp_worker_get_address(proc.comms.wrkr, &a, &l);
     assert(s == UCS_OK);
+
     proc.comms.wrkrs[proc.rank].addr = a;
     proc.comms.wrkrs[proc.rank].len = l;
 }
@@ -171,6 +172,9 @@ dump_mapped_mem_info(const char *name, const mem_info_t *mp)
            );
 }
 
+/*
+ * a couple of shortcuts
+ */
 static mem_info_t *globals;
 static mem_info_t *def_symm_heap;
 
@@ -221,6 +225,10 @@ reg_symmetric_heap(void)
     def_symm_heap->base = (uint64_t) attr.address;
     def_symm_heap->end  = def_symm_heap->base + attr.length;
     def_symm_heap->length = attr.length;
+
+    logger(LOG_MEMORY,
+           "default symm heap @ %lu, size %lu",
+           def_symm_heap->base, def_symm_heap->length);
 }
 
 static void
@@ -236,8 +244,9 @@ static void
 reg_globals(void)
 {
     extern char data_start, end; /* from the executable */
-    void *base = &data_start;
-    const size_t len = (size_t) &end - (size_t) base;
+    uint64_t g_base = (uint64_t) &data_start;
+    uint64_t g_end = (uint64_t) &end;
+    const size_t len = g_end - g_base;
     ucp_mem_map_params_t mp;
     ucs_status_t s;
 
@@ -245,12 +254,16 @@ reg_globals(void)
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
 
-    globals->base = (uint64_t) base;
+    globals->base = g_base;
     globals->end  = globals->base + len;
     globals->length = len;
 
     s = ucp_mem_map(proc.comms.ctxt, &mp, &globals->racc.mh);
     assert(s == UCS_OK);
+
+    logger(LOG_MEMORY,
+           "globals @ %lu, size %lu",
+           globals->base, globals->length);
 }
 
 static void
@@ -352,7 +365,7 @@ shmemc_ucx_init(void)
     s = ucp_init(&pm, proc.comms.cfg, &proc.comms.ctxt);
     assert(s == UCS_OK);
 
-    /* local shortcuts */
+    /* local shortcuts TODO: hardwired index */
     globals = & proc.comms.regions[0].minfo[proc.rank];
     def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
 
