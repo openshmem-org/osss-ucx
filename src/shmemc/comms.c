@@ -21,7 +21,12 @@ in_region(uint64_t addr, int region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
 
-    if ( (addr > mi.base) && (addr < mi.end) ) {
+    logger(LOG_MEMORY,
+           "region %d for PE %d: addr = %lu, base = %lu, end = %lu",
+           region, pe,
+           addr, mi.base, mi.end);
+
+    if ( (mi.base <= addr) && (addr < mi.end) ) {
         return 1;
     }
 
@@ -29,29 +34,63 @@ in_region(uint64_t addr, int region, int pe)
 }
 
 /*
- * find remote rkey
+ * find memory region that ADDR is in, or -1 if none
  */
-inline static ucp_rkey_h
-lookup_rkey(uint64_t addr, int pe)
+inline static long
+lookup_region(uint64_t addr, int pe)
 {
     size_t i;
 
-    /* first, find which memory region the address is in:
-     *
-     * need to iterate through regions checking address ranges in
-     * their mem_info_t, if we get a match, return the rkey in the
-     * racc structure.  No match; return NULL
-     *
-     * any hash/memo opps here?
-     */
     for (i = 0; i < proc.comms.nregions; i += 1) {
         if (in_region(addr, i, pe)) {
-            return proc.comms.regions[i].minfo[pe].racc.rkey;
+            return (long) i;
             /* NOT REACHED */
         }
     }
 
+    return -1;
+}
+
+/*
+ * find remote rkey
+ */
+inline static ucp_rkey_h
+lookup_rkey(uint64_t remote_addr, int pe)
+{
+    long i;
+
+    i = lookup_region(remote_addr, pe);
+
+    logger(LOG_INFO, "i = %d", i);
+
+    if (i >= 0) {
+        return proc.comms.regions[i].minfo[pe].racc.rkey;
+        /* NOT REACHED */
+    }
+
     return NULL;
+}
+
+/*
+ * translate remote address
+ */
+inline static uint64_t
+translate_address(uint64_t local_addr, int pe)
+{
+    long i;
+
+    i = lookup_region(local_addr, proc.rank);
+
+    if (i >= 0) {
+        const uint64_t my_offset =
+            local_addr - proc.comms.regions[i].minfo[proc.rank].base;
+        const uint64_t r_addr =
+            proc.comms.regions[i].minfo[pe].base + my_offset;
+
+        return r_addr;
+    }
+
+    return (uint64_t) 0;
 }
 
 /*
@@ -101,10 +140,23 @@ void
 shmemc_put(void *dest, const void *src,
            size_t nbytes, int pe)
 {
-    uint64_t r_dest = TRANSLATE_ADDR(dest, pe); /* address on other PE */
-    ucp_rkey_h rkey = lookup_rkey(r_dest, pe); /* rkey for remote address */
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    uint64_t ud = (uint64_t) dest;
+    uint64_t r_dest;            /* address on other PE */
+    ucp_rkey_h rkey;            /* rkey for remote address */
+    ucp_ep_h ep;
     ucs_status_t s;
+
+    r_dest = translate_address(ud, pe);
+    assert(r_dest != 0);
+
+    logger(LOG_INFO,
+           "dest = %lu, pe = %d, r_dest = %lu",
+           dest, pe, r_dest);
+
+    rkey = lookup_rkey(r_dest, pe);
+    assert(rkey != NULL);
+
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_put(ep, src, nbytes, r_dest, rkey);
     assert(s == UCS_OK);
@@ -114,7 +166,8 @@ void
 shmemc_get(void *dest, const void *src,
            size_t nbytes, int pe)
 {
-    uint64_t r_src = TRANSLATE_ADDR(dest, pe);
+    uint64_t ud = (uint64_t) dest;
+    uint64_t r_src = TRANSLATE_ADDR(ud, pe);
     ucp_rkey_h rkey = lookup_rkey(r_src, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     ucs_status_t s;
@@ -132,7 +185,8 @@ void
 shmemc_put_nbi(void *dest, const void *src,
                size_t nbytes, int pe)
 {
-    uint64_t r_dest = TRANSLATE_ADDR(dest, pe);
+    uint64_t ud = (uint64_t) dest;
+    uint64_t r_dest = TRANSLATE_ADDR(ud, pe);
     ucp_rkey_h rkey = lookup_rkey(r_dest, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     ucs_status_t s;
@@ -145,7 +199,8 @@ void
 shmemc_get_nbi(void *dest, const void *src,
                size_t nbytes, int pe)
 {
-    uint64_t r_src = TRANSLATE_ADDR(dest, pe);
+    uint64_t ud = (uint64_t) dest;
+    uint64_t r_src = TRANSLATE_ADDR(ud, pe);
     ucp_rkey_h rkey = lookup_rkey(r_src, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     ucs_status_t s;
