@@ -61,8 +61,6 @@ lookup_rkey(uint64_t remote_addr, int pe)
 
     i = lookup_region(remote_addr, pe);
 
-    logger(LOG_INFO, "i = %d", i);
-
     if (i >= 0) {
         return proc.comms.regions[i].minfo[pe].racc.rkey;
         /* NOT REACHED */
@@ -80,6 +78,10 @@ translate_address(uint64_t local_addr, int pe)
     long i;
 
     i = lookup_region(local_addr, proc.rank);
+
+    logger(LOG_INFO,
+           "translate_address: local_addr = %lu, region = %d",
+           local_addr, i);
 
     if (i >= 0) {
         const uint64_t my_offset =
