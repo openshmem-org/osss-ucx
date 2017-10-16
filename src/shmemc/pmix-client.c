@@ -112,6 +112,7 @@ shmemc_pmix_exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
     for (r = 0; r < proc.comms.nregions; r += 1) {
+
         for (pe = 0; pe < proc.nranks; pe += 1) {
             /* can I merge these?  No luck so far */
             snprintf(fetch_base.key, PMIX_MAX_KEYLEN, region_base_fmt, pe, r);
@@ -127,7 +128,11 @@ shmemc_pmix_exchange_heap_info(void)
                 fetch_base.value.data.uint64;
             proc.comms.regions[r].minfo[pe].length =
                 fetch_size.value.data.size;
+            proc.comms.regions[r].minfo[pe].end =
+                proc.comms.regions[r].minfo[pe].base +
+                fetch_size.value.data.size;
         }
+
     }
 }
 
@@ -138,7 +143,7 @@ shmemc_pmix_publish_worker(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
-    pmix_byte_object_t *bop;
+    pmix_byte_object_t *bop;    /* shortcut */
 
     PMIX_INFO_CONSTRUCT(&pi);
 
@@ -234,6 +239,7 @@ shmemc_pmix_exchange_all_rkeys(void)
     PMIX_PDATA_CONSTRUCT(&fetch);
 
     for (r = 0; r < proc.comms.nregions; r += 1) {
+
         for (pe = 0; pe < proc.nranks; pe += 1) {
             const int i = (pe + proc.rank) % proc.nranks;
 
@@ -252,6 +258,7 @@ shmemc_pmix_exchange_all_rkeys(void)
                                    );
             assert(s == UCS_OK);
         }
+
     }
 }
 
