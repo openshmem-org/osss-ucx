@@ -193,10 +193,18 @@ shmemc_put_nbi(void *dest, const void *src,
                size_t nbytes, int pe)
 {
     uint64_t ud = (uint64_t) dest;
-    uint64_t r_dest = TRANSLATE_ADDR(ud, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_dest, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    uint64_t r_dest;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     ucs_status_t s;
+
+    r_dest = translate_address(ud, pe);
+    assert(r_dest != 0);
+
+    rkey = lookup_rkey(r_dest, pe);
+    assert(rkey != NULL);
+
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, rkey);
     assert(s == UCS_OK || s == UCS_INPROGRESS);
@@ -206,11 +214,19 @@ void
 shmemc_get_nbi(void *dest, const void *src,
                size_t nbytes, int pe)
 {
-    uint64_t ud = (uint64_t) dest;
-    uint64_t r_src = TRANSLATE_ADDR(ud, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_src, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    uint64_t us = (uint64_t) src;
+    uint64_t r_src;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     ucs_status_t s;
+
+    r_src = translate_address(us, pe);
+    assert(r_src != 0);
+
+    rkey = lookup_rkey(r_src, pe);
+    assert(rkey != NULL);
+
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, rkey);
     assert(s == UCS_OK || s == UCS_INPROGRESS);
