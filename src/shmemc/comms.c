@@ -131,6 +131,7 @@ shmemc_quiet(void)
 void
 shmemc_barrier_all(void)
 {
+    sleep(1);
     shmemc_quiet();             /* yeah, yeah, I know */
 }
 

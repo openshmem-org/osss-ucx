@@ -246,7 +246,8 @@ dereg_symmetric_heap(void)
 static void
 reg_globals(void)
 {
-    extern char data_start, end; /* from the executable */
+    extern char data_start; /* from the executable */
+    extern char end; /* from the executable */
     uint64_t g_base = (uint64_t) &data_start;
     uint64_t g_end = (uint64_t) &end;
     const size_t len = g_end - g_base;
