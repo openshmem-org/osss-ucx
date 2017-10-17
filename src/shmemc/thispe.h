@@ -63,9 +63,4 @@ typedef struct thispe_info {
     int npeers;
 } thispe_info_t;
 
-/*
- * TODO: get remote address "a" on PE "pe"
- */
-#define TRANSLATE_ADDR(a, pe) ((uint64_t) a)
-
 #endif /* ! _THISPE_H */

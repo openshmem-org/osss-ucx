@@ -57,12 +57,10 @@ lookup_region(uint64_t addr, int pe)
 inline static ucp_rkey_h
 lookup_rkey(uint64_t remote_addr, int pe)
 {
-    long i;
+    long r = lookup_region(remote_addr, pe);
 
-    i = lookup_region(remote_addr, pe);
-
-    if (i >= 0) {
-        return proc.comms.regions[i].minfo[pe].racc.rkey;
+    if (r >= 0) {
+        return proc.comms.regions[r].minfo[pe].racc.rkey;
         /* NOT REACHED */
     }
 
@@ -75,19 +73,17 @@ lookup_rkey(uint64_t remote_addr, int pe)
 inline static uint64_t
 translate_address(uint64_t local_addr, int pe)
 {
-    long i;
-
-    i = lookup_region(local_addr, proc.rank);
+    long r = lookup_region(local_addr, proc.rank);
 
     logger(LOG_INFO,
            "translate_address: local_addr = %lu, region = %d",
-           local_addr, i);
+           local_addr, r);
 
-    if (i >= 0) {
+    if (r >= 0) {
         const uint64_t my_offset =
-            local_addr - proc.comms.regions[i].minfo[proc.rank].base;
+            local_addr - proc.comms.regions[r].minfo[proc.rank].base;
         const uint64_t r_addr =
-            proc.comms.regions[i].minfo[pe].base + my_offset;
+            proc.comms.regions[r].minfo[pe].base + my_offset;
 
         return r_addr;
     }
@@ -243,7 +239,7 @@ shmemc_get_nbi(void *dest, const void *src,
 inline static uint32_t
 helper_fadd32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     uint32_t ret;
@@ -258,7 +254,7 @@ helper_fadd32(uint64_t t, uint32_t v, int pe)
 inline static uint64_t
 helper_fadd64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     uint64_t ret;
@@ -273,7 +269,7 @@ helper_fadd64(uint64_t t, uint64_t v, int pe)
 inline static void
 helper_add32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     ucs_status_t s;
@@ -285,7 +281,7 @@ helper_add32(uint64_t t, uint32_t v, int pe)
 inline static void
 helper_add64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     ucs_status_t s;
@@ -297,7 +293,7 @@ helper_add64(uint64_t t, uint64_t v, int pe)
 inline static uint32_t
 helper_swap32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     uint32_t ret;
@@ -312,7 +308,7 @@ helper_swap32(uint64_t t, uint32_t v, int pe)
 inline static uint64_t
 helper_swap64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     uint64_t ret;
@@ -327,7 +323,7 @@ helper_swap64(uint64_t t, uint64_t v, int pe)
 inline static uint32_t
 helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     uint32_t ret;
@@ -342,7 +338,7 @@ helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 inline static uint64_t
 helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
 {
-    uint64_t r_t = TRANSLATE_ADDR(t, pe);
+    uint64_t r_t = translate_address(t, pe);
     ucp_rkey_h rkey = lookup_rkey(r_t, pe);
     ucp_ep_h ep = lookup_ucp_ep(pe);
     uint64_t ret;
