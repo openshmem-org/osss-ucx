@@ -17,7 +17,7 @@ lookup_ucp_ep(int pe)
 }
 
 inline static int
-in_region(uint64_t addr, int region, int pe)
+in_region(uint64_t addr, size_t region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
 
@@ -55,40 +55,23 @@ lookup_region(uint64_t addr, int pe)
  * find remote rkey
  */
 inline static ucp_rkey_h
-lookup_rkey(uint64_t remote_addr, int pe)
+lookup_rkey(size_t region, int pe)
 {
-    long r = lookup_region(remote_addr, pe);
-
-    if (r >= 0) {
-        return proc.comms.regions[r].minfo[pe].racc.rkey;
-        /* NOT REACHED */
-    }
-
-    return NULL;
+    return proc.comms.regions[region].minfo[pe].racc.rkey;
 }
 
 /*
  * translate remote address
  */
 inline static uint64_t
-translate_address(uint64_t local_addr, int pe)
+translate_address(uint64_t local_addr, size_t region, int pe)
 {
-    long r = lookup_region(local_addr, proc.rank);
+    const uint64_t my_offset =
+        local_addr - proc.comms.regions[region].minfo[proc.rank].base;
+    const uint64_t r_addr =
+        proc.comms.regions[region].minfo[pe].base + my_offset;
 
-    logger(LOG_INFO,
-           "translate_address: local_addr = %lu, region = %d",
-           local_addr, r);
-
-    if (r >= 0) {
-        const uint64_t my_offset =
-            local_addr - proc.comms.regions[r].minfo[proc.rank].base;
-        const uint64_t r_addr =
-            proc.comms.regions[r].minfo[pe].base + my_offset;
-
-        return r_addr;
-    }
-
-    return (uint64_t) 0;
+    return r_addr;
 }
 
 /*
@@ -139,16 +122,20 @@ void
 shmemc_put(void *dest, const void *src,
            size_t nbytes, int pe)
 {
+    long r;
     uint64_t ud = (uint64_t) dest;
     uint64_t r_dest;            /* address on other PE */
     ucp_rkey_h rkey;            /* rkey for remote address */
     ucp_ep_h ep;
     ucs_status_t s;
 
-    r_dest = translate_address(ud, pe);
+    r = lookup_region(ud, proc.rank);
+    assert(r >= 0);
+
+    r_dest = translate_address(ud, r, pe);
     assert(r_dest != 0);
 
-    rkey = lookup_rkey(r_dest, pe);
+    rkey = lookup_rkey(r, pe);
     assert(rkey != NULL);
 
     ep = lookup_ucp_ep(pe);
@@ -161,16 +148,19 @@ void
 shmemc_get(void *dest, const void *src,
            size_t nbytes, int pe)
 {
+    long r;
     uint64_t us = (uint64_t) src;
     uint64_t r_src;
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
 
-    r_src = translate_address(us, pe);
+    r = lookup_region(us, proc.rank);
+
+    r_src = translate_address(us, r, pe);
     assert(r_src != 0);
 
-    rkey = lookup_rkey(r_src, pe);
+    rkey = lookup_rkey(r, pe);
     assert(rkey != NULL);
 
     ep = lookup_ucp_ep(pe);
@@ -188,16 +178,19 @@ void
 shmemc_put_nbi(void *dest, const void *src,
                size_t nbytes, int pe)
 {
+    long r;
     uint64_t ud = (uint64_t) dest;
     uint64_t r_dest;
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
 
-    r_dest = translate_address(ud, pe);
+    r = lookup_region(ud, proc.rank);
+
+    r_dest = translate_address(ud, r, pe);
     assert(r_dest != 0);
 
-    rkey = lookup_rkey(r_dest, pe);
+    rkey = lookup_rkey(r, pe);
     assert(rkey != NULL);
 
     ep = lookup_ucp_ep(pe);
@@ -210,16 +203,19 @@ void
 shmemc_get_nbi(void *dest, const void *src,
                size_t nbytes, int pe)
 {
+    long r;
     uint64_t us = (uint64_t) src;
     uint64_t r_src;
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
 
-    r_src = translate_address(us, pe);
+    r = lookup_region(us, proc.rank);
+
+    r_src = translate_address(us, r, pe);
     assert(r_src != 0);
 
-    rkey = lookup_rkey(r_src, pe);
+    rkey = lookup_rkey(r, pe);
     assert(rkey != NULL);
 
     ep = lookup_ucp_ep(pe);
@@ -239,11 +235,17 @@ shmemc_get_nbi(void *dest, const void *src,
 inline static uint32_t
 helper_fadd32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     uint32_t ret;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_fadd32(ep, v, r_t, rkey, &ret);
     assert(s == UCS_OK);
@@ -254,11 +256,17 @@ helper_fadd32(uint64_t t, uint32_t v, int pe)
 inline static uint64_t
 helper_fadd64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     uint64_t ret;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_fadd64(ep, v, r_t, rkey, &ret);
     assert(s == UCS_OK);
@@ -269,10 +277,16 @@ helper_fadd64(uint64_t t, uint64_t v, int pe)
 inline static void
 helper_add32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_add32(ep, v, r_t, rkey);
     assert(s == UCS_OK);
@@ -281,10 +295,16 @@ helper_add32(uint64_t t, uint32_t v, int pe)
 inline static void
 helper_add64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_add64(ep, v, r_t, rkey);
     assert(s == UCS_OK);
@@ -293,11 +313,17 @@ helper_add64(uint64_t t, uint64_t v, int pe)
 inline static uint32_t
 helper_swap32(uint64_t t, uint32_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     uint32_t ret;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_swap32(ep, v, r_t, rkey, &ret);
     assert(s == UCS_OK);
@@ -308,11 +334,17 @@ helper_swap32(uint64_t t, uint32_t v, int pe)
 inline static uint64_t
 helper_swap64(uint64_t t, uint64_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     uint64_t ret;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_swap64(ep, v, r_t, rkey, &ret);
     assert(s == UCS_OK);
@@ -323,11 +355,17 @@ helper_swap64(uint64_t t, uint64_t v, int pe)
 inline static uint32_t
 helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     uint32_t ret;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_cswap32(ep, c, v, r_t, rkey, &ret);
     assert(s == UCS_OK);
@@ -338,11 +376,17 @@ helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 inline static uint64_t
 helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
 {
-    uint64_t r_t = translate_address(t, pe);
-    ucp_rkey_h rkey = lookup_rkey(r_t, pe);
-    ucp_ep_h ep = lookup_ucp_ep(pe);
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
     uint64_t ret;
     ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
 
     s = ucp_atomic_cswap64(ep, c, v, r_t, rkey, &ret);
     assert(s == UCS_OK);
