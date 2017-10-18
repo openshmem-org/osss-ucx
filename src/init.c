@@ -19,6 +19,7 @@
 void
 shmem_finalize(void)
 {
+    /* do nothing if multiple finalizes */
     if (proc.refcount <= 0) {
         return;
     }
@@ -34,7 +35,7 @@ shmem_init(void)
 {
     int s;
 
-    /* no re-init */
+    /* do nothing if multiple inits */
     if (proc.refcount > 0) {
         return;
     }
