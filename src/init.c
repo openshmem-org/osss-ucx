@@ -19,11 +19,11 @@
 void
 shmem_finalize(void)
 {
-    proc.refcount -= 1;
-
-    if (proc.status != SHMEM_PE_RUNNING) {
+    if (proc.refcount <= 0) {
         return;
     }
+
+    proc.refcount -= 1;
 
     shmemc_finalize();
     shmemu_finalize();
@@ -34,12 +34,12 @@ shmem_init(void)
 {
     int s;
 
-    proc.refcount += 1;
-
     /* no re-init */
-    if (proc.status == SHMEM_PE_RUNNING) {
+    if (proc.refcount > 0) {
         return;
     }
+
+    proc.refcount += 1;
 
     shmemu_init();
     shmemc_init();

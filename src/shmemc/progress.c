@@ -71,7 +71,7 @@ progress_impl_event(void *unused_arg)
  * "event"  = back off until signaled
  *
  */
-static void *(*progress)(void *) = progress_impl_event;
+static void *(*progress)(void *) = progress_impl_simple;
 
 /*
  * start the progress thread
@@ -101,9 +101,11 @@ shmemc_ucx_progress_finalize(void)
     /* (eventually) tell thread poll to shut down */
     go = 0;
 
+#if 0
     /* poke the worker */
     s = ucp_worker_signal(proc.comms.wrkr);
     assert(s == UCS_OK);
+#endif
 
     /* clean up terminated thread */
     ps = pthread_join(thread, NULL);

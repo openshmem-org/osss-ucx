@@ -414,8 +414,13 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
+    ucs_status_t s;
+
     /* full barrier here */
-    ucp_worker_flush(proc.comms.wrkr);
+    sleep(1);
+    s = ucp_worker_flush(proc.comms.wrkr);
+    assert(s == UCS_OK);
+
     shmemc_pmix_barrier_all();
 
     shmemc_ucx_progress_finalize();
