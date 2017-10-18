@@ -2,6 +2,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
+#include "progress.h"
 
 #include <stdlib.h>             /* getenv */
 #include <assert.h>
@@ -74,14 +75,11 @@ make_init_params(ucp_params_t *p_p)
      * we'll try at first to get both 32- and 64-bit direct AMO
      * support because OpenSHMEM wants them
      */
-    p_p->features = UCP_FEATURE_RMA
-#if 1
-        /* while testing so we can play on mlx4 card */
-        |
-        UCP_FEATURE_AMO32
-        |
+    p_p->features =
+        UCP_FEATURE_RMA |
+        UCP_FEATURE_WAKEUP |
+        UCP_FEATURE_AMO32 |
         UCP_FEATURE_AMO64
-#endif
         ;
     p_p->estimated_num_eps = proc.nranks;
 }
@@ -227,7 +225,8 @@ reg_symmetric_heap(void)
     def_symm_heap->length = attr.length;
 
     /* initialize the heap allocator */
-    shmemc_mem_init(def_symm_heap->base, def_symm_heap->length);
+    shmemc_mem_init((void *) def_symm_heap->base,
+                    def_symm_heap->length);
 
     logger(LOG_MEMORY,
            "default symm heap @ %lu, size %lu",
@@ -258,7 +257,7 @@ reg_globals(void)
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
 
-    mp.address = g_base;
+    mp.address = (void *) g_base;
     mp.length = len;
     mp.flags =
         UCP_MEM_MAP_ALLOCATE |
@@ -408,6 +407,8 @@ shmemc_ucx_init(void)
 #endif
     /* don't need config info any more */
     ucp_config_release(proc.comms.cfg);
+
+    shmemc_ucx_progress_init();
 }
 
 void
@@ -416,6 +417,8 @@ shmemc_ucx_finalize(void)
     /* full barrier here */
     ucp_worker_flush(proc.comms.wrkr);
     shmemc_pmix_barrier_all();
+
+    shmemc_ucx_progress_finalize();
 
     return;
 
