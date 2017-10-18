@@ -3,9 +3,7 @@
 
 static double epoch;
 
-inline
-static
-double
+inline static double
 read_time(void)
 {
     struct timeval t;
