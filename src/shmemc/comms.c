@@ -489,7 +489,8 @@ SHMEMC_TYPED_CSWAP(longlong, long long, 64)
 /*
  * fetch & set
  *
- * TODO: silly impl. for now
+ * TODO: UCX really does have a fetch_nb, but for now do something
+ * simple
  *
  */
 
@@ -506,11 +507,14 @@ SHMEMC_TYPED_FETCH(longlong, long long, 64)
 SHMEMC_TYPED_FETCH(float, float, 32)
 SHMEMC_TYPED_FETCH(double, double, 64)
 
-#define SHMEMC_TYPED_SET(_name, _type, _size)       \
-    void                                            \
-    shmemc_##_name##_set(_type *t, _type v, int pe) \
-    {                                               \
-        *t = v;                                     \
+/*
+ * TODO: use swap and ignore return?
+ */
+#define SHMEMC_TYPED_SET(_name, _type, _size)           \
+    void                                                \
+    shmemc_##_name##_set(_type *t, _type v, int pe)     \
+    {                                                   \
+        (void) helper_swap##_size((uint64_t) t, v, pe); \
     }
 
 SHMEMC_TYPED_SET(int, int, 32)
