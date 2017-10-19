@@ -13,13 +13,13 @@
 #endif /* ENABLE_PSHMEM */
 
 void
-shmem_barrier_all(void)
+shmem_barrier(int start, int log2stride, int size, long *pSync)
 {
-    shmemc_barrier_all();
+    shmemc_barrier(start, log2stride, size, pSync);
 }
 
 void
-shmem_barrier(int start, int log_stride, int size, long *pSync)
+shmem_barrier_all(void)
 {
-    shmemc_barrier(start, log_stride, size, pSync);
+    shmemc_barrier_all();
 }

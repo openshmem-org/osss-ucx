@@ -121,7 +121,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
                                 int PE_start, int logPE_stride, int PE_size, \
                                 _type *pWrk, long *pSync)               \
     {                                                                   \
-        const int me = shmemc_my_pe();                                  \
+        const int me = shmem_my_pe();                                   \
         const int step = 1 << logPE_stride;                             \
         const int nloops = nreduce / SHMEM_REDUCE_MIN_WRKDATA_SIZE;     \
         const int nrem = nreduce % SHMEM_REDUCE_MIN_WRKDATA_SIZE;       \
@@ -163,7 +163,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
         for (j = 0; j < nreduce; j += 1) {                              \
             write_to[j] = source[j];                                    \
         }                                                               \
-        shmemc_barrier(PE_start, logPE_stride, PE_size, pSync);         \
+        shmem_barrier(PE_start, logPE_stride, PE_size, pSync);          \
         /* now go through other PEs and get source */                   \
         pe = PE_start;                                                  \
         for (i = 0; i < PE_size; i += 1) {                              \
@@ -194,7 +194,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
             pe += step;                                                 \
         }                                                               \
         /* everyone has to have finished */                             \
-        shmemc_barrier(PE_start, logPE_stride, PE_size, pSync);         \
+        shmem_barrier(PE_start, logPE_stride, PE_size, pSync);          \
         if (overlap) {                                                  \
             /* write to real local target and free temp */              \
             memcpy(target, tmptrg, snred);                              \

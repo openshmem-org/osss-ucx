@@ -1,5 +1,6 @@
 #include "shmemu.h"
 #include "state.h"
+#include "shmem/defs.h"
 
 #include <unistd.h>
 #include <string.h>
@@ -101,17 +102,6 @@ void
 shmemc_quiet(void)
 {
     do_flush();
-}
-
-/*
- * -- barriers -----------------------------------------------------------
- */
-
-void
-shmemc_barrier_all(void)
-{
-    sleep(1);
-    shmemc_quiet();             /* yeah, yeah, I know */
 }
 
 /*

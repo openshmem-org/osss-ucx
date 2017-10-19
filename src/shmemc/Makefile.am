@@ -11,7 +11,9 @@ libshmemc_ucx_a_SOURCES    = \
 				pmix-client.c \
 				ucx-init.c \
 				ranks.c \
+				barrier.c \
 				comms.c \
+				wait.c \
 				mcs-lock.c \
 				dlmalloc.c \
 				memalloc.c \

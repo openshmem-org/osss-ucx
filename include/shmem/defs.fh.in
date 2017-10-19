@@ -43,7 +43,7 @@
 !     Initialize sync arrays to this
 !
       integer SHMEM_SYNC_VALUE
-      parameter ( SHMEM_SYNC_VALUE = -1 )
+      parameter ( SHMEM_SYNC_VALUE = 0 )
 
 !
 !     compatibility with SGI
