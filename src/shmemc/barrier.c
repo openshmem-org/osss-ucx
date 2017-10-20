@@ -20,7 +20,6 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
-    long zero = 0;
     long one = 1;
 
     shmemc_quiet();
@@ -35,7 +34,7 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
         /* send acks out */
         pe = start + stride;
         for (i = 1; i < size; i += 1) {
-            shmemc_put(pSync, &one, sizeof(one), pe);
+            shmemc_put(pSync, &one, sizeof(one), pe); /* TODO: shmem_p */
             pe += stride;
         }
     }
