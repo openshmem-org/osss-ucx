@@ -27,7 +27,8 @@ setup_backoff(void)
 static void *
 progress_impl_simple(void *unused_arg)
 {
-    return;
+    return NULL;                /* TODO: no progress thread while testing */
+
     while (go) {
         unsigned s = ucp_worker_progress(proc.comms.wrkr);
 
