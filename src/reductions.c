@@ -3,8 +3,8 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
-#include "shmemc.h"
 #include "shmem/defs.h"
+#include "shmem/api.h"
 
 #include <complex.h>
 
@@ -173,7 +173,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
                 /* pull in all the full chunks */                       \
                 nget = SHMEM_REDUCE_MIN_WRKDATA_SIZE * sizeof(_type);   \
                 for (k = 0; k < nloops; k += 1) {                       \
-                    shmemc_get(pWrk, & (source[si]), nget, pe);         \
+                    shmem_getmem(pWrk, & (source[si]), nget, pe);       \
                     for (j = 0; j < SHMEM_REDUCE_MIN_WRKDATA_SIZE;      \
                          j += 1) {                                      \
                         write_to[ti] =                                  \
@@ -184,7 +184,7 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
                 }                                                       \
                 /* now get remaining part of source */                  \
                 nget = nrem * sizeof(_type);                            \
-                shmemc_get(pWrk, & (source[si]), nget, pe);             \
+                shmem_getmem(pWrk, & (source[si]), nget, pe);           \
                 for (j = 0; j < nrem; j += 1) {                         \
                     write_to[ti] =                                      \
                         (*the_op)(write_to[ti], pWrk[j]);               \
@@ -200,8 +200,6 @@ SHMEM_MINIMAX_FUNC(longdouble, long double)
             memcpy(target, tmptrg, snred);                              \
             free(tmptrg);                                               \
             tmptrg = NULL;                                              \
-            /* shmemc_barrier(PE_start, logPE_stride, PE_size, pSync); */ \
-            /* shmemc_quiet(); */                                        \
         }                                                               \
     }
 
