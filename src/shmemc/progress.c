@@ -6,7 +6,7 @@
 
 static pthread_t thread;
 
-static short go = 1;
+static volatile short go = 1;
 
 static struct timespec ts;
 static unsigned long backoff = 10000; /* nanoseconds */
@@ -27,11 +27,12 @@ setup_backoff(void)
 static void *
 progress_impl_simple(void *unused_arg)
 {
-    do {
+    return;
+    while (go) {
         unsigned s = ucp_worker_progress(proc.comms.wrkr);
 
         nanosleep(&ts, NULL);
-    } while (go);
+    };
 
     return NULL;
 }

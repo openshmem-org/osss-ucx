@@ -6,6 +6,8 @@
 #include "shmemu.h"
 #include "state.h"
 
+static long bar_count = 0;
+
 void
 shmemc_barrier(int start, int log2stride, int size, long *pSync)
 {
@@ -23,12 +25,6 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
         /* wait for the rest of the AS to poke me */
         shmemc_long_wait_eq_until(pSync, size - 1);
 
-        logger(LOG_INFO, "root, size = %d, *pSync = %ld", size, *pSync);
-
-        /* clear */
-        *pSync = 0;
-        /* shmemc_wait_until(pSync, SHMEM_CMP_EQ, 0); */
-
         /* send acks out */
         pe = start + stride;
         for (i = 1; i < size; i += 1) {
@@ -40,12 +36,18 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
         /* poke root */
         shmemc_long_add(pSync, 1, start);
 
-        shmemc_long_wait_eq_until(pSync, 0);
-
-        /* clear */
-        shmemc_put(pSync, &zero, sizeof(zero), me);
-        shmemc_long_wait_eq_until(pSync, 0);
+        /* get ack */
+        shmemc_long_wait_ne_until(pSync, 0);
     }
+
+    /* reset */
+    *pSync = 0;
+
+    logger(LOG_INFO,
+           "barrier #%ld return: start = %d, stride = %d, size = %d",
+           bar_count, start, stride, size);
+
+    bar_count += 1;
 }
 
 void

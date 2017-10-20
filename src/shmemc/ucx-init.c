@@ -319,7 +319,7 @@ disconnect_all_eps_phase2(void)
     do {
         for (pe = 0; pe < proc.nranks; pe += 1) {
             if (sp[pe] != NULL) {
-                (void) ucp_worker_progress(proc.comms.wrkr);
+                // (void) ucp_worker_progress(proc.comms.wrkr);
 
                 s = ucp_request_test(sp[pe], NULL);
                 if (s == UCS_OK) {
@@ -417,11 +417,7 @@ shmemc_ucx_finalize(void)
     ucs_status_t s;
 
     /* full barrier here */
-    sleep(1);
-    s = ucp_worker_flush(proc.comms.wrkr);
-    assert(s == UCS_OK);
-
-    shmemc_pmix_barrier_all();
+    shmemc_barrier_all();
 
     shmemc_ucx_progress_finalize();
 

@@ -75,18 +75,6 @@ translate_address(uint64_t local_addr, size_t region, int pe)
     return r_addr;
 }
 
-/*
- * private helper
- */
-inline static void
-do_flush(void)
-{
-    ucs_status_t s;
-
-    s = ucp_worker_flush(proc.comms.wrkr);
-    assert(s == UCS_OK);
-}
-
 /**
  * API
  *
@@ -95,13 +83,19 @@ do_flush(void)
 void
 shmemc_fence(void)
 {
-    do_flush();
+    ucs_status_t s;
+
+    s = ucp_worker_fence(proc.comms.wrkr);
+    assert(s == UCS_OK);
 }
 
 void
 shmemc_quiet(void)
 {
-    do_flush();
+    ucs_status_t s;
+
+    s = ucp_worker_flush(proc.comms.wrkr);
+    assert(s == UCS_OK);
 }
 
 /*
