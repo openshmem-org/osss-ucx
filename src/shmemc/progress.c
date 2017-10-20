@@ -97,7 +97,9 @@ shmemc_ucx_progress_init(void)
 void
 shmemc_ucx_progress_finalize(void)
 {
+#if 0
     ucs_status_t s;
+#endif
     int ps;
 
     /* (eventually) tell thread poll to shut down */
