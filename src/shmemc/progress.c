@@ -30,7 +30,7 @@ progress_impl_simple(void *unused_arg)
     return NULL;                /* TODO: no progress thread while testing */
 
     while (go) {
-        unsigned s = ucp_worker_progress(proc.comms.wrkr);
+        (void) ucp_worker_progress(proc.comms.wrkr);
 
         nanosleep(&ts, NULL);
     };
