@@ -303,8 +303,9 @@ disconnect_all_eps_phase1(void)
     assert(sp != NULL);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        sp[pe] = ucp_disconnect_nb(proc.comms.eps[pe]);
-        if (sp[pe] != NULL) {
+        sp[pe] = ucp_ep_close_nb(proc.comms.eps[pe], UCP_EP_CLOSE_MODE_FLUSH);
+        if (sp[pe] != UCS_OK) {
+            logger(LOG_FINALIZE, "%s: waiting to close PE %d", __func__, pe);
             remaining += 1;
         }
     }
@@ -313,22 +314,23 @@ disconnect_all_eps_phase1(void)
 static void
 disconnect_all_eps_phase2(void)
 {
-    ucs_status_t s;
-    int pe;
+    while (remaining > 0) {
+        int pe;
 
-    do {
         for (pe = 0; pe < proc.nranks; pe += 1) {
-            if (sp[pe] != NULL) {
-                // (void) ucp_worker_progress(proc.comms.wrkr);
 
-                s = ucp_request_test(sp[pe], NULL);
-                if (s == UCS_OK) {
+            logger(LOG_FINALIZE, "%s: checking PE %d", __func__, pe);
+
+            if (sp[pe] != NULL) {
+                ucs_status_t s = ucp_request_check_status(sp[pe]);
+
+                if (s != UCS_INPROGRESS) {
                     sp[pe] = NULL;
                     remaining -= 1;
                 }
             }
         }
-    } while (remaining > 0);
+    }
 
     free(sp);
 }
@@ -414,12 +416,8 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
-    ucs_status_t s;
-
     /* full barrier here */
     shmemc_barrier_all();
-
-    shmemc_ucx_progress_finalize();
 
     return;
 
@@ -429,6 +427,8 @@ shmemc_ucx_finalize(void)
 
     disconnect_all_eps_phase1();
     disconnect_all_eps_phase2();
+
+    shmemc_ucx_progress_finalize();
 
     deallocate_endpoints();
 
