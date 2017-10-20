@@ -1,3 +1,7 @@
+#include "state.h"
+
+#include <ucp/api/ucp.h>
+
 #define VOLATILIZE(_type, _var) (* ( volatile _type *) (_var))
 
 #define COMMS_WAIT_TYPE(_name, _type, _opname, _op)                     \
@@ -5,7 +9,12 @@
     shmemc_##_name##_wait_##_opname##_until(_type *var,                 \
                                             _type cmp_value)            \
     {                                                                   \
-        while ( ! ( VOLATILIZE(_type, var) _op cmp_value ) );           \
+        while (1) {                                                     \
+            ucp_worker_wait_mem(proc.comms.wrkr, var);                  \
+            if (VOLATILIZE(_type, var) _op cmp_value ) {                \
+                return;                                                 \
+            }                                                           \
+        }                                                               \
     }
 
 COMMS_WAIT_TYPE(short, short, eq, ==)
