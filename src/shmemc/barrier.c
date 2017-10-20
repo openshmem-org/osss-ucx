@@ -6,7 +6,14 @@
 #include "shmemu.h"
 #include "state.h"
 
+/*
+ * internal debugging tracker for barrier counts
+ */
 static long bar_count = 0;
+
+/*
+ * just play with a simple linear barrier for now
+ */
 
 void
 shmemc_barrier(int start, int log2stride, int size, long *pSync)
