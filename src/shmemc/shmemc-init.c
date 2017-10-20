@@ -22,7 +22,9 @@ barrier_all_init(void)
 inline static void
 barrier_all_finalize(void)
 {
-    shmemc_mem_free(shmemc_all_sync);
+    if (shmemc_all_sync != NULL) {
+        shmemc_mem_free(shmemc_all_sync);
+    }
 }
 
 void
