@@ -38,12 +38,14 @@ typedef enum shmemu_log {
     LOG_INIT        = SHMEMU_BIT_SET(1),
     LOG_FINALIZE    = SHMEMU_BIT_SET(2),
     LOG_MEMORY      = SHMEMU_BIT_SET(3),
-    LOG_WORKER      = SHMEMU_BIT_SET(4),
-    LOG_HEAP        = SHMEMU_BIT_SET(5),
+    LOG_HEAP        = SHMEMU_BIT_SET(4),
+    LOG_WORKER      = SHMEMU_BIT_SET(5),
     LOG_INFO        = SHMEMU_BIT_SET(6),
     LOG_REDUCTION   = SHMEMU_BIT_SET(7),
-    LOG_ALL         = LOG_FATAL | LOG_INIT | LOG_FINALIZE
-                         | LOG_MEMORY | LOG_HEAP | LOG_WORKER | LOG_INFO,
+    LOG_BARRIER     = SHMEMU_BIT_SET(8),
+    LOG_ALL         = (LOG_FATAL | LOG_INIT | LOG_FINALIZE |
+                       LOG_MEMORY | LOG_HEAP | LOG_WORKER | LOG_INFO |
+                       LOG_REDUCTION | LOG_BARRIER),
     LOG_UNKNOWN     = -1
 } shmemu_log_t;
 
