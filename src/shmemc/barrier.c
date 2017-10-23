@@ -5,11 +5,12 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "state.h"
+#include "shmem/defs.h"
 
 /*
  * internal debugging tracker for barrier counts
  */
-static long bar_count = 0;
+static unsigned long bar_count = 0;
 
 /*
  * just play with a simple linear barrier for now
@@ -20,7 +21,7 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
-    long one = 1;
+    long poke = ~SHMEM_SYNC_VALUE;
 
     shmemc_quiet();
 
@@ -34,30 +35,35 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
         /* send acks out */
         pe = start + stride;
         for (i = 1; i < size; i += 1) {
-            shmemc_put(pSync, &one, sizeof(one), pe); /* TODO: shmem_p */
+            shmemc_put(pSync, &poke, sizeof(poke), pe);
             pe += stride;
         }
     }
     else {
         /* poke root */
-        shmemc_long_add(pSync, 1, start);
+        shmemc_long_add(pSync, 1L, start);
 
         /* get ack */
-        shmemc_long_wait_ne_until(pSync, 0);
+        shmemc_long_wait_ne_until(pSync, SHMEM_SYNC_VALUE);
     }
 
-    /* reset */
-    *pSync = 0;
+    /* restore */
+    *pSync = SHMEM_SYNC_VALUE;
 
     logger(LOG_INFO,
-           "barrier #%ld return: start = %d, stride = %d, size = %d",
+           "barrier #%lu return: start = %d, stride = %d, size = %d",
            bar_count, start, stride, size);
 
     bar_count += 1;
 }
 
+#if 0
+static long shmemc_all_sync /* [SHMEM_BARRIER_SYNC_SIZE] = { */ SHMEM_SYNC_VALUE /* } */;
+#endif
+static long shmemc_all_sync = SHMEM_SYNC_VALUE;
+
 void
 shmemc_barrier_all(void)
 {
-    shmemc_barrier(0, 0, proc.nranks, shmemc_all_sync);
+    shmemc_barrier(0, 0, proc.nranks, &shmemc_all_sync);
 }
