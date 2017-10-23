@@ -19,8 +19,13 @@
 void
 shmem_finalize(void)
 {
+    logger(LOG_FINALIZE,
+           "enter \"%s\", refcount = %d",
+           __func__,
+           proc.refcount);
+
     /* do nothing if multiple finalizes */
-    if (proc.refcount <= 0) {
+    if (proc.refcount < 1) {
         return;
     }
 
@@ -48,7 +53,12 @@ shmem_init(void)
     s = atexit(shmem_finalize);
     assert(s == 0);
 
-    /* urgh! */
+    logger(LOG_INIT,
+           "leave \"%s\", refcount = %d",
+           __func__,
+           proc.refcount);
+
+    /* 'ere we go! */
 }
 
 #ifdef ENABLE_PSHMEM
