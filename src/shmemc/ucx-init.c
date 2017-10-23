@@ -323,6 +323,7 @@ disconnect_all_eps(void)
             ucs_status_t s;
 
             do {
+                (void) ucp_worker_progress(proc.comms.wrkr);
                 s = ucp_request_check_status(req);
             } while (s == UCS_INPROGRESS);
         }
@@ -349,7 +350,6 @@ shmemc_ucx_make_remote_endpoints(void)
 
         s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[i]);
         assert(s == UCS_OK);
-
     }
 }
 
@@ -397,18 +397,18 @@ void
 shmemc_ucx_finalize(void)
 {
     shmemc_ucx_progress_finalize();
-    return;
+
+#if 0
     disconnect_all_eps();
 
-    deallocate_endpoints();
-
     ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
-    ucp_worker_release_address(proc.comms.wrkr,
-                               proc.comms.wrkrs[proc.rank].addr);
+
     deallocate_workers();
+    deallocate_endpoints();
 
     dereg_globals();
     dereg_symmetric_heap();
 
     ucp_cleanup(proc.comms.ctxt);
+#endif
 }

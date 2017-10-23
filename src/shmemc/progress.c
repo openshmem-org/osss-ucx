@@ -56,10 +56,11 @@ shmemc_quiet(void)
 static void *
 progress_impl_simple(void *unused_arg)
 {
+    return NULL;
     while (go) {
         const double now = shmemu_timer();
 
-        if ((now - last_call) > 0.5) {
+        if ((now - last_call) > 0.2) {
             progress();
             last_call = now;
         }
