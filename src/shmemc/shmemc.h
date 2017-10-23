@@ -220,11 +220,7 @@ SHMEMC_WAITUNTIL_TYPE(longlong, long long, ge)
 /*
  * barriers
  */
-
-extern long *shmemc_all_sync;
-
 void shmemc_barrier_all(void);
-
 void shmemc_barrier(int start, int log_stride, int size, long *pSync);
 
 /*
