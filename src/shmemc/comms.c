@@ -22,10 +22,12 @@ in_region(uint64_t addr, size_t region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
 
+#if 0
     logger(LOG_MEMORY,
            "region %d for PE %d: addr = %lu, base = %lu, end = %lu",
            region, pe,
            addr, mi.base, mi.end);
+#endif
 
     if ( (mi.base <= addr) && (addr < mi.end) ) {
         return 1;
@@ -61,42 +63,28 @@ lookup_rkey(size_t region, int pe)
     return proc.comms.regions[region].minfo[pe].racc.rkey;
 }
 
+inline static uint64_t
+get_base(int region, int pe)
+{
+    return proc.comms.regions[region].minfo[pe].base;
+}
+
 /*
  * translate remote address
  */
 inline static uint64_t
 translate_address(uint64_t local_addr, size_t region, int pe)
 {
-    const uint64_t my_offset =
-        local_addr - proc.comms.regions[region].minfo[proc.rank].base;
-    const uint64_t r_addr =
-        proc.comms.regions[region].minfo[pe].base + my_offset;
+    const uint64_t my_offset = local_addr - get_base(region, proc.rank);
+    const uint64_t remote_addr = my_offset + get_base(region, pe);
 
-    return r_addr;
+    return remote_addr;
 }
 
 /**
  * API
  *
  **/
-
-void
-shmemc_fence(void)
-{
-    ucs_status_t s;
-
-    s = ucp_worker_fence(proc.comms.wrkr);
-    assert(s == UCS_OK);
-}
-
-void
-shmemc_quiet(void)
-{
-    ucs_status_t s;
-
-    s = ucp_worker_flush(proc.comms.wrkr);
-    assert(s == UCS_OK);
-}
 
 /*
  * -- puts & gets --------------------------------------------------------
