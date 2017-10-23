@@ -145,6 +145,12 @@ deallocate_endpoints(void)
 }
 
 /*
+ * a couple of shortcuts
+ */
+static mem_info_t *globals;
+static mem_info_t *def_symm_heap;
+
+/*
  * debugging output
  */
 static void
@@ -161,6 +167,7 @@ dump_mapped_mem_info(const char *name, const mem_info_t *mp)
     s = ucp_mem_query(mp->racc.mh, &attr);
     assert(s == UCS_OK);
 
+#if 0
     logger(LOG_MEMORY,
            "%d: \"%s\" memory at %p, length %.2f MB (%lu bytes)",
            proc.rank, name,
@@ -168,13 +175,27 @@ dump_mapped_mem_info(const char *name, const mem_info_t *mp)
            (double) attr.length / MB,
            (unsigned long) attr.length
            );
+#endif
 }
 
-/*
- * a couple of shortcuts
- */
-static mem_info_t *globals;
-static mem_info_t *def_symm_heap;
+static void
+dump(void)
+{
+    if (proc.rank == 0) {
+        const ucs_config_print_flags_t flags =
+            UCS_CONFIG_PRINT_CONFIG |
+            UCS_CONFIG_PRINT_HEADER;
+
+        ucp_config_print(proc.comms.cfg, say, "My config", flags);
+        ucp_context_print_info(proc.comms.ctxt, say);
+        ucp_worker_print_info(proc.comms.wrkr, say);
+        check_version();
+        fprintf(say, "----------------------------------------------\n\n");
+        fflush(say);
+    }
+    dump_mapped_mem_info("heap", def_symm_heap);
+    dump_mapped_mem_info("globals", globals);
+}
 
 static void
 reg_symmetric_heap(void)
@@ -228,9 +249,11 @@ reg_symmetric_heap(void)
     shmemc_mem_init((void *) def_symm_heap->base,
                     def_symm_heap->length);
 
+#if 0
     logger(LOG_MEMORY,
            "default symm heap @ %lu, size %lu",
            def_symm_heap->base, def_symm_heap->length);
+#endif
 }
 
 static void
@@ -270,9 +293,11 @@ reg_globals(void)
     s = ucp_mem_map(proc.comms.ctxt, &mp, &globals->racc.mh);
     assert(s == UCS_OK);
 
+#if 0
     logger(LOG_MEMORY,
            "globals @ %lu, size %lu",
            globals->base, globals->length);
+#endif
 }
 
 static void
@@ -284,55 +309,24 @@ dereg_globals(void)
     assert(s == UCS_OK);
 }
 
-/*
- * disconnect all endpoints.  Make it split-phase in case we can set
- * up overlap later, but for now these are just called in immediate
- * sequence.
- *
- */
-
-static ucs_status_ptr_t *sp;
-static unsigned int remaining = 0;
-
 static void
-disconnect_all_eps_phase1(void)
+disconnect_all_eps(void)
 {
     int pe;
 
-    sp = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*sp));
-    assert(sp != NULL);
-
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        sp[pe] = ucp_ep_close_nb(proc.comms.eps[pe], UCP_EP_CLOSE_MODE_FLUSH);
-        if (sp[pe] != UCS_OK) {
-            logger(LOG_FINALIZE, "%s: waiting to close PE %d", __func__, pe);
-            remaining += 1;
+        ucs_status_ptr_t req =
+            ucp_ep_close_nb(proc.comms.eps[pe], UCP_EP_CLOSE_MODE_FLUSH);
+
+        /* if not done immediately, wait */
+        if (req != UCS_OK) {
+            ucs_status_t s;
+
+            do {
+                s = ucp_request_check_status(req);
+            } while (s == UCS_INPROGRESS);
         }
     }
-}
-
-static void
-disconnect_all_eps_phase2(void)
-{
-    while (remaining > 0) {
-        int pe;
-
-        for (pe = 0; pe < proc.nranks; pe += 1) {
-
-            logger(LOG_FINALIZE, "%s: checking PE %d", __func__, pe);
-
-            if (sp[pe] != NULL) {
-                ucs_status_t s = ucp_request_check_status(sp[pe]);
-
-                if (s != UCS_INPROGRESS) {
-                    sp[pe] = NULL;
-                    remaining -= 1;
-                }
-            }
-        }
-    }
-
-    free(sp);
 }
 
 /**
@@ -391,22 +385,8 @@ shmemc_ucx_init(void)
 
     make_local_worker();
 
-#if 0
-    if (proc.rank == 0) {
-        const ucs_config_print_flags_t flags =
-            UCS_CONFIG_PRINT_CONFIG |
-            UCS_CONFIG_PRINT_HEADER;
+    // dump();
 
-        ucp_config_print(proc.comms.cfg, say, "My config", flags);
-        ucp_context_print_info(proc.comms.ctxt, say);
-        ucp_worker_print_info(proc.comms.wrkr, say);
-        check_version();
-        fprintf(say, "----------------------------------------------\n\n");
-        fflush(say);
-    }
-    dump_mapped_mem_info("heap", def_symm_heap);
-    dump_mapped_mem_info("globals", globals);
-#endif
     /* don't need config info any more */
     ucp_config_release(proc.comms.cfg);
 
@@ -416,26 +396,15 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
-    /* full barrier here */
-    shmemc_barrier_all();
-
-    return;
-
-    /* TODO: SOMETHING GOING WRONG AFTER HERE */
-
-    /* and clean up */
-
-    disconnect_all_eps_phase1();
-    disconnect_all_eps_phase2();
-
     shmemc_ucx_progress_finalize();
+    return;
+    disconnect_all_eps();
 
     deallocate_endpoints();
 
+    ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
     ucp_worker_release_address(proc.comms.wrkr,
                                proc.comms.wrkrs[proc.rank].addr);
-    ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
-
     deallocate_workers();
 
     dereg_globals();
