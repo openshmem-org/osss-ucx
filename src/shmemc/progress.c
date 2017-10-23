@@ -1,21 +1,50 @@
+#include "shmemu.h"
 #include "state.h"
 
 #include <pthread.h>
 #include <time.h>
 #include <assert.h>
 
+#include <ucp/api/ucp.h>
+
 static pthread_t thread;
 
 static volatile short go = 1;
 
 static struct timespec ts;
-static unsigned long backoff = 10000; /* nanoseconds */
+static unsigned long backoff = 1e6; /* nanoseconds */
+
+static double last_call;
 
 inline static void
 setup_backoff(void)
 {
     ts.tv_sec = 0;
     ts.tv_nsec = backoff;
+}
+
+inline static void
+progress(void)
+{
+    (void) ucp_worker_progress(proc.comms.wrkr);
+}
+
+void
+shmemc_fence(void)
+{
+    ucs_status_t s;
+
+    s = ucp_worker_fence(proc.comms.wrkr);
+    assert(s == UCS_OK);
+}
+
+void
+shmemc_quiet(void)
+{
+    ucs_status_t s;
+
+    s = ucp_worker_flush(proc.comms.wrkr);
+    assert(s == UCS_OK);
 }
 
 /*
@@ -27,13 +56,14 @@ setup_backoff(void)
 static void *
 progress_impl_simple(void *unused_arg)
 {
-    return NULL;                /* TODO: no progress thread while testing */
-
     while (go) {
-        (void) ucp_worker_progress(proc.comms.wrkr);
+        const double now = shmemu_timer();
 
-        nanosleep(&ts, NULL);
-    };
+        if ((now - last_call) > 0.5) {
+            progress();
+            last_call = now;
+        }
+    }
 
     return NULL;
 }
@@ -46,20 +76,14 @@ progress_impl_event(void *unused_arg)
     s = ucp_worker_arm(proc.comms.wrkr);
     assert(s == UCS_OK);
 
-    do {
-        unsigned ps;
-
-        /* clean up */
-        do {
-            ps = ucp_worker_progress(proc.comms.wrkr);
-            nanosleep(&ts, NULL);
-        } while (ps != 0);
+    while (go) {
+        progress();
+        nanosleep(&ts, NULL);
 
         /* wait for something to happen */
         s = ucp_worker_wait(proc.comms.wrkr);
         assert(s == UCS_OK);
-
-    } while (go);
+    }
 
     return NULL;
 }
@@ -73,7 +97,7 @@ progress_impl_event(void *unused_arg)
  * "event"  = back off until signaled
  *
  */
-static void *(*progress)(void *) = progress_impl_simple;
+static void *(*progress_call)(void *) = progress_impl_simple;
 
 /*
  * start the progress thread
@@ -87,8 +111,12 @@ shmemc_ucx_progress_init(void)
     setup_backoff();
 
     /* start progress thread */
-    ps = pthread_create(&thread, NULL, progress, NULL);
+    ps = pthread_create(&thread, NULL, progress_call, NULL);
     assert(ps == 0);
+
+    last_call = shmemu_timer();
+
+    logger(LOG_INIT, "created progress thread");
 }
 
 /*
@@ -114,4 +142,6 @@ shmemc_ucx_progress_finalize(void)
     /* clean up terminated thread */
     ps = pthread_join(thread, NULL);
     assert(ps == 0);
+
+    logger(LOG_FINALIZE, "finished progress thread");
 }

@@ -4,4 +4,6 @@
 void shmemc_ucx_progress_init(void);
 void shmemc_ucx_progress_finalize(void);
 
+void progress(void);
+
 #endif /* ! _SHMEMC_PROGRESS_H */
