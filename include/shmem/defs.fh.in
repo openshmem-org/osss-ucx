@@ -22,7 +22,7 @@
       parameter ( SHMEM_BCAST_SYNC_SIZE = 128 )
 
       integer SHMEM_BARRIER_SYNC_SIZE
-      parameter ( SHMEM_BARRIER_SYNC_SIZE = 128 )
+      parameter ( SHMEM_BARRIER_SYNC_SIZE = 4 )
 
       integer SHMEM_REDUCE_SYNC_SIZE
       parameter ( SHMEM_REDUCE_SYNC_SIZE = 256 )
