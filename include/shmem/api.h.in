@@ -82,6 +82,28 @@ extern "C"
     void shmem_init(void);
 
     /**
+     * @brief initializes the OpenSHMEM environment on the calling PE
+     * and requests a threading support level
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_init_thread(int requested, int *provided);
+     @endcode
+     *
+     * @section Effect
+     *
+     * Initializes the OpenSHMEM environment on the calling PE,
+     * requesting thread support level "requested".  Routine returns
+     * thread support level "provided".
+     *
+     * @return None.
+     *
+     */
+    void shmem_init_thread(int requested, int *provided);
+
+    /**
      * @brief finalizes the OpenSHMEM environment on the calling PE.
      *
      * @section Synopsis
@@ -205,6 +227,25 @@ extern "C"
      *
      */
     int shmem_n_pes(void) _WUR;
+
+    /**
+     * @brief Supplies the supported threading level to the caller
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_query_thread(int *provided);
+     @endcode
+     *
+     * @section Effect
+     *
+     * Supplies the supported threading level to the caller
+     *
+     * @return None.
+     *
+     */
+    void shmem_query_thread(int *provided);
 
     /**
      * @brief determines the major.minor version numbers of this release.
