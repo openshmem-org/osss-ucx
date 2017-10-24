@@ -7,15 +7,28 @@
 
 #include <ucp/api/ucp.h>
 
+/*
+ * progress thread and its sentinel
+ */
 static pthread_t thread;
-
 static volatile short go = 1;
 
+/*
+ * not used at the moment
+ */
 static struct timespec ts;
 static unsigned long backoff = 1e6; /* nanoseconds */
 
-static double last_call;
+/*
+ * this is intended to help back off this thread when the mainline is
+ * progressing by itself
+ */
+double last_call;
+static const double interval = 100.0;
 
+/*
+ * how long ot back off (unused)
+ */
 inline static void
 setup_backoff(void)
 {
@@ -23,28 +36,13 @@ setup_backoff(void)
     ts.tv_nsec = backoff;
 }
 
+/*
+ * progress UCX
+ */
 inline static void
 progress(void)
 {
     (void) ucp_worker_progress(proc.comms.wrkr);
-}
-
-void
-shmemc_fence(void)
-{
-    ucs_status_t s;
-
-    s = ucp_worker_fence(proc.comms.wrkr);
-    assert(s == UCS_OK);
-}
-
-void
-shmemc_quiet(void)
-{
-    ucs_status_t s;
-
-    s = ucp_worker_flush(proc.comms.wrkr);
-    assert(s == UCS_OK);
 }
 
 /*
@@ -56,11 +54,10 @@ shmemc_quiet(void)
 static void *
 progress_impl_simple(void *unused_arg)
 {
-    return NULL;
     while (go) {
         const double now = shmemu_timer();
 
-        if ((now - last_call) > 0.2) {
+        if ((now - last_call) > interval) {
             progress();
             last_call = now;
         }
@@ -94,7 +91,7 @@ progress_impl_event(void *unused_arg)
  *
  * currently one of
  *
- * "simple" = unrestrained polling loop
+ * "simple" = unrestrained polling loop    <-- current
  * "event"  = back off until signaled
  *
  */
@@ -111,11 +108,11 @@ shmemc_ucx_progress_init(void)
     /* throttle polling */
     setup_backoff();
 
+    last_call = shmemu_timer();
+
     /* start progress thread */
     ps = pthread_create(&thread, NULL, progress_call, NULL);
     assert(ps == 0);
-
-    last_call = shmemu_timer();
 
     logger(LOG_INIT, "created progress thread");
 }

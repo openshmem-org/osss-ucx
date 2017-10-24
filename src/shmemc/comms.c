@@ -86,6 +86,20 @@ translate_address(uint64_t local_addr, size_t region, int pe)
  *
  **/
 
+void
+shmemc_fence(void)
+{
+    const ucs_status_t s = ucp_worker_fence(proc.comms.wrkr);
+    assert(s == UCS_OK);
+}
+
+void
+shmemc_quiet(void)
+{
+    const ucs_status_t s = ucp_worker_flush(proc.comms.wrkr);
+    assert(s == UCS_OK);
+}
+
 /*
  * -- puts & gets --------------------------------------------------------
  */
