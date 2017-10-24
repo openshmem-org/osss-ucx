@@ -43,9 +43,10 @@ typedef enum shmemu_log {
     LOG_INFO        = SHMEMU_BIT_SET(6),
     LOG_REDUCTION   = SHMEMU_BIT_SET(7),
     LOG_BARRIER     = SHMEMU_BIT_SET(8),
+    LOG_DEPRECATE   = SHMEMU_BIT_SET(9),
     LOG_ALL         = (LOG_FATAL | LOG_INIT | LOG_FINALIZE |
                        LOG_MEMORY | LOG_HEAP | LOG_WORKER | LOG_INFO |
-                       LOG_REDUCTION | LOG_BARRIER),
+                       LOG_REDUCTION | LOG_BARRIER | LOG_DEPRECATE),
     LOG_UNKNOWN     = -1
 } shmemu_log_t;
 
@@ -60,7 +61,7 @@ void shmemu_logger(shmemu_log_t level, const char *fmt, ...);
 inline static void
 deprecate(const char *fn)
 {
-    logger(LOG_INFO, "\"%s\" is deprecated", fn);
+    logger(LOG_DEPRECATE, "\"%s\" is deprecated", fn);
 }
 
 #endif /* ! _SHMEM_SHEMU_H */
