@@ -1,11 +1,12 @@
 #ifndef _SHMEM_API_H
 #define _SHMEM_API_H 1
 
-#include <sys/types.h>
-#include <stddef.h>               /* ptrdiff_t */
-
 #include "shmem/defs.h"
 #include "shmem/depr.h"
+
+#include <sys/types.h>
+#include <stddef.h>               /* ptrdiff_t */
+#include <stdint.h>               /* sized int types */
 
 /*
  * for handling the "I" (upper-case eye) macro for complex numbers
@@ -1108,7 +1109,7 @@ extern "C"
                                       int pe) _WUR;
     /* see \ref shmem_long_atomic_compare_swap() */
     long long shmem_longlong_atomic_compare_swap(long long *target,
-                                                 long long_cond,
+                                                 long long cond,
                                                  long long value,
                                                  int pe) _WUR;
 
@@ -1152,12 +1153,29 @@ extern "C"
      * @return None.
      *
      */
-    long shmem_long_atomic_fetch_add(long *target, long value, int pe) _WUR;
+    SHMEM_DECL_AMO2(fetch_add, long, long)
     /* see \ref shmem_long_atomic_fetch_add() */
-    int shmem_int_atomic_fetch_add(int *target, int value, int pe) _WUR;
+    SHMEM_DECL_AMO2(fetch_add, int, int)
     /* see \ref shmem_long_atomic_fetch_add() */
-    long long shmem_longlong_atomic_fetch_add(long long *target, long long value,
-                                              int pe) _WUR;
+    SHMEM_DECL_AMO2(fetch_add, longlong, long long)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, uint, unsigned int)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, int32, int32_t)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, int64, int64_t)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, size, size_t)
+    /* see \ref shmem_long_atomic_fetch_add() */
+    SHMEM_DECL_AMO2(fetch_add, ptrdiff, ptrdiff_t)
 
     long shmem_long_fadd(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_fetch_add) _WUR;
@@ -1189,11 +1207,29 @@ extern "C"
      * @return None.
      *
      */
-    long shmem_long_atomic_fetch_inc(long *target, int pe) _WUR;
+    SHMEM_DECL_AMO1(fetch_inc, long, long)
     /* see \ref shmem_long_atomic_fetch_inc() */
-    int shmem_int_atomic_fetch_inc(int *target, int pe) _WUR;
+    SHMEM_DECL_AMO1(fetch_inc, int, int)
     /* see \ref shmem_long_atomic_fetch_inc() */
-    long long shmem_longlong_atomic_fetch_inc(long long *target, int pe) _WUR;
+    SHMEM_DECL_AMO1(fetch_inc, longlong, long long)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, uint, unsigned int)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, int32, int32_t)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, int64, int64_t)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, size, size_t)
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    SHMEM_DECL_AMO1(fetch_inc, ptrdiff, ptrdiff_t)
 
     long shmem_long_finc(long *target, int pe)
         _DEPRECATED_BY(shmem_long_atomic_fetch_inc) _WUR;
@@ -1224,11 +1260,29 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_long_atomic_add(long *target, long value, int pe);
+    SHMEM_DECL_VOID_AMO2(add, long, long)
     /* see \ref shmem_long_atomic_add() */
-    void shmem_int_atomic_add(int *target, int value, int pe);
+    SHMEM_DECL_VOID_AMO2(add, int, int)
     /* see \ref shmem_long_atomic_add() */
-    void shmem_longlong_atomic_add(long long *target, long long value, int pe);
+    SHMEM_DECL_VOID_AMO2(add, longlong, long long)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, uint, unsigned int)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, int32, int32_t)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, int64, int64_t)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, size, size_t)
+    /* see \ref shmem_long_atomic_add() */
+    SHMEM_DECL_VOID_AMO2(add, ptrdiff, ptrdiff_t)
 
     void shmem_long_add(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_add);
@@ -1238,16 +1292,224 @@ extern "C"
         _DEPRECATED_BY(shmem_long_atomic_add);
 
     /**
-     * @brief These routines perform an atomic exclusive-or(xor) operation
+     * @brief These routines perform an atomic "or" operation
      * between a data value and the target data object.
      *
      * @b Synopsis:
      *
      * - C/C++:
      * @code
-     void shmem_int_atomic_xor(int *dest, int value, int pe);
-     void shmem_long_atomic_xor(long *dest, long value, int pe);
-     void shmem_longlong_atomic_xor(long long *dest, long long value, int pe);
+     void shmem_ulong_atomic_or(unsigned long *dest, unsigned long value, int pe);
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object where to save
+     *                    the data on the target pe.
+     * @param value     The value with which the exclusive-or operation is
+     *                    atomically performed with the data at address dest.
+     * @param pe        An integer that indicates the PE number upon
+     *                which dest is to be updated. If you are using Fortran,
+     *                it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in
+     *        the Synopsis section.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic exclusive-or routines perform an and-operation between
+     * value and the data at address dest on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest between the time of the fetch and the update.
+     *
+     * @return None.
+     *
+     */
+    SHMEM_DECL_VOID_AMO2(and, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_or() */
+    SHMEM_DECL_VOID_AMO2(and, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_or() */
+    SHMEM_DECL_VOID_AMO2(and, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_or() */
+    SHMEM_DECL_VOID_AMO2(and, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_or() */
+    SHMEM_DECL_VOID_AMO2(and, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_or() */
+    SHMEM_DECL_VOID_AMO2(and, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_or() */
+    SHMEM_DECL_VOID_AMO2(and, uint64, uint64_t)
+
+    /**
+     * @brief These routines perform an atomic "or"
+     * operation between a data value and the target data object and
+     * return the former remote value.
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     unsigned long shmem_ulong_atomic_fetch_or(unsigned long *dest, unsigned long value, int pe);
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object where to save
+     *                    the data on the target pe.
+     * @param value     The value with which the exclusive-or operation is
+     *                    atomically performed with the data at address dest.
+     * @param pe        An integer that indicates the PE number upon
+     *                which dest is to be updated. If you are using Fortran,
+     *                it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in
+     *        the Synopsis section.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic exclusive-or routines perform an and-operation between
+     * value and the data at address dest on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest between the time of the fetch and the update.
+     *
+     * @return Value stored previously in remote location.
+     *
+     */
+    SHMEM_DECL_AMO2(fetch_or, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2(fetch_or, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2(fetch_or, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2(fetch_or, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2(fetch_or, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2(fetch_or, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2(fetch_or, uint64, uint64_t)
+
+    /**
+     * @brief These routines perform an atomic "and" operation
+     * between a data value and the target data object.
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     void shmem_ulong_atomic_and(unsigned long *dest, unsigned long value, int pe);
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object where to save
+     *                    the data on the target pe.
+     * @param value     The value with which the exclusive-or operation is
+     *                    atomically performed with the data at address dest.
+     * @param pe        An integer that indicates the PE number upon
+     *                which dest is to be updated. If you are using Fortran,
+     *                it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in
+     *        the Synopsis section.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic exclusive-or routines perform an and-operation between
+     * value and the data at address dest on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest between the time of the fetch and the update.
+     *
+     * @return None.
+     *
+     */
+    SHMEM_DECL_VOID_AMO2(and, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_and() */
+    SHMEM_DECL_VOID_AMO2(and, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_and() */
+    SHMEM_DECL_VOID_AMO2(and, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_and() */
+    SHMEM_DECL_VOID_AMO2(and, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_and() */
+    SHMEM_DECL_VOID_AMO2(and, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_and() */
+    SHMEM_DECL_VOID_AMO2(and, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_and() */
+    SHMEM_DECL_VOID_AMO2(and, uint64, uint64_t)
+
+    /**
+     * @brief These routines perform an atomic "and"
+     * operation between a data value and the target data object and
+     * return the former remote value.
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     unsigned long shmem_ulong_atomic_fetch_and(unsigned long *dest, unsigned long value, int pe);
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object where to save
+     *                    the data on the target pe.
+     * @param value     The value with which the exclusive-or operation is
+     *                    atomically performed with the data at address dest.
+     * @param pe        An integer that indicates the PE number upon
+     *                which dest is to be updated. If you are using Fortran,
+     *                it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in
+     *        the Synopsis section.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic exclusive-or routines perform an and-operation between
+     * value and the data at address dest on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest between the time of the fetch and the update.
+     *
+     * @return Value stored previously in remote location.
+     *
+     */
+    SHMEM_DECL_AMO2(fetch_and, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2(fetch_and, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2(fetch_and, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2(fetch_and, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2(fetch_and, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2(fetch_and, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2(fetch_and, uint64, uint64_t)
+
+    /**
+     * @brief These routines perform an atomic "xor" operation
+     * between a data value and the target data object.
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     void shmem_ulong_atomic_xor(unsigned long *dest, unsigned long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -1277,9 +1539,72 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_int_atomic_xor(int *dest, int value, int pe);
-    void shmem_long_atomic_xor(long *dest, long value, int pe);
-    void shmem_longlong_atomic_xor(long long *dest, long long value, int pe);
+    SHMEM_DECL_VOID_AMO2(xor, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_xor() */
+    SHMEM_DECL_VOID_AMO2(xor, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_xor() */
+    SHMEM_DECL_VOID_AMO2(xor, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_xor() */
+    SHMEM_DECL_VOID_AMO2(xor, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_xor() */
+    SHMEM_DECL_VOID_AMO2(xor, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_xor() */
+    SHMEM_DECL_VOID_AMO2(xor, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_xor() */
+    SHMEM_DECL_VOID_AMO2(xor, uint64, uint64_t)
+
+    /**
+     * @brief These routines perform an atomic "xor"
+     * operation between a data value and the target data object and
+     * return the former remote value.
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     unsigned long shmem_ulong_atomic_fetch_xor(unsigned long *dest, unsigned long value, int pe);
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object where to save
+     *                    the data on the target pe.
+     * @param value     The value with which the exclusive-or operation is
+     *                    atomically performed with the data at address dest.
+     * @param pe        An integer that indicates the PE number upon
+     *                which dest is to be updated. If you are using Fortran,
+     *                it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in
+     *        the Synopsis section.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic exclusive-or routines perform an xor-operation between
+     * value and the data at address dest on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest between the time of the fetch and the update.
+     *
+     * @return Value stored previously in remote location.
+     *
+     */
+    SHMEM_DECL_AMO2(fetch_xor, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, uint64, uint64_t)
 
     /*
      * @brief increment symmetric variable
@@ -1303,18 +1628,36 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_long_atomic_inc(long *target, int pe);
+    SHMEM_DECL_VOID_AMO1(inc, long, long)
     /* see \ref shmem_long_atomic_inc() */
-    void shmem_int_atomic_inc(int *target, int pe);
+    SHMEM_DECL_VOID_AMO1(inc, int, int)
     /* see \ref shmem_long_atomic_inc() */
-    void shmem_longlong_atomic_inc(long long *target, int pe);
+    SHMEM_DECL_VOID_AMO1(inc, longlong, long long)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, uint, unsigned int)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, int32, int32_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, int64, int64_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, size, size_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, ptrdiff, ptrdiff_t)
 
     void shmem_long_inc(long *target, int pe)
         _DEPRECATED_BY(shmem_long_atomic_inc);
     void shmem_int_inc(int *target, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_fetch);
+        _DEPRECATED_BY(shmem_int_atomic_inc);
     void shmem_longlong_inc(long long *target, int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_fetch);
+        _DEPRECATED_BY(shmem_longlong_atomic_inc);
 
     /**
      * @brief These routines perform an atomic fetch from a remote PE
@@ -1323,11 +1666,7 @@ extern "C"
      *
      * - C/C++:
      * @code
-     int shmem_int_atomic_fetch(const int *dest, int pe);
      long shmem_long_atomic_fetch(const long *dest, int pe);
-     long long shmem_longlong_atomic_fetch(const long long *dest, int pe);
-     float shmem_float_atomic_fetch(const float *dest, int pe);
-     double shmem_double_atomic_fetch(const double *dest, int pe);
      * @endcode
      *
      * - Fortran:
@@ -1374,11 +1713,33 @@ extern "C"
      * @return The value stored at address "dest" on PE pe.
      *
      */
-    int shmem_int_atomic_fetch(const int *dest, int pe);
-    long shmem_long_atomic_fetch(const long *dest, int pe);
-    long long shmem_longlong_atomic_fetch(const long long *dest, int pe);
-    float shmem_float_atomic_fetch(const float *dest, int pe);
-    double shmem_double_atomic_fetch(const double *dest, int pe);
+    SHMEM_DECL_AMO1(fetch, long, long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, int, int)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, float, float)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, double, double)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, longlong, long long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, uint, unsigned int)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, int32, int32_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, int64, int64_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, size, size_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, ptrdiff, ptrdiff_t)
 
     int shmem_int_fetch(const int *dest, int pe)
         _DEPRECATED_BY(shmem_int_atomic_fetch) _WUR;
@@ -1399,11 +1760,7 @@ extern "C"
      *
      * - C/C++:
      * @code
-     void shmem_int_atomic_set(int *dest, int value, int pe);
      void shmem_long_atomic_set(long *dest, long value, int pe);
-     void shmem_longlong_atomic_set(long long *dest, long long value, int pe);
-     void shmem_float_atomic_set(float *dest, float value, int pe);
-     void shmem_double_atomic_set(double *dest, double value, int pe);
      * @endcode
      *
      * - Fortran:
@@ -1452,11 +1809,33 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_int_atomic_set(int *dest, int value, int pe);
-    void shmem_long_atomic_set(long *dest, long value, int pe);
-    void shmem_longlong_atomic_set(long long *dest, long long value, int pe);
-    void shmem_float_atomic_set(float *dest, float value, int pe);
-    void shmem_double_atomic_set(double *dest, double value, int pe);
+    SHMEM_DECL_VOID_AMO2(set, long, long)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, int, int)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, float, float)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, double, double)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, longlong, long long)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, uint, unsigned int)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, int32, int32_t)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, int64, int64_t)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, size, size_t)
+    /* see \ref shmem_long_atomic_set() */
+    SHMEM_DECL_VOID_AMO2(set, ptrdiff, ptrdiff_t)
 
     void shmem_int_set(int *dest, int value, int pe)
         _DEPRECATED_BY(shmem_int_atomic_set);

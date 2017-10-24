@@ -78,6 +78,18 @@ enum shmem_thread_levels {
 };
 
 /*
+ * to declare AMOs
+ */
+#define SHMEM_DECL_AMO1(_op, _name, _type)                          \
+    _type shmem_##_name##_atomic_##_op(_type *target, int pe) _WUR;
+#define SHMEM_DECL_AMO2(_op, _name, _type)                              \
+    _type shmem_##_name##_atomic_##_op(_type *target, _type value, int pe) _WUR;
+#define SHMEM_DECL_VOID_AMO1(_op, _name, _type)                 \
+    void shmem_##_name##_atomic_##_op(_type *target, int pe);
+#define SHMEM_DECL_VOID_AMO2(_op, _name, _type)                         \
+    void shmem_##_name##_atomic_##_op(_type *target, _type value, int pe);
+
+/*
  * deprecated shmem constants
  */
 #define _SHMEM_MAJOR_VERSION            SHMEM_MAJOR_VERSION
