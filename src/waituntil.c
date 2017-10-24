@@ -72,6 +72,8 @@ SHMEM_TYPE_WAIT_UNTIL(long, long)
 SHMEM_TYPE_WAIT_UNTIL(longlong, long long)
 
 /**
+ * deprecated @ 1.4
+ *
  * wait is just wait_until with inequality/change test
  */
 
@@ -79,6 +81,7 @@ SHMEM_TYPE_WAIT_UNTIL(longlong, long long)
     void                                                                \
     shmem_##_name##_wait(_type *ivar, _type cmp_value)                  \
     {                                                                   \
+        deprecate(__func__);                                            \
         shmemc_##_name##_wait_ne_until(ivar, cmp_value);                \
     }
 

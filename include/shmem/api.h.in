@@ -1013,14 +1013,17 @@ extern "C"
      *
      * @return None.
      *
+     * @deprecated by shmem_long_wait_until
+     *
      */
-    void shmem_long_wait(long *ivar, long cmp_value);
-    /* see \ref shmem_long_wait() */
-    void shmem_short_wait(short *ivar, short cmp_value);
-    /* see \ref shmem_long_wait() */
-    void shmem_int_wait(int *ivar, int cmp_value);
-    /* see \ref shmem_long_wait() */
-    void shmem_longlong_wait(long long *ivar, long long cmp_value);
+    void shmem_long_wait(long *ivar, long cmp_value)
+        _DEPRECATED_BY(shmem_long_wait_until);
+    void shmem_short_wait(short *ivar, short cmp_value)
+        _DEPRECATED_BY(shmem_short_wait_until);
+    void shmem_int_wait(int *ivar, int cmp_value)
+        _DEPRECATED_BY(shmem_int_wait_until);
+    void shmem_longlong_wait(long long *ivar, long long cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
 
     /*
      * atomic swaps

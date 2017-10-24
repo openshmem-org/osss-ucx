@@ -8,16 +8,16 @@
 #include <bits/wordsize.h>
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_int_swap = pshmem_int_swap
-#define shmem_int_swap pshmem_int_swap
-#pragma weak shmem_long_swap = pshmem_long_swap
-#define shmem_long_swap pshmem_long_swap
-#pragma weak shmem_longlong_swap = pshmem_longlong_swap
-#define shmem_longlong_swap pshmem_longlong_swap
-#pragma weak shmem_float_swap = pshmem_float_swap
-#define shmem_float_swap pshmem_float_swap
-#pragma weak shmem_double_swap = pshmem_double_swap
-#define shmem_double_swap pshmem_double_swap
+#pragma weak shmem_int_atomic_swap = pshmem_int_atomic_swap
+#define shmem_int_atomic_swap pshmem_int_atomic_swap
+#pragma weak shmem_long_atomic_swap = pshmem_long_atomic_swap
+#define shmem_long_atomic_swap pshmem_long_atomic_swap
+#pragma weak shmem_longlong_atomic_swap = pshmem_longlong_atomic_swap
+#define shmem_longlong_atomic_swap pshmem_longlong_atomic_swap
+#pragma weak shmem_float_atomic_swap = pshmem_float_atomic_swap
+#define shmem_float_atomic_swap pshmem_float_atomic_swap
+#pragma weak shmem_double_atomic_swap = pshmem_double_atomic_swap
+#define shmem_double_atomic_swap pshmem_double_atomic_swap
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -41,6 +41,15 @@ SHMEM_TYPE_SWAP(longlong, long long, 64)
 SHMEM_TYPE_SWAP(float, float, 32)
 SHMEM_TYPE_SWAP(double, double, 32)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_compare_swap = pshmem_int_atomic_compare_swap
+#define shmem_int_atomic_compare_swap pshmem_int_atomic_compare_swap
+#pragma weak shmem_long_atomic_compare_swap = pshmem_long_atomic_compare_swap
+#define shmem_long_atomic_compare_swap pshmem_long_atomic_compare_swap
+#pragma weak shmem_longlong_atomic_compare_swap = pshmem_longlong_atomic_compare_swap
+#define shmem_longlong_atomic_compare_swap pshmem_longlong_atomic_compare_swap
+#endif /* ENABLE_PSHMEM */
+
 /*
  * conditional swap
  */
@@ -62,6 +71,15 @@ SHMEM_TYPE_CSWAP(long, long, 32)
 #endif
 SHMEM_TYPE_CSWAP(longlong, long long, 64)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_fetch_add = pshmem_int_atomic_fetch_add
+#define shmem_int_atomic_fetch_add pshmem_int_atomic_fetch_add
+#pragma weak shmem_long_atomic_fetch_add = pshmem_long_atomic_fetch_add
+#define shmem_long_atomic_fetch_add pshmem_long_atomic_fetch_add
+#pragma weak shmem_longlong_atomic_fetch_add = pshmem_longlong_atomic_fetch_add
+#define shmem_longlong_atomic_fetch_add pshmem_longlong_atomic_fetch_add
+#endif /* ENABLE_PSHMEM */
+
 /*
  * fetch-and-add
  */
@@ -82,6 +100,15 @@ SHMEM_TYPE_FADD(long, long, 32)
 #endif
 SHMEM_TYPE_FADD(longlong, long long, 64)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_fetch_inc = pshmem_int_atomic_fetch_inc
+#define shmem_int_atomic_fetch_inc pshmem_int_atomic_fetch_inc
+#pragma weak shmem_long_atomic_fetch_inc = pshmem_long_atomic_fetch_inc
+#define shmem_long_atomic_fetch_inc pshmem_long_atomic_fetch_inc
+#pragma weak shmem_longlong_atomic_fetch_inc = pshmem_longlong_atomic_fetch_inc
+#define shmem_longlong_atomic_fetch_inc pshmem_longlong_atomic_fetch_inc
+#endif /* ENABLE_PSHMEM */
+
 /*
  * fetch-and-increment
  */
@@ -100,6 +127,15 @@ SHMEM_TYPE_FINC(long, long, 64)
 SHMEM_TYPE_FINC(long, long, 32)
 #endif
 SHMEM_TYPE_FINC(longlong, long long, 64)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_add = pshmem_int_atomic_add
+#define shmem_int_atomic_add pshmem_int_atomic_add
+#pragma weak shmem_long_atomic_add = pshmem_long_atomic_add
+#define shmem_long_atomic_add pshmem_long_atomic_add
+#pragma weak shmem_longlong_atomic_add = pshmem_longlong_atomic_add
+#define shmem_longlong_atomic_add pshmem_longlong_atomic_add
+#endif /* ENABLE_PSHMEM */
 
 /*
  * add
@@ -120,6 +156,15 @@ SHMEM_TYPE_ADD(long, long, 32)
 #endif
 SHMEM_TYPE_ADD(longlong, long long, 64)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_inc = pshmem_int_atomic_inc
+#define shmem_int_atomic_inc pshmem_int_atomic_inc
+#pragma weak shmem_long_atomic_inc = pshmem_long_atomic_inc
+#define shmem_long_atomic_inc pshmem_long_atomic_inc
+#pragma weak shmem_longlong_atomic_inc = pshmem_longlong_atomic_inc
+#define shmem_longlong_atomic_inc pshmem_longlong_atomic_inc
+#endif /* ENABLE_PSHMEM */
+
 /*
  * increment
  */
@@ -138,6 +183,19 @@ SHMEM_TYPE_INC(long, long, 64)
 SHMEM_TYPE_INC(long, long, 32)
 #endif
 SHMEM_TYPE_INC(longlong, long long, 64)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_fetch = pshmem_int_atomic_fetch
+#define shmem_int_atomic_fetch pshmem_int_atomic_fetch
+#pragma weak shmem_long_atomic_fetch = pshmem_long_atomic_fetch
+#define shmem_long_atomic_fetch pshmem_long_atomic_fetch
+#pragma weak shmem_longlong_atomic_fetch = pshmem_longlong_atomic_fetch
+#define shmem_longlong_atomic_fetch pshmem_longlong_atomic_fetch
+#pragma weak shmem_float_atomic_fetch = pshmem_float_atomic_fetch
+#define shmem_float_atomic_fetch pshmem_float_atomic_fetch
+#pragma weak shmem_double_atomic_fetch = pshmem_double_atomic_fetch
+#define shmem_double_atomic_fetch pshmem_double_atomic_fetch
+#endif /* ENABLE_PSHMEM */
 
 /*
  * fetch
@@ -159,6 +217,19 @@ SHMEM_TYPE_FETCH(long, long, 32)
 SHMEM_TYPE_FETCH(longlong, long long, 64)
 SHMEM_TYPE_FETCH(float, float, 32)
 SHMEM_TYPE_FETCH(double, double, 64)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_set = pshmem_int_atomic_set
+#define shmem_int_atomic_set pshmem_int_atomic_set
+#pragma weak shmem_long_atomic_set = pshmem_long_atomic_set
+#define shmem_long_atomic_set pshmem_long_atomic_set
+#pragma weak shmem_longlong_atomic_set = pshmem_longlong_atomic_set
+#define shmem_longlong_atomic_set pshmem_longlong_atomic_set
+#pragma weak shmem_float_atomic_set = pshmem_float_atomic_set
+#define shmem_float_atomic_set pshmem_float_atomic_set
+#pragma weak shmem_double_atomic_set = pshmem_double_atomic_set
+#define shmem_double_atomic_set pshmem_double_atomic_set
+#endif /* ENABLE_PSHMEM */
 
 /*
  * set
