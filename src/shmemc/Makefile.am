@@ -12,6 +12,7 @@ libshmemc_ucx_a_SOURCES    = \
 				ucx-init.c \
 				ranks.c \
 				barrier.c \
+				broadcast.c \
 				comms.c \
 				wait.c \
 				mcs-lock.c \
