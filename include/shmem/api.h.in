@@ -2437,15 +2437,10 @@ extern "C"
 #define shmem_atomic_fetch(dest, pe)                               \
     _Generic(*(dest),                                              \
              int:          shmem_int_atomic_fetch,                 \
-             const int:    shmem_int_atomic_fetch,                 \
              long:         shmem_long_atomic_fetch,                \
-             const long:   shmem_long_atomic_fetch,                \
              long long:    shmem_longlong_atomic_fetch,            \
-             const long long: shmem_longlong_atomic_fetch,         \
              float:        shmem_float_atomic_fetch,               \
-             const float:  shmem_float_atomic_fetch,               \
-             double:       shmem_double_atomic_fetch,              \
-             const double: shmem_double_atomic_fetch)(dest, pe)
+             double:       shmem_double_atomic_fetch(dest, pe)
 
     /* see \ref shmem_long_atomic_set() */
 #define shmem_atomic_set(dest, value, pe)                              \
