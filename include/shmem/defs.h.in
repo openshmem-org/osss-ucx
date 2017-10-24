@@ -68,6 +68,16 @@ enum shmem_cmp_constants {
 #define SHMEM_ALLTOALLS_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
 
 /*
+ * thread support levels
+ */
+enum shmem_thread_levels {
+    SHMEM_THREAD_SINGLE = 0,
+    SHMEM_THREAD_FUNNELED,
+    SHMEM_THREAD_SERIALIZED,
+    SHMEM_THREAD_MULTIPLE
+};
+
+/*
  * deprecated shmem constants
  */
 #define _SHMEM_MAJOR_VERSION            SHMEM_MAJOR_VERSION

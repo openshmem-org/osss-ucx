@@ -808,14 +808,15 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void *shmalloc(size_t size);
+     void *shmem_malloc(size_t size);
      @endcode
      *
-     * @param size numer of bytes requested
+     * @param size number of bytes requested
      *
      * @section Effect
      *
-     * Allocates "size" bytes of memory from the PE's symmetric heap.
+     * Allocates "size" bytes of contiguous memory from the PE's
+     * symmetric heap.
      *
      * @return a pointer to the requested memory location, or NULL if
      * the requested memory is not available.
@@ -824,13 +825,37 @@ extern "C"
     void *shmem_malloc(size_t size) _WUR;
 
     /**
+     * @brief dynamically allocates zeroed symmetric memory
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void *shmem_calloc(size_t count, size_t size);
+     @endcode
+     *
+     * @param count number of elements to allcoate
+     * @param size how big each element is (bytes)
+     *
+     * @section Effect
+     *
+     * Allocates "count" lots of "size" bytes of contiguous memory
+     * from the PE's symmetric heap.  Memory is zeroed before return.
+     *
+     * @return a pointer to the requested memory location, or NULL if
+     * the requested memory is not available.
+     *
+     */
+    void *shmem_calloc(size_t count, size_t size) _WUR;
+
+    /**
      * @brief dynamically allocates symmetric memory
      *
      * @section Synopsis
      *
      * @subsection c C/C++
      @code
-     void shfree(void *ptr);
+     void shmem_free(void *ptr);
      @endcode
      *
      * @param ptr symmetric memory pointer
@@ -849,7 +874,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void *shrealloc(void *ptr, size_t size);
+     void *shmem_realloc(void *ptr, size_t size);
      @endcode
      *
      * @param ptr symmetric memory pointer
@@ -867,13 +892,13 @@ extern "C"
     void *shmem_realloc(void *ptr, size_t size) _WUR;
 
     /**
-     * @brief dynamically allocates symmetric memory
+     * @brief aligns already allocated symmetric memory
      *
      * @section Synopsis
      *
      * @subsection c C/C++
      @code
-     void *shrealloc(void *ptr, size_t size);
+     void *shmem_align(void *ptr, size_t size);
      @endcode
      *
      * @param ptr symmetric memory pointer
@@ -917,7 +942,6 @@ extern "C"
      *
      */
     void shmem_long_wait_until(long *ivar, int cmp, long cmp_value);
-
     /* see \ref shmem_long_wait_until() */
     void shmem_short_wait_until(short *ivar, int cmp,
                                 short cmp_value);
@@ -950,7 +974,6 @@ extern "C"
      *
      */
     void shmem_long_wait(long *ivar, long cmp_value);
-
     /* see \ref shmem_long_wait() */
     void shmem_short_wait(short *ivar, short cmp_value);
     /* see \ref shmem_long_wait() */
@@ -969,7 +992,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     long shmem_long_swap(long *target, long value, int pe);
+     long shmem_long_atomic_swap(long *target, long value, int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -979,22 +1002,33 @@ extern "C"
      *
      * @section Effect
      *
-     * swaps things!
+     * swaps contents of remote variable with supplied value
      *
      * @return None.
      *
      */
-    long shmem_long_swap(long *target, long value, int pe) _WUR;
+    long shmem_long_atomic_swap(long *target, long value, int pe) _WUR;
+    /* see \ref shmem_long_atomic_swap() */
+    int shmem_int_atomic_swap(int *target, int value, int pe) _WUR;
+    /* see \ref shmem_long_atomic_swap() */
+    long long shmem_longlong_atomic_swap(long long *target, long long value,
+                                         int pe) _WUR;
+    /* see \ref shmem_long_atomic_swap() */
+    float shmem_float_atomic_swap(float *target, float value, int pe) _WUR;
+    /* see \ref shmem_long_atomic_swap() */
+    double shmem_double_atomic_swap(double *target, double value, int pe) _WUR;
 
-    /* see \ref shmem_long_swap() */
-    int shmem_int_swap(int *target, int value, int pe) _WUR;
-    /* see \ref shmem_long_swap() */
+    long shmem_long_swap(long *target, long value, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_swap) _WUR;
+    int shmem_int_swap(int *target, int value, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_swap) _WUR;
     long long shmem_longlong_swap(long long *target, long long value,
-                                  int pe) _WUR;
-    /* see \ref shmem_long_swap() */
-    float shmem_float_swap(float *target, float value, int pe) _WUR;
-    /* see \ref shmem_long_swap() */
-    double shmem_double_swap(double *target, double value, int pe) _WUR;
+                                  int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_swap) _WUR;
+    float shmem_float_swap(float *target, float value, int pe)
+        _DEPRECATED_BY(shmem_float_atomic_swap) _WUR;
+    double shmem_double_swap(double *target, double value, int pe)
+        _DEPRECATED_BY(shmem_double_atomic_swap) _WUR;
 
     /**
      * @brief conditionally swap value into symmetric variable, fetch
@@ -1004,7 +1038,9 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     long shmem_long_cswap(long *target, long cond, long value, int pe);
+     long shmem_long_atomic_compare_swap(long *target,
+                                         long cond, long value,
+                                         int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -1019,14 +1055,32 @@ extern "C"
      * @return None.
      *
      */
-    long shmem_long_cswap(long *target, long cond, long value,
-                          int pe) _WUR;
+    long shmem_long_atomic_compare_swap(long *target,
+                                        long cond, long value,
+                                        int pe) _WUR;
+    /* see \ref shmem_long_atomic_compare_swap() */
+    int shmem_int_atomic_compare_swap(int *target,
+                                      int cond, int value,
+                                      int pe) _WUR;
+    /* see \ref shmem_long_atomic_compare_swap() */
+    long long shmem_longlong_atomic_compare_swap(long long *target,
+                                                 long long_cond,
+                                                 long long value,
+                                                 int pe) _WUR;
 
-    /* see \ref shmem_long_cswap() */
-    int shmem_int_cswap(int *target, int cond, int value, int pe) _WUR;
-    /* see \ref shmem_long_cswap() */
-    long long shmem_longlong_cswap(long long *target, long long cond,
-                                   long long value, int pe) _WUR;
+    long shmem_long_cswap(long *target,
+                          long cond, long value,
+                          int pe)
+        _DEPRECATED_BY(shmem_long_atomic_compare_swap) _WUR;
+    int shmem_int_cswap(int *target,
+                        int cond, int value,
+                        int pe)
+        _DEPRECATED_BY(shmem_long_atomic_compare_swap) _WUR;
+    long long shmem_longlong_cswap(long long *target,
+                                   long long_cond,
+                                   long long value,
+                                   int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_compare_swap) _WUR;
 
     /**
      * atomic fetch-{add,inc} & add,inc
@@ -1039,7 +1093,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     long shmem_long_fadd(long *target, long value, int pe);
+     long shmem_long_atomic_fetch_add(long *target, long value, int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -1054,13 +1108,20 @@ extern "C"
      * @return None.
      *
      */
-    long shmem_long_fadd(long *target, long value, int pe) _WUR;
+    long shmem_long_atomic_fetch_add(long *target, long value, int pe) _WUR;
+    /* see \ref shmem_long_atomic_fetch_add() */
+    int shmem_int_atomic_fetch_add(int *target, int value, int pe) _WUR;
+    /* see \ref shmem_long_atomic_fetch_add() */
+    long long shmem_longlong_atomic_fetch_add(long long *target, long long value,
+                                              int pe) _WUR;
 
-    /* see \ref shmem_long_fadd() */
-    int shmem_int_fadd(int *target, int value, int pe) _WUR;
-    /* see \ref shmem_long_fadd() */
+    long shmem_long_fadd(long *target, long value, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_fetch_add) _WUR;
+    int shmem_int_fadd(int *target, int value, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_fetch_add) _WUR;
     long long shmem_longlong_fadd(long long *target, long long value,
-                                  int pe) _WUR;
+                                  int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch_add) _WUR;
 
     /*
      * @brief increment symmetric variable, fetch back old value
@@ -1069,7 +1130,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     long shmem_long_finc(long *target, int pe);
+     long shmem_long_atomic_fetch_inc(long *target, int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -1084,12 +1145,18 @@ extern "C"
      * @return None.
      *
      */
-    long shmem_long_finc(long *target, int pe) _WUR;
+    long shmem_long_atomic_fetch_inc(long *target, int pe) _WUR;
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    int shmem_int_atomic_fetch_inc(int *target, int pe) _WUR;
+    /* see \ref shmem_long_atomic_fetch_inc() */
+    long long shmem_longlong_atomic_fetch_inc(long long *target, int pe) _WUR;
 
-    /* see \ref shmem_long_finc() */
-    int shmem_int_finc(int *target, int pe) _WUR;
-    /* see \ref shmem_long_finc() */
-    long long shmem_longlong_finc(long long *target, int pe) _WUR;
+    long shmem_long_finc(long *target, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_fetch_inc) _WUR;
+    int shmem_int_finc(int *target, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_fetch_inc) _WUR;
+    long long shmem_longlong_finc(long long *target, int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch_inc) _WUR;
 
     /*
      * @brief add value to symmetric variable
@@ -1098,7 +1165,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void shmem_long_add(long *target, long value, int pe);
+     void shmem_long_atomic_add(long *target, long value, int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -1113,12 +1180,18 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_long_add(long *target, long value, int pe);
+    void shmem_long_atomic_add(long *target, long value, int pe);
+    /* see \ref shmem_long_atomic_add() */
+    void shmem_int_atomic_add(int *target, int value, int pe);
+    /* see \ref shmem_long_atomic_add() */
+    void shmem_longlong_atomic_add(long long *target, long long value, int pe);
 
-    /* see \ref shmem_long_add() */
-    void shmem_int_add(int *target, int value, int pe);
-    /* see \ref shmem_long_add() */
-    void shmem_longlong_add(long long *target, long long value, int pe);
+    void shmem_long_add(long *target, long value, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_add);
+    void shmem_int_add(int *target, int value, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_add);
+    void shmem_longlong_add(long long *target, long long value, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_add);
 
     /*
      * @brief increment symmetric variable
@@ -1127,7 +1200,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void shmem_long_inc(long *target, int pe);
+     void shmem_long_atomic_inc(long *target, int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -1142,184 +1215,262 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_long_inc(long *target, int pe);
+    void shmem_long_atomic_inc(long *target, int pe);
+    /* see \ref shmem_long_atomic_inc() */
+    void shmem_int_atomic_inc(int *target, int pe);
+    /* see \ref shmem_long_atomic_inc() */
+    void shmem_longlong_atomic_inc(long long *target, int pe);
 
-    /* see \ref shmem_long_inc() */
-    void shmem_int_inc(int *target, int pe);
-    /* see \ref shmem_long_inc() */
-    void shmem_longlong_inc(long long *target, int pe);
+    void shmem_long_inc(long *target, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_inc);
+    void shmem_int_inc(int *target, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_fetch);
+    void shmem_longlong_inc(long long *target, int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch);
 
     /**
-     * cache flushing(deprecated)
+     * @brief These routines perform an atomic fetch from a remote PE
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     int shmem_int_atomic_fetch(const int *dest, int pe);
+     long shmem_long_atomic_fetch(const long *dest, int pe);
+     long long shmem_longlong_atomic_fetch(const long long *dest, int pe);
+     float shmem_float_atomic_fetch(const float *dest, int pe);
+     double shmem_double_atomic_fetch(const double *dest, int pe);
+     * @endcode
+     *
+     * - Fortran:
+     * @code
+     integer pe
+     integer*4 v4
+     integer*8 v8
+     real*4 r4
+     real*8 r8
+
+     v4 = shmem_int4_fetch(dest, pe)
+     v8 = shmem_int8_fetch(dest, pe)
+     r4 = shmem_real4_fetch(dest, pe)
+     r8 = shmem_real8_fetch(dest, pe)
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object in which save the
+     *                    data on the target pe.
+     * @param pe        An integer that indicates the PE number upon
+     *                    which dest is to be updated. If you are using
+     *                    Fortran, it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied
+     *        in the Synopsis section. When calling from Fortran,
+     *        the data type of value must be as follows:
+     *          - For SHMEM_INT4_FETCH(), value must be of type Integer,
+     *            with element size of 4 bytes
+     *          - For SHMEM_INT8_FETCH(), value must be of type Integer,
+     *            with element size of 8 bytes.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic fetch routines atomically return the value at address
+     * "dest" on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest on PE pe using the same type.
+     *
+     * @return The value stored at address "dest" on PE pe.
+     *
      */
+    int shmem_int_atomic_fetch(const int *dest, int pe);
+    long shmem_long_atomic_fetch(const long *dest, int pe);
+    long long shmem_longlong_atomic_fetch(const long long *dest, int pe);
+    float shmem_float_atomic_fetch(const float *dest, int pe);
+    double shmem_double_atomic_fetch(const double *dest, int pe);
+
+    int shmem_int_fetch(const int *dest, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_fetch) _WUR;
+    long shmem_long_fetch(const long *dest, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_fetch) _WUR;
+    long long shmem_longlong_fetch(const long long *dest, int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch) _WUR;
+    float shmem_float_fetch(const float *dest, int pe)
+        _DEPRECATED_BY(shmem_float_atomic_fetch) _WUR;
+    double shmem_double_fetch(const double *dest, int pe)
+        _DEPRECATED_BY(shmem_double_atomic_fetch) _WUR;
+
+    /**
+     * @brief These routines perform an atomic set of a variable on a
+     * remote PE
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     void shmem_int_atomic_set(int *dest, int value, int pe);
+     void shmem_long_atomic_set(long *dest, long value, int pe);
+     void shmem_longlong_atomic_set(long long *dest, long long value, int pe);
+     void shmem_float_atomic_set(float *dest, float value, int pe);
+     void shmem_double_atomic_set(double *dest, double value, int pe);
+     * @endcode
+     *
+     * - Fortran:
+     * @code
+     integer pe
+     integer*4 v4
+     integer*8 v8
+     real*4 r4
+     real*8 r8
+
+     call shmem_int4_set(dest, v4, pe)
+     call shmem_int8_set(dest, v8, pe)
+     call shmem_real4_set(dest, r4, pe)
+     call shmem_real8_set(dest, r8, pe)
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object in which save the
+     *                    data on the target pe.
+     * @param value     The remote dest address is atomically set to
+     *                    this value.
+     * @param pe        An integer that indicates the PE number upon
+     *                    which dest is to be updated. If you are using
+     *                    Fortran, it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in the
+     *        Synopsis section. When calling from Fortran, the data type of
+     *        value must be as follows:
+     *          - For SHMEM_INT4_SET(), value must be of type Integer,
+     *            with element size of 4 bytes
+     *          - For SHMEM_INT8_SET(), value must be of type Integer,
+     *            with element size of 8 bytes.
+     *      - value must be the same type as the dest data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic set routines atomically update an address to be "value" on
+     * PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest on PE pe using the same type.
+     *
+     * @return None.
+     *
+     */
+    void shmem_int_atomic_set(int *dest, int value, int pe);
+    void shmem_long_atomic_set(long *dest, long value, int pe);
+    void shmem_longlong_atomic_set(long long *dest, long long value, int pe);
+    void shmem_float_atomic_set(float *dest, float value, int pe);
+    void shmem_double_atomic_set(double *dest, double value, int pe);
+
+    void shmem_int_set(int *dest, int value, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_set);
+    void shmem_long_set(long *dest, long value, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_set);
+    void shmem_longlong_set(long long *dest, long long value, int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_set);
+    void shmem_float_set(float *dest, float value, int pe)
+        _DEPRECATED_BY(shmem_float_atomic_set);
+    void shmem_double_set(double *dest, double value, int pe)
+        _DEPRECATED_BY(shmem_double_atomic_set);
 
     /*
-     * @brief shmem_clear_cache_inv has no effect.
+     * locks/critical section
+     */
+
+    /**
+     * @brief claims a distributed lock
      *
      * @section Synopsis
      *
      * @subsection c C/C++
      @code
-     void shmem_clear_cache_inv(void);
+     void shmem_set_lock(long *lock);
      @endcode
      *
      * @subsection f Fortran
      @code
-     CALL SHMEM_CLEAR_CACHE_INV()
+     INTEGER LOCK
+
+     CALL SHMEM_SET_LOCK(LOCK)
      @endcode
+     *
+     * @param[in, out] lock a symmetric variable
      *
      * @section Effect
      *
-     * None.
-     *
-     * @deprecated Included for legacy use only, these calls have no
-     * effect in OpenSHMEM.
+     * The calling PE claims a lock on the symmetric variable.  Blocks
+     * until lock acquired.
      *
      * @return None.
      *
      */
-    void shmem_clear_cache_inv(void) _DEPRECATED;
+    void shmem_set_lock(long *lock);
 
-    /*
-     * @brief shmem_set_cache_inv has no effect.
+    /**
+     * @brief releases a distributed lock
      *
      * @section Synopsis
      *
      * @subsection c C/C++
      @code
-     void shmem_set_cache_inv(void);
+     void shmem_clear_lock(long *lock);
      @endcode
      *
      * @subsection f Fortran
      @code
-     CALL SHMEM_SET_CACHE_INV()
+     INTEGER LOCK
+
+     CALL SHMEM_CLEAR_LOCK(LOCK)
      @endcode
+     *
+     * @param[in, out] lock a symmetric variable
      *
      * @section Effect
      *
-     * None.  Included for legacy use only, these calls have no
-     * effect in OpenSHMEM.
-     *
-     * @deprecated Included for legacy use only.
+     * The calling PE releases a lock on the symmetric variable.
      *
      * @return None.
      *
      */
-    void shmem_set_cache_inv(void) _DEPRECATED;
+    void shmem_clear_lock(long *lock);
 
-    /*
-     * @brief shmem_clear_cache_line_inv has no effect.
+    /**
+     * @brief tests a distributed lock
      *
      * @section Synopsis
      *
      * @subsection c C/C++
      @code
-     void shmem_clear_cache_line_inv(void *target);
+     void shmem_test_lock(long *lock);
      @endcode
      *
      * @subsection f Fortran
      @code
-     CALL SHMEM_CLEAR_CACHE_LINE_INV(target)
-     @endcode
-     *
-     * @param target is the address of the cache line.
-     *
-     * @section Effect
-     *
-     * None.
-     *
-     * @deprecated Included for legacy use only, these calls have no
-     * effect in OpenSHMEM.
-     *
-     * @return None.
-     *
-     */
-    void shmem_clear_cache_line_inv(void *target) _DEPRECATED;
+     INTEGER LOCK
 
-    /*
-     * @brief shmem_set_cache_line_inv has no effect.
-     *
-     * @section Synopsis
-     *
-     * @subsection c C/C++
-     @code
-     void shmem_set_cache_line_inv(void *target);
+     CALL SHMEM_TEST_LOCK(LOCK)
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_SET_CACHE_LINE_INV(target)
-     @endcode
-     *
-     * @param target is the address of the cache line.
+     * @param[in, out] lock a symmetric variable
      *
      * @section Effect
      *
-     * None.
+     * The calling PE checks to see if lock can be acquired.  If yes,
+     * the lock is claimed, otherwise the lock is not claimed and the
+     * call returns immediately.  until lock acquired.
      *
-     * @deprecated Included for legacy use only, these calls have no
-     * effect in OpenSHMEM.
-     *
-     * @return None.
-     *
-     */
-    void shmem_set_cache_line_inv(void *target) _DEPRECATED;
-
-    /*
-     * @brief shmem_udcflush has no effect.
-     *
-     * @section Synopsis
-     *
-     * @subsection c C/C++
-     @code
-     void shmem_udcflush(void);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_UDCFLUSH()
-     @endcode
-     *
-     * @section Effect
-     *
-     * None.
-     *
-     * @deprecated Included for legacy use only, these calls have no
-     * effect in OpenSHMEM.
-     *
-     * @return None.
+     * @return non-zero if lock acquired, 0 if not.
      *
      */
-    void shmem_udcflush(void) _DEPRECATED;
-
-    /*
-     * @brief shmem_udcflush_line has no effect.
-     *
-     * @section Synopsis
-     *
-     * @subsection c C/C++
-     @code
-     void shmem_udcflush_line(void *target);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_UDCFLUSH_LINE(target)
-     @endcode
-     *
-     * @param target is the address of the cache line.
-     *
-     * @section Effect
-     *
-     * None.
-     *
-     * @deprecated Included for legacy use only, these calls have no
-     * effect in OpenSHMEM.
-     *
-     * @return None.
-     *
-     */
-    void shmem_udcflush_line(void *target) _DEPRECATED;
+    int shmem_test_lock(long *lock) _WUR;
 
     /**
      * reductions
@@ -1620,228 +1771,6 @@ extern "C"
                            int PE_start, int logPE_stride, int PE_size,
                            long *pSync);
 
-    /*
-     * locks/critical section
-     */
-
-    /**
-     * @brief claims a distributed lock
-     *
-     * @section Synopsis
-     *
-     * @subsection c C/C++
-     @code
-     void shmem_set_lock(long *lock);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_SET_LOCK(LOCK)
-     @endcode
-     *
-     * @param[in, out] lock a symmetric variable
-     *
-     * @section Effect
-     *
-     * The calling PE claims a lock on the symmetric variable.  Blocks
-     * until lock acquired.
-     *
-     * @return None.
-     *
-     */
-    void shmem_set_lock(long *lock);
-
-    /**
-     * @brief releases a distributed lock
-     *
-     * @section Synopsis
-     *
-     * @subsection c C/C++
-     @code
-     void shmem_clear_lock(long *lock);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_CLEAR_LOCK(LOCK)
-     @endcode
-     *
-     * @param[in, out] lock a symmetric variable
-     *
-     * @section Effect
-     *
-     * The calling PE releases a lock on the symmetric variable.
-     *
-     * @return None.
-     *
-     */
-    void shmem_clear_lock(long *lock);
-
-    /**
-     * @brief tests a distributed lock
-     *
-     * @section Synopsis
-     *
-     * @subsection c C/C++
-     @code
-     void shmem_test_lock(long *lock);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_TEST_LOCK(LOCK)
-     @endcode
-     *
-     * @param[in, out] lock a symmetric variable
-     *
-     * @section Effect
-     *
-     * The calling PE checks to see if lock can be acquired.  If yes,
-     * the lock is claimed, otherwise the lock is not claimed and the
-     * call returns immediately.  until lock acquired.
-     *
-     * @return non-zero if lock acquired, 0 if not.
-     *
-     */
-    int shmem_test_lock(long *lock) _WUR;
-
-    /**
-     * @brief These routines perform an atomic fetch from a remote PE
-     *
-     * @b Synopsis:
-     *
-     * - C/C++:
-     * @code
-     int shmem_int_fetch(const int *dest, int pe);
-     long shmem_long_fetch(const long *dest, int pe);
-     long long shmem_longlong_fetch(const long long *dest, int pe);
-     float shmem_float_fetch(const float *dest, int pe);
-     double shmem_double_fetch(const double *dest, int pe);
-     * @endcode
-     *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     v4 = shmem_int4_fetch(dest, pe)
-     v8 = shmem_int8_fetch(dest, pe)
-     r4 = shmem_real4_fetch(dest, pe)
-     r8 = shmem_real8_fetch(dest, pe)
-     * @endcode
-     *
-     * @param dest    Address of the symmetric data object in which save the
-     *                    data on the target pe.
-     * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
-     *
-     * @b Constraints:
-     *      - dest must be the address of a symmetric data object.
-     *      - If using C/C++, the type of value must match that implied
-     *        in the Synopsis section. When calling from Fortran,
-     *        the data type of value must be as follows:
-     *          - For SHMEM_INT4_FETCH(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_FETCH(), value must be of type Integer,
-     *            with element size of 8 bytes.
-     *      - value must be the same type as the target data object.
-     *      - This process must be carried out guaranteeing that it will not
-     *          be interrupted by any other atomic operation on the
-     *          specified type.
-     *
-     * @b Effect:
-     *
-     * The atomic fetch routines atomically return the value at address
-     * "dest" on PE pe. The operation must
-     * be completed without the possibility of another process updating
-     * dest on PE pe using the same type.
-     *
-     * @return The value stored at address "dest" on PE pe.
-     *
-     */
-    int shmem_int_fetch(const int *dest, int pe);
-    long shmem_long_fetch(const long *dest, int pe);
-    long long shmem_longlong_fetch(const long long *dest, int pe);
-    float shmem_float_fetch(const float *dest, int pe);
-    double shmem_double_fetch(const double *dest, int pe);
-
-    /**
-     * @brief These routines perform an atomic set of a variable on a
-     * remote PE
-     *
-     * @b Synopsis:
-     *
-     * - C/C++:
-     * @code
-     void shmem_int_set(int *dest, int value, int pe);
-     void shmem_long_set(long *dest, long value, int pe);
-     void shmem_longlong_set(long long *dest, long long value, int pe);
-     void shmem_float_set(float *dest, float value, int pe);
-     void shmem_double_set(double *dest, double value, int pe);
-     * @endcode
-     *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     call shmem_int4_set(dest, v4, pe)
-     call shmem_int8_set(dest, v8, pe)
-     call shmem_real4_set(dest, r4, pe)
-     call shmem_real8_set(dest, r8, pe)
-     * @endcode
-     *
-     * @param dest    Address of the symmetric data object in which save the
-     *                    data on the target pe.
-     * @param value     The remote dest address is atomically set to
-     *                    this value.
-     * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
-     *
-     * @b Constraints:
-     *      - dest must be the address of a symmetric data object.
-     *      - If using C/C++, the type of value must match that implied in the
-     *        Synopsis section. When calling from Fortran, the data type of
-     *        value must be as follows:
-     *          - For SHMEM_INT4_SET(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_SET(), value must be of type Integer,
-     *            with element size of 8 bytes.
-     *      - value must be the same type as the dest data object.
-     *      - This process must be carried out guaranteeing that it will not
-     *          be interrupted by any other atomic operation on the
-     *          specified type.
-     *
-     * @b Effect:
-     *
-     * The atomic set routines atomically update an address to be "value" on
-     * PE pe. The operation must
-     * be completed without the possibility of another process updating
-     * dest on PE pe using the same type.
-     *
-     * @return None.
-     *
-     */
-    void shmem_int_set(int *dest, int value, int pe);
-    void shmem_long_set(long *dest, long value, int pe);
-    void shmem_longlong_set(long long *dest, long long value, int pe);
-    void shmem_float_set(float *dest, float value, int pe);
-    void shmem_double_set(double *dest, double value, int pe);
-
 #ifdef __STDC_VERSION__
 #if  __STDC_VERSION__ >= 201112L
 
@@ -1925,80 +1854,74 @@ extern "C"
              long long:   shmem_longlong_iput)(dest, source, dst, sst,  \
                                                nelems, pe)
 
-    /* see \ref shmem_long_swap() */
-#define shmem_swap(dest, value, pe)                             \
-    _Generic(*(dest),                                           \
-             int:          shmem_int_swap,                      \
-             long:         shmem_long_swap,                     \
-             long long:    shmem_longlong_swap,                 \
-             float:        shmem_float_swap,                    \
-             double:       shmem_double_swap)(dest, value, pe)
+    /* see \ref shmem_long_atomic_swap() */
+#define shmem_atomic_swap(dest, value, pe)                             \
+    _Generic(*(dest),                                                  \
+             int:          shmem_int_atomic_swap,                      \
+             long:         shmem_long_atomic_swap,                     \
+             long long:    shmem_longlong_atomic_swap,                 \
+             float:        shmem_float_atomic_swap,                    \
+             double:       shmem_double_atomic_swap)(dest, value, pe)
 
-    /* see \ref shmem_long_cswap() */
-#define shmem_cswap(dest, cond, value, pe)                              \
+    /* see \ref shmem_long_atomic_compare_swap() */
+#define shmem_atomic_compare_swap(dest, cond, value, pe)                \
     _Generic(*(dest),                                                   \
-             int:          shmem_int_cswap,                             \
-             long:         shmem_long_cswap,                            \
-             long long:    shmem_longlong_cswap)(dest, cond, value, pe)
+             int:          shmem_int_atomic_compare_swap,               \
+             long:         shmem_long_atomic_compare_swap,              \
+             long long:    shmem_longlong_atomic_compare_swap)(dest,    \
+                                                               cond, value, \
+                                                               pe)
 
-    /* see \ref shmem_long_fadd() */
-#define shmem_fadd(dest, value, pe)                                 \
-    _Generic(*(dest),                                               \
-             int:          shmem_int_fadd,                          \
-             long:         shmem_long_fadd,                         \
-             long long:    shmem_longlong_fadd)(dest, value, pe)
+    /* see \ref shmem_long_atomic_fetch_add() */
+#define shmem_atomic_fetch_add(dest, value, pe)                         \
+    _Generic(*(dest),                                                   \
+             int:          shmem_int_atomic_fetch_add,                  \
+             long:         shmem_long_atomic_fetch_add,                 \
+             long long:    shmem_longlong_atomic_fetch_add)(dest, value, pe)
 
+    /* see \ref shmem_long_atomic_fetch_inc() */
+#define shmem_atomic_fetch_inc(dest, pe)                                \
+    _Generic(*(dest),                                                   \
+             int:          shmem_int_atomic_fetch_inc,                  \
+             long:         shmem_long_atomic_fetch_inc,                 \
+             long long:    shmem_longlong_atomic_fetch_inc)(dest, pe)
 
-    /* see \ref shmem_long_finc() */
-#define shmem_finc(dest, pe)                                \
-    _Generic(*(dest),                                       \
-             int:          shmem_int_finc,                  \
-             long:         shmem_long_finc,                 \
-             long long:    shmem_longlong_finc)(dest, pe)
+    /* see \ref shmem_long_atomic_add() */
+#define shmem_atomic_add(dest, value, pe)                              \
+    _Generic(*(dest),                                                  \
+             int:          shmem_int_atomic_add,                       \
+             long:         shmem_long_atomic_add,                      \
+             long long:    shmem_longlong_atomic_add)(dest, value, pe)
 
-    /* see \ref shmem_long_add() */
-#define shmem_add(dest, value, pe)                              \
-    _Generic(*(dest),                                           \
-             int:          shmem_int_add,                       \
-             long:         shmem_long_add,                      \
-             long long:    shmem_longlong_add)(dest, value, pe)
+    /* see \ref shmem_long_atomic_inc() */
+#define shmem_atomic_inc(dest, pe)                                 \
+    _Generic(*(dest),                                              \
+             int:          shmem_int_atomic_inc,                   \
+             long:         shmem_long_atomic_inc,                  \
+             long long:    shmem_longlong_atomic_inc)(dest, pe)
 
-    /* see \ref shmem_long_add() */
-#define shmem_add(dest, value, pe)                              \
-    _Generic(*(dest),                                           \
-             int:          shmem_int_add,                       \
-             long:         shmem_long_add,                      \
-             long long:    shmem_longlong_add)(dest, value, pe)
+    /* see \ref shmem_long_atomic_fetch() */
+#define shmem_atomic_fetch(dest, pe)                               \
+    _Generic(*(dest),                                              \
+             int:          shmem_int_atomic_fetch,                 \
+             const int:    shmem_int_atomic_fetch,                 \
+             long:         shmem_long_atomic_fetch,                \
+             const long:   shmem_long_atomic_fetch,                \
+             long long:    shmem_longlong_atomic_fetch,            \
+             const long long: shmem_longlong_atomic_fetch,         \
+             float:        shmem_float_atomic_fetch,               \
+             const float:  shmem_float_atomic_fetch,               \
+             double:       shmem_double_atomic_fetch,              \
+             const double: shmem_double_atomic_fetch)(dest, pe)
 
-    /* see \ref shmem_long_inc() */
-#define shmem_inc(dest, pe)                                 \
-    _Generic(*(dest),                                       \
-             int:          shmem_int_inc,                   \
-             long:         shmem_long_inc,                  \
-             long long:    shmem_longlong_inc)(dest, pe)
-
-    /* see \ref shmem_long_fetch() */
-#define shmem_fetch(dest, pe)                               \
-    _Generic(*(dest),                                       \
-             int:          shmem_int_fetch,                 \
-             const int:    shmem_int_fetch,                 \
-             long:         shmem_long_fetch,                \
-             const long:   shmem_long_fetch,                \
-             long long:    shmem_longlong_fetch,            \
-             const long long: shmem_longlong_fetch,         \
-             float:        shmem_float_fetch,               \
-             const float:  shmem_float_fetch,               \
-             double:       shmem_double_fetch,              \
-             const double: shmem_double_fetch)(dest, pe)
-
-    /* see \ref shmem_long_set() */
-#define shmem_set(dest, value, pe)                              \
-    _Generic(*(dest),                                           \
-             int:          shmem_int_set,                       \
-             long:         shmem_long_set,                      \
-             long long:    shmem_longlong_set,                  \
-             float:        shmem_float_set,                     \
-             double:       shmem_double_set)(dest, value, pe)
+    /* see \ref shmem_long_atomic_set() */
+#define shmem_atomic_set(dest, value, pe)                              \
+    _Generic(*(dest),                                                  \
+             int:          shmem_int_atomic_set,                       \
+             long:         shmem_long_atomic_set,                      \
+             long long:    shmem_longlong_atomic_set,                  \
+             float:        shmem_float_atomic_set,                     \
+             double:       shmem_double_atomic_set)(dest, value, pe)
 
     /* see \ref shmem_long_wait() */
 #define shmem_wait(ivar, cmp_value)                                 \
@@ -2018,6 +1941,178 @@ extern "C"
 
 #endif   /* __STDC_VERSION__ >= 201112L test */
 #endif /* __STDC_VERSION__ defined test */
+
+    /**
+     * cache flushing(deprecated)
+     */
+
+    /*
+     * @brief shmem_clear_cache_inv has no effect.
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_clear_cache_inv(void);
+     @endcode
+     *
+     * @subsection f Fortran
+     @code
+     CALL SHMEM_CLEAR_CACHE_INV()
+     @endcode
+     *
+     * @section Effect
+     *
+     * None.
+     *
+     * @deprecated Included for legacy use only, these calls have no
+     * effect in OpenSHMEM.
+     *
+     * @return None.
+     *
+     */
+    void shmem_clear_cache_inv(void) _DEPRECATED;
+
+    /*
+     * @brief shmem_set_cache_inv has no effect.
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_set_cache_inv(void);
+     @endcode
+     *
+     * @subsection f Fortran
+     @code
+     CALL SHMEM_SET_CACHE_INV()
+     @endcode
+     *
+     * @section Effect
+     *
+     * None.  Included for legacy use only, these calls have no
+     * effect in OpenSHMEM.
+     *
+     * @deprecated Included for legacy use only.
+     *
+     * @return None.
+     *
+     */
+    void shmem_set_cache_inv(void) _DEPRECATED;
+
+    /*
+     * @brief shmem_clear_cache_line_inv has no effect.
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_clear_cache_line_inv(void *target);
+     @endcode
+     *
+     * @subsection f Fortran
+     @code
+     CALL SHMEM_CLEAR_CACHE_LINE_INV(target)
+     @endcode
+     *
+     * @param target is the address of the cache line.
+     *
+     * @section Effect
+     *
+     * None.
+     *
+     * @deprecated Included for legacy use only, these calls have no
+     * effect in OpenSHMEM.
+     *
+     * @return None.
+     *
+     */
+    void shmem_clear_cache_line_inv(void *target) _DEPRECATED;
+
+    /*
+     * @brief shmem_set_cache_line_inv has no effect.
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_set_cache_line_inv(void *target);
+     @endcode
+     *
+     * @subsection f Fortran
+     @code
+     CALL SHMEM_SET_CACHE_LINE_INV(target)
+     @endcode
+     *
+     * @param target is the address of the cache line.
+     *
+     * @section Effect
+     *
+     * None.
+     *
+     * @deprecated Included for legacy use only, these calls have no
+     * effect in OpenSHMEM.
+     *
+     * @return None.
+     *
+     */
+    void shmem_set_cache_line_inv(void *target) _DEPRECATED;
+
+    /*
+     * @brief shmem_udcflush has no effect.
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_udcflush(void);
+     @endcode
+     *
+     * @subsection f Fortran
+     @code
+     CALL SHMEM_UDCFLUSH()
+     @endcode
+     *
+     * @section Effect
+     *
+     * None.
+     *
+     * @deprecated Included for legacy use only, these calls have no
+     * effect in OpenSHMEM.
+     *
+     * @return None.
+     *
+     */
+    void shmem_udcflush(void) _DEPRECATED;
+
+    /*
+     * @brief shmem_udcflush_line has no effect.
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_udcflush_line(void *target);
+     @endcode
+     *
+     * @subsection f Fortran
+     @code
+     CALL SHMEM_UDCFLUSH_LINE(target)
+     @endcode
+     *
+     * @param target is the address of the cache line.
+     *
+     * @section Effect
+     *
+     * None.
+     *
+     * @deprecated Included for legacy use only, these calls have no
+     * effect in OpenSHMEM.
+     *
+     * @return None.
+     *
+     */
+    void shmem_udcflush_line(void *target) _DEPRECATED;
 
     /*
      * --end--

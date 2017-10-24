@@ -49,6 +49,18 @@ shmemc_mem_alloc(size_t size)
 }
 
 /**
+ * allocate COUNT * SIZE bytes, zero out
+ */
+
+void *
+shmemc_mem_calloc(size_t count, size_t size)
+{
+    void *addr = mspace_calloc(myspace, count, size);
+
+    return addr;
+}
+
+/**
  * release memory previously allocated at ADDR
  */
 void

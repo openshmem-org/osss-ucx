@@ -2,6 +2,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "shmemc.h"
 
 #include <bits/wordsize.h>
@@ -25,7 +26,7 @@
 
 #define SHMEM_TYPE_SWAP(_name, _type, _size)                            \
     _type                                                               \
-    shmem_##_name##_swap(_type *target, _type value, int pe)            \
+    shmem_##_name##_atomic_swap(_type *target, _type value, int pe)     \
     {                                                                   \
         return shmemc_##_name##_swap(target, value, pe);                \
     }
@@ -46,8 +47,9 @@ SHMEM_TYPE_SWAP(double, double, 32)
 
 #define SHMEM_TYPE_CSWAP(_name, _type, _size)                           \
     _type                                                               \
-    shmem_##_name##_cswap(_type *target, _type cond, _type value,       \
-                          int pe)                                       \
+    shmem_##_name##_atomic_compare_swap(_type *target,                  \
+                                        _type cond, _type value,        \
+                                        int pe)                         \
     {                                                                   \
         return shmemc_##_name##_cswap(target, cond, value, pe);         \
     }
@@ -66,9 +68,10 @@ SHMEM_TYPE_CSWAP(longlong, long long, 64)
 
 #define SHMEM_TYPE_FADD(_name, _type, _size)                            \
     _type                                                               \
-    shmem_##_name##_fadd(_type *target, _type value, int pe)            \
+    shmem_##_name##_atomic_fetch_add(_type *target,                     \
+                                     _type value, int pe)               \
     {                                                                   \
-        return shmemc_##_name##_fadd(target, value, pe);                 \
+        return shmemc_##_name##_fadd(target, value, pe);                \
     }
 
 SHMEM_TYPE_FADD(int, int, 32)
@@ -85,7 +88,7 @@ SHMEM_TYPE_FADD(longlong, long long, 64)
 
 #define SHMEM_TYPE_FINC(_name, _type, _size)                            \
     _type                                                               \
-    shmem_##_name##_finc(_type *target, int pe)                         \
+    shmem_##_name##_atomic_fetch_inc(_type *target, int pe)             \
     {                                                                   \
         return shmemc_##_name##_finc(target, pe);                       \
     }
@@ -104,7 +107,7 @@ SHMEM_TYPE_FINC(longlong, long long, 64)
 
 #define SHMEM_TYPE_ADD(_name, _type, _size)                             \
     void                                                                \
-    shmem_##_name##_add(_type *target, _type value, int pe)             \
+    shmem_##_name##_atomic_add(_type *target, _type value, int pe)      \
     {                                                                   \
         shmemc_##_name##_add(target, value, pe);                        \
     }
@@ -123,7 +126,7 @@ SHMEM_TYPE_ADD(longlong, long long, 64)
 
 #define SHMEM_TYPE_INC(_name, _type, _size)                             \
     void                                                                \
-    shmem_##_name##_inc(_type *target, int pe)                          \
+    shmem_##_name##_atomic_inc(_type *target, int pe)                   \
     {                                                                   \
         shmemc_##_name##_inc(target, pe);                               \
     }
@@ -142,9 +145,9 @@ SHMEM_TYPE_INC(longlong, long long, 64)
 
 #define SHMEM_TYPE_FETCH(_name, _type, _size)                           \
     _type                                                               \
-    shmem_##_name##_fetch(_type *target, int pe)                        \
+    shmem_##_name##_atomic_fetch(_type *target, int pe)                 \
     {                                                                   \
-        return shmemc_##_name##_fetch(target, pe);                     \
+        return shmemc_##_name##_fetch(target, pe);                      \
     }
 
 SHMEM_TYPE_FETCH(int, int, 32)
@@ -163,7 +166,7 @@ SHMEM_TYPE_FETCH(double, double, 64)
 
 #define SHMEM_TYPE_SET(_name, _type, _size)                             \
     void                                                                \
-    shmem_##_name##_set(_type *target, _type value, int pe)             \
+    shmem_##_name##_atomic_set(_type *target, _type value, int pe)      \
     {                                                                   \
         shmemc_##_name##_set(target, value, pe);                        \
     }
@@ -177,3 +180,102 @@ SHMEM_TYPE_SET(long, long, 32)
 SHMEM_TYPE_SET(longlong, long long, 64)
 SHMEM_TYPE_SET(float, float, 32)
 SHMEM_TYPE_SET(double, double, 64)
+
+
+/*
+ * Deprecations as of 1.4.  3 different macros for different parameter
+ * counts.  Provide variants for return types.  This needs to match
+ * deprecation information in the header file.
+ *
+ * TODO: flesh out new 1.4 standard AMO types
+ */
+
+#define SHMEM_DEPRECATE_VOID_AMO1(_op, _name, _type)                    \
+    void                                                                \
+    shmem_##_name##_##_op(_type *target, int pe)                        \
+    {                                                                   \
+        deprecate(__func__);                                            \
+        shmemc_##_name##_##_op(target, pe);                             \
+    }
+
+#define SHMEM_DEPRECATE_VOID_AMO2(_op, _name, _type)                    \
+    void                                                                \
+    shmem_##_name##_##_op(_type *target, _type value, int pe)           \
+    {                                                                   \
+        deprecate(__func__);                                            \
+        shmemc_##_name##_##_op(target, value, pe);                      \
+    }
+
+#define SHMEM_DEPRECATE_VOID_AMO3(_op, _name, _type)                    \
+    void                                                                \
+    shmem_##_name##_##_op(_type *target,                                \
+                             _type cond, _type value,                   \
+                             int pe)                                    \
+    {                                                                   \
+        deprecate(__func__);                                            \
+        shmemc_##_name##_##_op(target, cond, value, pe);                \
+    }
+
+#define SHMEM_DEPRECATE_AMO1(_op, _name, _type)                         \
+    _type                                                               \
+    shmem_##_name##_##_op(_type *target, int pe)                        \
+    {                                                                   \
+        deprecate(__func__);                                            \
+        return shmemc_##_name##_##_op(target, pe);                      \
+    }
+
+#define SHMEM_DEPRECATE_AMO2(_op, _name, _type)                         \
+    _type                                                               \
+    shmem_##_name##_##_op(_type *target, _type value, int pe)           \
+    {                                                                   \
+        deprecate(__func__);                                            \
+        return shmemc_##_name##_##_op(target, value, pe);               \
+    }
+
+#define SHMEM_DEPRECATE_AMO3(_op, _name, _type)                         \
+    _type                                                               \
+    shmem_##_name##_##_op(_type *target,                                \
+                             _type cond, _type value,                   \
+                             int pe)                                    \
+    {                                                                   \
+        deprecate(__func__);                                            \
+        return shmemc_##_name##_##_op(target, cond, value, pe);         \
+    }
+
+SHMEM_DEPRECATE_VOID_AMO2(set, int, int)
+SHMEM_DEPRECATE_VOID_AMO2(set, long, long)
+SHMEM_DEPRECATE_VOID_AMO2(set, longlong, long long)
+SHMEM_DEPRECATE_VOID_AMO2(set, float, float)
+SHMEM_DEPRECATE_VOID_AMO2(set, double, double)
+
+SHMEM_DEPRECATE_VOID_AMO1(inc, int, int)
+SHMEM_DEPRECATE_VOID_AMO1(inc, long, long)
+SHMEM_DEPRECATE_VOID_AMO1(inc, longlong, long long)
+
+SHMEM_DEPRECATE_VOID_AMO2(add, int, int)
+SHMEM_DEPRECATE_VOID_AMO2(add, long, long)
+SHMEM_DEPRECATE_VOID_AMO2(add, longlong, long long)
+
+SHMEM_DEPRECATE_AMO1(fetch, int, int)
+SHMEM_DEPRECATE_AMO1(fetch, long, long)
+SHMEM_DEPRECATE_AMO1(fetch, longlong, long long)
+SHMEM_DEPRECATE_AMO1(fetch, float, float)
+SHMEM_DEPRECATE_AMO1(fetch, double, double)
+
+SHMEM_DEPRECATE_AMO1(finc, int, int)
+SHMEM_DEPRECATE_AMO1(finc, long, long)
+SHMEM_DEPRECATE_AMO1(finc, longlong, long long)
+
+SHMEM_DEPRECATE_AMO2(fadd, int, int)
+SHMEM_DEPRECATE_AMO2(fadd, long, long)
+SHMEM_DEPRECATE_AMO2(fadd, longlong, long long)
+
+SHMEM_DEPRECATE_AMO2(swap, int, int)
+SHMEM_DEPRECATE_AMO2(swap, long, long)
+SHMEM_DEPRECATE_AMO2(swap, longlong, long long)
+SHMEM_DEPRECATE_AMO2(swap, float, float)
+SHMEM_DEPRECATE_AMO2(swap, double, double)
+
+SHMEM_DEPRECATE_AMO3(cswap, int, int)
+SHMEM_DEPRECATE_AMO3(cswap, long, long)
+SHMEM_DEPRECATE_AMO3(cswap, longlong, long long)

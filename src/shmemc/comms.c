@@ -200,6 +200,8 @@ shmemc_get_nbi(void *dest, const void *src,
  * -- atomics ------------------------------------------------------------
  */
 
+/* TODO: repeated patterns here, maybe some kind of template? */
+
 /*
  * helpers
  */

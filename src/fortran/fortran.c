@@ -419,13 +419,13 @@ FORTRANIFY(shmem_wait)(int *ivar, int *cmp_value)
 void
 FORTRANIFY(shmem_int4_inc)(int *target, int *pe)
 {
-    shmem_int_inc(target, *pe);
+    shmem_int_atomic_inc(target, *pe);
 }
 
 void
 FORTRANIFY(shmem_int8_inc)(long *target, int *pe)
 {
-    shmem_long_inc(target, *pe);
+    shmem_long_atomic_inc(target, *pe);
 }
 
 /*
@@ -435,13 +435,13 @@ FORTRANIFY(shmem_int8_inc)(long *target, int *pe)
 int
 FORTRANIFY(shmem_int4_finc)(int *target, int *pe)
 {
-    return shmem_int_finc(target, *pe);
+    return shmem_int_atomic_fetch_inc(target, *pe);
 }
 
 long
 FORTRANIFY(shmem_int8_finc)(long *target, int *pe)
 {
-    return shmem_long_finc(target, *pe);
+    return shmem_long_atomic_fetch_inc(target, *pe);
 }
 
 /*
@@ -451,13 +451,13 @@ FORTRANIFY(shmem_int8_finc)(long *target, int *pe)
 void
 FORTRANIFY(shmem_int4_add)(int *target, int *value, int *pe)
 {
-    shmem_int_add(target, *value, *pe);
+    shmem_int_atomic_add(target, *value, *pe);
 }
 
 void
 FORTRANIFY(shmem_int8_add)(long *target, long *value, int *pe)
 {
-    shmem_long_add(target, *value, *pe);
+    shmem_long_atomic_add(target, *value, *pe);
 }
 
 /*
@@ -467,13 +467,13 @@ FORTRANIFY(shmem_int8_add)(long *target, long *value, int *pe)
 int
 FORTRANIFY(shmem_int4_fadd)(int *target, int *value, int *pe)
 {
-    return shmem_int_fadd(target, *value, *pe);
+    return shmem_int_atomic_fetch_add(target, *value, *pe);
 }
 
 long
 FORTRANIFY(shmem_int8_fadd)(long *target, long *value, int *pe)
 {
-    return shmem_long_fadd(target, *value, *pe);
+    return shmem_long_atomic_fetch_add(target, *value, *pe);
 }
 
 
@@ -484,31 +484,31 @@ FORTRANIFY(shmem_int8_fadd)(long *target, long *value, int *pe)
 int
 FORTRANIFY(shmem_int4_swap)(int *target, int *value, int *pe)
 {
-    return shmem_int_swap(target, *value, *pe);
+    return shmem_int_atomic_swap(target, *value, *pe);
 }
 
 long
 FORTRANIFY(shmem_int8_swap)(long *target, long *value, int *pe)
 {
-    return shmem_long_swap(target, *value, *pe);
+    return shmem_long_atomic_swap(target, *value, *pe);
 }
 
 float
 FORTRANIFY(shmem_real4_swap)(float *target, float *value, int *pe)
 {
-    return shmem_float_swap(target, *value, *pe);
+    return shmem_float_atomic_swap(target, *value, *pe);
 }
 
 double
 FORTRANIFY(shmem_real8_swap)(double *target, double *value, int *pe)
 {
-    return shmem_double_swap(target, *value, *pe);
+    return shmem_double_atomic_swap(target, *value, *pe);
 }
 
 int
 FORTRANIFY(shmem_swap)(int *target, int *value, int *pe)
 {
-    return shmem_int_swap(target, *value, *pe);
+    return shmem_int_atomic_swap(target, *value, *pe);
 }
 
 /*
@@ -518,13 +518,13 @@ FORTRANIFY(shmem_swap)(int *target, int *value, int *pe)
 int
 FORTRANIFY(shmem_int4_cswap)(int *target, int *cond, int *value, int *pe)
 {
-    return shmem_int_cswap(target, *cond, *value, *pe);
+    return shmem_int_atomic_compare_swap(target, *cond, *value, *pe);
 }
 
 long
 FORTRANIFY(shmem_int8_cswap)(long *target, long *cond, long *value, int *pe)
 {
-    return shmem_long_cswap(target, *cond, *value, *pe);
+    return shmem_long_atomic_compare_swap(target, *cond, *value, *pe);
 }
 
 /*
@@ -534,49 +534,49 @@ FORTRANIFY(shmem_int8_cswap)(long *target, long *cond, long *value, int *pe)
 int
 FORTRANIFY(shmem_int4_fetch)(int *target, int *pe)
 {
-    return shmem_int_fetch(target, *pe);
+    return shmem_int_atomic_fetch(target, *pe);
 }
 
 long
 FORTRANIFY(shmem_int8_fetch)(long *target, int *pe)
 {
-    return shmem_long_fetch(target, *pe);
+    return shmem_long_atomic_fetch(target, *pe);
 }
 
 float
 FORTRANIFY(shmem_real4_fetch)(float *target, int *pe)
 {
-    return shmem_float_fetch(target, *pe);
+    return shmem_float_atomic_fetch(target, *pe);
 }
 
 double
 FORTRANIFY(shmem_real8_fetch)(double *target, int *pe)
 {
-    return shmem_double_fetch(target, *pe);
+    return shmem_double_atomic_fetch(target, *pe);
 }
 
 void
 FORTRANIFY(shmem_int4_set)(int *target, int *val, int *pe)
 {
-    shmem_int_set(target, *val, *pe);
+    shmem_int_atomic_set(target, *val, *pe);
 }
 
 void
 FORTRANIFY(shmem_int8_set)(long *target, long *val, int *pe)
 {
-    shmem_long_set(target, *val, *pe);
+    shmem_long_atomic_set(target, *val, *pe);
 }
 
 void
 FORTRANIFY(shmem_real4_set)(float *target, float *val, int *pe)
 {
-    shmem_float_set(target, *val, *pe);
+    shmem_float_atomic_set(target, *val, *pe);
 }
 
 void
 FORTRANIFY(shmem_real8_set)(double *target, double *val, int *pe)
 {
-    shmem_double_set(target, *val, *pe);
+    shmem_double_atomic_set(target, *val, *pe);
 }
 
 /*

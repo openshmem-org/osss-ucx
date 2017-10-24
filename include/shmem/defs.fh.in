@@ -46,6 +46,18 @@
       parameter ( SHMEM_SYNC_VALUE = 0 )
 
 !
+!     thread support level
+!
+      integer SHMEM_THREAD_SINGLE
+      parameter ( SHMEM_THREAD_SINGLE = 0 )
+      integer SHMEM_THREAD_FUNNELED
+      parameter ( SHMEM_THREAD_FUNNELED = 1 )
+      integer SHMEM_THREAD_SERIALIZED
+      parameter ( SHMEM_THREAD_SERIALIZED = 2 )
+      integer SHMEM_THREAD_MULTIPLE
+      parameter ( SHMEM_THREAD_MULTIPLE = 3 )
+
+!
 !     compatibility with SGI
 !
 
