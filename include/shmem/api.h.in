@@ -1237,6 +1237,50 @@ extern "C"
     void shmem_longlong_add(long long *target, long long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_add);
 
+    /**
+     * @brief These routines perform an atomic exclusive-or(xor) operation
+     * between a data value and the target data object.
+     *
+     * @b Synopsis:
+     *
+     * - C/C++:
+     * @code
+     void shmem_int_atomic_xor(int *dest, int value, int pe);
+     void shmem_long_atomic_xor(long *dest, long value, int pe);
+     void shmem_longlong_atomic_xor(long long *dest, long long value, int pe);
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object where to save
+     *                    the data on the target pe.
+     * @param value     The value with which the exclusive-or operation is
+     *                    atomically performed with the data at address dest.
+     * @param pe        An integer that indicates the PE number upon
+     *                which dest is to be updated. If you are using Fortran,
+     *                it must be a default integer value.
+     *
+     * @b Constraints:
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in
+     *        the Synopsis section.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @b Effect:
+     *
+     * The atomic exclusive-or routines perform an xor-operation between
+     * value and the data at address dest on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest between the time of the fetch and the update.
+     *
+     * @return None.
+     *
+     */
+    void shmem_int_atomic_xor(int *dest, int value, int pe);
+    void shmem_long_atomic_xor(long *dest, long value, int pe);
+    void shmem_longlong_atomic_xor(long long *dest, long long value, int pe);
+
     /*
      * @brief increment symmetric variable
      *
@@ -1899,12 +1943,12 @@ extern "C"
                                                nelems, pe)
 
     /* see \ref shmem_long_atomic_swap() */
-#define shmem_atomic_swap(dest, value, pe)                             \
-    _Generic(*(dest),                                                  \
-             int:          shmem_int_atomic_swap,                      \
-             long:         shmem_long_atomic_swap,                     \
-             long long:    shmem_longlong_atomic_swap,                 \
-             float:        shmem_float_atomic_swap,                    \
+#define shmem_atomic_swap(dest, value, pe)                              \
+    _Generic(*(dest),                                                   \
+             int:          shmem_int_atomic_swap,                       \
+             long:         shmem_long_atomic_swap,                      \
+             long long:    shmem_longlong_atomic_swap,                  \
+             float:        shmem_float_atomic_swap,                     \
              double:       shmem_double_atomic_swap)(dest, value, pe)
 
     /* see \ref shmem_long_atomic_compare_swap() */
@@ -1930,19 +1974,85 @@ extern "C"
              long:         shmem_long_atomic_fetch_inc,                 \
              long long:    shmem_longlong_atomic_fetch_inc)(dest, pe)
 
+    /* see \ref shmem_long_atomic_fetch_and() */
+#define shmem_atomic_fetch_and(dest, value, pe)                     \
+    _Generic(*(dest),                                               \
+             unsigned int: shmem_uint_atomic_fetch_and,             \
+             unsigned long: shmem_ulong_atomic_fetch_and,           \
+             unsigned long long: shmem_ulonglong_atomic_fetch_and,  \
+             int32_t: shmem_int32_atomic_fetch_and,                 \
+             int64_t: shmem_int64_atomic_fetch_and,                 \
+             uint32_t: shmem_uint32_atomic_fetch_and,               \
+             uint64_t: shmem_uint64_atomic_fetch_and)(dest, pe)
+
+    /* see \ref shmem_long_atomic_fetch_or() */
+#define shmem_atomic_fetch_or(dest, value, pe)                      \
+    _Generic(*(dest),                                               \
+             unsigned int: shmem_uint_atomic_fetch_or,              \
+             unsigned long: shmem_ulong_atomic_fetch_or,            \
+             unsigned long long: shmem_ulonglong_atomic_fetch_or,   \
+             int32_t: shmem_int32_atomic_fetch_or,                  \
+             int64_t: shmem_int64_atomic_fetch_or,                  \
+             uint32_t: shmem_uint32_atomic_fetch_or,                \
+             uint64_t: shmem_uint64_atomic_fetch_or)(dest, pe)
+
+    /* see \ref shmem_long_atomic_fetch_xor() */
+#define shmem_atomic_fetch_xor(dest, value, pe)                     \
+    _Generic(*(dest),                                               \
+             unsigned int: shmem_uint_atomic_fetch_xor,             \
+             unsigned long: shmem_ulong_atomic_fetch_xor,           \
+             unsigned long long: shmem_ulonglong_atomic_fetch_xor,  \
+             int32_t: shmem_int32_atomic_fetch_xor,                 \
+             int64_t: shmem_int64_atomic_fetch_xor,                 \
+             uint32_t: shmem_uint32_atomic_fetch_xor,               \
+             uint64_t: shmem_uint64_atomic_fetch_xor)(dest, pe)
+
     /* see \ref shmem_long_atomic_add() */
-#define shmem_atomic_add(dest, value, pe)                              \
-    _Generic(*(dest),                                                  \
-             int:          shmem_int_atomic_add,                       \
-             long:         shmem_long_atomic_add,                      \
+#define shmem_atomic_add(dest, value, pe)                               \
+    _Generic(*(dest),                                                   \
+             int:          shmem_int_atomic_add,                        \
+             long:         shmem_long_atomic_add,                       \
              long long:    shmem_longlong_atomic_add)(dest, value, pe)
 
     /* see \ref shmem_long_atomic_inc() */
-#define shmem_atomic_inc(dest, pe)                                 \
-    _Generic(*(dest),                                              \
-             int:          shmem_int_atomic_inc,                   \
-             long:         shmem_long_atomic_inc,                  \
+#define shmem_atomic_inc(dest, pe)                              \
+    _Generic(*(dest),                                           \
+             int:          shmem_int_atomic_inc,                \
+             long:         shmem_long_atomic_inc,               \
              long long:    shmem_longlong_atomic_inc)(dest, pe)
+
+    /* see \ref shmem_long_atomic_and() */
+#define shmem_atomic_and(dest, value, pe)                       \
+    _Generic(*(dest),                                           \
+             unsigned int: shmem_uint_atomic_and,               \
+             unsigned long: shmem_ulong_atomic_and,             \
+             unsigned long long: shmem_ulonglong_atomic_and,    \
+             int32_t: shmem_int32_atomic_and,                   \
+             int64_t: shmem_int64_atomic_and,                   \
+             uint32_t: shmem_uint32_atomic_and,                 \
+             uint64_t: shmem_uint64_atomic_and)(dest, pe)
+
+    /* see \ref shmem_long_atomic_or() */
+#define shmem_atomic_or(dest, value, pe)                    \
+    _Generic(*(dest),                                       \
+             unsigned int: shmem_uint_atomic_or,            \
+             unsigned long: shmem_ulong_atomic_or,          \
+             unsigned long long: shmem_ulonglong_atomic_or, \
+             int32_t: shmem_int32_atomic_or,                \
+             int64_t: shmem_int64_atomic_or,                \
+             uint32_t: shmem_uint32_atomic_or,              \
+             uint64_t: shmem_uint64_atomic_or)(dest, pe)
+
+    /* see \ref shmem_long_atomic_xor() */
+#define shmem_atomic_xor(dest, value, pe)                       \
+    _Generic(*(dest),                                           \
+             unsigned int: shmem_uint_atomic_xor,               \
+             unsigned long: shmem_ulong_atomic_xor,             \
+             unsigned long long: shmem_ulonglong_atomic_xor,    \
+             int32_t: shmem_int32_atomic_xor,                   \
+             int64_t: shmem_int64_atomic_xor,                   \
+             uint32_t: shmem_uint32_atomic_xor,                 \
+             uint64_t: shmem_uint64_atomic_xor)(dest, pe)
 
     /* see \ref shmem_long_atomic_fetch() */
 #define shmem_atomic_fetch(dest, pe)                               \
