@@ -63,6 +63,7 @@ progress(void)
 static void *
 progress_impl_simple(void *unused_arg)
 {
+    return NULL;                /* can't work this out for now */
     while (go) {
         const double now = shmemu_timer();
 
