@@ -17,7 +17,7 @@ static volatile short go = 1;
  * not used at the moment
  */
 static struct timespec ts;
-static unsigned long backoff = 1e6; /* nanoseconds */
+static const unsigned long backoff = 1e6; /* nanoseconds */
 
 /*
  * this is intended to help back off this thread when the mainline is
@@ -49,8 +49,9 @@ progress(void)
         nanosleep(&ts, NULL);
         count = ucp_worker_progress(proc.comms.wrkr);
     } while (count > 0);
-    #endif
+#else
     (void) ucp_worker_progress(proc.comms.wrkr);
+#endif
 }
 
 /*

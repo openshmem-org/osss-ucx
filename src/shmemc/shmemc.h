@@ -112,8 +112,8 @@ SHMEMC_WAITUNTIL_TYPE(longlong, long long, ge)
 /*
  * barriers
  */
-void shmemc_barrier_all(void);
 void shmemc_barrier(int start, int log_stride, int size, long *pSync);
+void shmemc_barrier_all(void);
 
 /*
  * broadcasts
