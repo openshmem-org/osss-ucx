@@ -83,14 +83,12 @@ shmem_getmem(void *dest, const void *src,
     shmemc_get(dest, src, nelems, pe);
 }
 
-/* TODO */
-
 #define SHMEM_TYPED_G_WRAPPER(_name, _type)                          \
     _type                                                            \
     shmem_##_name##_g(const _type *addr, int pe)                     \
     {                                                                \
         _type val;                                                   \
-        shmem_##_name##_get(&val, addr, 1, pe);                      \
+        shmemc_get(&val, addr, sizeof(val), pe);                     \
         return val;                                                  \
     }
 

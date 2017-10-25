@@ -82,13 +82,11 @@ shmem_putmem(void *dest, const void *src,
     shmemc_put(dest, src, nelems, pe);
 }
 
-/* TODO */
-
 #define SHMEM_TYPED_P_WRAPPER(_name, _type)                          \
     void                                                             \
     shmem_##_name##_p(_type *addr, _type val, int pe)                \
     {                                                                \
-        shmem_##_name##_put(addr, &val, 1, pe);                      \
+        shmemc_put(addr, &val, sizeof(val), pe);                     \
     }
 
 SHMEM_TYPED_P_WRAPPER(char, char)
