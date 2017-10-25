@@ -90,7 +90,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void shmem_init_thread(int requested, int *provided);
+     int shmem_init_thread(int requested, int *provided);
      @endcode
      *
      * @section Effect
@@ -99,10 +99,10 @@ extern "C"
      * requesting thread support level "requested".  Routine returns
      * thread support level "provided".
      *
-     * @return None.
+     * @return zero on success, non-zero otherwise
      *
      */
-    void shmem_init_thread(int requested, int *provided);
+    int shmem_init_thread(int requested, int *provided);
 
     /**
      * @brief finalizes the OpenSHMEM environment on the calling PE.

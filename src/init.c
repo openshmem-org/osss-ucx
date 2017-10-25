@@ -72,12 +72,14 @@ shmem_init(void)
  * TODO: invert this and shmem_init(), just a stub for now
  */
 
-void
+int
 shmem_init_thread(int requested, int *provided)
 {
     *provided = SHMEM_THREAD_SINGLE;
 
     shmem_init();
+
+    return 0;
 }
 
 /*
