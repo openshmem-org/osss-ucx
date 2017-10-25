@@ -3,6 +3,7 @@
 #include "state.h"
 #include "shmemu.h"
 #include "shmemc.h"
+
 #include "shmem/defs.h"
 
 void
@@ -31,7 +32,7 @@ shmemc_init(void)
 void
 shmemc_finalize(void)
 {
-    shmemc_barrier_all();
+    shmemc_barrier_all();       /* finalize has implicit global barrier */
 
     shmemc_ucx_finalize();
 

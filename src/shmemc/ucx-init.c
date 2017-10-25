@@ -397,7 +397,6 @@ void
 shmemc_ucx_finalize(void)
 {
     logger(LOG_FINALIZE, "%s", __func__);
-    shmemc_ucx_progress_finalize();
 
 #if 0
     disconnect_all_eps();
@@ -407,7 +406,11 @@ shmemc_ucx_finalize(void)
 
     dereg_globals();
     dereg_symmetric_heap();
+#endif
 
+    shmemc_ucx_progress_finalize();
+
+#if 0
     ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
 
     ucp_cleanup(proc.comms.ctxt);

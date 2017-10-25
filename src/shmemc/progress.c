@@ -24,7 +24,7 @@ static unsigned long backoff = 1e6; /* nanoseconds */
  * progressing by itself
  */
 double last_call;
-static const double interval = 0.1;
+static const double interval = 1.0;
 
 /*
  * how long ot back off (unused)
@@ -42,6 +42,14 @@ setup_backoff(void)
 inline static void
 progress(void)
 {
+#if 0
+    unsigned count;
+
+    do {
+        nanosleep(&ts, NULL);
+        count = ucp_worker_progress(proc.comms.wrkr);
+    } while (count > 0);
+    #endif
     (void) ucp_worker_progress(proc.comms.wrkr);
 }
 

@@ -25,14 +25,12 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
 
     shmemc_quiet();
 
-    *pSync = 0;
-
     if (start == me) {
         int pe;
         int i;
 
         /* wait for the rest of the AS to poke me */
-        shmemc_long_wait_eq_until(pSync, size - 1);
+        shmemc_long_wait_eq_until(pSync, SHMEM_SYNC_VALUE + size - 1);
 
         /* send acks out */
         pe = start + stride;
@@ -68,5 +66,9 @@ long shmemc_all_sync = SHMEM_SYNC_VALUE;
 void
 shmemc_barrier_all(void)
 {
-    shmemc_barrier(0, 0, proc.nranks, &shmemc_all_sync);
+    shmemc_barrier(0,
+                   0,
+                   proc.nranks,
+                   &shmemc_all_sync
+                   );
 }
