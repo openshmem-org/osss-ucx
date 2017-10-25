@@ -24,7 +24,7 @@ static const unsigned long backoff = 1e6; /* nanoseconds */
  * progressing by itself
  */
 double last_call;
-static const double interval = 1.0;
+static const double interval = 2.0;
 
 /*
  * how long ot back off (unused)
