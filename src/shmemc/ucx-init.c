@@ -326,6 +326,7 @@ disconnect_all_eps(void)
                 (void) ucp_worker_progress(proc.comms.wrkr);
                 s = ucp_request_check_status(req);
             } while (s == UCS_INPROGRESS);
+            ucp_request_free(req);
         }
     }
 }
@@ -415,7 +416,7 @@ shmemc_ucx_finalize(void)
 #if REAL_SHUTDOWN
     dereg_globals();
     dereg_symmetric_heap();
-#endif
 
     ucp_cleanup(proc.comms.ctxt);
+#endif
 }

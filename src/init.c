@@ -55,10 +55,11 @@ shmem_init(void)
         s = atexit(shmem_finalize);
         assert(s == 0);
 
-        proc.refcount += 1;
         proc.status = SHMEM_PE_RUNNING;
         /* 'ere we go! */
     }
+
+    proc.refcount += 1;
 
     logger(LOG_INIT,
            "leave \"%s\", refcount = %d",
