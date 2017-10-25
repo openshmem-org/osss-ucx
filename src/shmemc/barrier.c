@@ -21,9 +21,11 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
-    long poke = ~SHMEM_SYNC_VALUE;
+    long poke = 1;
 
     shmemc_quiet();
+
+    *pSync = 0;
 
     if (start == me) {
         int pe;
@@ -41,26 +43,27 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
     }
     else {
         /* poke root */
-        shmemc_long_add(pSync, 1L, start);
+        shmemc_long_add(pSync, 1, start);
 
         /* get ack */
-        shmemc_long_wait_ne_until(pSync, SHMEM_SYNC_VALUE);
+        shmemc_long_wait_ne_until(pSync, 0);
     }
 
     /* restore */
     *pSync = SHMEM_SYNC_VALUE;
 
+#if 0
     logger(LOG_INFO,
            "barrier #%lu return: start = %d, stride = %d, size = %d",
            bar_count, start, stride, size);
-
+#endif
     bar_count += 1;
 }
 
 #if 0
-static long shmemc_all_sync /* [SHMEM_BARRIER_SYNC_SIZE] = { */ SHMEM_SYNC_VALUE /* } */;
+static long shmemc_all_sync[SHMEM_BARRIER_SYNC_SIZE] = { SHMEM_SYNC_VALUE };
 #endif
-static long shmemc_all_sync = SHMEM_SYNC_VALUE;
+long shmemc_all_sync = SHMEM_SYNC_VALUE;
 
 void
 shmemc_barrier_all(void)

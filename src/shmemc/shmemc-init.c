@@ -26,8 +26,6 @@ shmemc_init(void)
 
     shmemc_pmix_publish_my_rkeys();
     shmemc_pmix_exchange_all_rkeys();
-
-    proc.status = SHMEM_PE_RUNNING;
 }
 
 void
@@ -38,6 +36,4 @@ shmemc_finalize(void)
     shmemc_ucx_finalize();
 
     shmemc_pmix_client_finalize();
-
-    proc.status = SHMEM_PE_SHUTDOWN;
 }

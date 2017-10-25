@@ -23,20 +23,19 @@
 void
 shmem_finalize(void)
 {
-    logger(LOG_FINALIZE,
-           "enter \"%s\", refcount = %d",
-           __func__,
-           proc.refcount);
-
     /* do nothing if multiple finalizes */
-    if (proc.refcount < 1) {
-        return;
+    if (proc.refcount > 0) {
+        logger(LOG_FINALIZE,
+               "enter \"%s\", refcount = %d",
+               __func__,
+               proc.refcount);
+
+        shmemc_finalize();
+        shmemu_finalize();
+
+        proc.refcount = 0;      /* finalized is finalized */
+        proc.status = SHMEM_PE_SHUTDOWN;
     }
-
-    proc.refcount -= 1;
-
-    shmemc_finalize();
-    shmemu_finalize();
 }
 
 /*
@@ -46,27 +45,25 @@ shmem_finalize(void)
 void
 shmem_init(void)
 {
-    int s;
-
     /* do nothing if multiple inits */
-    if (proc.refcount > 0) {
-        return;
+    if (proc.refcount == 0) {
+        int s;
+
+        shmemu_init();
+        shmemc_init();
+
+        s = atexit(shmem_finalize);
+        assert(s == 0);
+
+        proc.refcount += 1;
+        proc.status = SHMEM_PE_RUNNING;
+        /* 'ere we go! */
     }
-
-    proc.refcount += 1;
-
-    shmemu_init();
-    shmemc_init();
-
-    s = atexit(shmem_finalize);
-    assert(s == 0);
 
     logger(LOG_INIT,
            "leave \"%s\", refcount = %d",
            __func__,
            proc.refcount);
-
-    /* 'ere we go! */
 }
 
 /*

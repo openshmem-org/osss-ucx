@@ -24,7 +24,7 @@ static unsigned long backoff = 1e6; /* nanoseconds */
  * progressing by itself
  */
 double last_call;
-static const double interval = 100.0;
+static const double interval = 0.1;
 
 /*
  * how long ot back off (unused)
@@ -61,6 +61,7 @@ progress_impl_simple(void *unused_arg)
             progress();
             last_call = now;
         }
+        nanosleep(&ts, NULL);
     }
 
     return NULL;
@@ -107,7 +108,6 @@ shmemc_ucx_progress_init(void)
 
     /* throttle polling */
     setup_backoff();
-
     last_call = shmemu_timer();
 
     /* start progress thread */

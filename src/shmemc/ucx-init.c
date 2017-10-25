@@ -396,18 +396,19 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
+    logger(LOG_FINALIZE, "%s", __func__);
     shmemc_ucx_progress_finalize();
 
 #if 0
     disconnect_all_eps();
-
-    ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
 
     deallocate_workers();
     deallocate_endpoints();
 
     dereg_globals();
     dereg_symmetric_heap();
+
+    ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
 
     ucp_cleanup(proc.comms.ctxt);
 #endif

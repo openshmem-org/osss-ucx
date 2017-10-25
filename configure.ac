@@ -7,6 +7,10 @@ AC_INIT([OSSS/SBU Reference Implementation],
 	[anthony.curtis@stonybrook.edu],
 	[],
 	[https://github.com/openshmem-org/])
+AC_SUBST([SHMEM_MAJOR_VERSION], 1)
+AC_SUBST([SHMEM_MINOR_VERSION], 4)
+AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
+AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 config_flags="$*"
 AC_DEFINE_UNQUOTED([CONFIG_FLAGS],["$config_flags"],[Flags passed to configure])
@@ -120,14 +124,6 @@ AC_FUNC_MMAP
 AC_CHECK_FUNCS([atexit gettimeofday gethostname uname getpagesize memset])
 
 AM_INIT_AUTOMAKE
-
-#
-# the header file constants
-#
-AC_SUBST([SHMEM_MAJOR_VERSION], 1)
-AC_SUBST([SHMEM_MINOR_VERSION], 3)
-AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
-AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 now="`date`"
 AC_DEFINE_UNQUOTED([CONFIG_BUILD_DATE],["$now"],[When this package was compiled])
