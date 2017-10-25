@@ -27,6 +27,8 @@ shmemc_init(void)
 
     shmemc_pmix_publish_my_rkeys();
     shmemc_pmix_exchange_all_rkeys();
+
+    shmemc_pmix_client_finalize();
 }
 
 void
@@ -35,6 +37,4 @@ shmemc_finalize(void)
     shmemc_barrier_all();       /* finalize has implicit global barrier */
 
     shmemc_ucx_finalize();
-
-    shmemc_pmix_client_finalize();
 }

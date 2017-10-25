@@ -393,26 +393,29 @@ shmemc_ucx_init(void)
     shmemc_ucx_progress_init();
 }
 
+#define REAL_SHUTDOWN 1
+
 void
 shmemc_ucx_finalize(void)
 {
-    logger(LOG_FINALIZE, "%s", __func__);
+    shmemc_ucx_progress_finalize();
 
-#if 0
+#if REAL_SHUTDOWN
     disconnect_all_eps();
-
-    deallocate_workers();
     deallocate_endpoints();
+#endif
 
+    if (proc.comms.wrkr) {
+        ucp_worker_release_address(proc.comms.wrkr,
+                                   proc.comms.wrkrs[proc.rank].addr);
+        ucp_worker_destroy(proc.comms.wrkr);
+    }
+    deallocate_workers();
+
+#if REAL_SHUTDOWN
     dereg_globals();
     dereg_symmetric_heap();
 #endif
 
-    shmemc_ucx_progress_finalize();
-
-#if 0
-    ucp_worker_destroy(proc.comms.wrkr); /* and free worker_info_t's ? */
-
     ucp_cleanup(proc.comms.ctxt);
-#endif
 }

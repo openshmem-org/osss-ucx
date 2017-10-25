@@ -20,6 +20,7 @@ pmix_finalize_handler(void)
     ps = PMIx_Finalize();
     assert(ps == PMIX_SUCCESS);
 
+    /* clean up allocations for exchanged buffers */
     for (pe = 0; pe < proc.nranks; pe += 1) {
         if (proc.comms.wrkrs[pe].buf != NULL) {
             free(proc.comms.wrkrs[pe].buf);
