@@ -41,7 +41,7 @@ shmemc_mem_base(void)
 #define MIN_MALLOC_SIZE 64
 
 void *
-shmemc_mem_alloc(size_t size)
+shmemc_mem_malloc(size_t size)
 {
     void *addr = mspace_malloc(myspace, size);
 

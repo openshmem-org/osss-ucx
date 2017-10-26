@@ -3,6 +3,7 @@
 #include "shmemc.h"
 #include "state.h"
 #include "progress.h"
+#include "memalloc.h"
 
 #include <stdlib.h>             /* getenv */
 #include <assert.h>

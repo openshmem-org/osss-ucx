@@ -2,9 +2,10 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmem/defs.h"
 #include "shmemc.h"
 #include "shmemu.h"
+#include "memalloc.h"
+#include "shmem/defs.h"
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -15,6 +16,8 @@ int malloc_error = SHMEM_MALLOC_OK;
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_malloc = pshmem_malloc
 #define shmem_malloc pshmem_malloc
+#pragma weak shmem_calloc = pshmem_calloc
+#define shmem_calloc pshmem_calloc
 #pragma weak shmem_free = pshmem_free
 #define shmem_free pshmem_free
 #pragma weak shmem_realloc = pshmem_realloc
@@ -26,7 +29,13 @@ int malloc_error = SHMEM_MALLOC_OK;
 void *
 shmem_malloc(size_t s)
 {
-    return shmemc_mem_alloc(s);
+    return shmemc_mem_malloc(s);
+}
+
+void *
+shmem_calloc(size_t n, size_t s)
+{
+    return shmemc_mem_calloc(n, s);
 }
 
 void

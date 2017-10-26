@@ -157,15 +157,4 @@ shmemc_addr_accessible(const void *addr, int pe)
     return 0;
 }
 
-/*
- * memory allocation
- */
-void shmemc_mem_init(void *base, size_t capacity);
-void shmemc_mem_finalize(void);
-void *shmemc_mem_base(void);
-void *shmemc_mem_alloc(size_t size);
-void shmemc_mem_free(void *addr);
-void *shmemc_mem_realloc(void *addr, size_t new_size);
-void *shmemc_mem_align(size_t alignment, size_t size);
-
 #endif /* ! _SHMEMC_H */

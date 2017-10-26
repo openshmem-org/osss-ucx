@@ -252,7 +252,7 @@ shmemc_get_nbi(void *dest, const void *src,
  */
 
 inline static uint32_t
-helper_fadd32(uint64_t t, uint32_t v, int pe)
+helper_atomic_fadd32(uint64_t t, uint32_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -273,7 +273,7 @@ helper_fadd32(uint64_t t, uint32_t v, int pe)
 }
 
 inline static uint64_t
-helper_fadd64(uint64_t t, uint64_t v, int pe)
+helper_atomic_fadd64(uint64_t t, uint64_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -294,7 +294,7 @@ helper_fadd64(uint64_t t, uint64_t v, int pe)
 }
 
 inline static void
-helper_add32(uint64_t t, uint32_t v, int pe)
+helper_atomic_add32(uint64_t t, uint32_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -312,7 +312,7 @@ helper_add32(uint64_t t, uint32_t v, int pe)
 }
 
 inline static void
-helper_add64(uint64_t t, uint64_t v, int pe)
+helper_atomic_add64(uint64_t t, uint64_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -330,7 +330,7 @@ helper_add64(uint64_t t, uint64_t v, int pe)
 }
 
 inline static uint32_t
-helper_swap32(uint64_t t, uint32_t v, int pe)
+helper_atomic_swap32(uint64_t t, uint32_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -351,7 +351,7 @@ helper_swap32(uint64_t t, uint32_t v, int pe)
 }
 
 inline static uint64_t
-helper_swap64(uint64_t t, uint64_t v, int pe)
+helper_atomic_swap64(uint64_t t, uint64_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -372,7 +372,7 @@ helper_swap64(uint64_t t, uint64_t v, int pe)
 }
 
 inline static uint32_t
-helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
+helper_atomic_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -393,7 +393,7 @@ helper_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
 }
 
 inline static uint64_t
-helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
+helper_atomic_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -413,8 +413,29 @@ helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
     return ret;
 }
 
+inline static uint32_t
+helper_atomic_and32(uint64_t t, uint32_t v, int pe)
+{
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    uint32_t ret;
+    ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
+
+    s = UCS_OK; /* something something */
+    assert(s == UCS_OK);
+
+    return ret;
+}
+
 inline static uint64_t
-helper_and32(uint64_t t, uint32_t v, int pe)
+helper_atomic_and64(uint64_t t, uint64_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -434,8 +455,71 @@ helper_and32(uint64_t t, uint32_t v, int pe)
     return ret;
 }
 
+inline static uint32_t
+helper_atomic_or32(uint64_t t, uint32_t v, int pe)
+{
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    uint32_t ret;
+    ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
+
+    s = UCS_OK; /* something something */
+    assert(s == UCS_OK);
+
+    return ret;
+}
+
 inline static uint64_t
-helper_and64(uint64_t t, uint64_t v, int pe)
+helper_atomic_or64(uint64_t t, uint64_t v, int pe)
+{
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    uint64_t ret;
+    ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
+
+    s = UCS_OK; /* something something */
+    assert(s == UCS_OK);
+
+    return ret;
+}
+
+inline static uint32_t
+helper_atomic_xor32(uint64_t t, uint32_t v, int pe)
+{
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    uint32_t ret;
+    ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
+
+    s = UCS_OK; /* something something */
+    assert(s == UCS_OK);
+
+    return ret;
+}
+
+inline static uint64_t
+helper_atomic_xor64(uint64_t t, uint64_t v, int pe)
 {
     long r;
     uint64_t r_t;
@@ -456,7 +540,7 @@ helper_and64(uint64_t t, uint64_t v, int pe)
 }
 
 /**
- * API
+ * AMO API
  **/
 
 /*
@@ -467,7 +551,7 @@ helper_and64(uint64_t t, uint64_t v, int pe)
     void                                                        \
     shmemc_##_name##_add(_type *t, _type v, int pe)             \
     {                                                           \
-        helper_add##_size((uint64_t) t, v, pe);                 \
+        (void) helper_atomic_add##_size((uint64_t) t, v, pe);   \
     }
 
 SHMEMC_TYPED_ADD(int, int, 32)
@@ -482,7 +566,7 @@ SHMEMC_TYPED_ADD(longlong, long long, 64)
     void                                                        \
     shmemc_##_name##_inc(_type *t, int pe)                      \
     {                                                           \
-        helper_add##_size((uint64_t) t, 1, pe);                 \
+        (void) helper_atomic_add##_size((uint64_t) t, 1, pe);   \
     }
 
 SHMEMC_TYPED_INC(int, int, 32)
@@ -493,11 +577,11 @@ SHMEMC_TYPED_INC(longlong, long long, 64)
  * fetch-and-add
  */
 
-#define SHMEMC_TYPED_FADD(_name, _type, _size)                  \
-    _type                                                       \
-    shmemc_##_name##_fadd(_type *t, _type v, int pe)            \
-    {                                                           \
-        return (_type) helper_fadd##_size((uint64_t) t, v, pe); \
+#define SHMEMC_TYPED_FADD(_name, _type, _size)                          \
+    _type                                                               \
+    shmemc_##_name##_fadd(_type *t, _type v, int pe)                    \
+    {                                                                   \
+        return (_type) helper_atomic_fadd##_size((uint64_t) t, v, pe);  \
     }
 
 SHMEMC_TYPED_FADD(int, int, 32)
@@ -508,11 +592,11 @@ SHMEMC_TYPED_FADD(longlong, long long, 64)
  * finc is just "fadd 1"
  */
 
-#define SHMEMC_TYPED_FINC(_name, _type, _size)                  \
-    _type                                                       \
-    shmemc_##_name##_finc(_type *t, int pe)                     \
-    {                                                           \
-        return (_type) helper_fadd##_size((uint64_t) t, 1, pe); \
+#define SHMEMC_TYPED_FINC(_name, _type, _size)                          \
+    _type                                                               \
+    shmemc_##_name##_finc(_type *t, int pe)                             \
+    {                                                                   \
+        return (_type) helper_atomic_fadd##_size((uint64_t) t, 1, pe);  \
     }
 
 SHMEMC_TYPED_FINC(int, int, 32)
@@ -523,12 +607,12 @@ SHMEMC_TYPED_FINC(longlong, long long, 64)
  * swaps
  */
 
-#define SHMEMC_TYPED_SWAP(_name, _type, _size)                  \
-    _type                                                       \
-    shmemc_##_name##_swap(_type *t, _type v, int pe)            \
-    {                                                           \
-        return (_type) helper_swap##_size((uint64_t) t, v, pe); \
-    }                                                           \
+#define SHMEMC_TYPED_SWAP(_name, _type, _size)                          \
+    _type                                                               \
+    shmemc_##_name##_swap(_type *t, _type v, int pe)                    \
+    {                                                                   \
+        return (_type) helper_atomic_swap##_size((uint64_t) t, v, pe);  \
+    }                                                                   \
 
 SHMEMC_TYPED_SWAP(int, int, 32)
 SHMEMC_TYPED_SWAP(long, long, 64)
@@ -536,12 +620,12 @@ SHMEMC_TYPED_SWAP(longlong, long long, 64)
 SHMEMC_TYPED_SWAP(float, float, 32)
 SHMEMC_TYPED_SWAP(double, double, 64)
 
-#define SHMEMC_TYPED_CSWAP(_name, _type, _size)                     \
-    _type                                                           \
-    shmemc_##_name##_cswap(_type *t, _type c, _type v, int pe)      \
-    {                                                               \
-        return (_type) helper_cswap##_size((uint64_t) t, c, v, pe); \
-    }                                                               \
+#define SHMEMC_TYPED_CSWAP(_name, _type, _size)                         \
+    _type                                                               \
+    shmemc_##_name##_cswap(_type *t, _type c, _type v, int pe)          \
+    {                                                                   \
+        return (_type) helper_atomic_cswap##_size((uint64_t) t, c, v, pe); \
+    }                                                                   \
 
 SHMEMC_TYPED_CSWAP(int, int, 32)
 SHMEMC_TYPED_CSWAP(long, long, 64)
@@ -555,11 +639,11 @@ SHMEMC_TYPED_CSWAP(longlong, long long, 64)
  *
  */
 
-#define SHMEMC_TYPED_FETCH(_name, _type, _size)                 \
-    _type                                                       \
-    shmemc_##_name##_fetch(_type *t, int pe)                    \
-    {                                                           \
-        return (_type) helper_fadd##_size((uint64_t) t, 0, pe); \
+#define SHMEMC_TYPED_FETCH(_name, _type, _size)                         \
+    _type                                                               \
+    shmemc_##_name##_fetch(_type *t, int pe)                            \
+    {                                                                   \
+        return (_type) helper_atomic_fadd##_size((uint64_t) t, 0, pe);  \
     }
 
 SHMEMC_TYPED_FETCH(int, int, 32)
@@ -571,11 +655,11 @@ SHMEMC_TYPED_FETCH(double, double, 64)
 /*
  * TODO: use swap and ignore return?
  */
-#define SHMEMC_TYPED_SET(_name, _type, _size)           \
-    void                                                \
-    shmemc_##_name##_set(_type *t, _type v, int pe)     \
-    {                                                   \
-        (void) helper_swap##_size((uint64_t) t, v, pe); \
+#define SHMEMC_TYPED_SET(_name, _type, _size)                   \
+    void                                                        \
+    shmemc_##_name##_set(_type *t, _type v, int pe)             \
+    {                                                           \
+        (void) helper_atomic_swap##_size((uint64_t) t, v, pe);  \
     }
 
 SHMEMC_TYPED_SET(int, int, 32)
@@ -588,17 +672,33 @@ SHMEMC_TYPED_SET(double, double, 64)
  * bitwise
  */
 
-#define SHMEMC_TYPED_AND(_name, _type, _size)           \
-    void                                                \
-    shmemc_##_name##_and(_type *t, _type v, int pe)     \
-    {                                                   \
-        (void) helper_and##_size((uint64_t) t, v, pe);  \
+#define SHMEMC_TYPED_BITWISE(_op, _name, _type, _size)          \
+    void                                                        \
+    shmemc_##_name##_##_op(_type *t, _type v, int pe)           \
+    {                                                           \
+        (void) helper_atomic_##_op##_size((uint64_t) t, v, pe); \
     }
 
-SHMEMC_TYPED_AND(uint, unsigned int, 32)
-SHMEMC_TYPED_AND(ulong, unsigned long, 64)
-SHMEMC_TYPED_AND(ulonglong, unsigned long long, 64)
-SHMEMC_TYPED_AND(int32, int32_t, 64)
-SHMEMC_TYPED_AND(int64, int64_t, 64)
-SHMEMC_TYPED_AND(uint32, uint32_t, 64)
-SHMEMC_TYPED_AND(uint64, uint64_t, 64)
+SHMEMC_TYPED_BITWISE(and, uint, unsigned int, 32)
+SHMEMC_TYPED_BITWISE(and, ulong, unsigned long, 64)
+SHMEMC_TYPED_BITWISE(and, ulonglong, unsigned long long, 64)
+SHMEMC_TYPED_BITWISE(and, int32, int32_t, 64)
+SHMEMC_TYPED_BITWISE(and, int64, int64_t, 64)
+SHMEMC_TYPED_BITWISE(and, uint32, uint32_t, 64)
+SHMEMC_TYPED_BITWISE(and, uint64, uint64_t, 64)
+
+SHMEMC_TYPED_BITWISE(or, uint, unsigned int, 32)
+SHMEMC_TYPED_BITWISE(or, ulong, unsigned long, 64)
+SHMEMC_TYPED_BITWISE(or, ulonglong, unsigned long long, 64)
+SHMEMC_TYPED_BITWISE(or, int32, int32_t, 64)
+SHMEMC_TYPED_BITWISE(or, int64, int64_t, 64)
+SHMEMC_TYPED_BITWISE(or, uint32, uint32_t, 64)
+SHMEMC_TYPED_BITWISE(or, uint64, uint64_t, 64)
+
+SHMEMC_TYPED_BITWISE(xor, uint, unsigned int, 32)
+SHMEMC_TYPED_BITWISE(xor, ulong, unsigned long, 64)
+SHMEMC_TYPED_BITWISE(xor, ulonglong, unsigned long long, 64)
+SHMEMC_TYPED_BITWISE(xor, int32, int32_t, 64)
+SHMEMC_TYPED_BITWISE(xor, int64, int64_t, 64)
+SHMEMC_TYPED_BITWISE(xor, uint32, uint32_t, 64)
+SHMEMC_TYPED_BITWISE(xor, uint64, uint64_t, 64)
