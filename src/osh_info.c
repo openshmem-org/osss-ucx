@@ -133,6 +133,14 @@ output_features(void)
 #endif /* ENABLE_CXX */
            );
 
+    output("Fortran support",
+#ifdef ENABLE_FORTRAN
+           "on"
+#else
+           "off"
+#endif /* ENABLE_FORTRAN */
+           );
+
     output("Debug messages",
 #ifdef ENABLE_DEBUG
            "on"
@@ -155,14 +163,6 @@ output_features(void)
 #else
            "off"
 #endif /* ENABLE_PSHMEM */
-           );
-
-    output("Fortran support",
-#ifdef ENABLE_FORTRAN
-           "on"
-#else
-           "off"
-#endif /* ENABLE_FORTRAN */
            );
 }
 
