@@ -12,6 +12,7 @@
 
 static const int tag_width = 24;
 static char *unknown = "unknown";
+static char *internal_error = "not found [shouldn't happen]";
 
 inline static void
 output(const char *tag, const char *val)
@@ -169,19 +170,21 @@ output_features(void)
 static void
 output_comms(void)
 {
+    output("UCX Install",
 #ifdef HAVE_UCX
-    output("UCX", "on");
-    output("UCX Install", UCX_DIR);
+           UCX_DIR
 #else
-    output("UCX", "off [shouldn't happen]");
+           internal_error
 #endif /* HAVE_UCX */
+           );
 
+    output("PMIx Install",
 #ifdef HAVE_PMIX
-    output("PMIx", "on");
-    output("PMIx Install", PMIX_DIR);
+           PMIX_DIR
 #else
-    output("PMIx", "off [shouldn't happen]");
+           internal_error
 #endif /* HAVE_PMIX */
+           );
 }
 
 int
