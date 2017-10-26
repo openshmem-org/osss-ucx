@@ -2,6 +2,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemc.h"
+
 #include <stdio.h>
 
 /*
@@ -16,5 +18,5 @@
 void *
 shmem_ptr(const void *target, int pe)
 {
-    return (void *) NULL;
+    return shmemc_ptr(target, pe);
 }

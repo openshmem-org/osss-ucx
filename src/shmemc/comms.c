@@ -101,6 +101,37 @@ shmemc_quiet(void)
 }
 
 /*
+ * -- accessible memory pointers -----------------------------------------
+ */
+
+void *
+shmemc_ptr(const void *addr, int pe)
+{
+    long r;
+    uint64_t ua = (uint64_t) addr;
+    uint64_t r_addr;            /* address on other PE */
+    ucp_rkey_h rkey;            /* rkey for remote address */
+    void *usable_addr = NULL;
+    ucs_status_t s;
+
+    r = lookup_region(ua, proc.rank);
+    assert(r >= 0);
+
+    r_addr = translate_address(ua, r, pe);
+    assert(r_addr != 0);
+
+    rkey = lookup_rkey(r, pe);
+    assert(rkey != NULL);
+
+    s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
+    if (s == UCS_OK) {
+        return usable_addr;
+    }
+
+    return NULL;
+}
+
+/*
  * -- puts & gets --------------------------------------------------------
  */
 
@@ -382,6 +413,48 @@ helper_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
     return ret;
 }
 
+inline static uint64_t
+helper_and32(uint64_t t, uint32_t v, int pe)
+{
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    uint64_t ret;
+    ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
+
+    s = UCS_OK; /* something something */
+    assert(s == UCS_OK);
+
+    return ret;
+}
+
+inline static uint64_t
+helper_and64(uint64_t t, uint64_t v, int pe)
+{
+    long r;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    uint64_t ret;
+    ucs_status_t s;
+
+    r = lookup_region(t, proc.rank);
+    r_t = translate_address(t, r, pe);
+    rkey = lookup_rkey(r, pe);
+    ep = lookup_ucp_ep(pe);
+
+    s = UCS_OK; /* something something */
+    assert(s == UCS_OK);
+
+    return ret;
+}
+
 /**
  * API
  **/
@@ -510,3 +583,22 @@ SHMEMC_TYPED_SET(long, long, 64)
 SHMEMC_TYPED_SET(longlong, long long, 64)
 SHMEMC_TYPED_SET(float, float, 32)
 SHMEMC_TYPED_SET(double, double, 64)
+
+/*
+ * bitwise
+ */
+
+#define SHMEMC_TYPED_AND(_name, _type, _size)           \
+    void                                                \
+    shmemc_##_name##_and(_type *t, _type v, int pe)     \
+    {                                                   \
+        (void) helper_and##_size((uint64_t) t, v, pe);  \
+    }
+
+SHMEMC_TYPED_AND(uint, unsigned int, 32)
+SHMEMC_TYPED_AND(ulong, unsigned long, 64)
+SHMEMC_TYPED_AND(ulonglong, unsigned long long, 64)
+SHMEMC_TYPED_AND(int32, int32_t, 64)
+SHMEMC_TYPED_AND(int64, int64_t, 64)
+SHMEMC_TYPED_AND(uint32, uint32_t, 64)
+SHMEMC_TYPED_AND(uint64, uint64_t, 64)

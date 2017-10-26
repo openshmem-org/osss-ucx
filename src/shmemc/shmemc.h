@@ -23,6 +23,8 @@ int shmemc_n_pes(void);
 void shmemc_quiet(void);
 void shmemc_fence(void);
 
+void *shmemc_ptr(const void *target, int pe);
+
 void shmemc_put(void *dest, const void *src, size_t nbytes, int pe);
 void shmemc_get(void *dest, const void *src, size_t nbytes, int pe);
 
