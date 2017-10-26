@@ -10,13 +10,18 @@
 #include <time.h>
 #include <unistd.h>
 
-static const int tag_width = 20;
+static const int tag_width = 24;
 static char *unknown = "unknown";
 
-static void
+inline static void
 output(const char *tag, const char *val)
 {
-    printf("%*s: %s\n", tag_width, tag, val);
+#define STRMAX 64
+    char buf[STRMAX];
+
+    snprintf(buf, STRMAX, "%s:", tag);
+    printf("%-*s %s\n", tag_width, buf, val);
+#undef STRMAX
 }
 
 static void
@@ -60,13 +65,14 @@ output_spec_version(void)
 {
 #if defined(SHMEM_MAJOR_VERSION) && defined(SHMEM_MINOR_VERSION)
 
-#define BUFMAX 8
+#define BUFMAX 16
     char buf[BUFMAX];
 
     snprintf(buf, BUFMAX,
              "%d.%d",
              SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
     output("Specification", buf);
+#undef BUFMAX
 #endif /* spec. version check */
 }
 
