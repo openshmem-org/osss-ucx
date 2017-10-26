@@ -21,15 +21,6 @@ int malloc_error = SHMEM_MALLOC_OK;
 #define shmem_realloc pshmem_realloc
 #pragma weak shmem_align = pshmem_align
 #define shmem_align pshmem_align
-
-#pragma weak shmalloc = pshmalloc
-#define shmalloc pshmalloc
-#pragma weak shfree = pshfree
-#define shfree pshfree
-#pragma weak shrealloc = pshrealloc
-#define shrealloc pshrealloc
-#pragma weak shmemalign = pshmemalign
-#define shmemalign pshmemalign
 #endif /* ENABLE_PSHMEM */
 
 void *
