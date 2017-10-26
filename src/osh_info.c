@@ -125,6 +125,14 @@ output_features(void)
 #endif /* ENABLE_SHARED */
            );
 
+    output("C++ support",
+#ifdef ENABLE_CXX
+           "on"
+#else
+           "off"
+#endif /* ENABLE_CXX */
+           );
+
     output("Debug messages",
 #ifdef ENABLE_DEBUG
            "on"
@@ -147,14 +155,6 @@ output_features(void)
 #else
            "off"
 #endif /* ENABLE_PSHMEM */
-           );
-
-    output("C++ support",
-#ifdef ENABLE_CXX
-           "on"
-#else
-           "off"
-#endif /* ENABLE_CXX */
            );
 
     output("Fortran support",
