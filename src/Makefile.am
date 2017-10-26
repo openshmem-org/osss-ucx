@@ -15,9 +15,11 @@ MY_INCLUDE             = -I../include
 all_cppflags           = $(shmemc_cppflags) $(shmemu_cppflags) $(MY_INCLUDE)
 
 MY_SOURCES             = \
+				dlmalloc.c \
+				memalloc.c \
 				init.c \
 				globalexit.c \
-				malloc.c \
+				shmalloc.c \
 				version.c \
 				atomics.c lock.c waituntil.c \
 				pe-query.c \

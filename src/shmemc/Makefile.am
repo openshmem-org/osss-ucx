@@ -13,8 +13,6 @@ LIBSHMEMC_SOURCES         = \
 				comms.c \
 				wait.c \
 				mcs-lock.c \
-				dlmalloc.c \
-				memalloc.c \
 				shmemc-init.c
 
 lib_LIBRARIES             = libshmemc-ucx.a
@@ -42,8 +40,3 @@ MY_WRAPPERS              += oshfort
 endif
 
 bin_SCRIPTS               = $(MY_WRAPPERS)
-
-#
-# special override rule
-#
-include ./dlmalloc.make

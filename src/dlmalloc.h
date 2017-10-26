@@ -9,6 +9,7 @@
 #define _DLMALLOC_H 1
 
 #include <sys/types.h>
+#include <time.h>
 
 #define ONLY_MSPACES 1
 #define HAVE_MORECORE 0
