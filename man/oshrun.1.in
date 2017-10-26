@@ -1,3 +1,4 @@
+.\" For license: see LICENSE file at top-level
 .TH oshrun 1 "" "OSSS"
 .SH NAME
 \fBoshrun\fP \- run an OpenSHMEM program

@@ -1,4 +1,5 @@
 #!/bin/sh
+# For license: see LICENSE file at top-level
 
 compiler="${OSH_CC-@CC@}"
 

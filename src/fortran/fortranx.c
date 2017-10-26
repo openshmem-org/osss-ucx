@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 /*
  * This is the Fortran interface.  Parameter-less routines are
  * the same as C, but with the standard underscore mangling we all love.

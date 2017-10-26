@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _PSHMEMX_H
 #define _PSHMEMX_H 1
 

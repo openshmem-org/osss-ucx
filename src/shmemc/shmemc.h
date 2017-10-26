@@ -1,11 +1,14 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _SHMEMC_H
 #define _SHMEMC_H 1
+
+#include "shmem/defs.h"
 
 #include <sys/types.h>          /* size_t */
 #include <stddef.h>             /* ptrdiff_t */
 #include <stdint.h>
-
-#include "shmem/defs.h"
+#include <unistd.h>
 
 /**
  * API
@@ -138,7 +141,7 @@ void shmemc_broadcast64(void *target, const void *source,
 inline static int
 shmemc_global_exit(int status)
 {
-    return 0;
+    _exit(status);
 }
 
 /*

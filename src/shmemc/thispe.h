@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _THISPE_H
 #define _THISPE_H 1
 

@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 /*
  * This was taken from the dlmalloc.c to act as a standalone header
  * file for other parts of the OpenSHMEM library

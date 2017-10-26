@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 SHMEM_HDRS             =  shmem/defs.h \
 				shmem/depr.h \
 				shmem/api.h \

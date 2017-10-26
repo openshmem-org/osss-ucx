@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #define ONLY_MSPACES 1
 #define HAVE_MORECORE 0
 #define HAVE_MMAP 0

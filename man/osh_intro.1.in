@@ -1,3 +1,4 @@
+.\" For license: see LICENSE file at top-level
 .TH osh_intro 1 "" "OSSS"
 .SH NAME
 \fBosh_intro\fP - Overview of OpenSHMEM programs

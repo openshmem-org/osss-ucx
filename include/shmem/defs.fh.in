@@ -1,3 +1,5 @@
+!     For license: see LICENSE file at top-level
+
 !     OpenSHMEM release
 
       integer SHMEM_MAJOR_VERSION
@@ -5,7 +7,7 @@
       integer SHMEM_MINOR_VERSION
       parameter ( SHMEM_MINOR_VERSION = @SHMEM_MINOR_VERSION@ )
 
-! one less than C's length
+!     one less than C's length
       integer SHMEM_MAX_NAME_LEN
       parameter ( SHMEM_MAX_NAME_LEN = @SHMEM_MAX_NAME_LEN@ - 1 )
 

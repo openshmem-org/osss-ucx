@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef FORTRAN_COMMON_H
 #define FORTRAN_COMMON_H 1
 

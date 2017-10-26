@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #include "state.h"
 
 #include <ucp/api/ucp.h>

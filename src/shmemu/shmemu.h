@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _SHMEM_SHEMU_H
 #define _SHMEM_SHEMU_H 1
 

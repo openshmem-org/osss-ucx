@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #include "shmemc-ucx.h"
 #include "pmix-client.h"
 #include "state.h"

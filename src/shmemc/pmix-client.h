@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _SHMEMI_PMIX_H
 #define _SHMEMI_PMIX_H 1
 

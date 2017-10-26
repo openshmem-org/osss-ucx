@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _MEMFENCE_H
 #define _MEMFENCE_H 1
 

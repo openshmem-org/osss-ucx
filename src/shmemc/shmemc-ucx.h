@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _SHMEMC_UCX_H
 #define _SHMEMC_UCX_H 1
 

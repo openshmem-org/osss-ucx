@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>

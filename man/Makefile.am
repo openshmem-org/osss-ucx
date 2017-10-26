@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 man1_MANS        = oshcc.1 oshrun.1 osh_info.1 osh_intro.1
 
 if ENABLE_CXX

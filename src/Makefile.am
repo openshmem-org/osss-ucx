@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 shmemc_dir             = ./shmemc
 shmemc_cppflags        = -I$(top_srcdir)/src/$(shmemc_dir)
 shmemc_ldflags         = -L$(shmemc_dir)

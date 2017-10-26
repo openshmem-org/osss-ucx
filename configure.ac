@@ -1,6 +1,8 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
+# For license: see LICENSE file at top-level
+
 AC_PREREQ([2.69])
 AC_INIT([OSSS/SBU Reference Implementation],
 	[1.0],

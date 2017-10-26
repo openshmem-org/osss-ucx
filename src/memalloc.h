@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _SHMEM_MEMALLOC_H
 #define _SHMEM_MEMALLOC_H 1
 

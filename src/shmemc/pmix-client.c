@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #include "thispe.h"
 #include "shmemu.h"
 #include "state.h"

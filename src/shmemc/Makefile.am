@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 PMIX_CFLAGS               = @PMIX_CFLAGS@
 
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \

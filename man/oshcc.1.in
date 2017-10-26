@@ -1,3 +1,4 @@
+.\" For license: see LICENSE file at top-level
 .TH oshcc 1 "" "OSSS"
 .SH NAME
 \fBoshcc\fP \- compile an OpenSHMEM C program

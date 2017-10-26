@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #include "shmem/defs.h"
 #include "shmemc.h"
 
