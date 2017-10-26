@@ -1,0 +1,12 @@
+# For license: see LICENSE file at top-level
+
+Prerequisites
+=============
+
+Currently you will need installed:
+
+    PMIX 1.2.3      : https://github.com/pmix/pmix/releases
+    UCX from github : https://github.com/openucx/ucx
+
+The sources here can be set up via the usual GNU autoconf ./autogen.sh
+script.
