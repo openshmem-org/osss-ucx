@@ -162,4 +162,7 @@ AC_CONFIG_FILES([src/shmemc/Makefile
 		 src/shmemc/oshrun
                ])
 
+AC_CONFIG_FILES([src/shmemu/Makefile
+               ])
+
 AC_OUTPUT

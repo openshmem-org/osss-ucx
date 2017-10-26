@@ -11,7 +11,7 @@ shmem_lib=@libdir@
 pmixlib_stanza="@PMIX_LIBS@"
 
 shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
-shmemlib_libs="-lshmem -lshmemc-ucx"
+shmemlib_libs="-lshmem -lshmemc-ucx -lshmemu"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
 
 comms_stanza="@UCX_LIBS@"

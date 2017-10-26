@@ -5,7 +5,6 @@ OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 LIBSHMEMC_SOURCES         = \
 				progress.c \
 				state.c \
-				hostname.c logger.c timer.c unitparse.c \
 				pmix-client.c \
 				ucx-init.c \
 				ranks.c \
@@ -16,7 +15,6 @@ LIBSHMEMC_SOURCES         = \
 				mcs-lock.c \
 				dlmalloc.c \
 				memalloc.c \
-				shmemu-init.c \
 				shmemc-init.c
 
 lib_LIBRARIES             = libshmemc-ucx.a
