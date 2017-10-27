@@ -3,6 +3,8 @@
 #ifndef _SHMEM_SHEMU_H
 #define _SHMEM_SHEMU_H 1
 
+#include "shmem/defs.h"
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
@@ -33,19 +35,17 @@ int shmemu_parse_size(char *size_str, size_t *bytes_p);
 void shmemu_logger_init(void);
 void shmemu_logger_finalize(void);
 
-#define SHMEMU_BIT_SET(_level) (1 << (_level))
-
 typedef enum shmemu_log {
-    LOG_FATAL       = SHMEMU_BIT_SET(0),
-    LOG_INIT        = SHMEMU_BIT_SET(1),
-    LOG_FINALIZE    = SHMEMU_BIT_SET(2),
-    LOG_MEMORY      = SHMEMU_BIT_SET(3),
-    LOG_HEAP        = SHMEMU_BIT_SET(4),
-    LOG_WORKER      = SHMEMU_BIT_SET(5),
-    LOG_INFO        = SHMEMU_BIT_SET(6),
-    LOG_REDUCTION   = SHMEMU_BIT_SET(7),
-    LOG_BARRIER     = SHMEMU_BIT_SET(8),
-    LOG_DEPRECATE   = SHMEMU_BIT_SET(9),
+    LOG_FATAL       = SHMEM_BIT_SET(0),
+    LOG_INIT        = SHMEM_BIT_SET(1),
+    LOG_FINALIZE    = SHMEM_BIT_SET(2),
+    LOG_MEMORY      = SHMEM_BIT_SET(3),
+    LOG_HEAP        = SHMEM_BIT_SET(4),
+    LOG_WORKER      = SHMEM_BIT_SET(5),
+    LOG_INFO        = SHMEM_BIT_SET(6),
+    LOG_REDUCTION   = SHMEM_BIT_SET(7),
+    LOG_BARRIER     = SHMEM_BIT_SET(8),
+    LOG_DEPRECATE   = SHMEM_BIT_SET(9),
     LOG_ALL         = (LOG_FATAL | LOG_INIT | LOG_FINALIZE |
                        LOG_MEMORY | LOG_HEAP | LOG_WORKER | LOG_INFO |
                        LOG_REDUCTION | LOG_BARRIER | LOG_DEPRECATE),

@@ -4,6 +4,11 @@
 #define _SHMEM_DEFINES_H 1
 
 /*
+ * utility
+ */
+#define SHMEM_BIT_SET(_level) (1 << (_level))
+
+/*
  * C and C++ do complex numbers differently
  *
  */
@@ -61,13 +66,10 @@ enum shmem_cmp_constants {
 #define SHMEM_BARRIER_SYNC_SIZE         (4L / SHMEM_INTERNAL_F2C_SCALE)
 #define SHMEM_REDUCE_SYNC_SIZE          (256L / SHMEM_INTERNAL_F2C_SCALE)
 #define SHMEM_REDUCE_MIN_WRKDATA_SIZE   (128L / SHMEM_INTERNAL_F2C_SCALE)
-
-#define SHMEM_SYNC_VALUE (0L)
-
-#define SHMEM_COLLECT_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
-
-#define SHMEM_ALLTOALL_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_ALLTOALLS_SYNC_SIZE (128L / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_SYNC_VALUE                (0L)
+#define SHMEM_COLLECT_SYNC_SIZE         (128L / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_ALLTOALL_SYNC_SIZE        (128L / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_ALLTOALLS_SYNC_SIZE       (128L / SHMEM_INTERNAL_F2C_SCALE)
 
 /*
  * thread support levels
@@ -78,6 +80,13 @@ enum shmem_thread_levels {
     SHMEM_THREAD_SERIALIZED,
     SHMEM_THREAD_MULTIPLE
 };
+
+typedef unsigned long shmem_ctx_t;
+
+#define SHMEM_CTX_DEFAULT     0
+#define SHMEM_CTX_SERIALIZED  SHMEM_BIT_SET(0)
+#define SHMEM_CTX_PRIVATE     SHMEM_BIT_SET(1)
+#define SHMEM_CTX_NOSTORE     SHMEM_BIT_SET(2)
 
 /*
  * to declare AMOs

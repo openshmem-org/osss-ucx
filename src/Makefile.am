@@ -17,27 +17,32 @@ MY_INCLUDE             = -I../include
 all_cppflags           = $(shmemc_cppflags) $(shmemu_cppflags) $(MY_INCLUDE)
 
 MY_SOURCES             = \
-				dlmalloc.c \
-				memalloc.c \
-				init.c \
-				globalexit.c \
-				shmalloc.c \
-				version.c \
-				atomics.c lock.c waituntil.c \
-				pe-query.c \
-				ptr.c \
-				accessible.c \
-				quiet.c \
-				put.c get.c \
-				put-strided.c get-strided.c \
-				put-nbi.c get-nbi.c \
-				barrier.c \
-				reductions.c \
-				fcollect.c collect.c \
-				broadcast.c \
-				alltoall.c \
-				cache.c
-
+                                accessible.c \
+                                alltoall.c \
+                                atomics.c \
+                                barrier.c \
+                                broadcast.c \
+                                cache.c \
+                                collect.c \
+                                dlmalloc.c \
+                                fcollect.c \
+                                get.c \
+                                get-nbi.c \
+                                get-strided.c \
+                                globalexit.c \
+                                init.c \
+                                lock.c \
+                                memalloc.c \
+                                pe-query.c \
+                                ptr.c \
+                                put.c \
+                                put-nbi.c \
+                                put-strided.c \
+                                quiet.c \
+                                reductions.c \
+                                shmalloc.c \
+                                version.c \
+                                waituntil.c
 
 if ENABLE_FORTRAN
 MY_SOURCES            += fortran/fortran.c fortran/fortran-mem.c

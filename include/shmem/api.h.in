@@ -2240,6 +2240,15 @@ extern "C"
                            int PE_start, int logPE_stride, int PE_size,
                            long *pSync);
 
+    /*
+     * Contexts
+     */
+
+    int shmem_ctx_create(long options, shmem_ctx_t *ctxp);
+    void shmem_ctx_destroy(shmem_ctx_t ctx);
+
+    /* TODO: 10/27/2017 - generics for contexts */
+
 #ifdef __STDC_VERSION__
 #if  __STDC_VERSION__ >= 201112L
 
