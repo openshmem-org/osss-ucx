@@ -45,7 +45,7 @@ barrier_helper(int start, int log2stride, int size, long *pSync)
     }
     else {
         /* poke root */
-        shmemc_long_inc(pSync, start);
+        shmemc_inc64(pSync, start);
 
         /* get ack */
         shmemc_long_wait_ne_until(pSync, SHMEM_SYNC_VALUE);

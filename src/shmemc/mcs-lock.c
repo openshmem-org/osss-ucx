@@ -82,7 +82,7 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
      * value, atomically
      */
     tmp.l_word =
-        shmemc_int_swap((int *) &lock->l_word, tmp.l_word, LOCK_OWNER(lock));
+        shmemc_swap32((int *) &lock->l_word, tmp.l_word, LOCK_OWNER(lock));
 
     /* Translate old (broken) default lock state */
     if (tmp.l_word == SHMEM_LOCK_FREE) {
@@ -128,9 +128,9 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * If global lock owner value still equals this_pe, load RESET
          * into it & return prev value
          */
-        tmp.l_word = shmemc_int_cswap((int *) &lock->l_word,
-                                      tmp.l_word,
-                                      SHMEM_LOCK_RESET, LOCK_OWNER(lock));
+        tmp.l_word = shmemc_cswap32((int *) &lock->l_word,
+                                    tmp.l_word,
+                                    SHMEM_LOCK_RESET, LOCK_OWNER(lock));
 
         if (tmp.l_next == this_pe) {
             /* We were still the only requestor, all done */
