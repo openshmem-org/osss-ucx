@@ -34,57 +34,111 @@ void shmemc_get(void *dest, const void *src, size_t nbytes, int pe);
 void shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe);
 void shmemc_get_nbi(void *dest, const void *src, size_t nbytes, int pe);
 
-/**
- * these are per-type so we can handle per-type locks
- *
- * TODO: parameterize with macros for new types
+/*
+ * swappity
  */
 
-void      shmemc_int_add(int *t, int v, int pe);
-void      shmemc_long_add(long *t, long v, int pe);
-void      shmemc_longlong_add(long long *t, long long v, int pe);
-void      shmemc_int_inc(int *t, int pe);
-void      shmemc_long_inc(long *t, int pe);
-void      shmemc_longlong_inc(long long *t, int pe);
-int       shmemc_int_finc(int *t, int pe);
-long      shmemc_long_finc(long *t, int pe);
-long long shmemc_longlong_finc(long long *t, int pe);
-int       shmemc_int_fadd(int *t, int v, int pe);
-long      shmemc_long_fadd(long *t, long v, int pe);
-long long shmemc_longlong_fadd(long long *t, long long v, int pe);
-int       shmemc_int_swap(int *t, int v, int pe);
-long      shmemc_long_swap(long *t, long v, int pe);
-long long shmemc_longlong_swap(long long *t, long long v, int pe);
-float     shmemc_float_swap(float *t, float v, int pe);
-double    shmemc_double_swap(double *t, double v, int pe);
-int       shmemc_int_cswap(int *t, int c, int v, int pe);
-long      shmemc_long_cswap(long *t, long c, long v, int pe);
-long long shmemc_longlong_cswap(long long *t, long long c, long long v, int pe);
-int       shmemc_int_fetch(int *t, int pe);
-long      shmemc_long_fetch(long *t, int pe);
-long long shmemc_longlong_fetch(long long *t, int pe);
-float     shmemc_float_fetch(float *t, int pe);
-double    shmemc_double_fetch(double *t, int pe);
-int       shmemc_int_set(int *t, int v, int pe);
-long      shmemc_long_set(long *t, long v, int pe);
-long long shmemc_longlong_set(long long *t, long long v, int pe);
-float     shmemc_float_set(float *t, float v, int pe);
-double    shmemc_double_set(double *t, double v, int pe);
+#define SHMEMC_DECL_SWAP(_size)                                         \
+    uint64_t shmemc_swap##_size(void *target, uint64_t value, int pe);
+
+SHMEMC_DECL_SWAP(32)
+SHMEMC_DECL_SWAP(64)
+
+#define SHMEMC_DECL_CSWAP(_size)                                \
+    uint64_t shmemc_cswap##_size(void *target,                  \
+                                 uint64_t cond, uint64_t value, \
+                                 int pe);
+
+SHMEMC_DECL_CSWAP(32)
+SHMEMC_DECL_CSWAP(64)
 
 /*
- * xor
+ * adds and incs
  */
 
-#define SHMEMC_DECL_XOR(_name, _type)                               \
-    void shmemc_##_name##_xor(_type *target, _type value, int pe);
+#define SHMEMC_DECL_ADD(_size)                                      \
+    void shmemc_add##_size(void *target, uint64_t value, int pe);
 
-SHMEMC_DECL_XOR(uint, unsigned int)
-SHMEMC_DECL_XOR(ulong, unsigned long)
-SHMEMC_DECL_XOR(ulonglong, unsigned long long)
-SHMEMC_DECL_XOR(int32, int32_t)
-SHMEMC_DECL_XOR(int64, int64_t)
-SHMEMC_DECL_XOR(uint32, uint32_t)
-SHMEMC_DECL_XOR(uint64, uint64_t)
+#define SHMEMC_DECL_INC(_size)                                      \
+    void shmemc_inc##_size(void *target, int pe);
+
+SHMEMC_DECL_ADD(32)
+SHMEMC_DECL_ADD(64)
+
+SHMEMC_DECL_INC(32)
+SHMEMC_DECL_INC(64)
+
+#define SHMEMC_DECL_FETCH_ADD(_size)                                    \
+    uint64_t shmemc_fadd##_size(void *target, uint64_t value, int pe);
+
+#define SHMEMC_DECL_FETCH_INC(_size)                    \
+    uint64_t shmemc_finc##_size(void *target, int pe);
+
+SHMEMC_DECL_FETCH_ADD(32)
+SHMEMC_DECL_FETCH_ADD(64)
+
+SHMEMC_DECL_FETCH_INC(32)
+SHMEMC_DECL_FETCH_INC(64)
+
+#define SHMEMC_DECL_CSWAP(_size)                                \
+    uint64_t shmemc_cswap##_size(void *target,                  \
+                                 uint64_t cond, uint64_t value, \
+                                 int pe);
+
+SHMEMC_DECL_CSWAP(32)
+SHMEMC_DECL_CSWAP(64)
+
+/*
+ * fetch and set
+ */
+
+#define SHMEMC_DECL_FETCH(_size)                        \
+    uint64_t shmemc_fetch##_size(void *target, int pe);
+
+SHMEMC_DECL_FETCH(32)
+SHMEMC_DECL_FETCH(64)
+
+#define SHMEMC_DECL_SET(_size)                                      \
+    void shmemc_set##_size(void *target, uint64_t value, int pe);
+
+SHMEMC_DECL_SET(32)
+SHMEMC_DECL_SET(64)
+
+/*
+ * bitwise
+ */
+
+#define SHMEMC_DECL_BITWISE(_op, _size)                         \
+    void shmemc_##_op##_size(void *target, uint64_t value, int pe);
+
+SHMEMC_DECL_BITWISE(and, 32)
+SHMEMC_DECL_BITWISE(and, 64)
+
+SHMEMC_DECL_BITWISE(or, 32)
+SHMEMC_DECL_BITWISE(or, 64)
+
+SHMEMC_DECL_BITWISE(xor, 32)
+SHMEMC_DECL_BITWISE(xor, 64)
+
+/*
+ * fetch-bitwise
+ */
+
+#define SHMEMC_DECL_FETCH_BITWISE(_op, _size)                           \
+    uint64_t shmemc_fetch_##_op##_size(void *target, uint64_t value, int pe);
+
+SHMEMC_DECL_FETCH_BITWISE(and, 32)
+SHMEMC_DECL_FETCH_BITWISE(and, 64)
+
+SHMEMC_DECL_FETCH_BITWISE(or, 32)
+SHMEMC_DECL_FETCH_BITWISE(or, 64)
+
+SHMEMC_DECL_FETCH_BITWISE(xor, 32)
+SHMEMC_DECL_FETCH_BITWISE(xor, 64)
+
+/*
+ * locks
+ */
 
 void shmemc_set_lock(long *lock);
 void shmemc_clear_lock(long *lock);
@@ -95,8 +149,8 @@ int  shmemc_test_lock(long *lock);
  *
  * NEEDS PUSH-DOWN INTO COMMS IMPLEMENTATION FOR ACTUAL WAIT
  */
-#define SHMEMC_WAITUNTIL_TYPE(_name, _type, _opname)                    \
-    void shmemc_##_name##_wait_##_opname##_until(_type *var,            \
+#define SHMEMC_WAITUNTIL_TYPE(_name, _type, _opname)                \
+    void shmemc_##_name##_wait_##_opname##_until(_type *var,        \
                                                  _type cmp_value);
 
 SHMEMC_WAITUNTIL_TYPE(short, short, eq)
