@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _MPP_SHMEM_H
 #define _MPP_SHMEM_H 1
 

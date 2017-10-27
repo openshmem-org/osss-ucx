@@ -1,3 +1,5 @@
-! Dunno how to do something like "#warning" for Fortran
+!     For license: see LICENSE file at top-level
+
+!     Dunno how to do something like "#warning" for Fortran
 
       include 'shmem.fh'
