@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 Name: @PACKAGE@
 Description: @PACKAGE_NAME@
 Version: @PACKAGE_VERSION@
@@ -6,7 +8,7 @@ URL: @PACKAGE_URL@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 #
-Libs: -L@libdir@ -lshmem -lshmemi -lshmemc -lshmemu @PMIX_LIBS@
+Libs: -L@libdir@ -lshmem -lshmemc-ucx -lshmemu @PMIX_LIBS@
 Cflags: -I@includedir@
 #
 Provides: @PACKAGE@
