@@ -7,6 +7,7 @@
 #include "shmem/defs.h"
 #include "shmemc.h"
 #include "shmemu.h"
+#include "memalloc.h"
 #include "fortran-common.h"
 
 /**
@@ -101,7 +102,7 @@ FORTRANIFY(shpalloc)(uintptr_t **addr, int *length,
         /* NOT REACHED */
     }
 
-    symm_addr = shmemc_mem_alloc(*length * scale);
+    symm_addr = shmemc_mem_malloc(*length * scale);
 
     /* pass back status code */
     *errcode = malloc_error;
