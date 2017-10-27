@@ -16,19 +16,19 @@
 #endif /* ENABLE_PSHMEM */
 
 void
-shmem_set_lock(volatile long *lock)
+shmem_set_lock(long *lock)
 {
     shmemc_set_lock((long *) lock);
 }
 
 void
-shmem_clear_lock(volatile long *lock)
+shmem_clear_lock(long *lock)
 {
     shmemc_clear_lock((long *) lock);
 }
 
 int
-shmem_test_lock(volatile long *lock)
+shmem_test_lock(long *lock)
 {
     return shmemc_test_lock((long *) lock);
 }
