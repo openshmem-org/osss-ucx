@@ -13,8 +13,9 @@
 #include <unistd.h>
 
 static const int tag_width = 24;
-static char *unknown = "unknown";
-static char *internal_error = "not found [shouldn't happen]";
+
+#define UNKNOWN        "unknown"
+#define INTERNAL_ERROR "not found [shouldn't happen]"
 
 inline static void
 output(const char *tag, const char *val)
@@ -34,7 +35,7 @@ output_package(void)
 #ifdef PACKAGE_NAME
            PACKAGE_NAME
 #else
-           unknown
+           UNKNOWN
 #endif /* PACKAGE_NAME */
            );
 
@@ -42,7 +43,7 @@ output_package(void)
 #ifdef PACKAGE_VERSION
             PACKAGE_VERSION
 #else
-           unknown
+           UNKNOWN
 #endif /* PACKAGE_VERSION */
            );
 
@@ -50,7 +51,7 @@ output_package(void)
 #ifdef PACKAGE_URL
             PACKAGE_URL
 #else
-           unknown
+           UNKNOWN
 #endif /* PACKAGE_URL */
            );
 
@@ -58,7 +59,7 @@ output_package(void)
 #ifdef PACKAGE_BUGREPORT
            PACKAGE_BUGREPORT
 #else
-           unknown
+           UNKNOWN
 #endif /* PACKAGE_BUGREPORT */
            );
 }
@@ -88,7 +89,7 @@ output_build_env(void)
 #ifdef CONFIG_BUILD_DATE
            CONFIG_BUILD_DATE
 #else
-           unknown
+           UNKNOWN
 #endif /* CONFIG_BUILD_DATE */
            );
 
@@ -96,12 +97,12 @@ output_build_env(void)
 #ifdef CONFIG_BUILD_HOST
            CONFIG_BUILD_HOST
 #else
-           unknown
+           UNKNOWN
 #endif /* CONFIG_BUILD_HOST */
            );
 
     host = shmemu_gethostname();
-    output("Execution host", (host != NULL) ? host : unknown);
+    output("Execution host", (host != NULL) ? host : UNKNOWN);
 
     /* command-line that built the library */
 #ifdef CONFIG_FLAGS
@@ -176,7 +177,7 @@ output_comms(void)
 #ifdef HAVE_UCX
            UCX_DIR
 #else
-           internal_error
+           INTERNAL_ERROR
 #endif /* HAVE_UCX */
            );
 
@@ -184,7 +185,7 @@ output_comms(void)
 #ifdef HAVE_PMIX
            PMIX_DIR
 #else
-           internal_error
+           INTERNAL_ERROR
 #endif /* HAVE_PMIX */
            );
 }
