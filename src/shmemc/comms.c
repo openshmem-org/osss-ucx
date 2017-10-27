@@ -513,11 +513,17 @@ helper_atomic_xor32(uint64_t t, uint32_t v, int pe)
     assert(s == UCS_OK);
 }
 
+/*
+ * messy nastiness: have to put in request for bitwise AMOs in UCX
+ */
+
 inline static void
 helper_atomic_xor64(uint64_t t, uint64_t v, int pe)
 {
     long r;
     uint64_t r_t;
+    uint64_t rval, rval_orig;
+    uint64_t ret;
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
@@ -527,8 +533,15 @@ helper_atomic_xor64(uint64_t t, uint64_t v, int pe)
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(pe);
 
-    s = UCS_OK; /* something something */
-    assert(s == UCS_OK);
+    do {
+        s = ucp_get(ep, &rval_orig, sizeof(rval_orig), r_t, rkey);
+        assert(s == UCS_OK);
+
+        rval = rval_orig ^ v;
+
+        s = ucp_atomic_cswap64(ep, rval_orig, rval, r_t, rkey, &ret);
+        assert(s == UCS_OK);
+    } while (ret != rval_orig);
 }
 
 /*

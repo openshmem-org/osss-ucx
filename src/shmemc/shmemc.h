@@ -71,6 +71,21 @@ long long shmemc_longlong_set(long long *t, long long v, int pe);
 float     shmemc_float_set(float *t, float v, int pe);
 double    shmemc_double_set(double *t, double v, int pe);
 
+/*
+ * xor
+ */
+
+#define SHMEMC_DECL_XOR(_name, _type)                               \
+    void shmemc_##_name##_xor(_type *target, _type value, int pe);
+
+SHMEMC_DECL_XOR(uint, unsigned int)
+SHMEMC_DECL_XOR(ulong, unsigned long)
+SHMEMC_DECL_XOR(ulonglong, unsigned long long)
+SHMEMC_DECL_XOR(int32, int32_t)
+SHMEMC_DECL_XOR(int64, int64_t)
+SHMEMC_DECL_XOR(uint32, uint32_t)
+SHMEMC_DECL_XOR(uint64, uint64_t)
+
 void shmemc_set_lock(long *lock);
 void shmemc_clear_lock(long *lock);
 int  shmemc_test_lock(long *lock);

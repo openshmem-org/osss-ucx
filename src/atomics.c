@@ -234,28 +234,28 @@ SHMEM_TYPE_FETCH(double, double, 64)
 #endif /* ENABLE_PSHMEM */
 
 /*
- * set
+ * xor
  */
 
-#define SHMEM_TYPE_SET(_name, _type, _size)                             \
+#define SHMEM_TYPE_XOR(_name, _type)                                    \
     void                                                                \
-    shmem_##_name##_atomic_set(_type *target, _type value, int pe)      \
+    shmem_##_name##_atomic_xor(_type *target, _type value, int pe)      \
     {                                                                   \
-        shmemc_##_name##_set(target, value, pe);                        \
+        shmemc_##_name##_xor(target, value, pe);                        \
     }
 
-SHMEM_TYPE_SET(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_TYPE_SET(long, long, 64)
-#else
-SHMEM_TYPE_SET(long, long, 32)
-#endif
-SHMEM_TYPE_SET(longlong, long long, 64)
-SHMEM_TYPE_SET(float, float, 32)
-SHMEM_TYPE_SET(double, double, 64)
+SHMEM_TYPE_XOR(uint, unsigned int)
+SHMEM_TYPE_XOR(ulong, unsigned long)
+SHMEM_TYPE_XOR(ulonglong, unsigned long long)
+SHMEM_TYPE_XOR(int32, int32_t)
+SHMEM_TYPE_XOR(int64, int64_t)
+SHMEM_TYPE_XOR(uint32, uint32_t)
+SHMEM_TYPE_XOR(uint64, uint64_t)
 
 
 /*
+ *-----------------------------------------------------------------------
+ *
  * Deprecations as of 1.4.  3 different macros for different parameter
  * counts.  Provide variants for return types.  This needs to match
  * deprecation information in the header file.
