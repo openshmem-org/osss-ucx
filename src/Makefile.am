@@ -24,6 +24,7 @@ MY_SOURCES             = \
                                 broadcast.c \
                                 cache.c \
                                 collect.c \
+				contexts.c \
                                 dlmalloc.c \
                                 fcollect.c \
                                 get.c \
