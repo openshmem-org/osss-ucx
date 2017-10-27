@@ -152,7 +152,7 @@ AC_CONFIG_FILES([include/Makefile
 		])
 
 AC_CONFIG_FILES([pkgconfig/Makefile
-		 pkgconfig/osss-openshmem.pc
+		 pkgconfig/osss-ucx.pc
 		])
 
 AC_CONFIG_FILES([src/Makefile
