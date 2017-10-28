@@ -60,14 +60,7 @@ void shmemu_logger(shmemu_log_t level, const char *fmt, ...);
 # define logger(...)
 #endif /* ENABLE_DEBUG */
 
-/*
- * need to restrict this report to first usage only
- */
-inline static void
-deprecate(const char *fn)
-{
-    logger(LOG_DEPRECATE, "\"%s\" is deprecated", fn);
-}
+void deprecate(const char *fn);
 
 #include <sys/types.h>
 #include <stdint.h>
