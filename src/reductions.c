@@ -11,92 +11,6 @@
 #include <complex.h>
 
 /**
- * these are the arithmetic operations
- *
- */
-
-#define SHMEM_MATH_FUNC(_name, _type)           \
-    static                                      \
-    _type                                       \
-    sum_##_name##_func(_type _a, _type _b)      \
-    {                                           \
-        return (_a) + (_b);                     \
-    }                                           \
-    static                                      \
-    _type                                       \
-    prod_##_name##_func(_type _a, _type _b)     \
-    {                                           \
-        return (_a) * (_b);                     \
-    }
-
-SHMEM_MATH_FUNC(short, short)
-SHMEM_MATH_FUNC(int, int)
-SHMEM_MATH_FUNC(long, long)
-SHMEM_MATH_FUNC(longlong, long long)
-SHMEM_MATH_FUNC(float, float)
-SHMEM_MATH_FUNC(double, double)
-SHMEM_MATH_FUNC(longdouble, long double)
-SHMEM_MATH_FUNC(complexd, double complex)
-SHMEM_MATH_FUNC(complexf, float complex)
-
-/**
- * these are the logical operations.  Note: these are *bitwise*.
- *
- */
-
-#define SHMEM_LOGIC_FUNC(_name, _type)          \
-    static                                      \
-    _type                                       \
-    and_##_name##_func(_type _a, _type _b)      \
-    {                                           \
-        return (_a) & (_b);                     \
-    }                                           \
-    static                                      \
-    _type                                       \
-    or_##_name##_func(_type _a, _type _b)       \
-    {                                           \
-        return (_a) | (_b);                     \
-    }                                           \
-    static                                      \
-    _type                                       \
-    xor_##_name##_func(_type _a, _type _b)      \
-    {                                           \
-        return (_a) ^ (_b);                     \
-    }
-
-SHMEM_LOGIC_FUNC(short, short)
-SHMEM_LOGIC_FUNC(int, int)
-SHMEM_LOGIC_FUNC(long, long)
-SHMEM_LOGIC_FUNC(longlong, long long)
-
-/**
- * these are the minima/maxima operations
- *
- */
-
-#define SHMEM_MINIMAX_FUNC(_name, _type)        \
-    static                                      \
-    _type                                       \
-    min_##_name##_func(_type _a, _type _b)      \
-    {                                           \
-        return (_a) < (_b) ? (_a) : (_b);       \
-    }                                           \
-    static                                      \
-    _type                                       \
-    max_##_name##_func(_type _a, _type _b)      \
-    {                                           \
-        return (_a) > (_b) ? (_a) : (_b);       \
-    }
-
-SHMEM_MINIMAX_FUNC(short, short)
-SHMEM_MINIMAX_FUNC(int, int)
-SHMEM_MINIMAX_FUNC(long, long)
-SHMEM_MINIMAX_FUNC(longlong, long long)
-SHMEM_MINIMAX_FUNC(float, float)
-SHMEM_MINIMAX_FUNC(double, double)
-SHMEM_MINIMAX_FUNC(longdouble, long double)
-
-/**
  * common reduce code.  Build generalized reduction for various types.
  * Comparison operator passed as 1st parameter
  *
@@ -230,7 +144,7 @@ SHMEM_UDR_TYPE_OP(complexd, double complex)
                                        int PE_size,                     \
                                        _type *pWrk, long *pSync)        \
     {                                                                   \
-        udr_##_name##_to_all(_opcall##_##_name##_func,                  \
+        udr_##_name##_to_all(shmemu_##_opcall##_##_name##_func,         \
                              _initval,                                  \
                              target, source,                            \
                              nreduce,                                   \
