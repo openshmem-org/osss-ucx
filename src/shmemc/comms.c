@@ -133,6 +133,28 @@ shmemc_ptr(const void *addr, int pe)
     return NULL;
 }
 
+int
+shmemc_addr_accessible(const void *addr, int pe)
+{
+    long r;
+    uint64_t ua = (uint64_t) addr;
+
+    r = lookup_region(ua, proc.rank);
+
+    return (r >= 0) ? 1 : 0;
+}
+
+int
+shmemc_pe_accessible(int pe)
+{
+    if ( (pe >= 0) && (pe < proc.nranks) ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+}
+
 /*
  * -- puts & gets --------------------------------------------------------
  */

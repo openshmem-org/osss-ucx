@@ -206,23 +206,12 @@ void shmemc_broadcast64(void *target, const void *source,
 /*
  * zap the program
  */
-
 void shmemc_trigger_globalexit(int status);
 
 /*
  * accessibility
  */
-
-inline static int
-shmemc_pe_accessible(int pe)
-{
-    return 1;
-}
-
-inline static int
-shmemc_addr_accessible(const void *addr, int pe)
-{
-    return 0;
-}
+int shmemc_pe_accessible(int pe);
+int shmemc_addr_accessible(const void *addr, int pe);
 
 #endif /* ! _SHMEMC_H */
