@@ -56,11 +56,17 @@ void shmemu_logger(shmemu_log_t level, const char *fmt, ...);
 
 #ifdef ENABLE_DEBUG
 # define logger(...) shmemu_logger(__VA_ARGS__)
+void deprecate(const char *fn);
+void shmemu_deprecate_init();
+void shmemu_deprecate_finalize();
 #else
 # define logger(...)
+inline static void deprecate(const char *fn) { }
+inline static void shmemu_deprecate_init(void) { }
+inline static void shmemu_deprecate_finalize(void) { }
 #endif /* ENABLE_DEBUG */
 
-void deprecate(const char *fn);
+
 
 #include <sys/types.h>
 #include <stdint.h>

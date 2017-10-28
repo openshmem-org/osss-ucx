@@ -4,18 +4,21 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#ifdef ENABLE_DEBUG
+
 #include "shmemu.h"
 #include "uthash.h"
 
+#include <stdlib.h>
 #include <assert.h>
 
 struct depr {
-    const char *name;
+    char *name;
     unsigned long count;
     UT_hash_handle hh;
 };
 
-static struct depr *table = NULL;
+static struct depr *table;
 
 /*
  * need to restrict this report to first usage only
@@ -40,3 +43,23 @@ deprecate(const char *fn)
         logger(LOG_DEPRECATE, "\"%s\" is deprecated", fn);
     }
 }
+
+void
+shmemu_deprecate_init(void)
+{
+    table = NULL;
+}
+
+void
+shmemu_deprecate_finalize(void)
+{
+    struct depr *cur;
+    struct depr *tmp;
+
+    HASH_ITER(hh, table, cur, tmp) {
+        free(cur->name);   /* was strdup'ed above */
+        HASH_DEL(table, cur);
+    }
+}
+
+#endif /* ENABLE_DEBUG */
