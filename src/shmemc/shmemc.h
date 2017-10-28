@@ -207,11 +207,7 @@ void shmemc_broadcast64(void *target, const void *source,
  * zap the program
  */
 
-inline static int
-shmemc_global_exit(int status)
-{
-    _exit(status);
-}
+void shmemc_trigger_globalexit(int status);
 
 /*
  * accessibility

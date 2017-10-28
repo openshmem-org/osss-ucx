@@ -4,7 +4,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
-#include "progress.h"
+#include "globalexit.h"
 #include "memalloc.h"
 
 #include <stdlib.h>             /* getenv */
@@ -394,7 +394,7 @@ shmemc_ucx_init(void)
     /* don't need config info any more */
     ucp_config_release(proc.comms.cfg);
 
-    shmemc_ucx_progress_init();
+    shmemc_globalexit_init();
 }
 
 #define REAL_SHUTDOWN 1
@@ -402,7 +402,7 @@ shmemc_ucx_init(void)
 void
 shmemc_ucx_finalize(void)
 {
-    shmemc_ucx_progress_finalize();
+    shmemc_globalexit_finalize();
 
 #if REAL_SHUTDOWN
     disconnect_all_eps();

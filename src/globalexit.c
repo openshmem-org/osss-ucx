@@ -19,5 +19,5 @@
 void
 shmem_global_exit(int status)
 {
-    shmemc_global_exit(status);
+    shmemc_trigger_globalexit(status);
 }

@@ -5,7 +5,7 @@ PMIX_CFLAGS               = @PMIX_CFLAGS@
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 				-I../../include -I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \
-				progress.c \
+				globalexit.c \
 				state.c \
 				pmix-client.c \
 				ucx-init.c \
