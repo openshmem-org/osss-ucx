@@ -2,7 +2,7 @@
 
 OTHER_CPPFLAGS            = -I../../include -I$(srcdir)/../shmemc
 LIBSHMEMU_SOURCES         = hostname.c logger.c timer.c unitparse.c \
-				shmemu-init.c
+				shmemu-init.c miscops.c
 
 lib_LIBRARIES             = libshmemu.a
 libshmemu_a_SOURCES       = $(LIBSHMEMU_SOURCES)
