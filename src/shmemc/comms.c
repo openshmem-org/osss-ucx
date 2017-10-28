@@ -117,13 +117,8 @@ shmemc_ptr(const void *addr, int pe)
     ucs_status_t s;
 
     r = lookup_region(ua, proc.rank);
-    assert(r >= 0);
-
     r_addr = translate_address(ua, r, pe);
-    assert(r_addr != 0);
-
     rkey = lookup_rkey(r, pe);
-    assert(rkey != NULL);
 
     s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
     if (s == UCS_OK) {
@@ -171,14 +166,8 @@ shmemc_put(void *dest, const void *src,
     ucs_status_t s;
 
     r = lookup_region(ud, proc.rank);
-    assert(r >= 0);
-
     r_dest = translate_address(ud, r, pe);
-    assert(r_dest != 0);
-
     rkey = lookup_rkey(r, pe);
-    assert(rkey != NULL);
-
     ep = lookup_ucp_ep(pe);
 
     s = ucp_put(ep, src, nbytes, r_dest, rkey);
@@ -197,13 +186,8 @@ shmemc_get(void *dest, const void *src,
     ucs_status_t s;
 
     r = lookup_region(us, proc.rank);
-
     r_src = translate_address(us, r, pe);
-    assert(r_src != 0);
-
     rkey = lookup_rkey(r, pe);
-    assert(rkey != NULL);
-
     ep = lookup_ucp_ep(pe);
 
     s = ucp_get(ep, dest, nbytes, r_src, rkey);
@@ -227,13 +211,8 @@ shmemc_put_nbi(void *dest, const void *src,
     ucs_status_t s;
 
     r = lookup_region(ud, proc.rank);
-
     r_dest = translate_address(ud, r, pe);
-    assert(r_dest != 0);
-
     rkey = lookup_rkey(r, pe);
-    assert(rkey != NULL);
-
     ep = lookup_ucp_ep(pe);
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, rkey);
@@ -252,13 +231,8 @@ shmemc_get_nbi(void *dest, const void *src,
     ucs_status_t s;
 
     r = lookup_region(us, proc.rank);
-
     r_src = translate_address(us, r, pe);
-    assert(r_src != 0);
-
     rkey = lookup_rkey(r, pe);
-    assert(rkey != NULL);
-
     ep = lookup_ucp_ep(pe);
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, rkey);
@@ -275,179 +249,118 @@ shmemc_get_nbi(void *dest, const void *src,
  * helpers
  */
 
-inline static uint32_t
-helper_atomic_fetch_add32(uint64_t t, uint32_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint32_t ret;
-    ucs_status_t s;
+#define HELPER_FADD(_size)                                              \
+    inline static uint##_size##_t                                       \
+    helper_atomic_fetch_add##_size(uint64_t t, uint##_size##_t v, int pe) \
+    {                                                                   \
+        long r;                                                         \
+        uint64_t r_t;                                                   \
+        ucp_rkey_h rkey;                                                \
+        ucp_ep_h ep;                                                    \
+        uint##_size##_t ret;                                            \
+        ucs_status_t s;                                                 \
+                                                                        \
+        r = lookup_region(t, proc.rank);                                \
+        r_t = translate_address(t, r, pe);                              \
+        rkey = lookup_rkey(r, pe);                                      \
+        ep = lookup_ucp_ep(pe);                                         \
+                                                                        \
+        s = ucp_atomic_fadd##_size(ep, v, r_t, rkey, &ret);             \
+        assert(s == UCS_OK);                                            \
+                                                                        \
+        return ret;                                                     \
+    }
 
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
+HELPER_FADD(32)
+HELPER_FADD(64)
 
-    s = ucp_atomic_fadd32(ep, v, r_t, rkey, &ret);
-    assert(s == UCS_OK);
+#define HELPER_ADD(_size)                                           \
+    inline static void                                              \
+    helper_atomic_add##_size(uint64_t t, uint##_size##_t v, int pe) \
+    {                                                               \
+        long r;                                                     \
+        uint64_t r_t;                                               \
+        ucp_rkey_h rkey;                                            \
+        ucp_ep_h ep;                                                \
+        ucs_status_t s;                                             \
+                                                                    \
+        r = lookup_region(t, proc.rank);                            \
+        r_t = translate_address(t, r, pe);                          \
+        rkey = lookup_rkey(r, pe);                                  \
+        ep = lookup_ucp_ep(pe);                                     \
+                                                                    \
+        s = ucp_atomic_add##_size(ep, v, r_t, rkey);                \
+        assert(s == UCS_OK);                                        \
+    }
 
-    return ret;
-}
-
-inline static uint64_t
-helper_atomic_fetch_add64(uint64_t t, uint64_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint64_t ret;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = ucp_atomic_fadd64(ep, v, r_t, rkey, &ret);
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static void
-helper_atomic_add32(uint64_t t, uint32_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = ucp_atomic_add32(ep, v, r_t, rkey);
-    assert(s == UCS_OK);
-}
-
-inline static void
-helper_atomic_add64(uint64_t t, uint64_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = ucp_atomic_add64(ep, v, r_t, rkey);
-    assert(s == UCS_OK);
-}
+HELPER_ADD(32)
+HELPER_ADD(64)
 
 /*
  * swaps
  */
 
-inline static uint32_t
-helper_atomic_swap32(uint64_t t, uint32_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint32_t ret;
-    ucs_status_t s;
+#define HELPER_SWAP(_size)                                              \
+    inline static uint##_size##_t                                       \
+    helper_atomic_swap##_size(uint64_t t, uint##_size##_t v, int pe)    \
+    {                                                                   \
+        long r;                                                         \
+        uint64_t r_t;                                                   \
+        ucp_rkey_h rkey;                                                \
+        ucp_ep_h ep;                                                    \
+        uint##_size##_t ret;                                            \
+        ucs_status_t s;                                                 \
+                                                                        \
+        r = lookup_region(t, proc.rank);                                \
+        r_t = translate_address(t, r, pe);                              \
+        rkey = lookup_rkey(r, pe);                                      \
+        ep = lookup_ucp_ep(pe);                                         \
+                                                                        \
+        s = ucp_atomic_swap##_size(ep, v, r_t, rkey, &ret);             \
+        assert(s == UCS_OK);                                            \
+                                                                        \
+        return ret;                                                     \
+    }
 
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
+HELPER_SWAP(32)
+HELPER_SWAP(64)
 
-    s = ucp_atomic_swap32(ep, v, r_t, rkey, &ret);
-    assert(s == UCS_OK);
+#define HELPER_CSWAP(_size)                                             \
+    inline static uint##_size##_t                                       \
+    helper_atomic_cswap##_size(uint64_t t,                              \
+                               uint##_size##_t c, uint##_size##_t v,    \
+                               int pe)                                  \
+    {                                                                   \
+        long r;                                                         \
+        uint64_t r_t;                                                   \
+        ucp_rkey_h rkey;                                                \
+        ucp_ep_h ep;                                                    \
+        uint##_size##_t ret;                                            \
+        ucs_status_t s;                                                 \
+                                                                        \
+        r = lookup_region(t, proc.rank);                                \
+        r_t = translate_address(t, r, pe);                              \
+        rkey = lookup_rkey(r, pe);                                      \
+        ep = lookup_ucp_ep(pe);                                         \
+                                                                        \
+        s = ucp_atomic_cswap##_size(ep, c, v, r_t, rkey, &ret);         \
+        assert(s == UCS_OK);                                            \
+                                                                        \
+        return ret;                                                     \
+    }
 
-    return ret;
-}
-
-inline static uint64_t
-helper_atomic_swap64(uint64_t t, uint64_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint64_t ret;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = ucp_atomic_swap64(ep, v, r_t, rkey, &ret);
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static uint32_t
-helper_atomic_cswap32(uint64_t t, uint32_t c, uint32_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint32_t ret;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = ucp_atomic_cswap32(ep, c, v, r_t, rkey, &ret);
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static uint64_t
-helper_atomic_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint64_t ret;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = ucp_atomic_cswap64(ep, c, v, r_t, rkey, &ret);
-    assert(s == UCS_OK);
-
-    return ret;
-}
+HELPER_CSWAP(32)
+HELPER_CSWAP(64)
 
 /*
  * bitwise helpers
  */
 
-#define HELPER_BITWISE_OP(_op, _opname, _size)                          \
-    inline static void                                                  \
-    helper_atomic_##_opname####_size(uint64_t t, uint##_size##_t v, int pe) \
+#define HELPER_FETCH_BITWISE_OP(_op, _opname, _size)                    \
+    inline static uint##_size##_t                                       \
+    helper_atomic_fetch_##_opname##_size(uint64_t t,                    \
+                                         uint##_size##_t v,             \
+                                         int pe)                        \
     {                                                                   \
         long r;                                                         \
         uint64_t r_t;                                                   \
@@ -471,155 +384,27 @@ helper_atomic_cswap64(uint64_t t, uint64_t c, uint64_t v, int pe)
                                         r_t, rkey, &ret);               \
             assert(s == UCS_OK);                                        \
         } while (ret != rval_orig);                                     \
+                                                                        \
+        return ret;                                                     \
     }
 
 /*
  * and
  */
-HELPER_BITWISE_OP(&, and, 32)
-HELPER_BITWISE_OP(&, and, 64)
+HELPER_FETCH_BITWISE_OP(&, and, 32)
+HELPER_FETCH_BITWISE_OP(&, and, 64)
 
 /*
  * or
  */
-HELPER_BITWISE_OP(|, or, 32)
-HELPER_BITWISE_OP(|, or, 64)
+HELPER_FETCH_BITWISE_OP(|, or, 32)
+HELPER_FETCH_BITWISE_OP(|, or, 64)
 
 /*
  * xor
  */
-HELPER_BITWISE_OP(^, xor, 32)
-HELPER_BITWISE_OP(^, xor, 64)
-
-/*
- * fetched bitwise helpers
- */
-
-inline static uint32_t
-helper_atomic_fetch_and32(uint64_t t, uint32_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint32_t ret = 0;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = UCS_OK; /* something something */
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static uint64_t
-helper_atomic_fetch_and64(uint64_t t, uint64_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint64_t ret = 0;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = UCS_OK; /* something something */
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static uint32_t
-helper_atomic_fetch_or32(uint64_t t, uint32_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint32_t ret = 0;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = UCS_OK; /* something something */
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static uint64_t
-helper_atomic_fetch_or64(uint64_t t, uint64_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint64_t ret = 0;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = UCS_OK; /* something something */
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static uint32_t
-helper_atomic_fetch_xor32(uint64_t t, uint32_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint32_t ret = 0;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = UCS_OK; /* something something */
-    assert(s == UCS_OK);
-
-    return ret;
-}
-
-inline static uint64_t
-helper_atomic_fetch_xor64(uint64_t t, uint64_t v, int pe)
-{
-    long r;
-    uint64_t r_t;
-    ucp_rkey_h rkey;
-    ucp_ep_h ep;
-    uint64_t ret = 0;
-    ucs_status_t s;
-
-    r = lookup_region(t, proc.rank);
-    r_t = translate_address(t, r, pe);
-    rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
-
-    s = UCS_OK; /* something something */
-    assert(s == UCS_OK);
-
-    return ret;
-}
+HELPER_FETCH_BITWISE_OP(^, xor, 32)
+HELPER_FETCH_BITWISE_OP(^, xor, 64)
 
 /**
  * AMO API
@@ -629,11 +414,11 @@ helper_atomic_fetch_xor64(uint64_t t, uint64_t v, int pe)
  * add
  */
 
-#define SHMEMC_ADD(_size)                                           \
-    void                                                            \
-    shmemc_add##_size(void *t, uint64_t v, int pe)                  \
-    {                                                               \
-        (void) helper_atomic_add##_size((uint64_t) t, v, pe);       \
+#define SHMEMC_ADD(_size)                                       \
+    void                                                        \
+    shmemc_add##_size(void *t, uint64_t v, int pe)              \
+    {                                                           \
+        (void) helper_atomic_add##_size((uint64_t) t, v, pe);   \
     }
 
 SHMEMC_ADD(32)
@@ -643,11 +428,11 @@ SHMEMC_ADD(64)
  * inc is just "add 1"
  */
 
-#define SHMEMC_INC(_size)                                             \
-    void                                                              \
-    shmemc_inc##_size(void *t, int pe)                                \
-    {                                                                 \
-        (void) helper_atomic_add##_size((uint64_t) t, 1, pe);         \
+#define SHMEMC_INC(_size)                                       \
+    void                                                        \
+    shmemc_inc##_size(void *t, int pe)                          \
+    {                                                           \
+        (void) helper_atomic_add##_size((uint64_t) t, 1, pe);   \
     }
 
 SHMEMC_INC(32)
@@ -657,11 +442,11 @@ SHMEMC_INC(64)
  * fetch-and-add
  */
 
-#define SHMEMC_FADD(_size)                                              \
-    uint64_t                                                            \
-    shmemc_fadd##_size(void *t, uint64_t v, int pe)                     \
-    {                                                                   \
-        return helper_atomic_fetch_add##_size((uint64_t) t, v, pe);     \
+#define SHMEMC_FADD(_size)                                          \
+    uint64_t                                                        \
+    shmemc_fadd##_size(void *t, uint64_t v, int pe)                 \
+    {                                                               \
+        return helper_atomic_fetch_add##_size((uint64_t) t, v, pe); \
     }
 
 SHMEMC_FADD(32)
@@ -671,11 +456,11 @@ SHMEMC_FADD(64)
  * finc is just "fadd 1"
  */
 
-#define SHMEMC_FINC(_size)                                              \
-    uint64_t                                                            \
-    shmemc_finc##_size(void *t, int pe)                                 \
-    {                                                                   \
-        return helper_atomic_fetch_add##_size((uint64_t) t, 1, pe);     \
+#define SHMEMC_FINC(_size)                                          \
+    uint64_t                                                        \
+    shmemc_finc##_size(void *t, int pe)                             \
+    {                                                               \
+        return helper_atomic_fetch_add##_size((uint64_t) t, 1, pe); \
     }
 
 SHMEMC_FINC(32)
@@ -685,22 +470,22 @@ SHMEMC_FINC(64)
  * swaps
  */
 
-#define SHMEMC_SWAP(_size)                                              \
-    uint64_t                                                            \
-    shmemc_swap##_size(void *t, uint64_t v, int pe)                     \
-    {                                                                   \
-        return helper_atomic_swap##_size((uint64_t) t, v, pe);          \
-    }                                                                   \
+#define SHMEMC_SWAP(_size)                                      \
+    uint64_t                                                    \
+    shmemc_swap##_size(void *t, uint64_t v, int pe)             \
+    {                                                           \
+        return helper_atomic_swap##_size((uint64_t) t, v, pe);  \
+    }                                                           \
 
 SHMEMC_SWAP(32)
 SHMEMC_SWAP(64)
 
-#define SHMEMC_CSWAP(_size)                                             \
-    uint64_t                                                            \
-    shmemc_cswap##_size(void *t, uint64_t c, uint64_t v, int pe)        \
-    {                                                                   \
-        return helper_atomic_cswap##_size((uint64_t) t, c, v, pe);      \
-    }                                                                   \
+#define SHMEMC_CSWAP(_size)                                         \
+    uint64_t                                                        \
+    shmemc_cswap##_size(void *t, uint64_t c, uint64_t v, int pe)    \
+    {                                                               \
+        return helper_atomic_cswap##_size((uint64_t) t, c, v, pe);  \
+    }                                                               \
 
 SHMEMC_CSWAP(32)
 SHMEMC_CSWAP(64)
@@ -713,11 +498,11 @@ SHMEMC_CSWAP(64)
  *
  */
 
-#define SHMEMC_FETCH(_size)                                             \
-    uint64_t                                                            \
-    shmemc_fetch##_size(void *t, int pe)                                \
-    {                                                                   \
-        return helper_atomic_fetch_add##_size((uint64_t) t, 0, pe);     \
+#define SHMEMC_FETCH(_size)                                         \
+    uint64_t                                                        \
+    shmemc_fetch##_size(void *t, int pe)                            \
+    {                                                               \
+        return helper_atomic_fetch_add##_size((uint64_t) t, 0, pe); \
     }
 
 SHMEMC_FETCH(32)
@@ -726,11 +511,11 @@ SHMEMC_FETCH(64)
 /*
  * TODO: use swap and ignore return?
  */
-#define SHMEMC_SET(_size)                                       \
-    void                                                        \
-    shmemc_set##_size(void *t, uint64_t v, int pe)              \
-    {                                                           \
-        (void) helper_atomic_swap##_size((uint64_t) t, v, pe);  \
+#define SHMEMC_SET(_size)                                               \
+    void                                                                \
+    shmemc_set##_size(void *t, uint64_t v, int pe)                      \
+    {                                                                   \
+        (void) helper_atomic_swap##_size((uint64_t) t, v, pe);          \
     }
 
 SHMEMC_SET(32)
@@ -764,7 +549,7 @@ SHMEMC_FETCH_BITWISE(xor, 64)
     void                                                                \
     shmemc_##_op##_size(void *t, uint64_t v, int pe)                    \
     {                                                                   \
-        (void) helper_atomic_##_op##_size((uint64_t) t, v, pe);         \
+        (void) helper_atomic_fetch_##_op##_size((uint64_t) t, v, pe);   \
     }
 
 SHMEMC_BITWISE(and, 32)
