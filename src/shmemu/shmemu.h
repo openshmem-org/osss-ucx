@@ -52,18 +52,23 @@ typedef enum shmemu_log {
     LOG_UNKNOWN     = -1
 } shmemu_log_t;
 
-void shmemu_logger(shmemu_log_t level, const char *fmt, ...);
-
 #ifdef ENABLE_DEBUG
+
+void shmemu_logger(shmemu_log_t level, const char *fmt, ...);
+void shmemu_deprecate(const char *fn);
+
 # define logger(...) shmemu_logger(__VA_ARGS__)
-void deprecate(const char *fn);
+# define deprecate(_fn) shmemu_deprecate(_fn)
 void shmemu_deprecate_init();
 void shmemu_deprecate_finalize();
+
 #else
+
 # define logger(...)
-inline static void deprecate(const char *fn) { }
-inline static void shmemu_deprecate_init(void) { }
-inline static void shmemu_deprecate_finalize(void) { }
+# define deprecate(_fn)
+# define shmemu_deprecate_init()
+# define shmemu_deprecate_finalize()
+
 #endif /* ENABLE_DEBUG */
 
 

@@ -14,7 +14,6 @@
 
 struct depr {
     char *name;
-    unsigned long count;
     UT_hash_handle hh;
 };
 
@@ -24,7 +23,7 @@ static struct depr *table;
  * need to restrict this report to first usage only
  */
 void
-deprecate(const char *fn)
+shmemu_deprecate(const char *fn)
 {
     struct depr *lu;
 
@@ -35,8 +34,7 @@ deprecate(const char *fn)
 
         assert(dp != NULL);
 
-        dp->name = strdup(fn);  /* TODO: memleak */
-        dp->count = 1;
+        dp->name = strdup(fn);
 
         HASH_ADD_STR(table, name, dp);
 

@@ -31,6 +31,8 @@ shmemc_init(void)
     shmemc_pmix_exchange_all_rkeys();
 
     shmemc_pmix_client_finalize();
+
+    shmemc_barrier_all();
 }
 
 void
