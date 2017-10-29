@@ -104,13 +104,13 @@ void shmemc_trigger_globalexit(int status)
 
     shmemc_globalexit_status = status;
 
-    shmemc_globalexit_sentinel = SENTINEL_ZAPPED;
-
-    tell_pes();
-
     logger(LOG_FINALIZE,
            "global_exit trigger (status = %d)",
            status);
+
+    shmemc_globalexit_sentinel = SENTINEL_ZAPPED;
+
+    tell_pes();
 
     terminate_thread();
 }
