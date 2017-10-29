@@ -97,9 +97,8 @@ tell_pes(void)
     }
 }
 
-static long shemmc_globalexit_sync = SHMEM_SYNC_VALUE;
-
-void shmemc_trigger_globalexit(int status)
+void
+shmemc_trigger_globalexit(int status)
 {
 
     shmemc_globalexit_status = status;
