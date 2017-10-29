@@ -77,6 +77,26 @@ shmemc_globalexit_finalize(void)
     logger(LOG_FINALIZE, "terminated globalexit thread");
 }
 
+/*
+ * Signalling shutdown with raw puts to avoid e.g. a broadcast getting
+ * stuck as PEs fall off the map...
+ *
+ * (also doing a redundant but harmless put-to-self to avoid loop
+ * conditional/split)
+ */
+inline static void
+tell_pes(void)
+{
+    int i;
+
+    for (i = 0; i < proc.nranks; i += 1) {
+        shmemc_put(&shmemc_globalexit_sentinel,
+                   &shmemc_globalexit_sentinel,
+                   1,
+                   i);
+    }
+}
+
 static long shemmc_globalexit_sync = SHMEM_SYNC_VALUE;
 
 void shmemc_trigger_globalexit(int status)
@@ -86,24 +106,7 @@ void shmemc_trigger_globalexit(int status)
 
     shmemc_globalexit_sentinel = SENTINEL_ZAPPED;
 
-#if 0
-    shmemc_broadcast64(&shmemc_globalexit_sentinel,
-                       &shmemc_globalexit_sentinel,
-                       1,
-                       proc.rank, 0, 0, proc.nranks,
-                       &shemmc_globalexit_sync);
-#endif
-
-    {
-        int i;
-
-        for (i = 0; i < proc.nranks; i += 1) {
-            shmemc_put(&shmemc_globalexit_sentinel,
-                       &shmemc_globalexit_sentinel,
-                       1,
-                       i);
-        }
-    }
+    tell_pes();
 
     logger(LOG_FINALIZE,
            "global_exit trigger (status = %d)",
