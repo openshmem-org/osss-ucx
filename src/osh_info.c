@@ -129,7 +129,7 @@ output_features(void)
 #endif /* ENABLE_SHARED */
            );
 
-    output("C++ support",
+    output("C++ compiler",
 #ifdef ENABLE_CXX
            "on"
 #else
