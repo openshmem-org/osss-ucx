@@ -35,7 +35,7 @@ terminate_thread(void)
 static void *
 progress(void *unused)
 {
-    shmemc_long_wait_ne_until(&shmemc_globalexit_sentinel, SENTINEL_ARMED);
+    shmemc_wait_ne_until64(&shmemc_globalexit_sentinel, SENTINEL_ARMED);
 
     if (shmemc_globalexit_sentinel == SENTINEL_ZAPPED) {
         _exit(shmemc_globalexit_status);
