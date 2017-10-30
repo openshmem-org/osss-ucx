@@ -9,9 +9,9 @@
 #endif
 
 #define COMMS_TEST_SIZE(_size, _opname, _op)                            \
-    void                                                                \
-    shmemc_test_##_opname##_size(uint##_size##_t *var,                  \
-                                 uint##_size##_t value)                 \
+    int                                                                 \
+    shmemc_test_##_opname##_size(int##_size##_t *var,                   \
+                                 int##_size##_t value)                  \
     {                                                                   \
         ucp_worker_wait_mem(proc.comms.wrkr, var);                      \
         return ( *var _op value ) ? 1 : 0;                              \
@@ -43,8 +43,8 @@ COMMS_TEST_SIZE(64, ge, >=)
 
 #define COMMS_WAIT_SIZE(_size, _opname, _op)                            \
     void                                                                \
-    shmemc_wait_##_opname##_until##_size(uint##_size##_t *var,          \
-                                         uint##_size##_t value)         \
+    shmemc_wait_##_opname##_until##_size(int##_size##_t *var,           \
+                                         int##_size##_t value)          \
     {                                                                   \
         while (1) {                                                     \
             ucp_worker_wait_mem(proc.comms.wrkr, var);                  \

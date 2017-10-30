@@ -150,8 +150,8 @@ int  shmemc_test_lock(long *lock);
  */
 
 #define SHMEMC_TEST(_size, _opname)                                     \
-    void shmemc_test_##_opname##_size(uint##_size##_t *var,             \
-                                      uint##_size##_t value);
+    int shmemc_test_##_opname##_size(int##_size##_t *var,               \
+                                     int##_size##_t value);
 
 SHMEMC_TEST(16, eq)
 SHMEMC_TEST(32, eq)
@@ -178,8 +178,8 @@ SHMEMC_TEST(32, ge)
 SHMEMC_TEST(64, ge)
 
 #define SHMEMC_WAITUNTIL(_size, _opname)                                \
-    void shmemc_wait_##_opname##_until##_size(uint##_size##_t *var,     \
-                                              uint##_size##_t value);
+    void shmemc_wait_##_opname##_until##_size(int##_size##_t *var,      \
+                                              int##_size##_t value);
 
 SHMEMC_WAITUNTIL(16, eq)
 SHMEMC_WAITUNTIL(32, eq)
