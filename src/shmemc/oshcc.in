@@ -1,7 +1,7 @@
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
-compiler="${OSH_CC-@CC@}"
+compiler="${OSH_CC-@PTHREAD_CC@}"
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -34,6 +34,6 @@ do
 done
     
 $compiler \
-    -I$shmem_include \
+    -I$shmem_include @PTHREAD_CFLAGS@ \
     $@ \
-    $shmemlib_stanza
+    $shmemlib_stanza @PTHREAD_LIBS@

@@ -132,6 +132,15 @@ AC_DEFINE_UNQUOTED([CONFIG_BUILD_DATE],["$now"],[When this package was compiled]
 host="`hostname`"
 AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compiled])
 
+#
+# check for pthreads and how to set it up
+#
+m4_include([config/m4/ax_pthread.m4])
+AX_PTHREAD
+AC_SUBST([PTHREAD_CC])
+AC_SUBST([PTHREAD_CFLAGS])
+AC_SUBST([PTHREAD_LIBS])
+
 AC_CONFIG_FILES([Makefile])
 
 AC_CONFIG_FILES([man/Makefile

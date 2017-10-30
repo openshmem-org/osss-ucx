@@ -33,6 +33,6 @@ do
 done
     
 $compiler \
-    -I$shmem_include \
+    -I$shmem_include @PTHREAD_CFLAGS@ \
     $@ \
-    $shmemlib_stanza
+    $shmemlib_stanza @PTHREAD_LIBS@
