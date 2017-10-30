@@ -8,18 +8,39 @@
 #include "shmemc.h"
 
 #include <bits/wordsize.h>
+#include <sys/types.h>
+#include <stdint.h>
+#include <stddef.h>
 
 #ifdef ENABLE_PSHMEM
+#pragma weak shmem_float_atomic_swap = pshmem_float_atomic_swap
+#define shmem_float_atomic_swap pshmem_float_atomic_swap
+#pragma weak shmem_double_atomic_swap = pshmem_double_atomic_swap
+#define shmem_double_atomic_swap pshmem_double_atomic_swap
 #pragma weak shmem_int_atomic_swap = pshmem_int_atomic_swap
 #define shmem_int_atomic_swap pshmem_int_atomic_swap
 #pragma weak shmem_long_atomic_swap = pshmem_long_atomic_swap
 #define shmem_long_atomic_swap pshmem_long_atomic_swap
 #pragma weak shmem_longlong_atomic_swap = pshmem_longlong_atomic_swap
 #define shmem_longlong_atomic_swap pshmem_longlong_atomic_swap
-#pragma weak shmem_float_atomic_swap = pshmem_float_atomic_swap
-#define shmem_float_atomic_swap pshmem_float_atomic_swap
-#pragma weak shmem_double_atomic_swap = pshmem_double_atomic_swap
-#define shmem_double_atomic_swap pshmem_double_atomic_swap
+#pragma weak shmem_uint_atomic_swap = pshmem_uint_atomic_swap
+#define shmem_uint_atomic_swap pshmem_uint_atomic_swap
+#pragma weak shmem_ulong_atomic_swap = pshmem_ulong_atomic_swap
+#define shmem_ulong_atomic_swap pshmem_ulong_atomic_swap
+#pragma weak shmem_ulonglong_atomic_swap = pshmem_ulonglong_atomic_swap
+#define shmem_ulonglong_atomic_swap pshmem_ulonglong_atomic_swap
+#pragma weak shmem_int32_atomic_swap = pshmem_int32_atomic_swap
+#define shmem_int32_atomic_swap pshmem_int32_atomic_swap
+#pragma weak shmem_int64_atomic_swap = pshmem_int64_atomic_swap
+#define shmem_int64_atomic_swap pshmem_int64_atomic_swap
+#pragma weak shmem_uint32_atomic_swap = pshmem_uint32_atomic_swap
+#define shmem_uint32_atomic_swap pshmem_uint32_atomic_swap
+#pragma weak shmem_uint64_atomic_swap = pshmem_uint64_atomic_swap
+#define shmem_uint64_atomic_swap pshmem_uint64_atomic_swap
+#pragma weak shmem_size_atomic_swap = pshmem_size_atomic_swap
+#define shmem_size_atomic_swap pshmem_size_atomic_swap
+#pragma weak shmem_ptrdiff_atomic_swap = pshmem_ptrdiff_atomic_swap
+#define shmem_ptrdiff_atomic_swap pshmem_ptrdiff_atomic_swap
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -41,7 +62,16 @@ SHMEM_TYPE_SWAP(long, long, 32)
 #endif
 SHMEM_TYPE_SWAP(longlong, long long, 64)
 SHMEM_TYPE_SWAP(float, float, 32)
-SHMEM_TYPE_SWAP(double, double, 32)
+SHMEM_TYPE_SWAP(double, double, 64)
+SHMEM_TYPE_SWAP(uint, unsigned int, 32)
+SHMEM_TYPE_SWAP(ulong, unsigned long, 64)
+SHMEM_TYPE_SWAP(ulonglong, unsigned long long, 64)
+SHMEM_TYPE_SWAP(int32, int32_t, 32)
+SHMEM_TYPE_SWAP(int64, int64_t, 64)
+SHMEM_TYPE_SWAP(uint32, uint32_t, 32)
+SHMEM_TYPE_SWAP(uint64, uint64_t, 64)
+SHMEM_TYPE_SWAP(size, size_t, 64)
+SHMEM_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_compare_swap = pshmem_int_atomic_compare_swap
@@ -50,6 +80,24 @@ SHMEM_TYPE_SWAP(double, double, 32)
 #define shmem_long_atomic_compare_swap pshmem_long_atomic_compare_swap
 #pragma weak shmem_longlong_atomic_compare_swap = pshmem_longlong_atomic_compare_swap
 #define shmem_longlong_atomic_compare_swap pshmem_longlong_atomic_compare_swap
+#pragma weak shmem_uint_atomic_compare_swap = pshmem_uint_atomic_compare_swap
+#define shmem_uint_atomic_compare_swap pshmem_uint_atomic_compare_swap
+#pragma weak shmem_ulong_atomic_compare_swap = pshmem_ulong_atomic_compare_swap
+#define shmem_ulong_atomic_compare_swap pshmem_ulong_atomic_compare_swap
+#pragma weak shmem_ulonglong_atomic_compare_swap = pshmem_ulonglong_atomic_compare_swap
+#define shmem_ulonglong_atomic_compare_swap pshmem_ulonglong_atomic_compare_swap
+#pragma weak shmem_int32_atomic_compare_swap = pshmem_int32_atomic_compare_swap
+#define shmem_int32_atomic_compare_swap pshmem_int32_atomic_compare_swap
+#pragma weak shmem_int64_atomic_compare_swap = pshmem_int64_atomic_compare_swap
+#define shmem_int64_atomic_compare_swap pshmem_int64_atomic_compare_swap
+#pragma weak shmem_uint32_atomic_compare_swap = pshmem_uint32_atomic_compare_swap
+#define shmem_uint32_atomic_compare_swap pshmem_uint32_atomic_compare_swap
+#pragma weak shmem_uint64_atomic_compare_swap = pshmem_uint64_atomic_compare_swap
+#define shmem_uint64_atomic_compare_swap pshmem_uint64_atomic_compare_swap
+#pragma weak shmem_size_atomic_compare_swap = pshmem_size_atomic_compare_swap
+#define shmem_size_atomic_compare_swap pshmem_size_atomic_compare_swap
+#pragma weak shmem_ptrdiff_atomic_compare_swap = pshmem_ptrdiff_atomic_compare_swap
+#define shmem_ptrdiff_atomic_compare_swap pshmem_ptrdiff_atomic_compare_swap
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -72,6 +120,15 @@ SHMEM_TYPE_CSWAP(long, long, 64)
 SHMEM_TYPE_CSWAP(long, long, 32)
 #endif
 SHMEM_TYPE_CSWAP(longlong, long long, 64)
+SHMEM_TYPE_CSWAP(uint, unsigned int, 32)
+SHMEM_TYPE_CSWAP(ulong, unsigned long, 64)
+SHMEM_TYPE_CSWAP(ulonglong, unsigned long long, 64)
+SHMEM_TYPE_CSWAP(int32, int32_t, 32)
+SHMEM_TYPE_CSWAP(int64, int64_t, 64)
+SHMEM_TYPE_CSWAP(uint32, uint32_t, 32)
+SHMEM_TYPE_CSWAP(uint64, uint64_t, 64)
+SHMEM_TYPE_CSWAP(size, size_t, 64)
+SHMEM_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_fetch_add = pshmem_int_atomic_fetch_add
@@ -80,6 +137,9 @@ SHMEM_TYPE_CSWAP(longlong, long long, 64)
 #define shmem_long_atomic_fetch_add pshmem_long_atomic_fetch_add
 #pragma weak shmem_longlong_atomic_fetch_add = pshmem_longlong_atomic_fetch_add
 #define shmem_longlong_atomic_fetch_add pshmem_longlong_atomic_fetch_add
+
+/* TODO */
+
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -101,6 +161,15 @@ SHMEM_TYPE_FADD(long, long, 64)
 SHMEM_TYPE_FADD(long, long, 32)
 #endif
 SHMEM_TYPE_FADD(longlong, long long, 64)
+SHMEM_TYPE_FADD(uint, unsigned int, 32)
+SHMEM_TYPE_FADD(ulong, unsigned long, 64)
+SHMEM_TYPE_FADD(ulonglong, unsigned long long, 64)
+SHMEM_TYPE_FADD(int32, int32_t, 32)
+SHMEM_TYPE_FADD(int64, int64_t, 64)
+SHMEM_TYPE_FADD(uint32, uint32_t, 32)
+SHMEM_TYPE_FADD(uint64, uint64_t, 64)
+SHMEM_TYPE_FADD(size, size_t, 64)
+SHMEM_TYPE_FADD(ptrdiff, ptrdiff_t, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_fetch_inc = pshmem_int_atomic_fetch_inc
@@ -109,6 +178,9 @@ SHMEM_TYPE_FADD(longlong, long long, 64)
 #define shmem_long_atomic_fetch_inc pshmem_long_atomic_fetch_inc
 #pragma weak shmem_longlong_atomic_fetch_inc = pshmem_longlong_atomic_fetch_inc
 #define shmem_longlong_atomic_fetch_inc pshmem_longlong_atomic_fetch_inc
+
+/* TODO */
+
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -129,6 +201,15 @@ SHMEM_TYPE_FINC(long, long, 64)
 SHMEM_TYPE_FINC(long, long, 32)
 #endif
 SHMEM_TYPE_FINC(longlong, long long, 64)
+SHMEM_TYPE_FINC(uint, unsigned int, 32)
+SHMEM_TYPE_FINC(ulong, unsigned long, 64)
+SHMEM_TYPE_FINC(ulonglong, unsigned long long, 64)
+SHMEM_TYPE_FINC(int32, int32_t, 32)
+SHMEM_TYPE_FINC(int64, int64_t, 64)
+SHMEM_TYPE_FINC(uint32, uint32_t, 32)
+SHMEM_TYPE_FINC(uint64, uint64_t, 64)
+SHMEM_TYPE_FINC(size, size_t, 64)
+SHMEM_TYPE_FINC(ptrdiff, ptrdiff_t, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_add = pshmem_int_atomic_add
@@ -137,6 +218,9 @@ SHMEM_TYPE_FINC(longlong, long long, 64)
 #define shmem_long_atomic_add pshmem_long_atomic_add
 #pragma weak shmem_longlong_atomic_add = pshmem_longlong_atomic_add
 #define shmem_longlong_atomic_add pshmem_longlong_atomic_add
+
+/* TODO */
+
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -157,6 +241,15 @@ SHMEM_TYPE_ADD(long, long, 64)
 SHMEM_TYPE_ADD(long, long, 32)
 #endif
 SHMEM_TYPE_ADD(longlong, long long, 64)
+SHMEM_TYPE_ADD(uint, unsigned int, 32)
+SHMEM_TYPE_ADD(ulong, unsigned long, 64)
+SHMEM_TYPE_ADD(ulonglong, unsigned long long, 64)
+SHMEM_TYPE_ADD(int32, int32_t, 32)
+SHMEM_TYPE_ADD(int64, int64_t, 64)
+SHMEM_TYPE_ADD(uint32, uint32_t, 32)
+SHMEM_TYPE_ADD(uint64, uint64_t, 64)
+SHMEM_TYPE_ADD(size, size_t, 64)
+SHMEM_TYPE_ADD(ptrdiff, ptrdiff_t, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_inc = pshmem_int_atomic_inc
@@ -165,6 +258,9 @@ SHMEM_TYPE_ADD(longlong, long long, 64)
 #define shmem_long_atomic_inc pshmem_long_atomic_inc
 #pragma weak shmem_longlong_atomic_inc = pshmem_longlong_atomic_inc
 #define shmem_longlong_atomic_inc pshmem_longlong_atomic_inc
+
+/* TODO */
+
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -185,6 +281,15 @@ SHMEM_TYPE_INC(long, long, 64)
 SHMEM_TYPE_INC(long, long, 32)
 #endif
 SHMEM_TYPE_INC(longlong, long long, 64)
+SHMEM_TYPE_INC(uint, unsigned int, 32)
+SHMEM_TYPE_INC(ulong, unsigned long, 64)
+SHMEM_TYPE_INC(ulonglong, unsigned long long, 64)
+SHMEM_TYPE_INC(int32, int32_t, 32)
+SHMEM_TYPE_INC(int64, int64_t, 64)
+SHMEM_TYPE_INC(uint32, uint32_t, 32)
+SHMEM_TYPE_INC(uint64, uint64_t, 64)
+SHMEM_TYPE_INC(size, size_t, 64)
+SHMEM_TYPE_INC(ptrdiff, ptrdiff_t, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_fetch = pshmem_int_atomic_fetch
@@ -197,6 +302,20 @@ SHMEM_TYPE_INC(longlong, long long, 64)
 #define shmem_float_atomic_fetch pshmem_float_atomic_fetch
 #pragma weak shmem_double_atomic_fetch = pshmem_double_atomic_fetch
 #define shmem_double_atomic_fetch pshmem_double_atomic_fetch
+#pragma weak shmem_uint_atomic_fetch = pshmem_uint_atomic_fetch
+#define shmem_uint_atomic_fetch pshmem_uint_atomic_fetch
+#pragma weak shmem_ulong_atomic_fetch = pshmem_ulong_atomic_fetch
+#define shmem_ulong_atomic_fetch pshmem_ulong_atomic_fetch
+#pragma weak shmem_ulonglong_atomic_fetch = pshmem_ulonglong_atomic_fetch
+#define shmem_ulonglong_atomic_fetch pshmem_ulonglong_atomic_fetch
+#pragma weak shmem_int32_atomic_fetch = pshmem_int32_atomic_fetch
+#define shmem_int32_atomic_fetch pshmem_int32_atomic_fetch
+#pragma weak shmem_int64_atomic_fetch = pshmem_int64_atomic_fetch
+#define shmem_int64_atomic_fetch pshmem_int64_atomic_fetch
+#pragma weak shmem_size_atomic_fetch = pshmem_size_atomic_fetch
+#define shmem_size_atomic_fetch pshmem_size_atomic_fetch
+#pragma weak shmem_ptrdiff_atomic_fetch = pshmem_ptrdiff_atomic_fetch
+#define shmem_ptrdiff_atomic_fetch pshmem_ptrdiff_atomic_fetch
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -240,6 +359,20 @@ SHMEM_TYPE_FETCH(ptrdiff, ptrdiff_t, 64)
 #define shmem_float_atomic_set pshmem_float_atomic_set
 #pragma weak shmem_double_atomic_set = pshmem_double_atomic_set
 #define shmem_double_atomic_set pshmem_double_atomic_set
+#pragma weak shmem_uint_atomic_set = pshmem_uint_atomic_set
+#define shmem_uint_atomic_set pshmem_uint_atomic_set
+#pragma weak shmem_ulong_atomic_set = pshmem_ulong_atomic_set
+#define shmem_ulong_atomic_set pshmem_ulong_atomic_set
+#pragma weak shmem_ulonglong_atomic_set = pshmem_ulonglong_atomic_set
+#define shmem_ulonglong_atomic_set pshmem_ulonglong_atomic_set
+#pragma weak shmem_int32_atomic_set = pshmem_int32_atomic_set
+#define shmem_int32_atomic_set pshmem_int32_atomic_set
+#pragma weak shmem_int64_atomic_set = pshmem_int64_atomic_set
+#define shmem_int64_atomic_set pshmem_int64_atomic_set
+#pragma weak shmem_size_atomic_set = pshmem_size_atomic_set
+#define shmem_size_atomic_set pshmem_size_atomic_set
+#pragma weak shmem_ptrdiff_atomic_set = pshmem_ptrdiff_atomic_set
+#define shmem_ptrdiff_atomic_set pshmem_ptrdiff_atomic_set
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -272,24 +405,170 @@ SHMEM_TYPE_SET(uint64, uint64_t, 64)
 SHMEM_TYPE_SET(size, size_t, 64)
 SHMEM_TYPE_SET(ptrdiff, ptrdiff_t, 64)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_uint_atomic_xor = pshmem_uint_atomic_xor
+#define shmem_uint_atomic_xor pshmem_uint_atomic_xor
+#pragma weak shmem_ulong_atomic_xor = pshmem_ulong_atomic_xor
+#define shmem_ulong_atomic_xor pshmem_ulong_atomic_xor
+#pragma weak shmem_ulonglong_atomic_xor = pshmem_ulonglong_atomic_xor
+#define shmem_ulonglong_atomic_xor pshmem_ulonglong_atomic_xor
+#pragma weak shmem_int32_atomic_xor = pshmem_int32_atomic_xor
+#define shmem_int32_atomic_xor pshmem_int32_atomic_xor
+#pragma weak shmem_int64_atomic_xor = pshmem_int64_atomic_xor
+#define shmem_int64_atomic_xor pshmem_int64_atomic_xor
+#pragma weak shmem_uint32_atomic_xor = pshmem_uint32_atomic_xor
+#define shmem_uint32_atomic_xor pshmem_uint32_atomic_xor
+#pragma weak shmem_uint64_atomic_xor = pshmem_uint64_atomic_xor
+#define shmem_uint64_atomic_xor pshmem_uint64_atomic_xor
+
+#pragma weak shmem_uint_atomic_or = pshmem_uint_atomic_or
+#define shmem_uint_atomic_or pshmem_uint_atomic_or
+#pragma weak shmem_ulong_atomic_or = pshmem_ulong_atomic_or
+#define shmem_ulong_atomic_or pshmem_ulong_atomic_or
+#pragma weak shmem_ulonglong_atomic_or = pshmem_ulonglong_atomic_or
+#define shmem_ulonglong_atomic_or pshmem_ulonglong_atomic_or
+#pragma weak shmem_int32_atomic_or = pshmem_int32_atomic_or
+#define shmem_int32_atomic_or pshmem_int32_atomic_or
+#pragma weak shmem_int64_atomic_or = pshmem_int64_atomic_or
+#define shmem_int64_atomic_or pshmem_int64_atomic_or
+#pragma weak shmem_uint32_atomic_or = pshmem_uint32_atomic_or
+#define shmem_uint32_atomic_or pshmem_uint32_atomic_or
+#pragma weak shmem_uint64_atomic_or = pshmem_uint64_atomic_or
+#define shmem_uint64_atomic_or pshmem_uint64_atomic_or
+
+#pragma weak shmem_uint_atomic_and = pshmem_uint_atomic_and
+#define shmem_uint_atomic_and pshmem_uint_atomic_and
+#pragma weak shmem_ulong_atomic_and = pshmem_ulong_atomic_and
+#define shmem_ulong_atomic_and pshmem_ulong_atomic_and
+#pragma weak shmem_ulonglong_atomic_and = pshmem_ulonglong_atomic_and
+#define shmem_ulonglong_atomic_and pshmem_ulonglong_atomic_and
+#pragma weak shmem_int32_atomic_xor = pshmem_int32_atomic_xor
+#define shmem_int32_atomic_and pshmem_int32_atomic_and
+#pragma weak shmem_int64_atomic_and = pshmem_int64_atomic_and
+#define shmem_int64_atomic_and pshmem_int64_atomic_and
+#pragma weak shmem_uint32_atomic_and = pshmem_uint32_atomic_and
+#define shmem_uint32_atomic_and pshmem_uint32_atomic_and
+#pragma weak shmem_uint64_atomic_and = pshmem_uint64_atomic_and
+#define shmem_uint64_atomic_and pshmem_uint64_atomic_and
+#endif /* ENABLE_PSHMEM */
+
 /*
- * xor
+ * bitwise
  */
 
-#define SHMEM_TYPE_XOR(_name, _type, _size)                             \
+#define SHMEM_TYPE_BITWISE(_opname, _name, _type, _size)                \
     void                                                                \
-    shmem_##_name##_atomic_xor(_type *target, _type value, int pe)      \
+    shmem_##_name##_atomic_##_opname(_type *target, _type value, int pe) \
     {                                                                   \
-        shmemc_xor##_size(target, value, pe);                           \
+        shmemc_##_opname##_size(target, value, pe);                     \
     }
 
-SHMEM_TYPE_XOR(uint, unsigned int, 32)
-SHMEM_TYPE_XOR(ulong, unsigned long, 64)
-SHMEM_TYPE_XOR(ulonglong, unsigned long long, 64)
-SHMEM_TYPE_XOR(int32, int32_t, 32)
-SHMEM_TYPE_XOR(int64, int64_t, 64)
-SHMEM_TYPE_XOR(uint32, uint32_t, 32)
-SHMEM_TYPE_XOR(uint64, uint64_t, 64)
+SHMEM_TYPE_BITWISE(xor, uint, unsigned int, 32)
+SHMEM_TYPE_BITWISE(xor, ulong, unsigned long, 64)
+SHMEM_TYPE_BITWISE(xor, ulonglong, unsigned long long, 64)
+SHMEM_TYPE_BITWISE(xor, int32, int32_t, 32)
+SHMEM_TYPE_BITWISE(xor, int64, int64_t, 64)
+SHMEM_TYPE_BITWISE(xor, uint32, uint32_t, 32)
+SHMEM_TYPE_BITWISE(xor, uint64, uint64_t, 64)
+
+SHMEM_TYPE_BITWISE(or, uint, unsigned int, 32)
+SHMEM_TYPE_BITWISE(or, ulong, unsigned long, 64)
+SHMEM_TYPE_BITWISE(or, ulonglong, unsigned long long, 64)
+SHMEM_TYPE_BITWISE(or, int32, int32_t, 32)
+SHMEM_TYPE_BITWISE(or, int64, int64_t, 64)
+SHMEM_TYPE_BITWISE(or, uint32, uint32_t, 32)
+SHMEM_TYPE_BITWISE(or, uint64, uint64_t, 64)
+
+SHMEM_TYPE_BITWISE(and, uint, unsigned int, 32)
+SHMEM_TYPE_BITWISE(and, ulong, unsigned long, 64)
+SHMEM_TYPE_BITWISE(and, ulonglong, unsigned long long, 64)
+SHMEM_TYPE_BITWISE(and, int32, int32_t, 32)
+SHMEM_TYPE_BITWISE(and, int64, int64_t, 64)
+SHMEM_TYPE_BITWISE(and, uint32, uint32_t, 32)
+SHMEM_TYPE_BITWISE(and, uint64, uint64_t, 64)
+
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_uint_atomic_fetch_xor = pshmem_uint_atomic_fetch_xor
+#define shmem_uint_atomic_fetch_xor pshmem_uint_atomic_fetch_xor
+#pragma weak shmem_ulong_atomic_fetch_xor = pshmem_ulong_atomic_fetch_xor
+#define shmem_ulong_atomic_fetch_xor pshmem_ulong_atomic_fetch_xor
+#pragma weak shmem_ulonglong_atomic_fetch_xor = pshmem_ulonglong_atomic_fetch_xor
+#define shmem_ulonglong_atomic_fetch_xor pshmem_ulonglong_atomic_fetch_xor
+#pragma weak shmem_int32_atomic_fetch_xor = pshmem_int32_atomic_fetch_xor
+#define shmem_int32_atomic_fetch_xor pshmem_int32_atomic_fetch_xor
+#pragma weak shmem_int64_atomic_fetch_xor = pshmem_int64_atomic_fetch_xor
+#define shmem_int64_atomic_fetch_xor pshmem_int64_atomic_fetch_xor
+#pragma weak shmem_uint32_atomic_fetch_xor = pshmem_uint32_atomic_fetch_xor
+#define shmem_uint32_atomic_fetch_xor pshmem_uint32_atomic_fetch_xor
+#pragma weak shmem_uint64_atomic_fetch_xor = pshmem_uint64_atomic_fetch_xor
+#define shmem_uint64_atomic_fetch_xor pshmem_uint64_atomic_fetch_xor
+
+#pragma weak shmem_uint_atomic_fetch_or = pshmem_uint_atomic_fetch_or
+#define shmem_uint_atomic_fetch_or pshmem_uint_atomic_fetch_or
+#pragma weak shmem_ulong_atomic_fetch_or = pshmem_ulong_atomic_fetch_or
+#define shmem_ulong_atomic_fetch_or pshmem_ulong_atomic_fetch_or
+#pragma weak shmem_ulonglong_atomic_fetch_or = pshmem_ulonglong_atomic_fetch_or
+#define shmem_ulonglong_atomic_fetch_or pshmem_ulonglong_atomic_fetch_or
+#pragma weak shmem_int32_atomic_fetch_or = pshmem_int32_atomic_fetch_or
+#define shmem_int32_atomic_fetch_or pshmem_int32_atomic_fetch_or
+#pragma weak shmem_int64_atomic_fetch_or = pshmem_int64_atomic_fetch_or
+#define shmem_int64_atomic_fetch_or pshmem_int64_atomic_fetch_or
+#pragma weak shmem_uint32_atomic_fetch_or = pshmem_uint32_atomic_fetch_or
+#define shmem_uint32_atomic_fetch_or pshmem_uint32_atomic_fetch_or
+#pragma weak shmem_uint64_atomic_fetch_or = pshmem_uint64_atomic_fetch_or
+#define shmem_uint64_atomic_fetch_or pshmem_uint64_atomic_fetch_or
+
+#pragma weak shmem_uint_atomic_fetch_and = pshmem_uint_atomic_fetch_and
+#define shmem_uint_atomic_fetch_and pshmem_uint_atomic_fetch_and
+#pragma weak shmem_ulong_atomic_fetch_and = pshmem_ulong_atomic_fetch_and
+#define shmem_ulong_atomic_fetch_and pshmem_ulong_atomic_fetch_and
+#pragma weak shmem_ulonglong_atomic_fetch_and = pshmem_ulonglong_atomic_fetch_and
+#define shmem_ulonglong_atomic_fetch_and pshmem_ulonglong_atomic_fetch_and
+#pragma weak shmem_int32_atomic_fetch_and = pshmem_int32_atomic_fetch_and
+#define shmem_int32_atomic_fetch_and pshmem_int32_atomic_fetch_and
+#pragma weak shmem_int64_atomic_fetch_and = pshmem_int64_atomic_fetch_and
+#define shmem_int64_atomic_fetch_and pshmem_int64_atomic_fetch_and
+#pragma weak shmem_uint32_atomic_fetch_and = pshmem_uint32_atomic_fetch_and
+#define shmem_uint32_atomic_fetch_and pshmem_uint32_atomic_fetch_and
+#pragma weak shmem_uint64_atomic_fetch_and = pshmem_uint64_atomic_fetch_and
+#define shmem_uint64_atomic_fetch_and pshmem_uint64_atomic_fetch_and
+#endif /* ENABLE_PSHMEM */
+
+/*
+ * fetch-bitwise
+ */
+
+#define SHMEM_TYPE_FETCH_BITWISE(_opname, _name, _type, _size)          \
+    _type                                                               \
+    shmem_##_name##_atomic_fetch_##_opname(_type *target, _type value, int pe) \
+    {                                                                   \
+        return shmemc_fetch_##_opname##_size(target, value, pe);        \
+    }
+
+SHMEM_TYPE_FETCH_BITWISE(xor, uint, unsigned int, 32)
+SHMEM_TYPE_FETCH_BITWISE(xor, ulong, unsigned long, 64)
+SHMEM_TYPE_FETCH_BITWISE(xor, ulonglong, unsigned long long, 64)
+SHMEM_TYPE_FETCH_BITWISE(xor, int32, int32_t, 32)
+SHMEM_TYPE_FETCH_BITWISE(xor, int64, int64_t, 64)
+SHMEM_TYPE_FETCH_BITWISE(xor, uint32, uint32_t, 32)
+SHMEM_TYPE_FETCH_BITWISE(xor, uint64, uint64_t, 64)
+
+SHMEM_TYPE_FETCH_BITWISE(or, uint, unsigned int, 32)
+SHMEM_TYPE_FETCH_BITWISE(or, ulong, unsigned long, 64)
+SHMEM_TYPE_FETCH_BITWISE(or, ulonglong, unsigned long long, 64)
+SHMEM_TYPE_FETCH_BITWISE(or, int32, int32_t, 32)
+SHMEM_TYPE_FETCH_BITWISE(or, int64, int64_t, 64)
+SHMEM_TYPE_FETCH_BITWISE(or, uint32, uint32_t, 32)
+SHMEM_TYPE_FETCH_BITWISE(or, uint64, uint64_t, 64)
+
+SHMEM_TYPE_FETCH_BITWISE(and, uint, unsigned int, 32)
+SHMEM_TYPE_FETCH_BITWISE(and, ulong, unsigned long, 64)
+SHMEM_TYPE_FETCH_BITWISE(and, ulonglong, unsigned long long, 64)
+SHMEM_TYPE_FETCH_BITWISE(and, int32, int32_t, 32)
+SHMEM_TYPE_FETCH_BITWISE(and, int64, int64_t, 64)
+SHMEM_TYPE_FETCH_BITWISE(and, uint32, uint32_t, 32)
+SHMEM_TYPE_FETCH_BITWISE(and, uint64, uint64_t, 64)
 
 
 /*
