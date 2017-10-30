@@ -95,14 +95,6 @@ extern "C"
 #define pshmemx_free_nb(a)     pshfree_nb(a)
 
     /*
-     * Proposed by IBM Zurich
-     *
-     */
-    void pshmemx_int_xor(int *target, int value, int pe);
-    void pshmemx_long_xor(long *target, long value, int pe);
-    void pshmemx_longlong_xor(long long *target, long long value, int pe);
-
-    /*
      * wallclock time
      *
      */
