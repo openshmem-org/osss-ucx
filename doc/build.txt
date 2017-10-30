@@ -5,8 +5,13 @@ Prerequisites
 
 Currently you will need installed:
 
-    PMIX 1.2.3      : https://github.com/pmix/pmix/releases
+    PMIx 1.2.3      : https://github.com/pmix/pmix/releases
     UCX from github : https://github.com/openucx/ucx
 
-The sources here can be set up via the usual GNU autoconf ./autogen.sh
-script.
+Sequence
+========
+
+1. In the top-level source directory, run ./autogen.sh
+2. You can build this package either in-source or out-of-source
+3. configure script can be told where PMIx and UCX live, and other options
+4. make and make install
