@@ -45,6 +45,7 @@ static shmemu_log_table_t table[] =
         LOG_LEVEL_EMIT(REDUCTION),
         LOG_LEVEL_EMIT(BARRIER),
         LOG_LEVEL_EMIT(DEPRECATE),
+        LOG_LEVEL_EMIT(LOCK),
         LOG_LEVEL_EMIT(UNKNOWN)
     };
 
@@ -133,6 +134,7 @@ shmemu_logger_init(void)
         else {
             log_stream = stderr;
         }
+        setbuf(log_stream, NULL);
     }
 }
 

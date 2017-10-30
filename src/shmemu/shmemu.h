@@ -46,9 +46,10 @@ typedef enum shmemu_log {
     LOG_REDUCTION   = SHMEM_BIT_SET(7),
     LOG_BARRIER     = SHMEM_BIT_SET(8),
     LOG_DEPRECATE   = SHMEM_BIT_SET(9),
+    LOG_LOCK        = SHMEM_BIT_SET(10),
     LOG_ALL         = (LOG_FATAL | LOG_INIT | LOG_FINALIZE |
                        LOG_MEMORY | LOG_HEAP | LOG_WORKER | LOG_INFO |
-                       LOG_REDUCTION | LOG_BARRIER | LOG_DEPRECATE),
+                       LOG_REDUCTION | LOG_BARRIER | LOG_DEPRECATE | LOG_LOCK),
     LOG_UNKNOWN     = -1
 } shmemu_log_t;
 
