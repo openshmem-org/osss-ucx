@@ -137,9 +137,24 @@ SHMEM_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
 #define shmem_long_atomic_fetch_add pshmem_long_atomic_fetch_add
 #pragma weak shmem_longlong_atomic_fetch_add = pshmem_longlong_atomic_fetch_add
 #define shmem_longlong_atomic_fetch_add pshmem_longlong_atomic_fetch_add
-
-/* TODO */
-
+#pragma weak shmem_uint_atomic_fetch_add = pshmem_uint_atomic_fetch_add
+#define shmem_uint_atomic_fetch_add pshmem_uint_atomic_fetch_add
+#pragma weak shmem_ulong_atomic_fetch_add = pshmem_ulong_atomic_fetch_add
+#define shmem_ulong_atomic_fetch_add pshmem_ulong_atomic_fetch_add
+#pragma weak shmem_ulonglong_atomic_fetch_add = pshmem_ulonglong_atomic_fetch_add
+#define shmem_ulonglong_atomic_fetch_add pshmem_ulonglong_atomic_fetch_add
+#pragma weak shmem_int32_atomic_fetch_add = pshmem_int32_atomic_fetch_add
+#define shmem_int32_atomic_fetch_add pshmem_int32_atomic_fetch_add
+#pragma weak shmem_int64_atomic_fetch_add = pshmem_int64_atomic_fetch_add
+#define shmem_int64_atomic_fetch_add pshmem_int64_atomic_fetch_add
+#pragma weak shmem_uint32_atomic_fetch_add = pshmem_uint32_atomic_fetch_add
+#define shmem_uint32_atomic_fetch_add pshmem_uint32_atomic_fetch_add
+#pragma weak shmem_uint64_atomic_fetch_add = pshmem_uint64_atomic_fetch_add
+#define shmem_uint64_atomic_fetch_add pshmem_uint64_atomic_fetch_add
+#pragma weak shmem_size_atomic_fetch_add = pshmem_size_atomic_fetch_add
+#define shmem_size_atomic_fetch_add pshmem_size_atomic_fetch_add
+#pragma weak shmem_ptrdiff_atomic_fetch_add = pshmem_ptrdiff_atomic_fetch_add
+#define shmem_ptrdiff_atomic_fetch_add pshmem_ptrdiff_atomic_fetch_add
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -178,9 +193,24 @@ SHMEM_TYPE_FADD(ptrdiff, ptrdiff_t, 64)
 #define shmem_long_atomic_fetch_inc pshmem_long_atomic_fetch_inc
 #pragma weak shmem_longlong_atomic_fetch_inc = pshmem_longlong_atomic_fetch_inc
 #define shmem_longlong_atomic_fetch_inc pshmem_longlong_atomic_fetch_inc
-
-/* TODO */
-
+#pragma weak shmem_uint_atomic_fetch_inc = pshmem_uint_atomic_fetch_inc
+#define shmem_uint_atomic_fetch_inc pshmem_uint_atomic_fetch_inc
+#pragma weak shmem_ulong_atomic_fetch_inc = pshmem_ulong_atomic_fetch_inc
+#define shmem_ulong_atomic_fetch_inc pshmem_ulong_atomic_fetch_inc
+#pragma weak shmem_ulonglong_atomic_fetch_inc = pshmem_ulonglong_atomic_fetch_inc
+#define shmem_ulonglong_atomic_fetch_inc pshmem_ulonglong_atomic_fetch_inc
+#pragma weak shmem_int32_atomic_fetch_inc = pshmem_int32_atomic_fetch_inc
+#define shmem_int32_atomic_fetch_inc pshmem_int32_atomic_fetch_inc
+#pragma weak shmem_int64_atomic_fetch_inc = pshmem_int64_atomic_fetch_inc
+#define shmem_int64_atomic_fetch_inc pshmem_int64_atomic_fetch_inc
+#pragma weak shmem_uint32_atomic_fetch_inc = pshmem_uint32_atomic_fetch_inc
+#define shmem_uint32_atomic_fetch_inc pshmem_uint32_atomic_fetch_inc
+#pragma weak shmem_uint64_atomic_fetch_inc = pshmem_uint64_atomic_fetch_inc
+#define shmem_uint64_atomic_fetch_inc pshmem_uint64_atomic_fetch_inc
+#pragma weak shmem_size_atomic_fetch_inc = pshmem_size_atomic_fetch_inc
+#define shmem_size_atomic_fetch_inc pshmem_size_atomic_fetch_inc
+#pragma weak shmem_ptrdiff_atomic_fetch_inc = pshmem_ptrdiff_atomic_fetch_inc
+#define shmem_ptrdiff_atomic_fetch_inc pshmem_ptrdiff_atomic_fetch_inc
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -218,9 +248,24 @@ SHMEM_TYPE_FINC(ptrdiff, ptrdiff_t, 64)
 #define shmem_long_atomic_add pshmem_long_atomic_add
 #pragma weak shmem_longlong_atomic_add = pshmem_longlong_atomic_add
 #define shmem_longlong_atomic_add pshmem_longlong_atomic_add
-
-/* TODO */
-
+#pragma weak shmem_uint_atomic_add = pshmem_uint_atomic_add
+#define shmem_uint_atomic_add pshmem_uint_atomic_add
+#pragma weak shmem_ulong_atomic_add = pshmem_ulong_atomic_add
+#define shmem_ulong_atomic_add pshmem_ulong_atomic_add
+#pragma weak shmem_ulonglong_atomic_add = pshmem_ulonglong_atomic_add
+#define shmem_ulonglong_atomic_add pshmem_ulonglong_atomic_add
+#pragma weak shmem_int32_atomic_add = pshmem_int32_atomic_add
+#define shmem_int32_atomic_add pshmem_int32_atomic_add
+#pragma weak shmem_int64_atomic_add = pshmem_int64_atomic_add
+#define shmem_int64_atomic_add pshmem_int64_atomic_add
+#pragma weak shmem_uint32_atomic_add = pshmem_uint32_atomic_add
+#define shmem_uint32_atomic_add pshmem_uint32_atomic_add
+#pragma weak shmem_uint64_atomic_add = pshmem_uint64_atomic_add
+#define shmem_uint64_atomic_add pshmem_uint64_atomic_add
+#pragma weak shmem_size_atomic_add = pshmem_size_atomic_add
+#define shmem_size_atomic_add pshmem_size_atomic_add
+#pragma weak shmem_ptrdiff_atomic_add = pshmem_ptrdiff_atomic_add
+#define shmem_ptrdiff_atomic_add pshmem_ptrdiff_atomic_add
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -258,9 +303,24 @@ SHMEM_TYPE_ADD(ptrdiff, ptrdiff_t, 64)
 #define shmem_long_atomic_inc pshmem_long_atomic_inc
 #pragma weak shmem_longlong_atomic_inc = pshmem_longlong_atomic_inc
 #define shmem_longlong_atomic_inc pshmem_longlong_atomic_inc
-
-/* TODO */
-
+#pragma weak shmem_uint_atomic_inc = pshmem_uint_atomic_inc
+#define shmem_uint_atomic_inc pshmem_uint_atomic_inc
+#pragma weak shmem_ulong_atomic_inc = pshmem_ulong_atomic_inc
+#define shmem_ulong_atomic_inc pshmem_ulong_atomic_inc
+#pragma weak shmem_ulonglong_atomic_inc = pshmem_ulonglong_atomic_inc
+#define shmem_ulonglong_atomic_inc pshmem_ulonglong_atomic_inc
+#pragma weak shmem_int32_atomic_inc = pshmem_int32_atomic_inc
+#define shmem_int32_atomic_inc pshmem_int32_atomic_inc
+#pragma weak shmem_int64_atomic_inc = pshmem_int64_atomic_inc
+#define shmem_int64_atomic_inc pshmem_int64_atomic_inc
+#pragma weak shmem_uint32_atomic_inc = pshmem_uint32_atomic_inc
+#define shmem_uint32_atomic_inc pshmem_uint32_atomic_inc
+#pragma weak shmem_uint64_atomic_inc = pshmem_uint64_atomic_inc
+#define shmem_uint64_atomic_inc pshmem_uint64_atomic_inc
+#pragma weak shmem_size_atomic_inc = pshmem_size_atomic_inc
+#define shmem_size_atomic_inc pshmem_size_atomic_inc
+#pragma weak shmem_ptrdiff_atomic_inc = pshmem_ptrdiff_atomic_inc
+#define shmem_ptrdiff_atomic_inc pshmem_ptrdiff_atomic_inc
 #endif /* ENABLE_PSHMEM */
 
 /*
