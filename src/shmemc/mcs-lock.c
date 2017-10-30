@@ -117,6 +117,8 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 static void
 lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
+    int zero = 0;
+
     /* Is there someone on the linked list ? */
     if (node->l_next == SHMEM_LOCK_FREE) {
         SHMEM_LOCK tmp;
@@ -172,7 +174,7 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
      * Release any waiters on the linked list
      */
 
-    shmemc_put(&node->l_locked, 0, sizeof(node->l_locked), node->l_next);
+    shmemc_put(&node->l_locked, &zero, sizeof(node->l_locked), node->l_next);
 }
 
 
