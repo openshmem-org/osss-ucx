@@ -4,47 +4,76 @@
 
 #include <ucp/api/ucp.h>
 
+#if 0
 #define VOLATILIZE(_type, _var) (* ( volatile _type *) (_var))
+#endif
 
-#define COMMS_WAIT_TYPE(_name, _type, _opname, _op)                     \
+#define COMMS_TEST_SIZE(_size, _opname, _op)                            \
     void                                                                \
-    shmemc_##_name##_wait_##_opname##_until(_type *var,                 \
-                                            _type cmp_value)            \
+    shmemc_test_##_opname##_size(uint##_size##_t *var,                  \
+                                 uint##_size##_t value)                 \
+    {                                                                   \
+        ucp_worker_wait_mem(proc.comms.wrkr, var);                      \
+        return ( *var _op value ) ? 1 : 0;                              \
+    }
+
+COMMS_TEST_SIZE(16, eq, ==)
+COMMS_TEST_SIZE(32, eq, ==)
+COMMS_TEST_SIZE(64, eq, ==)
+
+COMMS_TEST_SIZE(16, ne, !=)
+COMMS_TEST_SIZE(32, ne, !=)
+COMMS_TEST_SIZE(64, ne, !=)
+
+COMMS_TEST_SIZE(16, gt, >)
+COMMS_TEST_SIZE(32, gt, >)
+COMMS_TEST_SIZE(64, gt, >)
+
+COMMS_TEST_SIZE(16, le, <=)
+COMMS_TEST_SIZE(32, le, <=)
+COMMS_TEST_SIZE(64, le, <=)
+
+COMMS_TEST_SIZE(16, lt, <)
+COMMS_TEST_SIZE(32, lt, <)
+COMMS_TEST_SIZE(64, lt, <)
+
+COMMS_TEST_SIZE(16, ge, >=)
+COMMS_TEST_SIZE(32, ge, >=)
+COMMS_TEST_SIZE(64, ge, >=)
+
+#define COMMS_WAIT_SIZE(_size, _opname, _op)                            \
+    void                                                                \
+    shmemc_wait_##_opname##_until##_size(uint##_size##_t *var,          \
+                                         uint##_size##_t value)         \
     {                                                                   \
         while (1) {                                                     \
             ucp_worker_wait_mem(proc.comms.wrkr, var);                  \
-            if (VOLATILIZE(_type, var) _op cmp_value ) {                \
+            if ( *var _op value ) {                                     \
                 return;                                                 \
             }                                                           \
         }                                                               \
     }
 
-COMMS_WAIT_TYPE(short, short, eq, ==)
-COMMS_WAIT_TYPE(int, int, eq, ==)
-COMMS_WAIT_TYPE(long, long, eq, ==)
-COMMS_WAIT_TYPE(longlong, long long, eq, ==)
+COMMS_WAIT_SIZE(16, eq, ==)
+COMMS_WAIT_SIZE(32, eq, ==)
+COMMS_WAIT_SIZE(64, eq, ==)
 
-COMMS_WAIT_TYPE(short, short, ne, !=)
-COMMS_WAIT_TYPE(int, int, ne, !=)
-COMMS_WAIT_TYPE(long, long, ne, !=)
-COMMS_WAIT_TYPE(longlong, long long, ne, !=)
+COMMS_WAIT_SIZE(16, ne, !=)
+COMMS_WAIT_SIZE(32, ne, !=)
+COMMS_WAIT_SIZE(64, ne, !=)
 
-COMMS_WAIT_TYPE(short, short, gt, >)
-COMMS_WAIT_TYPE(int, int, gt, >)
-COMMS_WAIT_TYPE(long, long, gt, >)
-COMMS_WAIT_TYPE(longlong, long long, gt, >)
+COMMS_WAIT_SIZE(16, gt, >)
+COMMS_WAIT_SIZE(32, gt, >)
+COMMS_WAIT_SIZE(64, gt, >)
 
-COMMS_WAIT_TYPE(short, short, le, <=)
-COMMS_WAIT_TYPE(int, int, le, <=)
-COMMS_WAIT_TYPE(long, long, le, <=)
-COMMS_WAIT_TYPE(longlong, long long, le, <=)
+COMMS_WAIT_SIZE(16, le, <=)
+COMMS_WAIT_SIZE(32, le, <=)
+COMMS_WAIT_SIZE(64, le, <=)
 
-COMMS_WAIT_TYPE(short, short, lt, <)
-COMMS_WAIT_TYPE(int, int, lt, <)
-COMMS_WAIT_TYPE(long, long, lt, <)
-COMMS_WAIT_TYPE(longlong, long long, lt, <)
+COMMS_WAIT_SIZE(16, lt, <)
+COMMS_WAIT_SIZE(32, lt, <)
+COMMS_WAIT_SIZE(64, lt, <)
 
-COMMS_WAIT_TYPE(short, short, ge, >=)
-COMMS_WAIT_TYPE(int, int, ge, >=)
-COMMS_WAIT_TYPE(long, long, ge, >=)
-COMMS_WAIT_TYPE(longlong, long long, ge, >=)
+COMMS_WAIT_SIZE(16, ge, >=)
+COMMS_WAIT_SIZE(32, ge, >=)
+COMMS_WAIT_SIZE(64, ge, >=)

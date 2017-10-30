@@ -8,7 +8,8 @@
  */
 
 #include "shmemc.h"
-
+#include "shmemu.h"
+#include "state.h"
 
 /*
  *    Copyright (c) 1996-2002 by Quadrics Supercomputers World Ltd.
@@ -54,15 +55,14 @@ typedef struct
 #define l_word          u.word
 } SHMEM_LOCK;
 
-enum
-{
+enum shmem_lock {
     SHMEM_LOCK_FREE = 0,
     SHMEM_LOCK_RESET,
     SHMEM_LOCK_SET
 };
 
 /* Macro to map lock virtual address to owning process vp */
-#define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % shmemc_my_pe() )
+#define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % proc.nranks )
 
 static void
 lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
@@ -82,7 +82,7 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
      * value, atomically
      */
     tmp.l_word =
-        shmemc_swap32((int *) &lock->l_word, tmp.l_word, LOCK_OWNER(lock));
+        shmemc_swap32(&lock->l_word, tmp.l_word, LOCK_OWNER(lock));
 
     /* Translate old (broken) default lock state */
     if (tmp.l_word == SHMEM_LOCK_FREE) {
@@ -104,9 +104,10 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * I'm now next in global linked list, update l_next in the
          * prev_pe process with our vp
          */
-        shmemc_put((short *) &node->l_next, &this_pe, sizeof(short), prev_pe);
+        shmemc_put(&node->l_next, &this_pe, sizeof(node->l_next), prev_pe);
 
         /* Wait for flag to be released */
+        shmemc_wait_ne_until16(&node->l_locked, 0);
 #if 0
         GASNET_BLOCKUNTIL( !(node->l_locked) );
 #endif
@@ -128,7 +129,7 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * If global lock owner value still equals this_pe, load RESET
          * into it & return prev value
          */
-        tmp.l_word = shmemc_cswap32((int *) &lock->l_word,
+        tmp.l_word = shmemc_cswap32(&lock->l_word,
                                     tmp.l_word,
                                     SHMEM_LOCK_RESET, LOCK_OWNER(lock));
 
@@ -146,7 +147,12 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * are written before we try to use its value below.
          *
          */
+        do {
+            shmemc_test_eq16(&node->l_next, SHMEM_LOCK_FREE);
+        } while ( ! ( (node->l_next == SHMEM_LOCK_FREE) ||
+                      (node->l_next < 0)));
 #if 0
+        shmemc_wait_ne_until16(&node->l_next, SHMEM_LOCK_FREE);
         GASNET_BLOCKUNTIL(!
                           ((node->l_next == SHMEM_LOCK_FREE) ||
                            (node->l_next < 0))
@@ -157,6 +163,7 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 
     /* Be more strict about the test above, this memory consistency problem is
        a tricky one */
+    shmemc_wait_ge_until16(&node->l_next, 0);
 #if 0
     GASNET_BLOCKUNTIL( !(node->l_next < 0) );
 #endif
@@ -165,7 +172,7 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
      * Release any waiters on the linked list
      */
 
-    shmemc_put((short *) &node->l_locked, 0, sizeof(short), node->l_next);
+    shmemc_put(&node->l_locked, 0, sizeof(node->l_locked), node->l_next);
 }
 
 
@@ -185,8 +192,8 @@ lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 
     /* Read the remote global lock value */
     shmemc_get(&tmp.l_word,
-               (int *) &lock->l_word,
-               sizeof(int),
+               &lock->l_word,
+               sizeof(tmp.l_word),
                LOCK_OWNER(lock));
 
     /* Translate old (broken) default lock state */
@@ -210,7 +217,7 @@ shmemc_set_lock(long *lock)
 {
     lock_acquire(&((SHMEM_LOCK *) lock)[1],
                  &((SHMEM_LOCK *) lock)[0],
-                 shmemc_my_pe());
+                 proc.rank);
 }
 
 void
@@ -218,11 +225,11 @@ shmemc_clear_lock(long *lock)
 {
     /* The Cray man pages suggest we also need to do this (addy
        12.10.05) */
-    shmemc_quiet ();
+    shmemc_quiet();
 
     lock_release(&((SHMEM_LOCK *) lock)[1],
                  &((SHMEM_LOCK *) lock)[0],
-                 shmemc_my_pe());
+                 proc.rank);
 }
 
 int
@@ -230,5 +237,5 @@ shmemc_test_lock(long *lock)
 {
     return lock_test(&((SHMEM_LOCK *) lock)[1],
                      &((SHMEM_LOCK *) lock)[0],
-                     shmemc_my_pe());
+                     proc.rank);
 }

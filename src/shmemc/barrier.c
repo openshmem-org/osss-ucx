@@ -33,7 +33,7 @@ barrier_helper(int start, int log2stride, int size, long *pSync)
         int i;
 
         /* wait for the rest of the AS to poke me */
-        shmemc_long_wait_eq_until(pSync, npokes);
+        shmemc_wait_eq_until64(pSync, npokes);
         *pSync = SHMEM_SYNC_VALUE;
 
         /* send acks out */
@@ -48,7 +48,7 @@ barrier_helper(int start, int log2stride, int size, long *pSync)
         shmemc_inc64(pSync, start);
 
         /* get ack */
-        shmemc_long_wait_ne_until(pSync, SHMEM_SYNC_VALUE);
+        shmemc_wait_ne_until64(pSync, SHMEM_SYNC_VALUE);
         *pSync = SHMEM_SYNC_VALUE;
     }
 
