@@ -62,9 +62,9 @@ enum shmem_lock {
 };
 
 /* Macro to map lock virtual address to owning process vp */
-#define LOCK_OWNER(LOCK) ( ((uintptr_t)(LOCK) >> 3) % proc.nranks )
+#define LOCK_OWNER(_lock) ( ((uintptr_t)(_lock) >> 3) % proc.nranks )
 
-static void
+inline static void
 lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     SHMEM_LOCK tmp;
@@ -82,7 +82,7 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
      * value, atomically
      */
     tmp.l_word =
-        shmemc_swap32(&lock->l_word, tmp.l_word, LOCK_OWNER(lock));
+        shmemc_swap32((void *) &lock->l_word, tmp.l_word, LOCK_OWNER(lock));
 
     /* Translate old (broken) default lock state */
     if (tmp.l_word == SHMEM_LOCK_FREE) {
@@ -104,7 +104,8 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * I'm now next in global linked list, update l_next in the
          * prev_pe process with our vp
          */
-        shmemc_put(&node->l_next, &this_pe, sizeof(node->l_next), prev_pe);
+        shmemc_put((void *) &node->l_next, &this_pe,
+                   sizeof(node->l_next), prev_pe);
 
         /* Wait for flag to be released */
         shmemc_wait_ne_until16(&node->l_locked, 0);
@@ -114,7 +115,7 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
     }
 }
 
-static void
+inline static void
 lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     int zero = 0;
@@ -131,7 +132,7 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          * If global lock owner value still equals this_pe, load RESET
          * into it & return prev value
          */
-        tmp.l_word = shmemc_cswap32(&lock->l_word,
+        tmp.l_word = shmemc_cswap32((void *) &lock->l_word,
                                     tmp.l_word,
                                     SHMEM_LOCK_RESET, LOCK_OWNER(lock));
 
@@ -174,7 +175,10 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
      * Release any waiters on the linked list
      */
 
-    shmemc_put(&node->l_locked, &zero, sizeof(node->l_locked), node->l_next);
+    shmemc_put((void *) &node->l_locked,
+               &zero,
+               sizeof(node->l_locked),
+               node->l_next);
 }
 
 
@@ -186,15 +190,15 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
  *
  * (addy 12.10.05)
  */
-static int
+inline static int
 lock_test(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
 {
     SHMEM_LOCK tmp;
     int retval;
 
     /* Read the remote global lock value */
-    shmemc_get(&tmp.l_word,
-               &lock->l_word,
+    shmemc_get((void *) &tmp.l_word,
+               (void *) &lock->l_word,
                sizeof(tmp.l_word),
                LOCK_OWNER(lock));
 
