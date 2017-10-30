@@ -147,41 +147,63 @@ int  shmemc_test_lock(long *lock);
 /*
  * routine per-type and test to avoid branching
  *
- * NEEDS PUSH-DOWN INTO COMMS IMPLEMENTATION FOR ACTUAL WAIT
  */
-#define SHMEMC_WAITUNTIL_TYPE(_name, _type, _opname)                \
-    void shmemc_##_name##_wait_##_opname##_until(_type *var,        \
-                                                 _type cmp_value);
 
-SHMEMC_WAITUNTIL_TYPE(short, short, eq)
-SHMEMC_WAITUNTIL_TYPE(int, int, eq)
-SHMEMC_WAITUNTIL_TYPE(long, long, eq)
-SHMEMC_WAITUNTIL_TYPE(longlong, long long, eq)
+#define SHMEMC_TEST(_size, _opname)                                     \
+    void shmemc_test_##_opname##_size(uint##_size##_t *var,             \
+                                      uint##_size##_t value);
 
-SHMEMC_WAITUNTIL_TYPE(short, short, ne)
-SHMEMC_WAITUNTIL_TYPE(int, int, ne)
-SHMEMC_WAITUNTIL_TYPE(long, long, ne)
-SHMEMC_WAITUNTIL_TYPE(longlong, long long, ne)
+SHMEMC_TEST(16, eq)
+SHMEMC_TEST(32, eq)
+SHMEMC_TEST(64, eq)
 
-SHMEMC_WAITUNTIL_TYPE(short, short, gt)
-SHMEMC_WAITUNTIL_TYPE(int, int, gt)
-SHMEMC_WAITUNTIL_TYPE(long, long, gt)
-SHMEMC_WAITUNTIL_TYPE(longlong, long long, gt)
+SHMEMC_TEST(16, ne)
+SHMEMC_TEST(32, ne)
+SHMEMC_TEST(64, ne)
 
-SHMEMC_WAITUNTIL_TYPE(short, short, le)
-SHMEMC_WAITUNTIL_TYPE(int, int, le)
-SHMEMC_WAITUNTIL_TYPE(long, long, le)
-SHMEMC_WAITUNTIL_TYPE(longlong, long long, le)
+SHMEMC_TEST(16, gt)
+SHMEMC_TEST(32, gt)
+SHMEMC_TEST(64, gt)
 
-SHMEMC_WAITUNTIL_TYPE(short, short, lt)
-SHMEMC_WAITUNTIL_TYPE(int, int, lt)
-SHMEMC_WAITUNTIL_TYPE(long, long, lt)
-SHMEMC_WAITUNTIL_TYPE(longlong, long long, lt)
+SHMEMC_TEST(16, le)
+SHMEMC_TEST(32, le)
+SHMEMC_TEST(64, le)
 
-SHMEMC_WAITUNTIL_TYPE(short, short, ge)
-SHMEMC_WAITUNTIL_TYPE(int, int, ge)
-SHMEMC_WAITUNTIL_TYPE(long, long, ge)
-SHMEMC_WAITUNTIL_TYPE(longlong, long long, ge)
+SHMEMC_TEST(16, lt)
+SHMEMC_TEST(32, lt)
+SHMEMC_TEST(64, lt)
+
+SHMEMC_TEST(16, ge)
+SHMEMC_TEST(32, ge)
+SHMEMC_TEST(64, ge)
+
+#define SHMEMC_WAITUNTIL(_size, _opname)                                \
+    void shmemc_wait_##_opname##_until##_size(uint##_size##_t *var,     \
+                                              uint##_size##_t value);
+
+SHMEMC_WAITUNTIL(16, eq)
+SHMEMC_WAITUNTIL(32, eq)
+SHMEMC_WAITUNTIL(64, eq)
+
+SHMEMC_WAITUNTIL(16, ne)
+SHMEMC_WAITUNTIL(32, ne)
+SHMEMC_WAITUNTIL(64, ne)
+
+SHMEMC_WAITUNTIL(16, gt)
+SHMEMC_WAITUNTIL(32, gt)
+SHMEMC_WAITUNTIL(64, gt)
+
+SHMEMC_WAITUNTIL(16, le)
+SHMEMC_WAITUNTIL(32, le)
+SHMEMC_WAITUNTIL(64, le)
+
+SHMEMC_WAITUNTIL(16, lt)
+SHMEMC_WAITUNTIL(32, lt)
+SHMEMC_WAITUNTIL(64, lt)
+
+SHMEMC_WAITUNTIL(16, ge)
+SHMEMC_WAITUNTIL(32, ge)
+SHMEMC_WAITUNTIL(64, ge)
 
 /*
  * barriers
