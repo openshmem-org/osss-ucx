@@ -985,15 +985,45 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_long_wait_until(long *ivar, int cmp, long cmp_value);
+    void shmem_long_wait_until(long *ivar, shmem_cmp_t cmp, long cmp_value);
     /* see \ref shmem_long_wait_until() */
-    void shmem_short_wait_until(short *ivar, int cmp,
+    void shmem_short_wait_until(short *ivar, shmem_cmp_t cmp,
                                 short cmp_value);
     /* see \ref shmem_long_wait_until() */
-    void shmem_int_wait_until(int *ivar, int cmp, int cmp_value);
+    void shmem_int_wait_until(int *ivar, shmem_cmp_t cmp, int cmp_value);
     /* see \ref shmem_long_wait_until() */
-    void shmem_longlong_wait_until(long long *ivar, int cmp,
+    void shmem_longlong_wait_until(long long *ivar, shmem_cmp_t cmp,
                                    long long cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_ushort_wait_until(unsigned short *ivar, shmem_cmp_t cmp,
+                                 unsigned short cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_uint_wait_until(unsigned int *ivar, shmem_cmp_t cmp,
+                               unsigned int cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_ulong_wait_until(unsigned long *ivar, shmem_cmp_t cmp,
+                               unsigned long cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_ulonglong_wait_until(unsigned long long *ivar, shmem_cmp_t cmp,
+                                    unsigned long long cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_int32_wait_until(int32_t *ivar, shmem_cmp_t cmp,
+                                int32_t cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_int64_wait_until(int64_t *ivar, shmem_cmp_t cmp,
+                                int64_t cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_uint32_wait_until(uint32_t *ivar, shmem_cmp_t cmp,
+                                 uint32_t cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_uint64_wait_until(uint64_t *ivar, shmem_cmp_t cmp,
+                                 uint64_t cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_size_wait_until(size_t *ivar, shmem_cmp_t cmp,
+                               size_t cmp_value);
+    /* see \ref shmem_long_wait_until() */
+    void shmem_ptrdiff_wait_until(ptrdiff_t *ivar, shmem_cmp_t cmp,
+                                  ptrdiff_t cmp_value);
 
     /**
      * @brief wait for symmetric variable to change value
@@ -1026,6 +1056,27 @@ extern "C"
     void shmem_int_wait(int *ivar, int cmp_value)
         _DEPRECATED_BY(shmem_int_wait_until);
     void shmem_longlong_wait(long long *ivar, long long cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_ushort_wait(unsigned short *ivar, unsigned short cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_uint_wait(unsigned int *ivar, unsigned int cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_ulong_wait(unsigned long *ivar, unsigned long cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_ulonglong_wait(unsigned long long *ivar,
+                              unsigned long long cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_int32_wait(int32_t *ivar, int32_t cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_int64_wait(int64_t *ivar, int64_t cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_uint32_wait(uint32_t *ivar, uint32_t cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_uint64_wait(uint64_t *ivar, uint64_t cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_size_wait(size_t *ivar, size_t cmp_value)
+        _DEPRECATED_BY(shmem_longlong_wait_until);
+    void shmem_ptrdiff_wait(ptrdiff_t *ivar, ptrdiff_t cmp_value)
         _DEPRECATED_BY(shmem_longlong_wait_until);
 
     /*
