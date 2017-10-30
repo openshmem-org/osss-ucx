@@ -51,14 +51,14 @@ enum shmem_fortran_errors {
     SHMEM_MALLOC_SYMMSIZE_FAILED     = (-10L)
 };
 
-enum shmem_cmp_constants {
+typedef enum shmem_cmp_constants {
     SHMEM_CMP_EQ = 0,
     SHMEM_CMP_NE,
     SHMEM_CMP_GT,
     SHMEM_CMP_LE,
     SHMEM_CMP_LT,
     SHMEM_CMP_GE
-};
+} shmem_cmp_t;
 
 #define SHMEM_INTERNAL_F2C_SCALE        (int) (sizeof(long) / sizeof(int))
 
