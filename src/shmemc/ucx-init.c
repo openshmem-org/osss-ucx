@@ -249,7 +249,7 @@ reg_symmetric_heap(void)
     def_symm_heap->length = attr.length;
 
     /* initialize the heap allocator */
-    shmemc_mem_init((void *) def_symm_heap->base,
+    shmemm_mem_init((void *) def_symm_heap->base,
                     def_symm_heap->length);
 
 #if 0

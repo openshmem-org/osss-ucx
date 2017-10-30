@@ -25,7 +25,6 @@ MY_SOURCES             = \
                                 cache.c \
                                 collect.c \
 				contexts.c \
-                                dlmalloc.c \
                                 fcollect.c \
                                 get.c \
                                 get-nbi.c \
@@ -44,6 +43,7 @@ MY_SOURCES             = \
                                 shmalloc.c \
                                 version.c \
                                 waituntil.c
+MY_SOURCES            += dlmalloc.c
 
 if ENABLE_FORTRAN
 MY_SOURCES            += fortran/fortran.c fortran/fortran-mem.c
