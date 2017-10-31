@@ -8,6 +8,8 @@
 #include "memalloc.h"
 
 #include <stdlib.h>             /* getenv */
+#include <string.h>
+#include <strings.h>
 #include <assert.h>
 
 #include <ucp/api/ucp.h>
