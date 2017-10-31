@@ -66,20 +66,20 @@ SHMEM_TYPED_PUT_NBI(float, float)
 SHMEM_TYPED_PUT_NBI(complexf, COMPLEXIFY(float))
 SHMEM_TYPED_PUT_NBI(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_PUT_NBI(_name, _size)                               \
+#define SHMEM_SIZED_PUT_NBI(_size)                                      \
     void                                                                \
-    shmem_put##_name##_nbi(void *dest, const void *src,                 \
-                            size_t nelems, int pe)                      \
+    shmem_put##_size##_nbi(void *dest, const void *src,                 \
+                           size_t nelems, int pe)                       \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
         shmemc_put_nbi(dest, src, sized_nelems, pe);                    \
     }
 
-SHMEM_SIZED_PUT_NBI(32, 32)
-SHMEM_SIZED_PUT_NBI(4, 32)
-SHMEM_SIZED_PUT_NBI(64, 64)
-SHMEM_SIZED_PUT_NBI(8, 64)
-SHMEM_SIZED_PUT_NBI(128, 128)
+SHMEM_SIZED_PUT_NBI(8)
+SHMEM_SIZED_PUT_NBI(16)
+SHMEM_SIZED_PUT_NBI(32)
+SHMEM_SIZED_PUT_NBI(64)
+SHMEM_SIZED_PUT_NBI(128)
 
 void
 shmem_putmem_nbi(void *dest, const void *src, size_t nelems, int pe)

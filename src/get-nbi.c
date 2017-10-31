@@ -67,20 +67,20 @@ SHMEM_TYPED_GET_NBI(float, float)
 SHMEM_TYPED_GET_NBI(complexf, COMPLEXIFY(float))
 SHMEM_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_GET_NBI(_name, _size)                               \
+#define SHMEM_SIZED_GET_NBI(_size)                                      \
     void                                                                \
-    shmem_get##_name##_nbi(void *dest, const void *src,                 \
+    shmem_get##_size##_nbi(void *dest, const void *src,                 \
                            size_t nelems, int pe)                       \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
         shmemc_get_nbi(dest, src, sized_nelems, pe);                    \
     }
 
-SHMEM_SIZED_GET_NBI(32, 32)
-SHMEM_SIZED_GET_NBI(4, 32)
-SHMEM_SIZED_GET_NBI(64, 64)
-SHMEM_SIZED_GET_NBI(8, 64)
-SHMEM_SIZED_GET_NBI(128, 128)
+SHMEM_SIZED_GET_NBI(8)
+SHMEM_SIZED_GET_NBI(16)
+SHMEM_SIZED_GET_NBI(32)
+SHMEM_SIZED_GET_NBI(64)
+SHMEM_SIZED_GET_NBI(128)
 
 void
 shmem_getmem_nbi(void *dest, const void *src, size_t nelems, int pe)

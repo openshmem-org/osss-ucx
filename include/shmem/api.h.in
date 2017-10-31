@@ -373,8 +373,8 @@ extern "C"
 
 #define API_DECL_PUTGET_SIZE(_opname, _size)                    \
     /* see \ref shmem_long_put() */                             \
-    void pshmem_##_opname##_size(void *dest, const void *src,   \
-                                 size_t nelems, int pe);
+    void shmem_##_opname##_size(void *dest, const void *src,    \
+                                size_t nelems, int pe);
 
     API_DECL_PUTGET_SIZE(put, 8)
     API_DECL_PUTGET_SIZE(put, 16)
@@ -398,10 +398,9 @@ extern "C"
     void shmem_getmem(void *dest, const void *src, size_t nelems,
                       int pe);
 
-
 #define API_DECL_P(_name, _type)                                \
     /* see \ref shmem_long_p() */                               \
-    void pshmem_##_name##_p(_type *dest, _type src, int pe);
+    void shmem_##_name##_p(_type *dest, _type src, int pe);
 
     API_DECL_P(float, float)
     API_DECL_P(double, double)
@@ -430,9 +429,9 @@ extern "C"
 
 #undef API_DECL_P
 
-#define API_DECL_G(_name, _type)                    \
-    /* see \ref shmem_long_g() */                   \
-    _type pshmem_##_name##_g(const _type *dest, int pe);
+#define API_DECL_G(_name, _type)                        \
+    /* see \ref shmem_long_g() */                       \
+    _type shmem_##_name##_g(const _type *dest, int pe);
 
     API_DECL_G(float, float)
     API_DECL_G(double, double)
