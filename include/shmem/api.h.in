@@ -2427,53 +2427,120 @@ extern "C"
      */
 
     /* see \ref shmem_long_put() */
-#define shmem_put(dest, source, nelems, pe)                             \
-    _Generic(*(dest),                                                   \
-             float:       shmem_float_put,                              \
-             double:      shmem_double_put,                             \
-             long double: shmem_longdouble_put,                         \
-             char:        shmem_char_put,                               \
-             short:       shmem_short_put,                              \
-             int:         shmem_int_put,                                \
-             long:        shmem_long_put,                               \
-             long long:   shmem_longlong_put)(dest, source, nelems, pe)
+#define shmem_put(dest, source, nelems, pe)                 \
+    _Generic(*(dest),                                       \
+             float:                shmem_float_put,         \
+             double:               shmem_double_put,        \
+             long double:          shmem_longdouble_put,    \
+             signed char:          shmem_schar_put,         \
+             char:                 shmem_char_put,          \
+             short:                shmem_short_put,         \
+             int:                  shmem_int_put,           \
+             long:                 shmem_long_put,          \
+             long long:            shmem_longlong_put,      \
+             unsigned char:        shmem_char_put,          \
+             unsigned short:       shmem_short_put,         \
+             unsigned int:         shmem_int_put,           \
+             unsigned long:        shmem_long_put,          \
+             unsigned long long:   shmem_longlong_put,      \
+             int8_t:               shmem_int8_put,          \
+             int16_t:              shmem_int16_put,         \
+             int32_t:              shmem_int32_put,         \
+             int64_t:              shmem_int64_put,         \
+             uint8_t:              shmem_int8_put,          \
+             uint16_t:             shmem_uint16_put,        \
+             uint32_t:             shmem_uint32_put,        \
+             uint64_t:             shmem_uint64_put,        \
+             size_t:               shmem_size_put,          \
+             ptrdiff_t:            shmem_ptrdiff_put        \
+             )(dest, source, nelems, pe)
 
     /* see \ref shmem_long_get() */
-#define shmem_get(dest, source, nelems, pe)                             \
-    _Generic(*(dest),                                                   \
-             float:       shmem_float_get,                              \
-             double:      shmem_double_get,                             \
-             long double: shmem_longdouble_get,                         \
-             char:        shmem_char_get,                               \
-             short:       shmem_short_get,                              \
-             int:         shmem_int_get,                                \
-             long:        shmem_long_get,                               \
-             long long:   shmem_longlong_get)(dest, source, nelems, pe)
+#define shmem_get(dest, source, nelems, pe)                 \
+    _Generic(*(dest),                                       \
+             float:                shmem_float_get,         \
+             double:               shmem_double_get,        \
+             long double:          shmem_longdouble_get,    \
+             signed char:          shmem_schar_get,         \
+             char:                 shmem_char_get,          \
+             short:                shmem_short_get,         \
+             int:                  shmem_int_get,           \
+             long:                 shmem_long_get,          \
+             long long:            shmem_longlong_get,      \
+             unsigned char:        shmem_char_get,          \
+             unsigned short:       shmem_short_get,         \
+             unsigned int:         shmem_int_get,           \
+             unsigned long:        shmem_long_get,          \
+             unsigned long long:   shmem_longlong_get,      \
+             int8_t:               shmem_int8_get,          \
+             int16_t:              shmem_int16_get,         \
+             int32_t:              shmem_int32_get,         \
+             int64_t:              shmem_int64_get,         \
+             uint8_t:              shmem_int8_get,          \
+             uint16_t:             shmem_uint16_get,        \
+             uint32_t:             shmem_uint32_get,        \
+             uint64_t:             shmem_uint64_get,        \
+             size_t:               shmem_size_get,          \
+             ptrdiff_t:            shmem_ptrdiff_get        \
+             )(dest, source, nelems, pe)
 
     /* see \ref shmem_long_p() */
-#define shmem_p(dest, value, pe)                                \
-    _Generic(*(dest),                                           \
-             float:       shmem_float_p,                        \
-             double:      shmem_double_p,                       \
-             long double: shmem_longdouble_p,                   \
-             char:        shmem_char_p,                         \
-             short:       shmem_short_p,                        \
-             int:         shmem_int_p,                          \
-             long:        shmem_long_p,                         \
-             long long:   shmem_longlong_p)(dest, value, pe)
-
+#define shmem_p(dest, value, pe)                 \
+    _Generic(*(dest),                                       \
+             float:                shmem_float_p,         \
+             double:               shmem_double_p,        \
+             long double:          shmem_longdouble_p,    \
+             signed char:          shmem_schar_p,         \
+             char:                 shmem_char_p,          \
+             short:                shmem_short_p,         \
+             int:                  shmem_int_p,           \
+             long:                 shmem_long_p,          \
+             long long:            shmem_longlong_p,      \
+             unsigned char:        shmem_char_p,          \
+             unsigned short:       shmem_short_p,         \
+             unsigned int:         shmem_int_p,           \
+             unsigned long:        shmem_long_p,          \
+             unsigned long long:   shmem_longlong_p,      \
+             int8_t:               shmem_int8_p,          \
+             int16_t:              shmem_int16_p,         \
+             int32_t:              shmem_int32_p,         \
+             int64_t:              shmem_int64_p,         \
+             uint8_t:              shmem_int8_p,          \
+             uint16_t:             shmem_uint16_p,        \
+             uint32_t:             shmem_uint32_p,        \
+             uint64_t:             shmem_uint64_p,        \
+             size_t:               shmem_size_p,          \
+             ptrdiff_t:            shmem_ptrdiff_p        \
+             )(dest, value, pe)
 
     /* see \ref shmem_long_g() */
-#define shmem_g(addr, pe)                               \
-    _Generic((addr),                                    \
-             float:       shmem_float_g,                \
-             double:      shmem_double_g,               \
-             long double: shmem_longdouble_g,           \
-             char:        shmem_char_g,                 \
-             short:       shmem_short_g,                \
-             int:         shmem_int_g,                  \
-             long:        shmem_long_g,                 \
-             long long:   shmem_longlong_g)(addr, pe)
+#define shmem_g(src, pe)                                   \
+    _Generic(*(src),                                       \
+             float:                shmem_float_p,         \
+             double:               shmem_double_p,        \
+             long double:          shmem_longdouble_p,    \
+             signed char:          shmem_schar_p,         \
+             char:                 shmem_char_p,          \
+             short:                shmem_short_p,         \
+             int:                  shmem_int_p,           \
+             long:                 shmem_long_p,          \
+             long long:            shmem_longlong_p,      \
+             unsigned char:        shmem_char_p,          \
+             unsigned short:       shmem_short_p,         \
+             unsigned int:         shmem_int_p,           \
+             unsigned long:        shmem_long_p,          \
+             unsigned long long:   shmem_longlong_p,      \
+             int8_t:               shmem_int8_p,          \
+             int16_t:              shmem_int16_p,         \
+             int32_t:              shmem_int32_p,         \
+             int64_t:              shmem_int64_p,         \
+             uint8_t:              shmem_int8_p,          \
+             uint16_t:             shmem_uint16_p,        \
+             uint32_t:             shmem_uint32_p,        \
+             uint64_t:             shmem_uint64_p,        \
+             size_t:               shmem_size_p,          \
+             ptrdiff_t:            shmem_ptrdiff_p        \
+             )(src, pe)
 
     /* see \ref shmem_long_iput() */
 #define shmem_iput(dest, source, dst, sst, nelems, pe)                  \
