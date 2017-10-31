@@ -8,7 +8,7 @@ AC_INIT([OSSS/SBU Reference Implementation],
 	[1.0],
 	[anthony.curtis@stonybrook.edu],
 	[],
-	[https://github.com/openshmem-org/])
+	[https://bitbucket.org/sbuopenshmem/osss-openshmem])
 AC_SUBST([SHMEM_MAJOR_VERSION], 1)
 AC_SUBST([SHMEM_MINOR_VERSION], 4)
 AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
