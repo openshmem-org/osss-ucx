@@ -1,5 +1,9 @@
 /* For license: see LICENSE file at top-level */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "shmemc-ucx.h"
 #include "pmix-client.h"
 #include "state.h"
@@ -18,6 +22,7 @@ shmemc_init(void)
     shmemc_ucx_init();
 
     /* now heap registered... */
+    /* TODO: don't do this if all addresses fixed */
     shmemc_pmix_publish_heap_info();
     shmemc_pmix_exchange_heap_info();
 
