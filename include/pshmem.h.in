@@ -10,9 +10,6 @@ extern "C"
 {
 #endif  /* __cplusplus */
 
-    void pshmem_info_get_version(int *major, int *minor);
-    void pshmem_info_get_name(char *name);
-
     /*
      * init & query
      */
@@ -20,6 +17,12 @@ extern "C"
     void pstart_pes(int npes);
     void pshmem_init(void);
     void pshmem_finalize(void);
+
+    void pshmem_info_get_version(int *major, int *minor);
+    void pshmem_info_get_name(char *name);
+
+    void pshmem_init_thread(int req, int *prov);
+    int pshmem_query_thread(int *prov) _WUR;
 
     void pshmem_global_exit(int status);
 
@@ -33,21 +36,37 @@ extern "C"
      * I/O
      */
 
-    void pshmem_short_put(short *dest, const short *src, size_t nelems,
-                          int pe);
-    void pshmem_int_put(int *dest, const int *src, size_t nelems,
-                        int pe);
-    void pshmem_long_put(long *dest, const long *src, size_t nelems,
-                         int pe);
-    void pshmem_longlong_put(long long *dest, const long long *src,
-                             size_t nelems, int pe);
-    void pshmem_longdouble_put(long double *dest,
-                               const long double *src, size_t nelems,
-                               int pe);
-    void pshmem_double_put(double *dest, const double *src,
-                           size_t nelems, int pe);
-    void pshmem_float_put(float *dest, const float *src, size_t nelems,
-                          int pe);
+#define PSHMEM_DECL_PUT(_name, _type)                                   \
+    void pshmem_##_name##_put(_type *dest, const _type *src,            \
+                              size_t nelems, int pe);
+
+    PSHMEM_DECL_PUT(float, float)
+    PSHMEM_DECL_PUT(double, double)
+    PSHMEM_DECL_PUT(longdouble, long double)
+    PSHMEM_DECL_PUT(schar, signed char)
+    PSHMEM_DECL_PUT(char, char)
+    PSHMEM_DECL_PUT(short, short)
+    PSHMEM_DECL_PUT(int, int)
+    PSHMEM_DECL_PUT(long, long)
+    PSHMEM_DECL_PUT(longlong, long long)
+    PSHMEM_DECL_PUT(uchar, unsigned char)
+    PSHMEM_DECL_PUT(ushort, unsigned short)
+    PSHMEM_DECL_PUT(uint, unsigned int)
+    PSHMEM_DECL_PUT(ulong, unsigned long)
+    PSHMEM_DECL_PUT(ulonglong, unsigned long long)
+    PSHMEM_DECL_PUT(int8, int8_t)
+    PSHMEM_DECL_PUT(int16, int16_t)
+    PSHMEM_DECL_PUT(int32, int32_t)
+    PSHMEM_DECL_PUT(int64, int64_t)
+    PSHMEM_DECL_PUT(uint8, unsigned int8_t)
+    PSHMEM_DECL_PUT(uint16, unsigned int16_t)
+    PSHMEM_DECL_PUT(uint32, unsigned int32_t)
+    PSHMEM_DECL_PUT(uint64, unsigned int64_t)
+    PSHMEM_DECL_PUT(size, size_t)
+    PSHMEM_DECL_PUT(ptrdiff, ptrdiff_t)
+
+#undef PSHMEM_DECL_PUT
+
     void pshmem_putmem(void *dest, const void *src, size_t nelems,
                        int pe);
     void pshmem_put32(void *dest, const void *src, size_t nelems,
@@ -57,21 +76,37 @@ extern "C"
     void pshmem_put128(void *dest, const void *src, size_t nelems,
                        int pe);
 
-    void pshmem_short_get(short *dest, const short *src, size_t nelems,
-                          int pe);
-    void pshmem_int_get(int *dest, const int *src, size_t nelems,
-                        int pe);
-    void pshmem_long_get(long *dest, const long *src, size_t nelems,
-                         int pe);
-    void pshmem_longlong_get(long long *dest, const long long *src,
-                             size_t nelems, int pe);
-    void pshmem_longdouble_get(long double *dest,
-                               const long double *src, size_t nelems,
-                               int pe);
-    void pshmem_double_get(double *dest, const double *src,
-                           size_t nelems, int pe);
-    void pshmem_float_get(float *dest, const float *src, size_t nelems,
-                          int pe);
+#define PSHMEM_DECL_GET(_name, _type)                                   \
+    void pshmem_##_name##_get(_type *dest, const _type *src,            \
+                              size_t nelems, int pe);
+
+    PSHMEM_DECL_GET(float, float)
+    PSHMEM_DECL_GET(double, double)
+    PSHMEM_DECL_GET(longdouble, long double)
+    PSHMEM_DECL_GET(schar, signed char)
+    PSHMEM_DECL_GET(char, char)
+    PSHMEM_DECL_GET(short, short)
+    PSHMEM_DECL_GET(int, int)
+    PSHMEM_DECL_GET(long, long)
+    PSHMEM_DECL_GET(longlong, long long)
+    PSHMEM_DECL_GET(uchar, unsigned char)
+    PSHMEM_DECL_GET(ushort, unsigned short)
+    PSHMEM_DECL_GET(uint, unsigned int)
+    PSHMEM_DECL_GET(ulong, unsigned long)
+    PSHMEM_DECL_GET(ulonglong, unsigned long long)
+    PSHMEM_DECL_GET(int8, int8_t)
+    PSHMEM_DECL_GET(int16, int16_t)
+    PSHMEM_DECL_GET(int32, int32_t)
+    PSHMEM_DECL_GET(int64, int64_t)
+    PSHMEM_DECL_GET(uint8, unsigned int8_t)
+    PSHMEM_DECL_GET(uint16, unsigned int16_t)
+    PSHMEM_DECL_GET(uint32, unsigned int32_t)
+    PSHMEM_DECL_GET(uint64, unsigned int64_t)
+    PSHMEM_DECL_GET(size, size_t)
+    PSHMEM_DECL_GET(ptrdiff, ptrdiff_t)
+
+#undef PSHMEM_DECL_GET
+
     void pshmem_getmem(void *dest, const void *src, size_t nelems,
                        int pe);
     void pshmem_get32(void *dest, const void *src, size_t nelems,
@@ -81,104 +116,147 @@ extern "C"
     void pshmem_get128(void *dest, const void *src, size_t nelems,
                        int pe);
 
-    void pshmem_char_p(char *addr, char value, int pe);
-    void pshmem_short_p(short *addr, short value, int pe);
-    void pshmem_int_p(int *addr, int value, int pe);
-    void pshmem_long_p(long *addr, long value, int pe);
-    void pshmem_longlong_p(long long *addr, long long value, int pe);
-    void pshmem_float_p(float *addr, float value, int pe);
-    void pshmem_double_p(double *addr, double value, int pe);
-    void pshmem_longdouble_p(long double *addr, long double value,
-                             int pe);
+#define PSHMEM_DECL_P(_name, _type)                             \
+    void pshmem_##_name##_p(_type *dest, _type src, int pe);
 
-    char pshmem_char_g(char *addr, int pe) _WUR;
-    short pshmem_short_g(short *addr, int pe) _WUR;
-    int pshmem_int_g(int *addr, int pe) _WUR;
-    long pshmem_long_g(long *addr, int pe) _WUR;
-    long long pshmem_longlong_g(long long *addr, int pe) _WUR;
-    float pshmem_float_g(float *addr, int pe) _WUR;
-    double pshmem_double_g(double *addr, int pe) _WUR;
-    long double pshmem_longdouble_g(long double *addr, int pe) _WUR;
+    PSHMEM_DECL_P(float, float)
+    PSHMEM_DECL_P(double, double)
+    PSHMEM_DECL_P(longdouble, long double)
+    PSHMEM_DECL_P(schar, signed char)
+    PSHMEM_DECL_P(char, char)
+    PSHMEM_DECL_P(short, short)
+    PSHMEM_DECL_P(int, int)
+    PSHMEM_DECL_P(long, long)
+    PSHMEM_DECL_P(longlong, long long)
+    PSHMEM_DECL_P(uchar, unsigned char)
+    PSHMEM_DECL_P(ushort, unsigned short)
+    PSHMEM_DECL_P(uint, unsigned int)
+    PSHMEM_DECL_P(ulong, unsigned long)
+    PSHMEM_DECL_P(ulonglong, unsigned long long)
+    PSHMEM_DECL_P(int8, int8_t)
+    PSHMEM_DECL_P(int16, int16_t)
+    PSHMEM_DECL_P(int32, int32_t)
+    PSHMEM_DECL_P(int64, int64_t)
+    PSHMEM_DECL_P(uint8, unsigned int8_t)
+    PSHMEM_DECL_P(uint16, unsigned int16_t)
+    PSHMEM_DECL_P(uint32, unsigned int32_t)
+    PSHMEM_DECL_P(uint64, unsigned int64_t)
+    PSHMEM_DECL_P(size, size_t)
+    PSHMEM_DECL_P(ptrdiff, ptrdiff_t)
 
+#undef PSHMEM_DECL_P
+
+#define PSHMEM_DECL_G(_name, _type)                 \
+    _type pshmem_##_name##_g(_type *dest, int pe);
+
+    PSHMEM_DECL_G(float, float)
+    PSHMEM_DECL_G(double, double)
+    PSHMEM_DECL_G(longdouble, long double)
+    PSHMEM_DECL_G(schar, signed char)
+    PSHMEM_DECL_G(char, char)
+    PSHMEM_DECL_G(short, short)
+    PSHMEM_DECL_G(int, int)
+    PSHMEM_DECL_G(long, long)
+    PSHMEM_DECL_G(longlong, long long)
+    PSHMEM_DECL_G(uchar, unsigned char)
+    PSHMEM_DECL_G(ushort, unsigned short)
+    PSHMEM_DECL_G(uint, unsigned int)
+    PSHMEM_DECL_G(ulong, unsigned long)
+    PSHMEM_DECL_G(ulonglong, unsigned long long)
+    PSHMEM_DECL_G(int8, int8_t)
+    PSHMEM_DECL_G(int16, int16_t)
+    PSHMEM_DECL_G(int32, int32_t)
+    PSHMEM_DECL_G(int64, int64_t)
+    PSHMEM_DECL_G(uint8, unsigned int8_t)
+    PSHMEM_DECL_G(uint16, unsigned int16_t)
+    PSHMEM_DECL_G(uint32, unsigned int32_t)
+    PSHMEM_DECL_G(uint64, unsigned int64_t)
+    PSHMEM_DECL_G(size, size_t)
+    PSHMEM_DECL_G(ptrdiff, ptrdiff_t)
+
+#undef PSHMEM_DECL_G
 
     /*
      * strided I/O
      */
 
-    void pshmem_double_iput(double *target, const double *source,
-                            ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                            int pe);
+#define PSHMEM_DECL_STRIDED_OP(_opname, _name, _type)                   \
+    void pshmem_##_name##_i##_opname(_type *dest, const _type *src,     \
+                                     ptrdiff_t tst, ptrdiff_t sst,      \
+                                     size_t nelems,                     \
+                                     int pe);
 
-    void pshmem_float_iput(float *target, const float *source,
-                           ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                           int pe);
+    PSHMEM_DECL_STRIDED_OP(put, float, float)
+    PSHMEM_DECL_STRIDED_OP(put, double, double)
+    PSHMEM_DECL_STRIDED_OP(put, longdouble, long double)
+    PSHMEM_DECL_STRIDED_OP(put, schar, signed char)
+    PSHMEM_DECL_STRIDED_OP(put, char, char)
+    PSHMEM_DECL_STRIDED_OP(put, short, short)
+    PSHMEM_DECL_STRIDED_OP(put, int, int)
+    PSHMEM_DECL_STRIDED_OP(put, long, long)
+    PSHMEM_DECL_STRIDED_OP(put, longlong, long long)
+    PSHMEM_DECL_STRIDED_OP(put, uchar, unsigned char)
+    PSHMEM_DECL_STRIDED_OP(put, ushort, unsigned short)
+    PSHMEM_DECL_STRIDED_OP(put, uint, unsigned int)
+    PSHMEM_DECL_STRIDED_OP(put, ulong, unsigned long)
+    PSHMEM_DECL_STRIDED_OP(put, ulonglong, unsigned long long)
+    PSHMEM_DECL_STRIDED_OP(put, int8, int8_t)
+    PSHMEM_DECL_STRIDED_OP(put, int16, int16_t)
+    PSHMEM_DECL_STRIDED_OP(put, int32, int32_t)
+    PSHMEM_DECL_STRIDED_OP(put, int64, int64_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint8, unsigned int8_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint16, unsigned int16_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint32, unsigned int32_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint64, unsigned int64_t)
+    PSHMEM_DECL_STRIDED_OP(put, size, size_t)
+    PSHMEM_DECL_STRIDED_OP(put, ptrdiff, ptrdiff_t)
 
-    void pshmem_int_iput(int *target, const int *source, ptrdiff_t tst,
-                         ptrdiff_t sst, size_t nelems, int pe);
+    PSHMEM_DECL_STRIDED_OP(get, float, float)
+    PSHMEM_DECL_STRIDED_OP(get, double, double)
+    PSHMEM_DECL_STRIDED_OP(get, longdouble, long double)
+    PSHMEM_DECL_STRIDED_OP(get, schar, signed char)
+    PSHMEM_DECL_STRIDED_OP(get, char, char)
+    PSHMEM_DECL_STRIDED_OP(get, short, short)
+    PSHMEM_DECL_STRIDED_OP(get, int, int)
+    PSHMEM_DECL_STRIDED_OP(get, long, long)
+    PSHMEM_DECL_STRIDED_OP(get, longlong, long long)
+    PSHMEM_DECL_STRIDED_OP(get, uchar, unsigned char)
+    PSHMEM_DECL_STRIDED_OP(get, ushort, unsigned short)
+    PSHMEM_DECL_STRIDED_OP(get, uint, unsigned int)
+    PSHMEM_DECL_STRIDED_OP(get, ulong, unsigned long)
+    PSHMEM_DECL_STRIDED_OP(get, ulonglong, unsigned long long)
+    PSHMEM_DECL_STRIDED_OP(get, int8, int8_t)
+    PSHMEM_DECL_STRIDED_OP(get, int16, int16_t)
+    PSHMEM_DECL_STRIDED_OP(get, int32, int32_t)
+    PSHMEM_DECL_STRIDED_OP(get, int64, int64_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint8, unsigned int8_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint16, unsigned int16_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint32, unsigned int32_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint64, unsigned int64_t)
+    PSHMEM_DECL_STRIDED_OP(get, size, size_t)
+    PSHMEM_DECL_STRIDED_OP(get, ptrdiff, ptrdiff_t)
 
-    void pshmem_iput32(void *target, const void *source, ptrdiff_t tst,
-                       ptrdiff_t sst, size_t nelems, int pe);
+#undef PSHMEM_DECL_STRIDED_OP
 
-    void pshmem_iput64(void *target, const void *source, ptrdiff_t tst,
-                       ptrdiff_t sst, size_t nelems, int pe);
+#define PSHMEM_DECL_STRIDED_OPSIZE(_opname, _size)                      \
+    void pshmem_i##_opname##_size(_type *dest, const _type *src,        \
+                                     ptrdiff_t tst, ptrdiff_t sst,      \
+                                     size_t nelems,                     \
+                                     int pe);
 
-    void pshmem_iput128(void *target, const void *source, ptrdiff_t tst,
-                        ptrdiff_t sst, size_t nelems, int pe);
+    PSHMEM_DECL_STRIDED_OPSIZE(put, 8)
+    PSHMEM_DECL_STRIDED_OPSIZE(put, 16)
+    PSHMEM_DECL_STRIDED_OPSIZE(put, 32)
+    PSHMEM_DECL_STRIDED_OPSIZE(put, 64)
+    PSHMEM_DECL_STRIDED_OPSIZE(put, 128)
 
-    void pshmem_long_iput(long *target, const long *source,
-                          ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                          int pe);
+    PSHMEM_DECL_STRIDED_OPSIZE(get, 8)
+    PSHMEM_DECL_STRIDED_OPSIZE(get, 16)
+    PSHMEM_DECL_STRIDED_OPSIZE(get, 32)
+    PSHMEM_DECL_STRIDED_OPSIZE(get, 64)
+    PSHMEM_DECL_STRIDED_OPSIZE(get, 128)
 
-    void pshmem_longdouble_iput(long double *target,
-                                const long double *source,
-                                ptrdiff_t tst, ptrdiff_t sst,
-                                size_t nelems, int pe);
-
-    void pshmem_longlong_iput(long long *target,
-                              const long long *source, ptrdiff_t tst,
-                              ptrdiff_t sst, size_t nelems, int pe);
-
-    void pshmem_short_iput(short *target, const short *source,
-                           ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                           int pe);
-
-
-    void pshmem_double_iget(double *target, const double *source,
-                            ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                            int pe);
-
-    void pshmem_float_iget(float *target, const float *source,
-                           ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                           int pe);
-
-    void pshmem_int_iget(int *target, const int *source, ptrdiff_t tst,
-                         ptrdiff_t sst, size_t nelems, int pe);
-
-    void pshmem_iget32(void *target, const void *source, ptrdiff_t tst,
-                       ptrdiff_t sst, size_t nelems, int pe);
-
-    void pshmem_iget64(void *target, const void *source, ptrdiff_t tst,
-                       ptrdiff_t sst, size_t nelems, int pe);
-
-    void pshmem_iget128(void *target, const void *source, ptrdiff_t tst,
-                        ptrdiff_t sst, size_t nelems, int pe);
-
-    void pshmem_long_iget(long *target, const long *source,
-                          ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                          int pe);
-
-    void pshmem_longdouble_iget(long double *target,
-                                const long double *source,
-                                ptrdiff_t tst, ptrdiff_t sst,
-                                size_t nelems, int pe);
-
-    void pshmem_longlong_iget(long long *target,
-                              const long long *source, ptrdiff_t tst,
-                              ptrdiff_t sst, size_t nelems, int pe);
-
-    void pshmem_short_iget(short *target, const short *source,
-                           ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                           int pe);
+#undef PSHMEM_DECL_STRIDED_OPSIZE
 
     /*
      * non-blocking implicit put/get
@@ -433,33 +511,62 @@ extern "C"
      * wait operations
      */
 
-    void pshmem_short_wait_until(short *ivar, int cmp,
+    int pshmem_short_test(short *ivar, shmem_cmp_t cmp,
+                          short cmp_value);
+    int pshmem_int_test(int *ivar, shmem_cmp_t cmp,
+                        int cmp_value);
+    int pshmem_long_test(long *ivar, shmem_cmp_t cmp,
+                         long cmp_value);
+    int pshmem_longlong_test(long long *ivar, shmem_cmp_t cmp,
+                             long long cmp_value);
+    int pshmem_ushort_test(unsigned short *ivar, shmem_cmp_t cmp,
+                           unsigned short cmp_value);
+    int pshmem_uint_test(unsigned int *ivar, shmem_cmp_t cmp,
+                         unsigned int cmp_value);
+    int pshmem_ulong_test(unsigned long *ivar, shmem_cmp_t cmp,
+                          unsigned long cmp_value);
+    int pshmem_ulonglong_test(unsigned long long *ivar, shmem_cmp_t cmp,
+                              unsigned long long cmp_value);
+    int pshmem_int32_test(int32_t *ivar, shmem_cmp_t cmp,
+                          int32_t cmp_value);
+    int pshmem_int64_test(int64_t *ivar, shmem_cmp_t cmp,
+                          int64_t cmp_value);
+    int pshmem_uint32_test(uint32_t *ivar, shmem_cmp_t cmp,
+                           uint32_t cmp_value);
+    int pshmem_uint64_test(uint64_t *ivar, shmem_cmp_t cmp,
+                           uint64_t cmp_value);
+    int pshmem_size_test(size_t *ivar, shmem_cmp_t cmp,
+                         size_t cmp_value);
+    int pshmem_ptrdiff_test(ptrdiff_t *ivar, shmem_cmp_t cmp,
+                            ptrdiff_t cmp_value);
+
+    void pshmem_short_wait_until(short *ivar, shmem_cmp_t cmp,
                                  short cmp_value);
-    void pshmem_int_wait_until(int *ivar, int cmp,
+    void pshmem_int_wait_until(int *ivar, shmem_cmp_t cmp,
                                int cmp_value);
-    void pshmem_long_wait_until(long *ivar, int cmp,
+    void pshmem_long_wait_until(long *ivar, shmem_cmp_t cmp,
                                 long cmp_value);
-    void pshmem_longlong_wait_until(long long *ivar, int cmp,
+    void pshmem_longlong_wait_until(long long *ivar, shmem_cmp_t cmp,
                                     long long cmp_value);
-    void pshmem_ushort_wait_until(unsigned short *ivar, int cmp,
+    void pshmem_ushort_wait_until(unsigned short *ivar, shmem_cmp_t cmp,
                                   unsigned short cmp_value);
-    void pshmem_uint_wait_until(unsigned int *ivar, int cmp,
+    void pshmem_uint_wait_until(unsigned int *ivar, shmem_cmp_t cmp,
                                 unsigned int cmp_value);
-    void pshmem_ulong_wait_until(unsigned long *ivar, int cmp,
+    void pshmem_ulong_wait_until(unsigned long *ivar, shmem_cmp_t cmp,
                                  unsigned long cmp_value);
-    void pshmem_ulonglong_wait_until(unsigned long long *ivar, int cmp,
+    void pshmem_ulonglong_wait_until(unsigned long long *ivar, shmem_cmp_t cmp,
                                      unsigned long long cmp_value);
-    void pshmem_int32_wait_until(int32_t *ivar, int cmp,
+    void pshmem_int32_wait_until(int32_t *ivar, shmem_cmp_t cmp,
                                  int32_t cmp_value);
-    void pshmem_int64_wait_until(int64_t *ivar, int cmp,
+    void pshmem_int64_wait_until(int64_t *ivar, shmem_cmp_t cmp,
                                  int64_t cmp_value);
-    void pshmem_uint32_wait_until(uint32_t *ivar, int cmp,
+    void pshmem_uint32_wait_until(uint32_t *ivar, shmem_cmp_t cmp,
                                   uint32_t cmp_value);
-    void pshmem_uint32_wait_until(uint32_t *ivar, int cmp,
-                                  uint32_t cmp_value);
-    void pshmem_size_wait_until(size_t *ivar, int cmp,
+    void pshmem_uint64_wait_until(uint64_t *ivar, shmem_cmp_t cmp,
+                                  uint64_t cmp_value);
+    void pshmem_size_wait_until(size_t *ivar, shmem_cmp_t cmp,
                                 size_t cmp_value);
-    void pshmem_ptrdiff_wait_until(ptrdiff_t *ivar, int cmp,
+    void pshmem_ptrdiff_wait_until(ptrdiff_t *ivar, shmem_cmp_t cmp,
                                    ptrdiff_t cmp_value);
 
     /* deprecations */
@@ -481,8 +588,8 @@ extern "C"
                            int64_t cmp_value);
     void pshmem_uint32_wait(uint32_t *ivar,
                             uint32_t cmp_value);
-    void pshmem_uint32_wait(uint32_t *ivar,
-                            uint32_t cmp_value);
+    void pshmem_uint64_wait(uint64_t *ivar,
+                            uint64_t cmp_value);
     void pshmem_size_wait(size_t *ivar,
                           size_t cmp_value);
     void pshmem_ptrdiff_wait(ptrdiff_t *ivar,
