@@ -56,6 +56,10 @@ extern void shmem_complexd_get(COMPLEXIFY(double) * dest,
 #pragma weak shmem_uint64_get = pshmem_uint64_get
 #define shmem_uint64_get pshmem_uint64_get
 
+#pragma weak shmem_get8 = pshmem_get8
+#define shmem_get8 pshmem_get8
+#pragma weak shmem_get16 = pshmem_get16
+#define shmem_get16 pshmem_get16
 #pragma weak shmem_get32 = pshmem_get32
 #define shmem_get32 pshmem_get32
 #pragma weak shmem_get64 = pshmem_get64
@@ -110,20 +114,20 @@ SHMEM_TYPED_GET(ptrdiff, ptrdiff_t)
 SHMEM_TYPED_GET(complexf, COMPLEXIFY(float))
 SHMEM_TYPED_GET(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_GET(_name, _size)                       \
+#define SHMEM_SIZED_GET(_size)                              \
     void                                                    \
-    shmem_get##_name(void *dest, const void *src,           \
+    shmem_get##_size(void *dest, const void *src,           \
                      size_t nelems, int pe)                 \
     {                                                       \
         const size_t sized_nelems = nelems * _size;         \
         shmemc_get(dest, src, sized_nelems, pe);            \
     }
 
-SHMEM_SIZED_GET(32, 32)
-SHMEM_SIZED_GET(4, 32)
-SHMEM_SIZED_GET(64, 64)
-SHMEM_SIZED_GET(8, 64)
-SHMEM_SIZED_GET(128, 128)
+SHMEM_SIZED_GET(8)
+SHMEM_SIZED_GET(16)
+SHMEM_SIZED_GET(32)
+SHMEM_SIZED_GET(64)
+SHMEM_SIZED_GET(128)
 
 void
 shmem_getmem(void *dest, const void *src,

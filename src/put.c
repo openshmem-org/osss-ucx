@@ -53,6 +53,10 @@
 #pragma weak shmem_uint64_put = pshmem_uint64_put
 #define shmem_uint64_put pshmem_uint64_put
 
+#pragma weak shmem_put8 = pshmem_put8
+#define shmem_put8 pshmem_put8
+#pragma weak shmem_put16 = pshmem_put16
+#define shmem_put16 pshmem_put16
 #pragma weak shmem_put32 = pshmem_put32
 #define shmem_put32 pshmem_put32
 #pragma weak shmem_put64 = pshmem_put64
@@ -109,20 +113,20 @@ SHMEM_TYPED_PUT(ptrdiff, ptrdiff_t)
 SHMEM_TYPED_PUT(complexf, COMPLEXIFY(float))
 SHMEM_TYPED_PUT(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_PUT(_name, _size)                                   \
+#define SHMEM_SIZED_PUT(_size)                                          \
     void                                                                \
-    shmem_put##_name(void *dest, const void *src,                       \
+    shmem_put##_size(void *dest, const void *src,                       \
                      size_t nelems, int pe)                             \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
         shmemc_put(dest, src, sized_nelems, pe);                        \
     }
 
-SHMEM_SIZED_PUT(32, 32)
-SHMEM_SIZED_PUT(4, 32)
-SHMEM_SIZED_PUT(64, 64)
-SHMEM_SIZED_PUT(8, 64)
-SHMEM_SIZED_PUT(128, 128)
+SHMEM_SIZED_PUT(8)
+SHMEM_SIZED_PUT(16)
+SHMEM_SIZED_PUT(32)
+SHMEM_SIZED_PUT(64)
+SHMEM_SIZED_PUT(128)
 
 void
 shmem_putmem(void *dest, const void *src,

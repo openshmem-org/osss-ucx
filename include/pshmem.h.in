@@ -108,13 +108,13 @@ extern "C"
     PSHMEM_DECL_PUTGET_SIZE(get, 64)
     PSHMEM_DECL_PUTGET_SIZE(get, 128)
 
+#undef PSHMEM_DECL_PUTGET_SIZE
+
     void pshmem_putmem(void *dest, const void *src, size_t nelems,
                        int pe);
 
     void pshmem_getmem(void *dest, const void *src, size_t nelems,
                        int pe);
-
-#undef PSHMEM_DECL_PUTGET_SIZE
 
 #define PSHMEM_DECL_P(_name, _type)                             \
     void pshmem_##_name##_p(_type *dest, _type src, int pe);

@@ -3,6 +3,10 @@
 #ifndef _SHMEM_DEFINES_H
 #define _SHMEM_DEFINES_H 1
 
+#include <sys/types.h>
+#include <stddef.h>
+#include <stdint.h>
+
 /*
  * utility
  */
