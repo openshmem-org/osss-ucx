@@ -70,10 +70,14 @@ get_base(int region, int pe)
 inline static uint64_t
 translate_address(uint64_t local_addr, size_t region, int pe)
 {
+#ifdef ENABLE_FIXED_ADDRESSES
+    return local_addr;
+#else
     const uint64_t my_offset = local_addr - get_base(region, proc.rank);
     const uint64_t remote_addr = my_offset + get_base(region, pe);
 
     return remote_addr;
+#endif /* ENABLE_FIXED_ADDRESSES */
 }
 
 /**
@@ -121,6 +125,9 @@ shmemc_ptr(const void *addr, int pe)
     return NULL;
 }
 
+/*
+ * true if adddress in a known symmetric region
+ */
 int
 shmemc_addr_accessible(const void *addr, int pe)
 {
@@ -132,6 +139,9 @@ shmemc_addr_accessible(const void *addr, int pe)
     return (r >= 0) ? 1 : 0;
 }
 
+/*
+ * true if a valid PE #
+ */
 int
 shmemc_pe_accessible(int pe)
 {

@@ -106,7 +106,7 @@ AM_CONDITIONAL([ENABLE_FIXED_ADDRESSES], [test "x$enable_fixed_addresses" = "xye
 #
 AC_ARG_ENABLE([cxx],
 	AS_HELP_STRING([--disable-cxx],
-			[Disable C++ compiler support @<:@default=yes@:>@]))
+			[Support C++ compiler? @<:@default=yes@:>@]))
 AS_IF([test "x$enable_cxx" != "xno"],
 	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ compiler])
 	 AC_SUBST([ENABLE_CXX], [1])],
