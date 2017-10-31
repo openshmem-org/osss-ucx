@@ -108,10 +108,7 @@ lock_acquire(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
                    sizeof(node->l_next), prev_pe);
 
         /* Wait for flag to be released */
-        shmemc_wait_ne_until16(&node->l_locked, 0);
-#if 0
-        GASNET_BLOCKUNTIL( !(node->l_locked) );
-#endif
+        shmemc_wait_ne_until16((int16_t *) &node->l_locked, 0);
     }
 }
 
@@ -151,25 +148,14 @@ lock_release(SHMEM_LOCK * node, SHMEM_LOCK * lock, int this_pe)
          *
          */
         do {
-            shmemc_test_eq16(&node->l_next, SHMEM_LOCK_FREE);
+            shmemc_test_eq16((int16_t *) &node->l_next, SHMEM_LOCK_FREE);
         } while ( ! ( (node->l_next == SHMEM_LOCK_FREE) ||
                       (node->l_next < 0)));
-#if 0
-        shmemc_wait_ne_until16(&node->l_next, SHMEM_LOCK_FREE);
-        GASNET_BLOCKUNTIL(!
-                          ((node->l_next == SHMEM_LOCK_FREE) ||
-                           (node->l_next < 0))
-                          );
-#endif
-
     }
 
     /* Be more strict about the test above, this memory consistency problem is
        a tricky one */
-    shmemc_wait_ge_until16(&node->l_next, 0);
-#if 0
-    GASNET_BLOCKUNTIL( !(node->l_next < 0) );
-#endif
+    shmemc_wait_ge_until16((int16_t *) &node->l_next, 0);
 
     /*
      * Release any waiters on the linked list
