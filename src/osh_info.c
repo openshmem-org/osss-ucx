@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 
-static const int tag_width = 24;
+static const int tag_width = 28;
 
 #define UNKNOWN        "unknown"
 #define INTERNAL_ERROR "not found [shouldn't happen]"
@@ -151,6 +151,14 @@ output_features(void)
 #else
            "off"
 #endif /* ENABLE_DEBUG */
+           );
+
+    output("Fixed symmetric addresses",
+#ifdef ENABLE_FIXED_ADDRESSES
+           "on"
+#else
+           "off"
+#endif /* ENABLE_FIXED_ADDRESSES */
            );
 
     output("Experimental API",

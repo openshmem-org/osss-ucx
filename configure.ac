@@ -89,6 +89,19 @@ AS_IF([test "x$enable_fortran" = "xyes"],
 AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
 
 #
+# address translation
+#
+AC_ARG_ENABLE([fixed-addresses],
+	AS_HELP_STRING([--enable-fixed-addresses],
+			[Symmetric addresses are identical everywhere @<:@default=no@:>@]))
+AS_IF([test "x$enable_fixed_addresses" = "xyes"],
+	[AC_DEFINE([ENABLE_FIXED_ADDRESSES], [1], [Enable fixed symmetric addressesI])
+	 AC_SUBST([ENABLE_FIXED_ADDRESSES], [1])],
+	[AC_SUBST([ENABLE_FIXED_ADDRESSES], [0])]
+	)
+AM_CONDITIONAL([ENABLE_FIXED_ADDRESSES], [test "x$enable_fixed_addresses" = "xyes"])
+
+#
 # enabled by default
 #
 AC_ARG_ENABLE([cxx],
