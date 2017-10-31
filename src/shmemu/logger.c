@@ -101,6 +101,20 @@ fatal(const char *fmt, ...)
         exit(EXIT_FAILURE);
 }
 
+inline static int
+option_enabled(const char *str)
+{
+    int ret = 0;
+
+    if ((strncasecmp(str, "y", 1) == 0) ||
+        (strncasecmp(str, "on", 2) == 0) ||
+        (atoi(str) > 0)) {
+        ret = 1;
+    }
+
+    return ret;
+}
+
 void
 shmemu_logger_init(void)
 {
@@ -113,9 +127,7 @@ shmemu_logger_init(void)
     }
 
     /* enable if: "y[es]", "on" or positive number */
-    if ((strncasecmp(e, "y", 1) == 0) ||
-        (strncasecmp(e, "on", 2) == 0) ||
-        (atoi(e) > 0)) {
+    if (option_enabled(e)) {
 
         logging = true;
 
@@ -134,7 +146,6 @@ shmemu_logger_init(void)
         else {
             log_stream = stderr;
         }
-        setbuf(log_stream, NULL);
     }
 }
 
