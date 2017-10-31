@@ -13,7 +13,7 @@ LIBSHMEMC_SOURCES         = \
 				barrier.c \
 				broadcast.c \
 				comms.c \
-				wait.c \
+				waituntil.c \
 				mcs-lock.c \
 				shmemc-init.c
 
