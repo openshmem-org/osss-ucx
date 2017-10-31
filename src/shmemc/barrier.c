@@ -10,11 +10,6 @@
 #include "shmem/defs.h"
 
 /*
- * internal debugging tracker for barrier counts
- */
-static unsigned long bar_count = 0;
-
-/*
  * just play with a simple linear barrier for now
  */
 
@@ -51,13 +46,6 @@ barrier_helper(int start, int log2stride, int size, long *pSync)
         shmemc_wait_ne_until64(pSync, SHMEM_SYNC_VALUE);
         *pSync = SHMEM_SYNC_VALUE;
     }
-
-#if 0
-    logger(LOG_BARRIER,
-           "barrier #%lu return: start = %d, stride = %d, size = %d",
-           bar_count, start, stride, size);
-#endif
-    bar_count += 1;
 }
 
 void

@@ -32,8 +32,8 @@ shmem_finalize(void)
                __func__,
                proc.refcount);
 
-        shmemc_finalize();
         shmemu_finalize();
+        shmemc_finalize();
 
         proc.refcount = 0;      /* finalized is finalized */
         proc.status = SHMEM_PE_SHUTDOWN;
@@ -51,8 +51,8 @@ shmem_init(void)
     if (proc.refcount == 0) {
         int s;
 
-        shmemu_init();
         shmemc_init();
+        shmemu_init();
 
         s = atexit(shmem_finalize);
         assert(s == 0);

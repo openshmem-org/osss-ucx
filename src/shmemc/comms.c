@@ -24,13 +24,6 @@ in_region(uint64_t addr, size_t region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
 
-#if 0
-    logger(LOG_MEMORY,
-           "region %d for PE %d: addr = %lu, base = %lu, end = %lu",
-           region, pe,
-           addr, mi.base, mi.end);
-#endif
-
     if ( (mi.base <= addr) && (addr < mi.end) ) {
         return 1;
     }

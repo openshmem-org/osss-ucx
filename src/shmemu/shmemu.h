@@ -28,6 +28,8 @@ char *shmemu_gethostname(void);
 
 int shmemu_parse_size(char *size_str, size_t *bytes_p);
 
+void *shmemu_round_down_address_to_pagesize(void *addr);
+
 /*
  * message logging
  */

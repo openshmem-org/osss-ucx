@@ -21,31 +21,9 @@
  */
 static FILE *say;
 
-#if 0
-/*
- * TODO: move to shmemu namespace in real implementation
- */
-static void *
-shmemu_round_down_address_to_pagesize(void *addr)
-{
-    const long psz = sysconf(_SC_PAGESIZE);
-    /* make sure aligned to page size multiples */
-    const size_t mod = (size_t) addr % psz;
-
-    if (mod != 0) {
-        const size_t div = (size_t) addr / psz;
-
-        addr = (void *) ((div - 1) * psz);
-    }
-
-    return addr;
-}
-#endif
-
 /**
  * no special treatment required here
  *
- * TODO put getenv calls all in 1 place
  */
 char *
 shmemc_getenv(const char *name)
@@ -65,6 +43,53 @@ check_version(void)
     fprintf(say, "String query\n");
     fprintf(say, "    UCX version \"%s\"\n", ucp_get_version_string());
     fprintf(say, "\n");
+}
+
+inline static int
+option_enabled(const char *str)
+{
+    int ret = 0;
+
+    if ((strncasecmp(str, "y", 1) == 0) ||
+        (strncasecmp(str, "on", 2) == 0) ||
+        (atoi(str) > 0)) {
+        ret = 1;
+    }
+
+    return ret;
+}
+/*
+ * read & save all our environment variables
+ */
+static void
+read_environment(void)
+{
+    char *e;
+
+    e = shmemc_getenv("SHMEM_SYMMETRIC_HEAP_SIZE");
+    if (e != NULL) {
+        const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
+        assert(r == 0);
+    }
+    else {
+        proc.env.def_heap_size = 4 * MB; /* and why not? */
+    }
+
+    e = shmemc_getenv("SHMEM_DEBUG");
+    if (e != NULL) {
+        proc.env.debug = option_enabled(e);
+    }
+    else {
+        proc.env.debug = 0;
+    }
+
+    e = shmemc_getenv("SHMEM_DEBUG_FILE");
+    if (e != NULL) {
+        proc.env.debug_file = strdup(e); /* free at end */
+    }
+    else {
+        proc.env.debug_file = NULL;
+    }
 }
 
 static void
@@ -169,16 +194,6 @@ dump_mapped_mem_info(const char *name, const mem_info_t *mp)
 
     s = ucp_mem_query(mp->racc.mh, &attr);
     assert(s == UCS_OK);
-
-#if 0
-    logger(LOG_MEMORY,
-           "%d: \"%s\" memory at %p, length %.2f MB (%lu bytes)",
-           proc.rank, name,
-           attr.address,
-           (double) attr.length / MB,
-           (unsigned long) attr.length
-           );
-#endif
 }
 
 static void
@@ -206,24 +221,13 @@ reg_symmetric_heap(void)
     ucs_status_t s;
     ucp_mem_map_params_t mp;
     ucp_mem_attr_t attr;
-    char *hs_str = shmemc_getenv("SHMEM_SYMMETRIC_HEAP_SIZE");
-    size_t len;
-
-    /* first look to see if we request a certain size */
-    if (hs_str != NULL) {
-        const int r = shmemu_parse_size(hs_str, &len);
-        assert(r == 0);
-    }
-    else {
-        len = 4 * MB; /* just some usable value */
-    }
 
     /* now register it with UCX */
     mp.field_mask =
         UCP_MEM_MAP_PARAM_FIELD_LENGTH |
         UCP_MEM_MAP_PARAM_FIELD_FLAGS;
 
-    mp.length = len;
+    mp.length = proc.env.def_heap_size;
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
@@ -251,12 +255,6 @@ reg_symmetric_heap(void)
     /* initialize the heap allocator */
     shmemm_mem_init((void *) def_symm_heap->base,
                     def_symm_heap->length);
-
-#if 0
-    logger(LOG_MEMORY,
-           "default symm heap @ %lu, size %lu",
-           def_symm_heap->base, def_symm_heap->length);
-#endif
 }
 
 static void
@@ -295,12 +293,6 @@ reg_globals(void)
 
     s = ucp_mem_map(proc.comms.ctxt, &mp, &globals->racc.mh);
     assert(s == UCS_OK);
-
-#if 0
-    logger(LOG_MEMORY,
-           "globals @ %lu, size %lu",
-           globals->base, globals->length);
-#endif
 }
 
 static void
@@ -374,6 +366,8 @@ shmemc_ucx_init(void)
     s = ucp_init(&pm, proc.comms.cfg, &proc.comms.ctxt);
     assert(s == UCS_OK);
 
+    read_environment();
+
     /* local shortcuts TODO: hardwired index */
     globals = & proc.comms.regions[0].minfo[proc.rank];
     def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
@@ -396,6 +390,10 @@ shmemc_ucx_init(void)
 
     shmemc_globalexit_init();
 }
+
+/*
+ * while testing
+ */
 
 #define REAL_SHUTDOWN 1
 

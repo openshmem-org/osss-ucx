@@ -38,6 +38,12 @@ typedef struct mem_region {
     mem_info_t *minfo;          /* nranks mem info */
 } mem_region_t;
 
+typedef struct env_info {
+    size_t def_heap_size;       /* TODO: expand for multiple heaps */
+    int debug;                  /* are we doing debugging? */
+    char *debug_file;           /* where does debugging output go? */
+} env_info_t;
+
 typedef struct comms_info {
     ucp_context_h ctxt;         /* local communication context */
     ucp_config_t *cfg;          /* local config */
@@ -56,6 +62,7 @@ typedef enum shmem_status {
 
 typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
+    env_info_t env;             /* environment vars */
 
     int rank;                   /* rank info */
     int nranks;

@@ -101,45 +101,21 @@ fatal(const char *fmt, ...)
         exit(EXIT_FAILURE);
 }
 
-inline static int
-option_enabled(const char *str)
-{
-    int ret = 0;
-
-    if ((strncasecmp(str, "y", 1) == 0) ||
-        (strncasecmp(str, "on", 2) == 0) ||
-        (atoi(str) > 0)) {
-        ret = 1;
-    }
-
-    return ret;
-}
-
 void
 shmemu_logger_init(void)
 {
-    char *e;
-
-    e = shmemc_getenv("SHMEM_DEBUG");
-    if (e == NULL) {
-        /* nothing to do */
-        return;
-    }
-
     /* enable if: "y[es]", "on" or positive number */
-    if (option_enabled(e)) {
-
-        logging = true;
+    if (proc.env.debug) {
 
         host = shmemu_gethostname();
         assert(host != NULL);
 
         /* TODO "%" modifiers for extra info */
-        e = shmemc_getenv("SHMEM_DEBUG_FILE");
-        if (e != NULL) {
-            log_stream = fopen(e, "a");
+        if (proc.env.debug_file != NULL) {
+            log_stream = fopen(proc.env.debug_file, "a");
             if (log_stream == NULL) {
-                fatal("can't open debug log file \"%s\"", e);
+                fatal("can't open debug log file \"%s\"",
+                      proc.env.debug_file);
                 /* NOT REACHED */
             }
         }
@@ -152,7 +128,7 @@ shmemu_logger_init(void)
 void
 shmemu_logger_finalize(void)
 {
-    if (! logging) {
+    if (! proc.env.debug) {
         return;
     }
 

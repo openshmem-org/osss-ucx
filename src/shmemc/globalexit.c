@@ -61,8 +61,6 @@ void
 shmemc_globalexit_init(void)
 {
     start_thread();
-
-    logger(LOG_INIT, "created globalexit thread");
 }
 
 /*
@@ -73,8 +71,6 @@ shmemc_globalexit_finalize(void)
 {
     shmemc_globalexit_sentinel = SENTINEL_DONE;
     terminate_thread();
-
-    logger(LOG_FINALIZE, "terminated globalexit thread");
 }
 
 /*
@@ -102,11 +98,6 @@ shmemc_trigger_globalexit(int status)
 {
 
     shmemc_globalexit_status = status;
-
-    logger(LOG_FINALIZE,
-           "global_exit trigger (status = %d)",
-           status);
-
     shmemc_globalexit_sentinel = SENTINEL_ZAPPED;
 
     tell_pes();
