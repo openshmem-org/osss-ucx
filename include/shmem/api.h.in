@@ -1019,7 +1019,7 @@ extern "C"
      *
      * ivar may be updated by another PE
      *
-     * @return None.
+     * @return 1 if the comparison is true, 0 if not
      *
      */
     void shmem_long_test(long *ivar, shmem_cmp_t cmp, long cmp_value);
@@ -1082,7 +1082,7 @@ extern "C"
      *
      * ivar updated by another PE, wait for that to happen
      *
-     * @return 1 if the comparison is true, 0 if not
+     * @return None.
      *
      */
     void shmem_long_wait_until(long *ivar, shmem_cmp_t cmp, long cmp_value);
@@ -1205,16 +1205,26 @@ extern "C"
      * @return None.
      *
      */
-    long shmem_long_atomic_swap(long *target, long value, int pe) _WUR;
-    /* see \ref shmem_long_atomic_swap() */
-    int shmem_int_atomic_swap(int *target, int value, int pe) _WUR;
-    /* see \ref shmem_long_atomic_swap() */
-    long long shmem_longlong_atomic_swap(long long *target, long long value,
-                                         int pe) _WUR;
-    /* see \ref shmem_long_atomic_swap() */
-    float shmem_float_atomic_swap(float *target, float value, int pe) _WUR;
-    /* see \ref shmem_long_atomic_swap() */
-    double shmem_double_atomic_swap(double *target, double value, int pe) _WUR;
+#define API_DECL_SWAP(_name, _type)                                     \
+    /* see \ref shmem_long_atomic_swap() */                             \
+    _type shmem_##_name##_atomic_swap(_type *target, _type value,\
+                                      int pe) _WUR;
+
+    API_DECL_SWAP(float, float)
+    API_DECL_SWAP(double, double)
+    API_DECL_SWAP(int, int)
+    API_DECL_SWAP(long, long)
+    API_DECL_SWAP(longlong, long long)
+    API_DECL_SWAP(uint, unsigned int)
+    API_DECL_SWAP(ulong, unsigned long)
+    API_DECL_SWAP(ulonglong, unsigned long long)
+    API_DECL_SWAP(int32, int32_t)
+    API_DECL_SWAP(int64, int64_t)
+    API_DECL_SWAP(uint32, uint32_t)
+    API_DECL_SWAP(size, size_t)
+    API_DECL_SWAP(ptrdiff, ptrdiff_t)
+
+    #undef API_DECL_SWAP
 
     long shmem_long_swap(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_swap) _WUR;
@@ -1253,18 +1263,26 @@ extern "C"
      * @return None.
      *
      */
-    long shmem_long_atomic_compare_swap(long *target,
-                                        long cond, long value,
-                                        int pe) _WUR;
-    /* see \ref shmem_long_atomic_compare_swap() */
-    int shmem_int_atomic_compare_swap(int *target,
-                                      int cond, int value,
-                                      int pe) _WUR;
-    /* see \ref shmem_long_atomic_compare_swap() */
-    long long shmem_longlong_atomic_compare_swap(long long *target,
-                                                 long long cond,
-                                                 long long value,
-                                                 int pe) _WUR;
+#define API_DECL_CSWAP(_name, _type)                                    \
+    /* see \ref shmem_long_atomic_compare_swap() */                     \
+    _type shmem_##_name##_atomic_compare_swap(_type *target,            \
+                                              _type cond,_type value,   \
+                                              int pe) _WUR;
+
+    /* no reals */
+    API_DECL_CSWAP(int, int)
+    API_DECL_CSWAP(long, long)
+    API_DECL_CSWAP(longlong, long long)
+    API_DECL_CSWAP(uint, unsigned int)
+    API_DECL_CSWAP(ulong, unsigned long)
+    API_DECL_CSWAP(ulonglong, unsigned long long)
+    API_DECL_CSWAP(int32, int32_t)
+    API_DECL_CSWAP(int64, int64_t)
+    API_DECL_CSWAP(uint32, uint32_t)
+    API_DECL_CSWAP(size, size_t)
+    API_DECL_CSWAP(ptrdiff, ptrdiff_t)
+
+#undef API_DECL_SWAP
 
     long shmem_long_cswap(long *target,
                           long cond, long value,
