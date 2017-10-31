@@ -36,85 +36,85 @@ extern "C"
      * I/O
      */
 
-#define PSHMEM_DECL_PUT(_name, _type)                                   \
-    void pshmem_##_name##_put(_type *dest, const _type *src,            \
-                              size_t nelems, int pe);
+#define PSHMEM_DECL_PUTGET(_opname, _name, _type)                       \
+    void pshmem_##_name##_##_opname(_type *dest, const _type *src,      \
+                                    size_t nelems, int pe);
 
-    PSHMEM_DECL_PUT(float, float)
-    PSHMEM_DECL_PUT(double, double)
-    PSHMEM_DECL_PUT(longdouble, long double)
-    PSHMEM_DECL_PUT(schar, signed char)
-    PSHMEM_DECL_PUT(char, char)
-    PSHMEM_DECL_PUT(short, short)
-    PSHMEM_DECL_PUT(int, int)
-    PSHMEM_DECL_PUT(long, long)
-    PSHMEM_DECL_PUT(longlong, long long)
-    PSHMEM_DECL_PUT(uchar, unsigned char)
-    PSHMEM_DECL_PUT(ushort, unsigned short)
-    PSHMEM_DECL_PUT(uint, unsigned int)
-    PSHMEM_DECL_PUT(ulong, unsigned long)
-    PSHMEM_DECL_PUT(ulonglong, unsigned long long)
-    PSHMEM_DECL_PUT(int8, int8_t)
-    PSHMEM_DECL_PUT(int16, int16_t)
-    PSHMEM_DECL_PUT(int32, int32_t)
-    PSHMEM_DECL_PUT(int64, int64_t)
-    PSHMEM_DECL_PUT(uint8, unsigned int8_t)
-    PSHMEM_DECL_PUT(uint16, unsigned int16_t)
-    PSHMEM_DECL_PUT(uint32, unsigned int32_t)
-    PSHMEM_DECL_PUT(uint64, unsigned int64_t)
-    PSHMEM_DECL_PUT(size, size_t)
-    PSHMEM_DECL_PUT(ptrdiff, ptrdiff_t)
+    PSHMEM_DECL_PUTGET(put, float, float)
+    PSHMEM_DECL_PUTGET(put, double, double)
+    PSHMEM_DECL_PUTGET(put, longdouble, long double)
+    PSHMEM_DECL_PUTGET(put, schar, signed char)
+    PSHMEM_DECL_PUTGET(put, char, char)
+    PSHMEM_DECL_PUTGET(put, short, short)
+    PSHMEM_DECL_PUTGET(put, int, int)
+    PSHMEM_DECL_PUTGET(put, long, long)
+    PSHMEM_DECL_PUTGET(put, longlong, long long)
+    PSHMEM_DECL_PUTGET(put, uchar, unsigned char)
+    PSHMEM_DECL_PUTGET(put, ushort, unsigned short)
+    PSHMEM_DECL_PUTGET(put, uint, unsigned int)
+    PSHMEM_DECL_PUTGET(put, ulong, unsigned long)
+    PSHMEM_DECL_PUTGET(put, ulonglong, unsigned long long)
+    PSHMEM_DECL_PUTGET(put, int8, int8_t)
+    PSHMEM_DECL_PUTGET(put, int16, int16_t)
+    PSHMEM_DECL_PUTGET(put, int32, int32_t)
+    PSHMEM_DECL_PUTGET(put, int64, int64_t)
+    PSHMEM_DECL_PUTGET(put, uint8, unsigned int8_t)
+    PSHMEM_DECL_PUTGET(put, uint16, unsigned int16_t)
+    PSHMEM_DECL_PUTGET(put, uint32, unsigned int32_t)
+    PSHMEM_DECL_PUTGET(put, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET(put, size, size_t)
+    PSHMEM_DECL_PUTGET(put, ptrdiff, ptrdiff_t)
 
-#undef PSHMEM_DECL_PUT
+    PSHMEM_DECL_PUTGET(get, float, float)
+    PSHMEM_DECL_PUTGET(get, double, double)
+    PSHMEM_DECL_PUTGET(get, longdouble, long double)
+    PSHMEM_DECL_PUTGET(get, schar, signed char)
+    PSHMEM_DECL_PUTGET(get, char, char)
+    PSHMEM_DECL_PUTGET(get, short, short)
+    PSHMEM_DECL_PUTGET(get, int, int)
+    PSHMEM_DECL_PUTGET(get, long, long)
+    PSHMEM_DECL_PUTGET(get, longlong, long long)
+    PSHMEM_DECL_PUTGET(get, uchar, unsigned char)
+    PSHMEM_DECL_PUTGET(get, ushort, unsigned short)
+    PSHMEM_DECL_PUTGET(get, uint, unsigned int)
+    PSHMEM_DECL_PUTGET(get, ulong, unsigned long)
+    PSHMEM_DECL_PUTGET(get, ulonglong, unsigned long long)
+    PSHMEM_DECL_PUTGET(get, int8, int8_t)
+    PSHMEM_DECL_PUTGET(get, int16, int16_t)
+    PSHMEM_DECL_PUTGET(get, int32, int32_t)
+    PSHMEM_DECL_PUTGET(get, int64, int64_t)
+    PSHMEM_DECL_PUTGET(get, uint8, unsigned int8_t)
+    PSHMEM_DECL_PUTGET(get, uint16, unsigned int16_t)
+    PSHMEM_DECL_PUTGET(get, uint32, unsigned int32_t)
+    PSHMEM_DECL_PUTGET(get, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET(get, size, size_t)
+    PSHMEM_DECL_PUTGET(get, ptrdiff, ptrdiff_t)
+
+#undef PSHMEM_DECL_PUTGET
+
+#define PSHMEM_DECL_PUTGET_SIZE(_opname, _size)                 \
+    void pshmem_##_opname##_size(void *dest, const _void *src,  \
+                                 size_t nelems, int pe);
+
+    PSHMEM_DECL_PUTGET_SIZE(put, 8)
+    PSHMEM_DECL_PUTGET_SIZE(put, 16)
+    PSHMEM_DECL_PUTGET_SIZE(put, 32)
+    PSHMEM_DECL_PUTGET_SIZE(put, 64)
+    PSHMEM_DECL_PUTGET_SIZE(put, 128)
+
+    PSHMEM_DECL_PUTGET_SIZE(get, 8)
+    PSHMEM_DECL_PUTGET_SIZE(get, 16)
+    PSHMEM_DECL_PUTGET_SIZE(get, 32)
+    PSHMEM_DECL_PUTGET_SIZE(get, 64)
+    PSHMEM_DECL_PUTGET_SIZE(get, 128)
 
     void pshmem_putmem(void *dest, const void *src, size_t nelems,
                        int pe);
-    void pshmem_put32(void *dest, const void *src, size_t nelems,
-                      int pe);
-    void pshmem_put64(void *dest, const void *src, size_t nelems,
-                      int pe);
-    void pshmem_put128(void *dest, const void *src, size_t nelems,
-                       int pe);
-
-#define PSHMEM_DECL_GET(_name, _type)                                   \
-    void pshmem_##_name##_get(_type *dest, const _type *src,            \
-                              size_t nelems, int pe);
-
-    PSHMEM_DECL_GET(float, float)
-    PSHMEM_DECL_GET(double, double)
-    PSHMEM_DECL_GET(longdouble, long double)
-    PSHMEM_DECL_GET(schar, signed char)
-    PSHMEM_DECL_GET(char, char)
-    PSHMEM_DECL_GET(short, short)
-    PSHMEM_DECL_GET(int, int)
-    PSHMEM_DECL_GET(long, long)
-    PSHMEM_DECL_GET(longlong, long long)
-    PSHMEM_DECL_GET(uchar, unsigned char)
-    PSHMEM_DECL_GET(ushort, unsigned short)
-    PSHMEM_DECL_GET(uint, unsigned int)
-    PSHMEM_DECL_GET(ulong, unsigned long)
-    PSHMEM_DECL_GET(ulonglong, unsigned long long)
-    PSHMEM_DECL_GET(int8, int8_t)
-    PSHMEM_DECL_GET(int16, int16_t)
-    PSHMEM_DECL_GET(int32, int32_t)
-    PSHMEM_DECL_GET(int64, int64_t)
-    PSHMEM_DECL_GET(uint8, unsigned int8_t)
-    PSHMEM_DECL_GET(uint16, unsigned int16_t)
-    PSHMEM_DECL_GET(uint32, unsigned int32_t)
-    PSHMEM_DECL_GET(uint64, unsigned int64_t)
-    PSHMEM_DECL_GET(size, size_t)
-    PSHMEM_DECL_GET(ptrdiff, ptrdiff_t)
-
-#undef PSHMEM_DECL_GET
 
     void pshmem_getmem(void *dest, const void *src, size_t nelems,
                        int pe);
-    void pshmem_get32(void *dest, const void *src, size_t nelems,
-                      int pe);
-    void pshmem_get64(void *dest, const void *src, size_t nelems,
-                      int pe);
-    void pshmem_get128(void *dest, const void *src, size_t nelems,
-                       int pe);
+
+#undef PSHMEM_DECL_PUTGET_SIZE
 
 #define PSHMEM_DECL_P(_name, _type)                             \
     void pshmem_##_name##_p(_type *dest, _type src, int pe);
@@ -239,7 +239,7 @@ extern "C"
 #undef PSHMEM_DECL_STRIDED_OP
 
 #define PSHMEM_DECL_STRIDED_OPSIZE(_opname, _size)                      \
-    void pshmem_i##_opname##_size(_type *dest, const _type *src,        \
+    void pshmem_i##_opname##_size(void *dest, const void *src,          \
                                      ptrdiff_t tst, ptrdiff_t sst,      \
                                      size_t nelems,                     \
                                      int pe);
@@ -262,57 +262,86 @@ extern "C"
      * non-blocking implicit put/get
      *
      */
-    void pshmem_double_put_nbi(double *dest, const double *source,
-                               size_t nelems, int pe);
-    void pshmem_float_put_nbi(float *dest, const float *source, size_t nelems,
-                              int pe);
-    void pshmem_char_put_nbi(char *dest, const char *source, size_t nelems,
-                             int pe);
-    void pshmem_int_put_nbi(int *dest, const int *source, size_t nelems,
-                            int pe);
-    void pshmem_long_put_nbi(long *dest, const long *source, size_t nelems,
-                             int pe);
-    void pshmem_longdouble_put_nbi(long double *dest,
-                                   const long double *source,
-                                   size_t nelems, int pe);
-    void pshmem_longlong_put_nbi(long long *dest, const long long *source,
-                                 size_t nelems, int pe);
-    void pshmem_put32_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    void pshmem_put64_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    void pshmem_put128_nbi(void *dest, const void *source, size_t nelems,
-                           int pe);
+
+#define PSHMEM_DECL_PUTGET_NBI(_opname, _name, _type)                   \
+    void pshmem_##_name##_##_opname##_nbi(_type *dest, const _type *src, \
+                                          size_t nelems, int pe);
+
+    PSHMEM_DECL_PUTGET_NBI(put, float, float)
+    PSHMEM_DECL_PUTGET_NBI(put, double, double)
+    PSHMEM_DECL_PUTGET_NBI(put, longdouble, long double)
+    PSHMEM_DECL_PUTGET_NBI(put, schar, signed char)
+    PSHMEM_DECL_PUTGET_NBI(put, char, char)
+    PSHMEM_DECL_PUTGET_NBI(put, short, short)
+    PSHMEM_DECL_PUTGET_NBI(put, int, int)
+    PSHMEM_DECL_PUTGET_NBI(put, long, long)
+    PSHMEM_DECL_PUTGET_NBI(put, longlong, long long)
+    PSHMEM_DECL_PUTGET_NBI(put, uchar, unsigned char)
+    PSHMEM_DECL_PUTGET_NBI(put, ushort, unsigned short)
+    PSHMEM_DECL_PUTGET_NBI(put, uint, unsigned int)
+    PSHMEM_DECL_PUTGET_NBI(put, ulong, unsigned long)
+    PSHMEM_DECL_PUTGET_NBI(put, ulonglong, unsigned long long)
+    PSHMEM_DECL_PUTGET_NBI(put, int8, int8_t)
+    PSHMEM_DECL_PUTGET_NBI(put, int16, int16_t)
+    PSHMEM_DECL_PUTGET_NBI(put, int32, int32_t)
+    PSHMEM_DECL_PUTGET_NBI(put, int64, int64_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint8, unsigned int8_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint16, unsigned int16_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint32, unsigned int32_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET_NBI(put, size, size_t)
+    PSHMEM_DECL_PUTGET_NBI(put, ptrdiff, ptrdiff_t)
+
+    PSHMEM_DECL_PUTGET_NBI(get, float, float)
+    PSHMEM_DECL_PUTGET_NBI(get, double, double)
+    PSHMEM_DECL_PUTGET_NBI(get, longdouble, long double)
+    PSHMEM_DECL_PUTGET_NBI(get, schar, signed char)
+    PSHMEM_DECL_PUTGET_NBI(get, char, char)
+    PSHMEM_DECL_PUTGET_NBI(get, short, short)
+    PSHMEM_DECL_PUTGET_NBI(get, int, int)
+    PSHMEM_DECL_PUTGET_NBI(get, long, long)
+    PSHMEM_DECL_PUTGET_NBI(get, longlong, long long)
+    PSHMEM_DECL_PUTGET_NBI(get, uchar, unsigned char)
+    PSHMEM_DECL_PUTGET_NBI(get, ushort, unsigned short)
+    PSHMEM_DECL_PUTGET_NBI(get, uint, unsigned int)
+    PSHMEM_DECL_PUTGET_NBI(get, ulong, unsigned long)
+    PSHMEM_DECL_PUTGET_NBI(get, ulonglong, unsigned long long)
+    PSHMEM_DECL_PUTGET_NBI(get, int8, int8_t)
+    PSHMEM_DECL_PUTGET_NBI(get, int16, int16_t)
+    PSHMEM_DECL_PUTGET_NBI(get, int32, int32_t)
+    PSHMEM_DECL_PUTGET_NBI(get, int64, int64_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint8, unsigned int8_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint16, unsigned int16_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint32, unsigned int32_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET_NBI(get, size, size_t)
+    PSHMEM_DECL_PUTGET_NBI(get, ptrdiff, ptrdiff_t)
+
+#undef PSHMEM_DECL_PUTGET_NBI
+
+#define PSHMEM_DECL_PUTGET_SIZE_NBI(_opname, _size)                     \
+    void pshmem_##_opname##_size##_nbi(void *dest, const void *src,     \
+                                       size_t nelems, int pe);
+
+    PSHMEM_DECL_PUTGET_SIZE_NBI(put, 8)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(put, 16)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(put, 32)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(put, 64)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(put, 128)
+
+    PSHMEM_DECL_PUTGET_SIZE_NBI(get, 8)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(get, 16)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(get, 32)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(get, 64)
+    PSHMEM_DECL_PUTGET_SIZE_NBI(get, 128)
+
+#undef PSHMEM_DECL_PUTGET_NBI
+
     void pshmem_putmem_nbi(void *dest, const void *source, size_t nelems,
                            int pe);
-    void pshmem_short_put_nbi(short *dest, const short *source, size_t nelems,
-                              int pe);
 
-    void pshmem_double_get_nbi(double *dest, const double *source,
-                               size_t nelems, int pe);
-    void pshmem_float_get_nbi(float *dest, const float *source, size_t nelems,
-                              int pe);
-    void pshmem_get32_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    void pshmem_get64_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    void pshmem_get128_nbi(void *dest, const void *source, size_t nelems,
-                           int pe);
     void pshmem_getmem_nbi(void *dest, const void *source, size_t nelems,
                            int pe);
-    void pshmem_int_get_nbi(int *dest, const int *source, size_t nelems,
-                            int pe);
-    void pshmem_char_get_nbi(char *dest, const char *source, size_t nelems,
-                             int pe);
-    void pshmem_long_get_nbi(long *dest, const long *source, size_t nelems,
-                             int pe);
-    void pshmem_longdouble_get_nbi(long double *dest,
-                                   const long double *source,
-                                   size_t nelems, int pe);
-    void pshmem_longlong_get_nbi(long long *dest, const long long *source,
-                                 size_t nelems, int pe);
-    void pshmem_short_get_nbi(short *dest, const short *source, size_t nelems,
-                              int pe);
 
 #ifdef __STDC_VERSION__
 #if  __STDC_VERSION__ >= 201112L
