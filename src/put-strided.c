@@ -8,6 +8,12 @@
 #include "shmem/api.h"
 
 /*
+ * TODO: this is just layered over shmem_put/get linearly for now.
+ * Looking for better iov method in UCX
+ */
+
+
+/*
  * these are needed for propagating into Fortran,
  * but aren't actually part of the API
  */
@@ -80,7 +86,7 @@ extern void shmem_complexd_put(COMPLEXIFY(double) *dest,
 
 #define SHMEM_TYPED_IPUT(_name, _type)                                  \
     void                                                                \
-    shmem_##_name##_iput(_type *tarput, const _type *source,            \
+    shmem_##_name##_iput(_type *target, const _type *source,            \
                          ptrdiff_t tst, ptrdiff_t sst,                  \
                          size_t nelems, int pe)                         \
     {                                                                   \
@@ -88,7 +94,7 @@ extern void shmem_complexd_put(COMPLEXIFY(double) *dest,
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmem_##_name##_put(tarput + ti, source + si, 1, pe);       \
+            shmem_##_name##_put(targwt + ti, source + si, 1, pe);       \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
