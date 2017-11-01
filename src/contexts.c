@@ -4,10 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemc.h"
-#include "shmem/defs.h"
-
-#include <stdlib.h>
+#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_create = pshmem_ctx_create
@@ -28,7 +25,14 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
     return 1;
 }
 
+/*
+ * no-op for now
+ */
 void
 shmem_ctx_destroy(shmem_ctx_t ctx)
 {
 }
+
+/*
+ * implementation currently just macros in shmem.h
+ */
