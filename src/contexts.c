@@ -34,5 +34,7 @@ shmem_ctx_destroy(shmem_ctx_t ctx)
 }
 
 /*
- * implementation currently just macros in shmem.h
+ * implementation currently missing - in progress
+ *
+ * decls in shmem.h
  */
