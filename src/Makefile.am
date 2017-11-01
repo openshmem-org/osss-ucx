@@ -41,7 +41,6 @@ MY_SOURCES             = \
                                 quiet.c \
                                 reductions.c \
                                 shmalloc.c \
-				sync.c \
                                 version.c \
                                 waituntil.c
 MY_SOURCES            += dlmalloc.c
