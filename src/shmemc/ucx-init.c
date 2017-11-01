@@ -103,6 +103,7 @@ read_environment(void)
     proc.env.print_version = 0;
     proc.env.print_info = 0;
     proc.env.def_heap_size = 4 * MB;
+    proc.env.debug = 0;
 
     backcompat_environment();
 
