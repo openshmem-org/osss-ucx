@@ -60,30 +60,79 @@ option_enabled(const char *str)
 
     return ret;
 }
+
+/*
+ * backward-compatible environment variables
+ */
+inline static void
+backcompat_environment(void)
+{
+    int overwrite = 1;
+    char *e;
+
+    /*
+     * defined in spec
+     */
+    e = shmemc_getenv("SMA_VERSION");
+    if (e != NULL) {
+        (void) setenv("SHMEM_VERSION", "1", overwrite);
+    }
+    e = shmemc_getenv("SMA_INFO");
+    if (e != NULL) {
+        (void) setenv("SHMEM_INFO", "1", overwrite);
+    }
+    e = shmemc_getenv("SMA_SYMMETRIC_SIZE");
+    if (e != NULL) {
+        (void) setenv("SHMEM_SYMMETRIC_SIZE", e, overwrite);
+    }
+    e = shmemc_getenv("SMA_DEBUG");
+    if (e != NULL) {
+        (void) setenv("SHMEM_DEBUG", "y", overwrite);
+    }
+}
+
 /*
  * read & save all our environment variables
  */
-static void
+inline static void
 read_environment(void)
 {
     char *e;
 
-    e = shmemc_getenv("SHMEM_SYMMETRIC_HEAP_SIZE");
+    /* init environment */
+    proc.env.print_version = 0;
+    proc.env.print_info = 0;
+    proc.env.def_heap_size = 4 * MB;
+
+    backcompat_environment();
+
+    /*
+     * defined in spec
+     */
+    e = shmemc_getenv("SHMEM_VERSION");
     if (e != NULL) {
-        const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
-        assert(r == 0);
+        proc.env.print_version = 1;
     }
-    else {
-        proc.env.def_heap_size = 4 * MB; /* and why not? */
+    e = shmemc_getenv("SHMEM_INFO");
+    if (e != NULL) {
+        proc.env.print_info = 1;
     }
 
-    e = shmemc_getenv("SHMEM_DEBUG");
+    e = shmemc_getenv("SHMEM_SYMMETRIC_SIZE");
+    if (e != NULL) {
+        const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
+
+        assert(r == 0);
+    }
+
+    e = shmemc_getenv("SHMEMC_DEBUG");
     if (e != NULL) {
         proc.env.debug = option_enabled(e);
     }
-    else {
-        proc.env.debug = 0;
-    }
+
+    /*
+     * this implementation also has...
+     */
 
     e = shmemc_getenv("SHMEM_DEBUG_FILE");
     if (e != NULL) {
@@ -105,12 +154,11 @@ make_init_params(ucp_params_t *p_p)
      * we'll try at first to get both 32- and 64-bit direct AMO
      * support because OpenSHMEM wants them
      */
-    p_p->features =
-        UCP_FEATURE_RMA |
-        UCP_FEATURE_WAKEUP |
-        UCP_FEATURE_AMO32 |
-        UCP_FEATURE_AMO64
-        ;
+    p_p->features  = UCP_FEATURE_RMA;
+    p_p->features |= UCP_FEATURE_WAKEUP;
+    p_p->features |= UCP_FEATURE_AMO32;
+    p_p->features |= UCP_FEATURE_AMO64;
+
     p_p->estimated_num_eps = proc.nranks;
 }
 

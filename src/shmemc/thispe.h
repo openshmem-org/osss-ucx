@@ -38,9 +38,17 @@ typedef struct mem_region {
     mem_info_t *minfo;          /* nranks mem info */
 } mem_region_t;
 
+/*
+ * implementations support some environment variables
+ */
 typedef struct env_info {
+    /* required */
+    int print_version;
+    int print_info;
     size_t def_heap_size;       /* TODO: expand for multiple heaps */
     int debug;                  /* are we doing debugging? */
+
+    /* this implementation */
     char *debug_file;           /* where does debugging output go? */
 } env_info_t;
 
