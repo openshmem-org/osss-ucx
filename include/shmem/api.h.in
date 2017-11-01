@@ -511,8 +511,41 @@ extern "C"
 
 
     /*
-     * barriers
+     * barriers & syncs
      */
+
+    /**
+     * @brief causes an active set of PEs to synchronize.  Local memory stores
+     * complete.
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_sync(int PE_start, int logPE_stride, int PE_size,
+                     long *pSync);
+     @endcode
+     *
+     * @param[in] PE_start first PE of the active set
+     * @param[in] logPE_stride log2 of stride between PEs
+     * @param[in] PE_size number of PEs in the active set
+     * @param[in, out] pSync symmetric work array
+     *
+     * @section Effect
+     *
+     * PEs in the active set defined by (PE_start, logPE_stride,
+     * PE_size) synchronize: no PE from this active set can leave the
+     * global barrier until all have arrived.  Local memory loads and store
+     * complete before return.  PEs not in the active set do not call
+     * shmem_sync().  pSync must be initialized everywhere before
+     * use, and, if modified, must be reset to its state before the
+     * call.
+     *
+     * @return None.
+     *
+     */
+    void shmem_sync(int PE_start, int logPE_stride, int PE_size,
+                    long *pSync);
 
     /**
      * @brief causes all PEs to synchronize
@@ -521,23 +554,16 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void shmem_barrier_all(void);
+     void shmem_sync_all(void);
      @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_BARRIER_ALL()
-     @endcode
-     *
-     * @section Effect
      *
      * All PEs synchronize: no PE can leave the global barrier until all
-     * have arrived.  Communication is also flushed before return.
+     * have arrived.  Local memory loads and store complete before return.
      *
      * @return None.
      *
      */
-    void shmem_barrier_all(void);
+    void shmem_sync_all(void);
 
     /**
      * @brief causes an active set of PEs to synchronize
@@ -579,6 +605,27 @@ extern "C"
      */
     void shmem_barrier(int PE_start, int logPE_stride, int PE_size,
                        long *pSync);
+
+
+    /**
+     * @brief causes all PEs to synchronize
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_barrier_all(void);
+     @endcode
+     *
+     * @section Effect
+     *
+     * All PEs synchronize: no PE can leave the global barrier until all
+     * have arrived.
+     *
+     * @return None.
+     *
+     */
+    void shmem_barrier_all(void);
 
     /**
      * @brief outbound communication completes before any subsequent

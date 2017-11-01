@@ -206,8 +206,11 @@ SHMEMC_WAITUNTIL(32, ge)
 SHMEMC_WAITUNTIL(64, ge)
 
 /*
- * barriers
+ * barriers & syncs
  */
+void shmemc_sync(int start, int log_stride, int size, long *pSync);
+void shmemc_sync_all(void);
+
 void shmemc_barrier(int start, int log_stride, int size, long *pSync);
 void shmemc_barrier_all(void);
 

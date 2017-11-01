@@ -11,7 +11,6 @@ LIBSHMEMC_SOURCES         = \
 				ucx-init.c \
 				ranks.c \
 				barrier.c \
-				sync.c \
 				broadcast.c \
 				comms.c \
 				waituntil.c \

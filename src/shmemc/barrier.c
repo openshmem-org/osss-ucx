@@ -5,8 +5,9 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemc.h"
-#include "shmemu.h"
 #include "state.h"
+#include "memfence.h"
+
 #include "shmem/defs.h"
 
 /*
@@ -14,12 +15,13 @@
  */
 
 inline static void
-barrier_helper(int start, int log2stride, int size, long *pSync)
+barrier_helper(void (*sync_op)(void),
+               int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
 
-    shmemc_quiet();
+    sync_op();
 
     if (start == me) {
         const int npokes = size - 1;
@@ -48,10 +50,15 @@ barrier_helper(int start, int log2stride, int size, long *pSync)
     }
 }
 
+/*
+ * API
+ */
+
 void
 shmemc_barrier(int start, int log2stride, int size, long *pSync)
 {
-    barrier_helper(start, log2stride, size, pSync);
+    barrier_helper(shmemc_quiet,
+                   start, log2stride, size, pSync);
 }
 
 long shmemc_all_barrier = SHMEM_SYNC_VALUE;
@@ -59,7 +66,37 @@ long shmemc_all_barrier = SHMEM_SYNC_VALUE;
 void
 shmemc_barrier_all(void)
 {
-    barrier_helper(0,
+    barrier_helper(shmemc_quiet,
+                   0,
+                   0,
+                   proc.nranks,
+                   &shmemc_all_barrier
+                   );
+}
+
+/*
+ * can't pass (potential) builtin as arg
+ */
+static void
+lsf_wrapper(void)
+{
+    LOAD_STORE_FENCE();
+}
+
+void
+shmemc_sync(int start, int log2stride, int size, long *pSync)
+{
+    barrier_helper(lsf_wrapper,
+                   start, log2stride, size, pSync);
+}
+
+long shmemc_all_sync = SHMEM_SYNC_VALUE;
+
+void
+shmemc_sync_all(void)
+{
+    barrier_helper(lsf_wrapper,
+                   0,
                    0,
                    proc.nranks,
                    &shmemc_all_barrier
