@@ -1007,7 +1007,6 @@ extern "C"
 #define API_DECL_WAIT(_name, _type)                                     \
     /* see \ref shmem_##_name##_wait() */                               \
     void shmem_##_name##_##wait(_type *ivar,                            \
-                                shmem_cmp_t cmp,                        \
                                 _type cmp_value)                        \
         _DEPRECATED_BY(shmem_##_name##_wait_until);
 
