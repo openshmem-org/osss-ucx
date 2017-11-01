@@ -314,10 +314,33 @@ extern "C"
      * I/O
      */
 
-#define API_DECL_PUTGET(_opname, _name, _type)                       \
-    /* see \ref shmem_long_put() */                                  \
-    void shmem_##_name##_##_opname(_type *dest, const _type *src,    \
-                                   size_t nelems, int pe);
+#define API_DECL_PUTGET(_opname, _name, _type)                          \
+    /* see \ref shmem_long_##_opname() */                               \
+    void shmem_##_name##_##_opname(_type *dest, const _type *src,       \
+                                   size_t nelems, int pe);              \
+    /* see \ref shmem_ctx_long_##_opname() */                           \
+    void shmem_ctx_##_name##_##_opname(shmem_ctx_t ctx,                 \
+                                       _type *dest, const _type *src,   \
+                                       size_t nelems, int pe);          \
+    /* see \ref shmem_long_i##_opname() */                              \
+    void shmem_##_name##_i##_opname(_type *target,                      \
+                                    const _type *source,                \
+                                    ptrdiff_t tst, ptrdiff_t sst,       \
+                                    size_t nelems, int pe);             \
+    /* see \ref shmem_ctx_long_i##_opname() */                          \
+    void shmem_ctx_##_name##_i##_opname(shmem_ctx_t ctx,                \
+                                        _type *target,                  \
+                                        const _type *source,            \
+                                        ptrdiff_t tst, ptrdiff_t sst,   \
+                                        size_t nelems, int pe);         \
+    /* see \ref shmem_long_##_opname##_nbi() */                         \
+    void shmem_##_name##_##_opname##_nbi(_type *dest, const _type *src, \
+                                         size_t nelems, int pe);        \
+    /* see \ref shmem_ctx_long_##_opname##_nbi() */                     \
+    void shmem_ctx_##_name##_##_opname##_nbi(shmem_ctx_t ctx,           \
+                                             _type *dest,               \
+                                             const _type *src,          \
+                                             size_t nelems, int pe);    \
 
     API_DECL_PUTGET(put, float, float)
     API_DECL_PUTGET(put, double, double)
@@ -371,10 +394,21 @@ extern "C"
 
 #undef API_DECL_PUTGET
 
-#define API_DECL_PUTGET_SIZE(_opname, _size)                    \
-    /* see \ref shmem_long_put() */                             \
-    void shmem_##_opname##_size(void *dest, const void *src,    \
-                                size_t nelems, int pe);
+#define API_DECL_PUTGET_SIZE(_opname, _size)                            \
+    /* see \ref shmem_long_##_opname() */                               \
+    void shmem_##_opname##_size(void *dest, const void *src,            \
+                                size_t nelems, int pe);                 \
+    /* see \ref shmem_ctx_long_##_opname() */                           \
+    void shmem_ctx_##_opname##_size(shmem_ctx_t ctx,                    \
+                                    void *dest, const void *src,        \
+                                    size_t nelems, int pe);             \
+    /* see \ref shmem_long_##_opname##_nbi() */                         \
+    void shmem_##_opname##_size##_nbi(void *dest, const void *src,      \
+                                      size_t nelems, int pe);           \
+    /* see \ref shmem_ctx_long_##_opname() */                           \
+    void shmem_ctx_##_opname##_size##_nbi(shmem_ctx_t ctx,              \
+                                          void *dest, const void *src,  \
+                                          size_t nelems, int pe);
 
     API_DECL_PUTGET_SIZE(put, 8)
     API_DECL_PUTGET_SIZE(put, 16)
@@ -390,17 +424,30 @@ extern "C"
 
 #undef API_DECL_PUTGET_SIZE
 
-    /* see \ref shmem_long_put() */
-    void shmem_putmem(void *dest, const void *src, size_t nelems,
-                      int pe);
+#define API_DECL_PUTGET_MEM(_opname)                                    \
+    /* see \ref shmem_long_##_opname() */                               \
+    void shmem_##_opname##mem(void *dest, const void *src,              \
+                              size_t nelems, int pe);                   \
+    /* see \ref shmem_ctx_long_##_opname() */                           \
+    void shmem_ctx_##_opname##mem(shmem_ctx_t ctx,                      \
+                                  void *dest, const void *src,          \
+                                  size_t nelems, int pe);               \
+    /* see \ref shmem_long_##_opname##_nbi() */                         \
+    void shmem_##_opname##mem##_nbi(void *dest, const void *src,        \
+                                    size_t nelems, int pe);             \
+    /* see \ref shmem_ctx_long_##_opname() */                           \
+    void shmem_ctx_##_opname##mem##_nbi(shmem_ctx_t ctx,                \
+                                        void *dest, const void *src,    \
+                                        size_t nelems, int pe);         \
 
-    /* see \ref shmem_long_get() */
-    void shmem_getmem(void *dest, const void *src, size_t nelems,
-                      int pe);
+    API_DECL_PUTGET_MEM(put)
+    API_DECL_PUTGET_MEM(get)
 
-#define API_DECL_P(_name, _type)                                \
-    /* see \ref shmem_long_p() */                               \
-    void shmem_##_name##_p(_type *dest, _type src, int pe);
+#define API_DECL_P(_name, _type)                                    \
+        /* see \ref shmem_long_p() */                               \
+        void shmem_##_name##_p(_type *dest, _type src, int pe);     \
+        /* see \ref shmem_ctx_long_p() */                           \
+        void shmem_ctx_##_name##_p(_type *dest, _type src, int pe);
 
     API_DECL_P(float, float)
     API_DECL_P(double, double)
@@ -429,9 +476,11 @@ extern "C"
 
 #undef API_DECL_P
 
-#define API_DECL_G(_name, _type)                        \
-    /* see \ref shmem_long_g() */                       \
-    _type shmem_##_name##_g(const _type *dest, int pe);
+#define API_DECL_G(_name, _type)                            \
+    /* see \ref shmem_long_g() */                           \
+    _type shmem_##_name##_g(const _type *dest, int pe);     \
+    /* see \ref shmem_ctx_long_g() */                       \
+    _type shmem_ctx_##_name##_g(const _type *dest, int pe);
 
     API_DECL_G(float, float)
     API_DECL_G(double, double)
@@ -459,170 +508,6 @@ extern "C"
     API_DECL_G(ptrdiff, ptrdiff_t)
 
 #undef API_DECL_G
-
-    /*
-     * strided I/O
-     */
-
-    /* see \ref shmem_long_iput() */
-    void shmem_double_iput(double *target, const double *source,
-                           ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                           int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_float_iput(float *target, const float *source,
-                          ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                          int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_int_iput(int *target, const int *source, ptrdiff_t tst,
-                        ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_char_iput(char *target, const char *source, ptrdiff_t tst,
-                         ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_iput32(void *target, const void *source, ptrdiff_t tst,
-                      ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_iput64(void *target, const void *source, ptrdiff_t tst,
-                      ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_iput128(void *target, const void *source, ptrdiff_t tst,
-                       ptrdiff_t sst, size_t nelems, int pe);
-
-    void shmem_long_iput(long *target, const long *source,
-                         ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                         int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_longdouble_iput(long double *target,
-                               const long double *source, ptrdiff_t tst,
-                               ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_longlong_iput(long long *target, const long long *source,
-                             ptrdiff_t tst, ptrdiff_t sst,
-                             size_t nelems, int pe);
-    /* see \ref shmem_long_iput() */
-    void shmem_short_iput(short *target, const short *source,
-                          ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                          int pe);
-
-
-    /* see \ref shmem_long_iget() */
-    void shmem_double_iget(double *target, const double *source,
-                           ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                           int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_float_iget(float *target, const float *source,
-                          ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                          int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_int_iget(int *target, const int *source, ptrdiff_t tst,
-                        ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_char_iget(char *target, const char *source, ptrdiff_t tst,
-                         ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_iget32(void *target, const void *source, ptrdiff_t tst,
-                      ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_iget64(void *target, const void *source, ptrdiff_t tst,
-                      ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_iget128(void *target, const void *source, ptrdiff_t tst,
-                       ptrdiff_t sst, size_t nelems, int pe);
-
-    void shmem_long_iget(long *target, const long *source,
-                         ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                         int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_longdouble_iget(long double *target,
-                               const long double *source, ptrdiff_t tst,
-                               ptrdiff_t sst, size_t nelems, int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_longlong_iget(long long *target, const long long *source,
-                             ptrdiff_t tst, ptrdiff_t sst,
-                             size_t nelems, int pe);
-    /* see \ref shmem_long_iget() */
-    void shmem_short_iget(short *target, const short *source,
-                          ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                          int pe);
-
-    /*
-     * non-blocking implicit put/get
-     *
-     */
-
-    /* see \ref shmem_long_put_nbi() */
-    void shmem_double_put_nbi(double *dest, const double *source,
-                              size_t nelems, int pe);
-    /* see \ref shmem_long_put_nbi() */
-    void shmem_float_put_nbi(float *dest, const float *source, size_t nelems,
-                             int pe);
-    /* see \ref shmem_long_put_nbi() */
-    void shmem_char_put_nbi(char *dest, const char *source, size_t nelems,
-                            int pe);
-    /* see \ref shmem_long_put_nbi() */
-    void shmem_int_put_nbi(int *dest, const int *source, size_t nelems,
-                           int pe);
-
-    void shmem_long_put_nbi(long *dest, const long *source, size_t nelems,
-                            int pe);
-    /* see \ref shmem_long_put_nbi() */
-    void shmem_longdouble_put_nbi(long double *dest, const long double *source,
-                                  size_t nelems, int pe);
-    /* see \ref shmem_long_put_nbi() */
-    void shmem_longlong_put_nbi(long long *dest, const long long *source,
-                                size_t nelems, int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_put32_nbi(void *dest, const void *source, size_t nelems,
-                         int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_put64_nbi(void *dest, const void *source, size_t nelems,
-                         int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_put128_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_putmem_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    /* see \ref shmem_long_put_nbi() */
-    void shmem_short_put_nbi(short *dest, const short *source, size_t nelems,
-                             int pe);
-
-    /* see \ref shmem_long_get__nbi() */
-    void shmem_double_get_nbi(double *dest, const double *source,
-                              size_t nelems, int pe);
-    /* see \ref shmem_long_get_nbi() */
-    void shmem_float_get_nbi(float *dest, const float *source, size_t nelems,
-                             int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_get32_nbi(void *dest, const void *source, size_t nelems,
-                         int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_get64_nbi(void *dest, const void *source, size_t nelems,
-                         int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_get128_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    /* see \ref shmem_long_nbi() */
-    void shmem_getmem_nbi(void *dest, const void *source, size_t nelems,
-                          int pe);
-    /* see \ref shmem_long_get_nbi() */
-    void shmem_int_get_nbi(int *dest, const int *source, size_t nelems,
-                           int pe);
-    /* see \ref shmem_long_get_nbi() */
-    void shmem_char_get_nbi(char *dest, const char *source, size_t nelems,
-                            int pe);
-
-    void shmem_long_get_nbi(long *dest, const long *source, size_t nelems,
-                            int pe);
-    /* see \ref shmem_long_get_nbi() */
-    void shmem_longdouble_get_nbi(long double *dest, const long double *source,
-                                  size_t nelems, int pe);
-    /* see \ref shmem_long_get_nbi() */
-    void shmem_longlong_get_nbi(long long *dest, const long long *source,
-                                size_t nelems, int pe);
-    /* see \ref shmem_get_nbi() */
-    void shmem_short_get_nbi(short *dest, const short *source, size_t nelems,
-                             int pe);
 
 
     /*
@@ -996,12 +881,14 @@ extern "C"
      */
     void *shmem_align(size_t alignment, size_t size) _WUR;
 
-    /*
-     * wait operations
-     */
+#define API_DECL_TEST_AND_WAIT_UNTIL(_opname, _name, _type)                   \
+    /* see \ref shmem_##_name##_opname() */                             \
+    void shmem_##_name##_##_opname(_type *ivar,                         \
+                                   shmem_cmp_t cmp,                     \
+                                   _type cmp_value);
 
     /**
-     * @brief wait for symmetric variable to change value
+     * @brief test for symmetric variable to change value
      *
      * @section Synopsis
      *
@@ -1022,49 +909,32 @@ extern "C"
      * @return 1 if the comparison is true, 0 if not
      *
      */
-    void shmem_long_test(long *ivar, shmem_cmp_t cmp, long cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_short_test(short *ivar, shmem_cmp_t cmp,
-                          short cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_int_test(int *ivar, shmem_cmp_t cmp, int cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_longlong_test(long long *ivar, shmem_cmp_t cmp,
-                             long long cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_ushort_test(unsigned short *ivar, shmem_cmp_t cmp,
-                           unsigned short cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_uint_test(unsigned int *ivar, shmem_cmp_t cmp,
-                         unsigned int cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_ulong_test(unsigned long *ivar, shmem_cmp_t cmp,
-                          unsigned long cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_ulonglong_test(unsigned long long *ivar, shmem_cmp_t cmp,
-                              unsigned long long cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_int32_test(int32_t *ivar, shmem_cmp_t cmp,
-                          int32_t cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_int64_test(int64_t *ivar, shmem_cmp_t cmp,
-                          int64_t cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_uint32_test(uint32_t *ivar, shmem_cmp_t cmp,
-                           uint32_t cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_uint64_test(uint64_t *ivar, shmem_cmp_t cmp,
-                           uint64_t cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_size_test(size_t *ivar, shmem_cmp_t cmp,
-                         size_t cmp_value);
-    /* see \ref shmem_long_test() */
-    void shmem_ptrdiff_test(ptrdiff_t *ivar, shmem_cmp_t cmp,
-                            ptrdiff_t cmp_value);
-
+    API_DECL_TEST_AND_WAIT_UNTIL(test, longdouble, long double)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, schar, signed char)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, char, char)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, short, short)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, long, long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, longlong, long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, uchar, unsigned char)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, ushort, unsigned short)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, uint, unsigned int)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, ulong, unsigned long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, ulonglong, unsigned long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int8, int8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int16, int16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int32, int32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int64, int64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, uint8, uint8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, uint16, uint16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, uint32, uint32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, uint64, uint64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, size, size_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, ptrdiff, ptrdiff_t)
 
     /**
-     * @brief test if a symmetric variable has changed value
+     * @brief wait for a symmetric variable to change value with
+     *        specified condition
      *
      * @section Synopsis
      *
@@ -1085,45 +955,30 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_long_wait_until(long *ivar, shmem_cmp_t cmp, long cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_short_wait_until(short *ivar, shmem_cmp_t cmp,
-                                short cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_int_wait_until(int *ivar, shmem_cmp_t cmp, int cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_longlong_wait_until(long long *ivar, shmem_cmp_t cmp,
-                                   long long cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_ushort_wait_until(unsigned short *ivar, shmem_cmp_t cmp,
-                                 unsigned short cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_uint_wait_until(unsigned int *ivar, shmem_cmp_t cmp,
-                               unsigned int cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_ulong_wait_until(unsigned long *ivar, shmem_cmp_t cmp,
-                               unsigned long cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_ulonglong_wait_until(unsigned long long *ivar, shmem_cmp_t cmp,
-                                    unsigned long long cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_int32_wait_until(int32_t *ivar, shmem_cmp_t cmp,
-                                int32_t cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_int64_wait_until(int64_t *ivar, shmem_cmp_t cmp,
-                                int64_t cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_uint32_wait_until(uint32_t *ivar, shmem_cmp_t cmp,
-                                 uint32_t cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_uint64_wait_until(uint64_t *ivar, shmem_cmp_t cmp,
-                                 uint64_t cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_size_wait_until(size_t *ivar, shmem_cmp_t cmp,
-                               size_t cmp_value);
-    /* see \ref shmem_long_wait_until() */
-    void shmem_ptrdiff_wait_until(ptrdiff_t *ivar, shmem_cmp_t cmp,
-                                  ptrdiff_t cmp_value);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, longdouble, long double)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, schar, signed char)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, char, char)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, short, short)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int, int)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, long, long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, longlong, long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uchar, unsigned char)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ushort, unsigned short)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint, unsigned int)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ulong, unsigned long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ulonglong, unsigned long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int8, int8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int16, int16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int32, int32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int64, int64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint8, uint8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint16, uint16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint32, uint32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint64, uint64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, size, size_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ptrdiff, ptrdiff_t)
+
+#undef API_DECL_TEST_AND_WAIT_UNTIL
 
     /**
      * @brief wait for symmetric variable to change value
@@ -1149,35 +1004,35 @@ extern "C"
      * @deprecated by shmem_long_wait_until
      *
      */
-    void shmem_long_wait(long *ivar, long cmp_value)
-        _DEPRECATED_BY(shmem_long_wait_until);
-    void shmem_short_wait(short *ivar, short cmp_value)
-        _DEPRECATED_BY(shmem_short_wait_until);
-    void shmem_int_wait(int *ivar, int cmp_value)
-        _DEPRECATED_BY(shmem_int_wait_until);
-    void shmem_longlong_wait(long long *ivar, long long cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_ushort_wait(unsigned short *ivar, unsigned short cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_uint_wait(unsigned int *ivar, unsigned int cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_ulong_wait(unsigned long *ivar, unsigned long cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_ulonglong_wait(unsigned long long *ivar,
-                              unsigned long long cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_int32_wait(int32_t *ivar, int32_t cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_int64_wait(int64_t *ivar, int64_t cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_uint32_wait(uint32_t *ivar, uint32_t cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_uint64_wait(uint64_t *ivar, uint64_t cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_size_wait(size_t *ivar, size_t cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
-    void shmem_ptrdiff_wait(ptrdiff_t *ivar, ptrdiff_t cmp_value)
-        _DEPRECATED_BY(shmem_longlong_wait_until);
+#define API_DECL_WAIT(_name, _type)                                     \
+    /* see \ref shmem_##_name##_wait() */                               \
+    void shmem_##_name##_##wait(_type *ivar,                            \
+                                shmem_cmp_t cmp,                        \
+                                _type cmp_value)                        \
+        _DEPRECATED_BY(shmem_##_name##_wait_until);
+
+    API_DECL_WAIT(longdouble, long double)
+    API_DECL_WAIT(schar, signed char)
+    API_DECL_WAIT(char, char)
+    API_DECL_WAIT(short, short)
+    API_DECL_WAIT(int, int)
+    API_DECL_WAIT(long, long)
+    API_DECL_WAIT(longlong, long long)
+    API_DECL_WAIT(uchar, unsigned char)
+    API_DECL_WAIT(ushort, unsigned short)
+    API_DECL_WAIT(uint, unsigned int)
+    API_DECL_WAIT(ulong, unsigned long)
+    API_DECL_WAIT(ulonglong, unsigned long long)
+    API_DECL_WAIT(int8, int8_t)
+    API_DECL_WAIT(int16, int16_t)
+    API_DECL_WAIT(int32, int32_t)
+    API_DECL_WAIT(int64, int64_t)
+    API_DECL_WAIT(uint8, uint8_t)
+    API_DECL_WAIT(uint16, uint16_t)
+    API_DECL_WAIT(uint32, uint32_t)
+    API_DECL_WAIT(uint64, uint64_t)
+    API_DECL_WAIT(size, size_t)
+    API_DECL_WAIT(ptrdiff, ptrdiff_t)
 
     /*
      * atomic swaps
@@ -1207,7 +1062,8 @@ extern "C"
      */
 #define API_DECL_SWAP(_name, _type)                                     \
     /* see \ref shmem_long_atomic_swap() */                             \
-    _type shmem_##_name##_atomic_swap(_type *target, _type value,\
+    _type shmem_##_name##_atomic_swap(_type *target,                    \
+                                      _type value,                      \
                                       int pe) _WUR;
 
     API_DECL_SWAP(float, float)
