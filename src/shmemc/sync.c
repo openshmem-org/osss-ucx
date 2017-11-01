@@ -7,6 +7,8 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "state.h"
+#include "memfence.h"
+
 #include "shmem/defs.h"
 
 /*
@@ -14,12 +16,12 @@
  */
 
 inline static void
-barrier_helper(int start, int log2stride, int size, long *pSync)
+sync_helper(int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
 
-    shmemc_quiet();
+    LOAD_STORE_FENCE();
 
     if (start == me) {
         const int npokes = size - 1;
@@ -49,19 +51,19 @@ barrier_helper(int start, int log2stride, int size, long *pSync)
 }
 
 void
-shmemc_barrier(int start, int log2stride, int size, long *pSync)
+shmemc_sync(int start, int log2stride, int size, long *pSync)
 {
-    barrier_helper(start, log2stride, size, pSync);
+    sync_helper(start, log2stride, size, pSync);
 }
 
-long shmemc_all_barrier = SHMEM_SYNC_VALUE;
+long shmemc_all_sync = SHMEM_SYNC_VALUE;
 
 void
-shmemc_barrier_all(void)
+shmemc_sync_all(void)
 {
-    barrier_helper(0,
-                   0,
-                   proc.nranks,
-                   &shmemc_all_barrier
-                   );
+    sync_helper(0,
+                0,
+                proc.nranks,
+                &shmemc_all_sync
+                );
 }
