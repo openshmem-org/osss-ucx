@@ -505,12 +505,15 @@ extern "C"
 #endif /* __STDC_VERSION__ defined test */
 
     /*
-     * barriers
+     * barriers & syncs
      */
 
     void pshmem_barrier_all(void);
     void pshmem_barrier(int PE_start, int logPE_stride, int PE_size,
                         long *pSync);
+    void pshmem_sync_all(void);
+    void pshmem_sync(int PE_start, int logPE_stride, int PE_size,
+                     long *pSync);
     void pshmem_fence(void);
     void pshmem_quiet(void);
 
