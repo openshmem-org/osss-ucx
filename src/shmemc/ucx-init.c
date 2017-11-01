@@ -144,7 +144,7 @@ read_environment(void)
     }
 }
 
-static void
+inline static void
 make_init_params(ucp_params_t *p_p)
 {
     p_p->field_mask =
@@ -166,7 +166,7 @@ make_init_params(ucp_params_t *p_p)
 /*
  * worker tables
  */
-static void
+inline static void
 allocate_workers(void)
 {
     proc.comms.wrkrs = (worker_info_t *)
@@ -174,7 +174,7 @@ allocate_workers(void)
     assert(proc.comms.wrkrs != NULL);
 }
 
-static void
+inline static void
 deallocate_workers(void)
 {
     if (proc.comms.wrkrs != NULL) {
@@ -182,7 +182,7 @@ deallocate_workers(void)
     }
 }
 
-static void
+inline static void
 make_local_worker(void)
 {
     ucs_status_t s;
@@ -207,7 +207,7 @@ make_local_worker(void)
 /*
  * endpoint tables
  */
-static void
+inline static void
 allocate_endpoints(void)
 {
     proc.comms.eps = (ucp_ep_h *)
@@ -215,7 +215,7 @@ allocate_endpoints(void)
     assert(proc.comms.eps != NULL);
 }
 
-static void
+inline static void
 deallocate_endpoints(void)
 {
     if (proc.comms.eps != NULL) {
@@ -232,7 +232,7 @@ static mem_info_t *def_symm_heap;
 /*
  * debugging output
  */
-static void
+inline static void
 dump_mapped_mem_info(const char *name, const mem_info_t *mp)
 {
     ucs_status_t s;
@@ -247,7 +247,7 @@ dump_mapped_mem_info(const char *name, const mem_info_t *mp)
     assert(s == UCS_OK);
 }
 
-static void
+inline static void
 dump(void)
 {
     if (proc.rank == 0) {
@@ -266,7 +266,7 @@ dump(void)
     dump_mapped_mem_info("globals", globals);
 }
 
-static void
+inline static void
 reg_symmetric_heap(void)
 {
     ucs_status_t s;
@@ -308,7 +308,7 @@ reg_symmetric_heap(void)
                     def_symm_heap->length);
 }
 
-static void
+inline static void
 dereg_symmetric_heap(void)
 {
     ucs_status_t s;
@@ -317,7 +317,7 @@ dereg_symmetric_heap(void)
     assert(s == UCS_OK);
 }
 
-static void
+inline static void
 reg_globals(void)
 {
     extern char data_start; /* from the executable */
@@ -346,7 +346,7 @@ reg_globals(void)
     assert(s == UCS_OK);
 }
 
-static void
+inline static void
 dereg_globals(void)
 {
     ucs_status_t s;
@@ -355,7 +355,7 @@ dereg_globals(void)
     assert(s == UCS_OK);
 }
 
-static void
+inline static void
 disconnect_all_eps(void)
 {
     int pe;
