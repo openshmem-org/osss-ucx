@@ -442,21 +442,13 @@ shmemc_ucx_init(void)
     shmemc_globalexit_init();
 }
 
-/*
- * while testing
- */
-
-#define REAL_SHUTDOWN 1
-
 void
 shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-#if REAL_SHUTDOWN
     disconnect_all_eps();
     deallocate_endpoints();
-#endif
 
     if (proc.comms.wrkr) {
         ucp_worker_release_address(proc.comms.wrkr,
@@ -465,10 +457,8 @@ shmemc_ucx_finalize(void)
     }
     deallocate_workers();
 
-#if REAL_SHUTDOWN
     dereg_globals();
     dereg_symmetric_heap();
 
     ucp_cleanup(proc.comms.ctxt);
-#endif
 }
