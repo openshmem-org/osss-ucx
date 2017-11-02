@@ -18,11 +18,13 @@
 #include <sys/time.h>
 #include <assert.h>
 #include <ctype.h>
+#include <math.h>
 
 #define TRACE_MSG_BUF_SIZE 256
 
 static FILE *log_stream = NULL;
 static char *host = NULL;
+static int pe_width = 4;
 
 typedef struct shmemu_log_table {
     shmemu_log_t level;
@@ -119,6 +121,9 @@ shmemu_logger_init(void)
         else {
             log_stream = stderr;
         }
+
+        /* how wide to display PE numbers */
+        pe_width = (int) ceil(log10((double) proc.nranks));
     }
 }
 
@@ -138,40 +143,37 @@ void
 shmemu_logger(shmemu_log_t level, const char *fmt, ...)
 {
     if (proc.env.debug) {
-        char *tmp1;
-        char *tmp2;
+        char tmp1[TRACE_MSG_BUF_SIZE];
+        char tmp2[TRACE_MSG_BUF_SIZE];
         va_list ap;
 
-        tmp1 = (char *) malloc(TRACE_MSG_BUF_SIZE * sizeof(*tmp1));
-        assert(tmp1 != NULL);
-        tmp2 = (char *) malloc(TRACE_MSG_BUF_SIZE * sizeof(*tmp2));
-        assert(tmp2 != NULL);
-
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
-                 "[%d:%s:%d:%6.6f] %10s: ",
-                 proc.rank,
+                 "[%*d:%s:%d:%6.6f]",
+                 pe_width, proc.rank,
                  host,
                  (int) getpid(),
-                 shmemu_timer(),
+                 shmemu_timer()
+                 );
+
+        snprintf(tmp2, TRACE_MSG_BUF_SIZE,
+                 "%-30s %8s: ",
+                 tmp1,
                  level_to_name(level)
                  );
 
         va_start(ap, fmt);
-        vsnprintf(tmp2, TRACE_MSG_BUF_SIZE, fmt, ap);
+        vsnprintf(tmp1, TRACE_MSG_BUF_SIZE, fmt, ap);
         va_end(ap);
 
-        strncat(tmp1, tmp2, strlen(tmp2));
-        strncat(tmp1, "\n", 1);
+        strncat(tmp2, tmp1, strlen(tmp2));
+        strncat(tmp2, "\n", 1);
 
-        fputs(tmp1, log_stream);
+        fputs(tmp2, log_stream);
         /* make sure this all goes out in 1 burst */
         fflush(log_stream);
 
-        free(tmp2);
-        free(tmp1);
-
         if (level == LOG_FATAL) {
-            exit(1);            /* maybe not just exit... */
+            shmemc_trigger_globalexit(1);
         }
     }
 }
