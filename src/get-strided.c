@@ -4,7 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmem/defs.h"
+#include "shmemc.h"
+
 #include "shmem/api.h"
 
 /*
@@ -84,11 +85,12 @@ extern void shmem_complexd_get(COMPLEXIFY(double) *dest,
                          ptrdiff_t tst, ptrdiff_t sst,                  \
                          size_t nelems, int pe)                         \
     {                                                                   \
+        const size_t the_size = sizeof(_type);                          \
         size_t ti = 0, si = 0;                                          \
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmem_##_name##_get(target + ti, source + si, 1, pe);       \
+            shmemc_get(target + ti, source + si, the_size, pe);         \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
@@ -132,7 +134,7 @@ SHMEM_TYPED_IGET(complexd, COMPLEXIFY(double))
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmem_get##_size(target + ti, source + si, 1, pe);          \
+            shmemc_get(target + ti, source + si, _size, pe);            \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
