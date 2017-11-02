@@ -5,17 +5,17 @@ PMIX_CFLAGS               = @PMIX_CFLAGS@
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 				-I../../include -I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \
-				globalexit.c \
-				state.c \
-				pmix-client.c \
-				ucx-init.c \
-				ranks.c \
 				barrier.c \
 				broadcast.c \
 				comms.c \
-				waituntil.c \
+				globalexit.c \
 				mcs-lock.c \
-				shmemc-init.c
+				pmix-client.c \
+				ranks.c \
+				shmemc-init.c \
+				state.c \
+				ucx-init.c \
+				waituntil.c
 
 lib_LIBRARIES             = libshmemc-ucx.a
 libshmemc_ucx_a_SOURCES   = $(LIBSHMEMC_SOURCES)
