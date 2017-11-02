@@ -41,14 +41,6 @@ output_package(void)
 #endif /* PACKAGE_NAME */
            );
 
-    output("Package version",
-#ifdef PACKAGE_VERSION
-            PACKAGE_VERSION
-#else
-           UNKNOWN
-#endif /* PACKAGE_VERSION */
-           );
-
     output("Package URL",
 #ifdef PACKAGE_URL
             PACKAGE_URL
@@ -63,6 +55,18 @@ output_package(void)
 #else
            UNKNOWN
 #endif /* PACKAGE_BUGREPORT */
+           );
+}
+
+static void
+output_version(void)
+{
+    output("Package version",
+#ifdef PACKAGE_VERSION
+            PACKAGE_VERSION
+#else
+           UNKNOWN
+#endif /* PACKAGE_VERSION */
            );
 }
 
@@ -259,19 +263,17 @@ main(int argc, char *argv[])
         return 1;
     }
 
-    /* common output */
-    output_package();
-    output_spec_version();
-
+    output_version();
     if (version_only) {
         return 0;
     }
 
-    /* we want all of it */
+    /* we want all the rest of it */
+
+    output_package();
+    output_spec_version();
     output_build_env();
-
     output_features();
-
     output_comms();
 
     return 0;
