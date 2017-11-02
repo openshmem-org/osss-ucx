@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <stdbool.h>
 #include <string.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -23,7 +22,6 @@
 #define TRACE_MSG_BUF_SIZE 256
 
 static FILE *log_stream = NULL;
-static bool logging = false;
 static char *host = NULL;
 
 typedef struct shmemu_log_table {
@@ -104,7 +102,6 @@ fatal(const char *fmt, ...)
 void
 shmemu_logger_init(void)
 {
-    /* enable if: "y[es]", "on" or positive number */
     if (proc.env.debug) {
 
         host = shmemu_gethostname();
@@ -140,7 +137,7 @@ shmemu_logger_finalize(void)
 void
 shmemu_logger(shmemu_log_t level, const char *fmt, ...)
 {
-    if (logging) {
+    if (proc.env.debug) {
         char *tmp1;
         char *tmp2;
         va_list ap;
@@ -151,9 +148,9 @@ shmemu_logger(shmemu_log_t level, const char *fmt, ...)
         assert(tmp2 != NULL);
 
         snprintf(tmp1, TRACE_MSG_BUF_SIZE,
-                 "[%s:%d:%d:%6.6f] %10s: ",
-                 host,
+                 "[%d:%s:%d:%6.6f] %10s: ",
                  proc.rank,
+                 host,
                  (int) getpid(),
                  shmemu_timer(),
                  level_to_name(level)

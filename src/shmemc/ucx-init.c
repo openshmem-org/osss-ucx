@@ -48,7 +48,7 @@ check_version(void)
 }
 
 inline static int
-option_enabled(const char *str)
+option_enabled_test(const char *str)
 {
     int ret = 0;
 
@@ -126,9 +126,9 @@ read_environment(void)
         assert(r == 0);
     }
 
-    e = shmemc_getenv("SHMEMC_DEBUG");
+    e = shmemc_getenv("SHMEM_DEBUG");
     if (e != NULL) {
-        proc.env.debug = option_enabled(e);
+        proc.env.debug = option_enabled_test(e);
     }
 
     /*
