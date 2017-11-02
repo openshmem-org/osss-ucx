@@ -11,6 +11,8 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <getopt.h>
+#include <libgen.h>
 
 static const int tag_width = 28;
 
@@ -198,13 +200,74 @@ output_comms(void)
            );
 }
 
-int
-main(void)
-{
-    output_package();
+static char *progname;
 
+static void
+output_help(void)
+{
+    fprintf(stderr,
+            "\n");
+    fprintf(stderr,
+            "Usage: %s [options]\n\n",
+            progname);
+    fprintf(stderr,
+            "    [-V | --version]    only output OpenSHMEM version info\n");
+    fprintf(stderr,
+            "    [-h | --help]       show this help message\n");
+    fprintf(stderr,
+            "\n");
+}
+
+static struct option opts[] = {
+    { "version", no_argument, NULL, 'V' },
+    { "help",    no_argument, NULL, 'h' },
+    { NULL,      no_argument, NULL, 0 }
+};
+
+
+int
+main(int argc, char *argv[])
+{
+    int version_only = 0;
+    int help = 0;
+
+    progname = basename(argv[0]);
+
+    while (1) {
+        int c = getopt_long(argc, argv, "hV", opts, NULL);
+
+        if (c == -1) {
+            break;
+        }
+
+        switch (c) {
+        case 'h':
+            help = 1;
+            break;
+        case 'V':
+            version_only = 1;
+            break;
+        default:
+            help = 1;
+            break;
+        }
+    }
+
+    /* usage info, and bail */
+    if (help) {
+        output_help();
+        return 1;
+    }
+
+    /* common output */
+    output_package();
     output_spec_version();
 
+    if (version_only) {
+        return 0;
+    }
+
+    /* we want all of it */
     output_build_env();
 
     output_features();
