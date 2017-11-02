@@ -94,7 +94,7 @@ extern void shmem_complexd_put(COMPLEXIFY(double) *dest,
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmem_##_name##_put(targwt + ti, source + si, 1, pe);       \
+            shmem_##_name##_put(target + ti, source + si, 1, pe);       \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
