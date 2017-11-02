@@ -28,7 +28,10 @@ void shmemc_fence(void);
 
 void *shmemc_ptr(const void *target, int pe);
 
-void shmemc_put(void *dest, const void *src, size_t nbytes, int pe);
+void shmemc_ctx_put(shmem_ctx_t ctx,
+                    void *dest, const void *src, size_t nbytes, int pe);
+#define shmemc_put(...) shmemc_ctx_put(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
 void shmemc_get(void *dest, const void *src, size_t nbytes, int pe);
 
 void shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe);
@@ -59,7 +62,7 @@ SHMEMC_DECL_CSWAP(64)
 #define SHMEMC_DECL_ADD(_size)                                      \
     void shmemc_add##_size(void *target, uint64_t value, int pe);
 
-#define SHMEMC_DECL_INC(_size)                                      \
+#define SHMEMC_DECL_INC(_size)                      \
     void shmemc_inc##_size(void *target, int pe);
 
 SHMEMC_DECL_ADD(32)

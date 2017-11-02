@@ -4,8 +4,9 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmem/defs.h"
 #include "shmemc.h"
+
+#include "shmem/defs.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_float_put = pshmem_float_put
@@ -75,43 +76,48 @@
 
 #endif /* ENABLE_PSHMEM */
 
-
-#define SHMEM_TYPED_PUT(_name, _type)                                   \
+#define SHMEM_CTX_TYPED_PUT(_name, _type)                               \
+    void                                                                \
+    shmem_ctx_##_name##_put(shmem_ctx_t ctx,                            \
+                            _type *dest, const _type *src,              \
+                            size_t nelems, int pe)                      \
+    {                                                                   \
+        const size_t sized_nelems = nelems * sizeof(_type);             \
+        shmemc_ctx_put(ctx, dest, src, sized_nelems, pe);               \
+    }                                                                   \
     void                                                                \
     shmem_##_name##_put(_type *dest, const _type *src,                  \
                         size_t nelems, int pe)                          \
     {                                                                   \
         const size_t sized_nelems = nelems * sizeof(_type);             \
-        shmemc_put(dest, src, sized_nelems, pe);                        \
+        shmemc_ctx_put(SHMEM_CTX_DEFAULT,                               \
+                       dest, src, sized_nelems, pe);                    \
     }
 
-SHMEM_TYPED_PUT(float, float)
-SHMEM_TYPED_PUT(double, double)
-SHMEM_TYPED_PUT(longdouble, long double)
-SHMEM_TYPED_PUT(char, char)
-SHMEM_TYPED_PUT(schar, signed char)
-SHMEM_TYPED_PUT(short, short)
-SHMEM_TYPED_PUT(int, int)
-SHMEM_TYPED_PUT(long, long)
-SHMEM_TYPED_PUT(longlong, long long)
-SHMEM_TYPED_PUT(uchar, unsigned char)
-SHMEM_TYPED_PUT(ushort, unsigned short)
-SHMEM_TYPED_PUT(uint, unsigned int)
-SHMEM_TYPED_PUT(ulong, unsigned long)
-SHMEM_TYPED_PUT(ulonglong, unsigned long long)
-SHMEM_TYPED_PUT(int8, int8_t)
-SHMEM_TYPED_PUT(int16, int16_t)
-SHMEM_TYPED_PUT(int32, int32_t)
-SHMEM_TYPED_PUT(int64, int64_t)
-SHMEM_TYPED_PUT(uint8, uint8_t)
-SHMEM_TYPED_PUT(uint16, uint16_t)
-SHMEM_TYPED_PUT(uint32, uint32_t)
-SHMEM_TYPED_PUT(uint64, uint64_t)
-SHMEM_TYPED_PUT(size, size_t)
-SHMEM_TYPED_PUT(ptrdiff, ptrdiff_t)
-/* for Fortran */
-SHMEM_TYPED_PUT(complexf, COMPLEXIFY(float))
-SHMEM_TYPED_PUT(complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_PUT(float, float)
+SHMEM_CTX_TYPED_PUT(double, double)
+SHMEM_CTX_TYPED_PUT(longdouble, long double)
+SHMEM_CTX_TYPED_PUT(char, char)
+SHMEM_CTX_TYPED_PUT(schar, signed char)
+SHMEM_CTX_TYPED_PUT(short, short)
+SHMEM_CTX_TYPED_PUT(int, int)
+SHMEM_CTX_TYPED_PUT(long, long)
+SHMEM_CTX_TYPED_PUT(longlong, long long)
+SHMEM_CTX_TYPED_PUT(uchar, unsigned char)
+SHMEM_CTX_TYPED_PUT(ushort, unsigned short)
+SHMEM_CTX_TYPED_PUT(uint, unsigned int)
+SHMEM_CTX_TYPED_PUT(ulong, unsigned long)
+SHMEM_CTX_TYPED_PUT(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_PUT(int8, int8_t)
+SHMEM_CTX_TYPED_PUT(int16, int16_t)
+SHMEM_CTX_TYPED_PUT(int32, int32_t)
+SHMEM_CTX_TYPED_PUT(int64, int64_t)
+SHMEM_CTX_TYPED_PUT(uint8, uint8_t)
+SHMEM_CTX_TYPED_PUT(uint16, uint16_t)
+SHMEM_CTX_TYPED_PUT(uint32, uint32_t)
+SHMEM_CTX_TYPED_PUT(uint64, uint64_t)
+SHMEM_CTX_TYPED_PUT(size, size_t)
+SHMEM_CTX_TYPED_PUT(ptrdiff, ptrdiff_t)
 
 #define SHMEM_SIZED_PUT(_size)                                          \
     void                                                                \

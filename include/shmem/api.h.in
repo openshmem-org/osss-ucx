@@ -314,33 +314,86 @@ extern "C"
      * I/O
      */
 
-#define API_DECL_PUTGET(_opname, _name, _type)                          \
-    /* see \ref shmem_long_##_opname() */                               \
-    void shmem_##_name##_##_opname(_type *dest, const _type *src,       \
-                                   size_t nelems, int pe);              \
+#define API_DECL_CTX_PUTGET(_opname, _name, _type)                      \
     /* see \ref shmem_ctx_long_##_opname() */                           \
     void shmem_ctx_##_name##_##_opname(shmem_ctx_t ctx,                 \
                                        _type *dest, const _type *src,   \
                                        size_t nelems, int pe);          \
-    /* see \ref shmem_long_i##_opname() */                              \
-    void shmem_##_name##_i##_opname(_type *target,                      \
-                                    const _type *source,                \
-                                    ptrdiff_t tst, ptrdiff_t sst,       \
-                                    size_t nelems, int pe);             \
     /* see \ref shmem_ctx_long_i##_opname() */                          \
     void shmem_ctx_##_name##_i##_opname(shmem_ctx_t ctx,                \
                                         _type *target,                  \
                                         const _type *source,            \
                                         ptrdiff_t tst, ptrdiff_t sst,   \
                                         size_t nelems, int pe);         \
-    /* see \ref shmem_long_##_opname##_nbi() */                         \
-    void shmem_##_name##_##_opname##_nbi(_type *dest, const _type *src, \
-                                         size_t nelems, int pe);        \
     /* see \ref shmem_ctx_long_##_opname##_nbi() */                     \
     void shmem_ctx_##_name##_##_opname##_nbi(shmem_ctx_t ctx,           \
                                              _type *dest,               \
                                              const _type *src,          \
-                                             size_t nelems, int pe);    \
+                                             size_t nelems, int pe);
+
+    API_DECL_CTX_PUTGET(put, float, float)
+    API_DECL_CTX_PUTGET(put, double, double)
+    API_DECL_CTX_PUTGET(put, longdouble, long double)
+    API_DECL_CTX_PUTGET(put, schar, signed char)
+    API_DECL_CTX_PUTGET(put, char, char)
+    API_DECL_CTX_PUTGET(put, short, short)
+    API_DECL_CTX_PUTGET(put, int, int)
+    API_DECL_CTX_PUTGET(put, long, long)
+    API_DECL_CTX_PUTGET(put, longlong, long long)
+    API_DECL_CTX_PUTGET(put, uchar, unsigned char)
+    API_DECL_CTX_PUTGET(put, ushort, unsigned short)
+    API_DECL_CTX_PUTGET(put, uint, unsigned int)
+    API_DECL_CTX_PUTGET(put, ulong, unsigned long)
+    API_DECL_CTX_PUTGET(put, ulonglong, unsigned long long)
+    API_DECL_CTX_PUTGET(put, int8, int8_t)
+    API_DECL_CTX_PUTGET(put, int16, int16_t)
+    API_DECL_CTX_PUTGET(put, int32, int32_t)
+    API_DECL_CTX_PUTGET(put, int64, int64_t)
+    API_DECL_CTX_PUTGET(put, uint8, uint8_t)
+    API_DECL_CTX_PUTGET(put, uint16, uint16_t)
+    API_DECL_CTX_PUTGET(put, uint32, uint32_t)
+    API_DECL_CTX_PUTGET(put, uint64, uint64_t)
+    API_DECL_CTX_PUTGET(put, size, size_t)
+    API_DECL_CTX_PUTGET(put, ptrdiff, ptrdiff_t)
+
+    API_DECL_CTX_PUTGET(get, float, float)
+    API_DECL_CTX_PUTGET(get, double, double)
+    API_DECL_CTX_PUTGET(get, longdouble, long double)
+    API_DECL_CTX_PUTGET(get, schar, signed char)
+    API_DECL_CTX_PUTGET(get, char, char)
+    API_DECL_CTX_PUTGET(get, short, short)
+    API_DECL_CTX_PUTGET(get, int, int)
+    API_DECL_CTX_PUTGET(get, long, long)
+    API_DECL_CTX_PUTGET(get, longlong, long long)
+    API_DECL_CTX_PUTGET(get, uchar, unsigned char)
+    API_DECL_CTX_PUTGET(get, ushort, unsigned short)
+    API_DECL_CTX_PUTGET(get, uint, unsigned int)
+    API_DECL_CTX_PUTGET(get, ulong, unsigned long)
+    API_DECL_CTX_PUTGET(get, ulonglong, unsigned long long)
+    API_DECL_CTX_PUTGET(get, int8, int8_t)
+    API_DECL_CTX_PUTGET(get, int16, int16_t)
+    API_DECL_CTX_PUTGET(get, int32, int32_t)
+    API_DECL_CTX_PUTGET(get, int64, int64_t)
+    API_DECL_CTX_PUTGET(get, uint8, uint8_t)
+    API_DECL_CTX_PUTGET(get, uint16, uint16_t)
+    API_DECL_CTX_PUTGET(get, uint32, uint32_t)
+    API_DECL_CTX_PUTGET(get, uint64, uint64_t)
+    API_DECL_CTX_PUTGET(get, size, size_t)
+    API_DECL_CTX_PUTGET(get, ptrdiff, ptrdiff_t)
+
+#define API_DECL_PUTGET(_opname, _name, _type)                          \
+    /* see \ref shmem_long_##_opname() */                               \
+    void shmem_##_name##_##_opname(_type *dest, const _type *src,       \
+                                   size_t nelems, int pe);              \
+    /* see \ref shmem_long_i##_opname() */                              \
+    void shmem_##_name##_i##_opname(_type *target,                      \
+                                    const _type *source,                \
+                                    ptrdiff_t tst, ptrdiff_t sst,       \
+                                    size_t nelems, int pe);             \
+    /* see \ref shmem_long_##_opname##_nbi() */                         \
+    void shmem_##_name##_##_opname##_nbi(_type *dest,                   \
+                                         const _type *src,              \
+                                         size_t nelems, int pe);
 
     API_DECL_PUTGET(put, float, float)
     API_DECL_PUTGET(put, double, double)
@@ -394,7 +447,7 @@ extern "C"
 
 #undef API_DECL_PUTGET
 
-#define API_DECL_PUTGET_SIZE(_opname, _size)                            \
+#define API_DECL_CTX_PUTGET_SIZE(_opname, _size)                        \
     /* see \ref shmem_long_##_opname() */                               \
     void shmem_##_opname##_size(void *dest, const void *src,            \
                                 size_t nelems, int pe);                 \
@@ -410,21 +463,21 @@ extern "C"
                                           void *dest, const void *src,  \
                                           size_t nelems, int pe);
 
-    API_DECL_PUTGET_SIZE(put, 8)
-    API_DECL_PUTGET_SIZE(put, 16)
-    API_DECL_PUTGET_SIZE(put, 32)
-    API_DECL_PUTGET_SIZE(put, 64)
-    API_DECL_PUTGET_SIZE(put, 128)
+    API_DECL_CTX_PUTGET_SIZE(put, 8)
+    API_DECL_CTX_PUTGET_SIZE(put, 16)
+    API_DECL_CTX_PUTGET_SIZE(put, 32)
+    API_DECL_CTX_PUTGET_SIZE(put, 64)
+    API_DECL_CTX_PUTGET_SIZE(put, 128)
 
-    API_DECL_PUTGET_SIZE(get, 8)
-    API_DECL_PUTGET_SIZE(get, 16)
-    API_DECL_PUTGET_SIZE(get, 32)
-    API_DECL_PUTGET_SIZE(get, 64)
-    API_DECL_PUTGET_SIZE(get, 128)
+    API_DECL_CTX_PUTGET_SIZE(get, 8)
+    API_DECL_CTX_PUTGET_SIZE(get, 16)
+    API_DECL_CTX_PUTGET_SIZE(get, 32)
+    API_DECL_CTX_PUTGET_SIZE(get, 64)
+    API_DECL_CTX_PUTGET_SIZE(get, 128)
 
-#undef API_DECL_PUTGET_SIZE
+#undef API_DECL_CTX_PUTGET_SIZE
 
-#define API_DECL_PUTGET_MEM(_opname)                                    \
+#define API_DECL_CTX_PUTGET_MEM(_opname)                                    \
     /* see \ref shmem_long_##_opname() */                               \
     void shmem_##_opname##mem(void *dest, const void *src,              \
                               size_t nelems, int pe);                   \
@@ -440,8 +493,8 @@ extern "C"
                                         void *dest, const void *src,    \
                                         size_t nelems, int pe);         \
 
-    API_DECL_PUTGET_MEM(put)
-    API_DECL_PUTGET_MEM(get)
+    API_DECL_CTX_PUTGET_MEM(put)
+    API_DECL_CTX_PUTGET_MEM(get)
 
 #define API_DECL_P(_name, _type)                                    \
         /* see \ref shmem_long_p() */                               \

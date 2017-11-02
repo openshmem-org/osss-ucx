@@ -2,6 +2,7 @@
 
 #include "shmemu.h"
 #include "state.h"
+
 #include "shmem/defs.h"
 
 #include <unistd.h>
@@ -158,8 +159,9 @@ shmemc_pe_accessible(int pe)
  */
 
 void
-shmemc_put(void *dest, const void *src,
-           size_t nbytes, int pe)
+shmemc_ctx_put(shmem_ctx_t ctx,
+               void *dest, const void *src,
+               size_t nbytes, int pe)
 {
     long r;
     uint64_t ud = (uint64_t) dest;
