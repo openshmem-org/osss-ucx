@@ -5,7 +5,7 @@
 pmix_happy=no
 
 AC_ARG_WITH([pmix],
-	[AS_HELP_STRING([--with-pmix], [Use PMIx library])])
+	[AS_HELP_STRING([--with-pmix@<:@=DIR@:>@], [Use PMIx library])])
 
 PKG_CHECK_MODULES([PMIX], [pmix], [
 			pmix_happy=yes
