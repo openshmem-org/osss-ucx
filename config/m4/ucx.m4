@@ -1,6 +1,7 @@
 ucx_happy=no
 
-AC_ARG_WITH([ucx], AS_HELP_STRING([--with-ucx], [Use UCX library])])
+AC_ARG_WITH([ucx],
+            [AS_HELP_STRING([--with-ucx@<:@=DIR@:>@], [Use UCX library])])
 
 AS_IF([test -d "$with_ucx"],
       [
