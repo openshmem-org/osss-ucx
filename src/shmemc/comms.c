@@ -96,14 +96,14 @@ valid_pe_number(int pe)
  **/
 
 void
-shmemc_fence(void)
+shmemc_ctx_fence(shmem_ctx_t ctx)
 {
     const ucs_status_t s = ucp_worker_fence(proc.comms.wrkr);
     assert(s == UCS_OK);
 }
 
 void
-shmemc_quiet(void)
+shmemc_ctx_quiet(shmem_ctx_t ctx)
 {
     const ucs_status_t s = ucp_worker_flush(proc.comms.wrkr);
     assert(s == UCS_OK);
@@ -184,8 +184,9 @@ shmemc_ctx_put(shmem_ctx_t ctx,
 }
 
 void
-shmemc_get(void *dest, const void *src,
-           size_t nbytes, int pe)
+shmemc_ctx_get(shmem_ctx_t ctx,
+               void *dest, const void *src,
+               size_t nbytes, int pe)
 {
     long r;
     uint64_t us = (uint64_t) src;
@@ -209,8 +210,9 @@ shmemc_get(void *dest, const void *src,
  */
 
 void
-shmemc_put_nbi(void *dest, const void *src,
-               size_t nbytes, int pe)
+shmemc_ctx_put_nbi(shmem_ctx_t ctx,
+                   void *dest, const void *src,
+                   size_t nbytes, int pe)
 {
     long r;
     uint64_t ud = (uint64_t) dest;
@@ -229,8 +231,9 @@ shmemc_put_nbi(void *dest, const void *src,
 }
 
 void
-shmemc_get_nbi(void *dest, const void *src,
-               size_t nbytes, int pe)
+shmemc_ctx_get_nbi(shmem_ctx_t ctx,
+                   void *dest, const void *src,
+                   size_t nbytes, int pe)
 {
     long r;
     uint64_t us = (uint64_t) src;

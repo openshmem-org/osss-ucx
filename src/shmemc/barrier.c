@@ -15,8 +15,8 @@
  */
 
 inline static void
-barrier_helper(void (*sync_op)(void),
-               int start, int log2stride, int size, long *pSync)
+barrier_helper_linear(void (*sync_op)(void),
+                      int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
@@ -51,22 +51,41 @@ barrier_helper(void (*sync_op)(void),
 }
 
 /*
+ * chosen implementation.  Later can be seelcted through e.g. env var
+ */
+static void (*barrier_helper)(
+                              void (*sync_op)(void),
+                              int start, int log2stride,
+                              int size, long *pSync) =
+    barrier_helper_linear;
+
+/*
+ * might be builtins or macros that can't be passed
+ */
+static void quiet_wrapper(void) { shmemc_quiet(); }
+static void sync_wrapper(void) { LOAD_STORE_FENCE(); }
+
+/*
+ * internal psyncs
+ */
+long shmemc_all_barrier = SHMEM_SYNC_VALUE;
+long shmemc_all_sync = SHMEM_SYNC_VALUE;
+
+/*
  * API
  */
 
 void
 shmemc_barrier(int start, int log2stride, int size, long *pSync)
 {
-    barrier_helper(shmemc_quiet,
+    barrier_helper(quiet_wrapper,
                    start, log2stride, size, pSync);
 }
-
-long shmemc_all_barrier = SHMEM_SYNC_VALUE;
 
 void
 shmemc_barrier_all(void)
 {
-    barrier_helper(shmemc_quiet,
+    barrier_helper(quiet_wrapper,
                    0,
                    0,
                    proc.nranks,
@@ -74,31 +93,20 @@ shmemc_barrier_all(void)
                    );
 }
 
-/*
- * can't pass (potential) builtin as arg
- */
-static void
-lsf_wrapper(void)
-{
-    LOAD_STORE_FENCE();
-}
-
 void
 shmemc_sync(int start, int log2stride, int size, long *pSync)
 {
-    barrier_helper(lsf_wrapper,
+    barrier_helper(sync_wrapper,
                    start, log2stride, size, pSync);
 }
-
-long shmemc_all_sync = SHMEM_SYNC_VALUE;
 
 void
 shmemc_sync_all(void)
 {
-    barrier_helper(lsf_wrapper,
+    barrier_helper(sync_wrapper,
                    0,
                    0,
                    proc.nranks,
-                   &shmemc_all_barrier
+                   &shmemc_all_sync
                    );
 }
