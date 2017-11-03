@@ -24,7 +24,8 @@
 
 static FILE *log_stream = NULL;
 static char *host = NULL;
-static int pe_width = 4;
+static int pe_width;
+static int stamp_width;
 
 typedef struct shmemu_log_table {
     shmemu_log_t level;
@@ -122,8 +123,12 @@ shmemu_logger_init(void)
             log_stream = stderr;
         }
 
-        /* how wide to display PE numbers */
+        /* how wide to display things */
         pe_width = (int) ceil(log10((double) proc.nranks));
+        stamp_width = 30 - pe_width;
+        if (stamp_width < 1) {
+            stamp_width = 1;
+        }
     }
 }
 
@@ -156,8 +161,8 @@ shmemu_logger(shmemu_log_t level, const char *fmt, ...)
                  );
 
         snprintf(tmp2, TRACE_MSG_BUF_SIZE,
-                 "%-30s %8s: ",
-                 tmp1,
+                 "%-*s %8s: ",
+                 stamp_width, tmp1,
                  level_to_name(level)
                  );
 
