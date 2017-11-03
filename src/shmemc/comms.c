@@ -81,6 +81,15 @@ translate_address(uint64_t local_addr, size_t region, int pe)
 #endif /* ENABLE_FIXED_ADDRESSES */
 }
 
+/*
+ * 1 if PE is a valid rank, 0 otherwise
+ */
+inline static int
+valid_pe_number(int pe)
+{
+    return ( (proc.nranks > pe) && (pe >= 0) ) ? 1 : 0;
+}
+
 /**
  * API
  *
@@ -127,7 +136,7 @@ shmemc_ptr(const void *addr, int pe)
 }
 
 /*
- * true if adddress in a known symmetric region
+ * 1 if adddress is remotely accessible, 0 otherwise
  */
 int
 shmemc_addr_accessible(const void *addr, int pe)
@@ -141,17 +150,12 @@ shmemc_addr_accessible(const void *addr, int pe)
 }
 
 /*
- * true if a valid PE #
+ * 1 if a valid PE #, 0 otherwise
  */
 int
 shmemc_pe_accessible(int pe)
 {
-    if ( (pe >= 0) && (pe < proc.nranks) ) {
-        return 1;
-    }
-    else {
-        return 0;
-    }
+    return valid_pe_number(pe);
 }
 
 /*
