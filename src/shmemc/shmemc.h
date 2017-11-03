@@ -23,8 +23,10 @@ char *shmemc_getenv(const char *name);
 int shmemc_my_pe(void);
 int shmemc_n_pes(void);
 
-void shmemc_quiet(void);
-void shmemc_fence(void);
+void shmemc_ctx_fence(shmem_ctx_t ctx);
+void shmemc_ctx_quiet(shmem_ctx_t ctx);
+#define shmemc_fence() shmemc_ctx_fence(SHMEM_CTX_DEFAULT)
+#define shmemc_quiet() shmemc_ctx_quiet(SHMEM_CTX_DEFAULT)
 
 void *shmemc_ptr(const void *target, int pe);
 
@@ -32,10 +34,17 @@ void shmemc_ctx_put(shmem_ctx_t ctx,
                     void *dest, const void *src, size_t nbytes, int pe);
 #define shmemc_put(...) shmemc_ctx_put(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-void shmemc_get(void *dest, const void *src, size_t nbytes, int pe);
+void shmemc_ctx_get(shmem_ctx_t ctx,
+                    void *dest, const void *src, size_t nbytes, int pe);
+#define shmemc_get(...) shmemc_ctx_get(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-void shmemc_put_nbi(void *dest, const void *src, size_t nbytes, int pe);
-void shmemc_get_nbi(void *dest, const void *src, size_t nbytes, int pe);
+void shmemc_ctx_put_nbi(shmem_ctx_t ctx,
+                        void *dest, const void *src, size_t nbytes, int pe);
+#define shmemc_put_nbi(...) shmemc_ctx_put_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
+                        void *dest, const void *src, size_t nbytes, int pe);
+#define shmemc_get_nbi(...) shmemc_ctx_get_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 /*
  * swappity
