@@ -6,6 +6,10 @@
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
 
+/*
+ * -- UCX-specific -----------------------------------------------------
+ */
+
 typedef struct worker_info {
     ucp_address_t *addr;        /* worker address */
     char *buf;                  /* allocated to copy remote worker */
@@ -19,6 +23,20 @@ typedef struct mem_region_access {
     ucp_mem_h mh;               /* memory handle */
     ucp_rkey_h rkey;            /* remote key for this heap */
 } mem_region_access_t;
+
+typedef struct comms_info {
+    ucp_context_h ctxt;         /* local communication context */
+    ucp_config_t *cfg;          /* local config */
+    ucp_worker_h wrkr;          /* local worker */
+    worker_info_t *wrkrs;       /* nranks workers */
+    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
+    mem_region_t *regions;      /* exchanged symmetric regions */
+    size_t nregions;            /* number of symmetric regions per PE */
+} comms_info_t;
+
+/*
+ * -- General ----------------------------------------------------------
+ */
 
 /*
  * each PE has a number of memory regions, which need the following
@@ -52,16 +70,6 @@ typedef struct env_info {
     char *debug_file;           /* where does debugging output go? */
 } env_info_t;
 
-typedef struct comms_info {
-    ucp_context_h ctxt;         /* local communication context */
-    ucp_config_t *cfg;          /* local config */
-    ucp_worker_h wrkr;          /* local worker */
-    worker_info_t *wrkrs;       /* nranks workers */
-    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-    mem_region_t *regions;      /* exchanged symmetric regions */
-    size_t nregions;            /* number of symmetric regions per PE */
-} comms_info_t;
-
 typedef enum shmem_status {
     SHMEM_PE_SHUTDOWN = 0,
     SHMEM_PE_RUNNING,
@@ -77,7 +85,7 @@ typedef struct thispe_info {
     shmem_status_t status;      /* up, down, out to lunch etc */
     int refcount;               /* library initialization count */
     int *peers;                 /* PEs in a node group */
-    int npeers;
+    size_t npeers;
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */
