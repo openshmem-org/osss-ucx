@@ -7,7 +7,7 @@
 #include <ucp/api/ucp.h>
 
 /*
- * -- UCX-specific -----------------------------------------------------
+ * -- for UCX --------------------------------------------------------
  */
 
 typedef struct worker_info {
@@ -23,20 +23,6 @@ typedef struct mem_region_access {
     ucp_mem_h mh;               /* memory handle */
     ucp_rkey_h rkey;            /* remote key for this heap */
 } mem_region_access_t;
-
-typedef struct comms_info {
-    ucp_context_h ctxt;         /* local communication context */
-    ucp_config_t *cfg;          /* local config */
-    ucp_worker_h wrkr;          /* local worker */
-    worker_info_t *wrkrs;       /* nranks workers */
-    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-    mem_region_t *regions;      /* exchanged symmetric regions */
-    size_t nregions;            /* number of symmetric regions per PE */
-} comms_info_t;
-
-/*
- * -- General ----------------------------------------------------------
- */
 
 /*
  * each PE has a number of memory regions, which need the following
@@ -55,6 +41,20 @@ typedef struct mem_info {
 typedef struct mem_region {
     mem_info_t *minfo;          /* nranks mem info */
 } mem_region_t;
+
+typedef struct comms_info {
+    ucp_context_h ctxt;         /* local communication context */
+    ucp_config_t *cfg;          /* local config */
+    ucp_worker_h wrkr;          /* local worker */
+    worker_info_t *wrkrs;       /* nranks workers */
+    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
+    mem_region_t *regions;      /* exchanged symmetric regions */
+    size_t nregions;            /* number of symmetric regions per PE */
+} comms_info_t;
+
+/*
+ * -- General --------------------------------------------------------
+ */
 
 /*
  * implementations support some environment variables
