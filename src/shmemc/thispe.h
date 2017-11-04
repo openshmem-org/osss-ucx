@@ -85,7 +85,7 @@ typedef struct thispe_info {
     shmem_status_t status;      /* up, down, out to lunch etc */
     int refcount;               /* library initialization count */
     int *peers;                 /* PEs in a node group */
-    size_t npeers;
+    int npeers;
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */
