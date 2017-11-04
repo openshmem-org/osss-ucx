@@ -343,7 +343,7 @@ shmemc_pmix_client_init(void)
     proc.npeers = (int) vp->data.uint32;
     /* how's the 'hood look? */
     assert(proc.npeers >= 0);
-    assert(proc.npeers < proc.nranks);
+    assert(proc.npeers <= proc.nranks);
 
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
     assert(ps == PMIX_SUCCESS);
