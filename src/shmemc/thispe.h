@@ -6,6 +6,10 @@
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
 
+/*
+ * -- for UCX --------------------------------------------------------
+ */
+
 typedef struct worker_info {
     ucp_address_t *addr;        /* worker address */
     char *buf;                  /* allocated to copy remote worker */
@@ -38,6 +42,20 @@ typedef struct mem_region {
     mem_info_t *minfo;          /* nranks mem info */
 } mem_region_t;
 
+typedef struct comms_info {
+    ucp_context_h ctxt;         /* local communication context */
+    ucp_config_t *cfg;          /* local config */
+    ucp_worker_h wrkr;          /* local worker */
+    worker_info_t *wrkrs;       /* nranks workers */
+    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
+    mem_region_t *regions;      /* exchanged symmetric regions */
+    size_t nregions;            /* number of symmetric regions per PE */
+} comms_info_t;
+
+/*
+ * -- General --------------------------------------------------------
+ */
+
 /*
  * implementations support some environment variables
  */
@@ -51,16 +69,6 @@ typedef struct env_info {
     /* this implementation */
     char *debug_file;           /* where does debugging output go? */
 } env_info_t;
-
-typedef struct comms_info {
-    ucp_context_h ctxt;         /* local communication context */
-    ucp_config_t *cfg;          /* local config */
-    ucp_worker_h wrkr;          /* local worker */
-    worker_info_t *wrkrs;       /* nranks workers */
-    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-    mem_region_t *regions;      /* exchanged symmetric regions */
-    size_t nregions;            /* number of symmetric regions per PE */
-} comms_info_t;
 
 typedef enum shmem_status {
     SHMEM_PE_SHUTDOWN = 0,
