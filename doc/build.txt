@@ -3,15 +3,25 @@
 Prerequisites
 =============
 
-Currently you will need installed:
+Currently you will need...
 
-    PMIx 1.2.3      : https://github.com/pmix/pmix/releases
+PMIx 1.2.x release.  Some API changes cause problems later on:
+
+    PMIx 1.2.4      : https://github.com/pmix/pmix/releases
+
+UCX releases to date (<= 1.2.1) don't support all the things I use,
+so:
+
     UCX from github : https://github.com/openucx/ucx
 
 Sequence
 ========
 
 1. In the top-level source directory, run ./autogen.sh
+
 2. You can build this package either in-source or out-of-source
-3. configure script can be told where PMIx and UCX live, and other options
+
+3. configure script can be told where PMIx and UCX live, and other
+   options
+
 4. make and make install
