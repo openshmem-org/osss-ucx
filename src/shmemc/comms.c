@@ -90,6 +90,32 @@ valid_pe_number(int pe)
     return ( (proc.nranks > pe) && (pe >= 0) ) ? 1 : 0;
 }
 
+/*
+ * see if addr is reachable using given context
+ */
+inline static void *
+shmemc_ptr_helper(shmem_ctx_t ctx,
+           const void *addr, int pe)
+{
+    long r;
+    uint64_t ua = (uint64_t) addr;
+    uint64_t r_addr;            /* address on other PE */
+    ucp_rkey_h rkey;            /* rkey for remote address */
+    void *usable_addr = NULL;
+    ucs_status_t s;
+
+    r = lookup_region(ua, proc.rank);
+    r_addr = translate_address(ua, r, pe);
+    rkey = lookup_rkey(r, pe);
+
+    s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
+    if (s == UCS_OK) {
+        return usable_addr;
+    }
+
+    return NULL;
+}
+
 /**
  * API
  *
@@ -116,23 +142,7 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
 void *
 shmemc_ptr(const void *addr, int pe)
 {
-    long r;
-    uint64_t ua = (uint64_t) addr;
-    uint64_t r_addr;            /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for remote address */
-    void *usable_addr = NULL;
-    ucs_status_t s;
-
-    r = lookup_region(ua, proc.rank);
-    r_addr = translate_address(ua, r, pe);
-    rkey = lookup_rkey(r, pe);
-
-    s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
-    if (s == UCS_OK) {
-        return usable_addr;
-    }
-
-    return NULL;
+    return shmemc_ptr_helper(SHMEM_CTX_DEFAULT, addr, pe);
 }
 
 /*
@@ -141,10 +151,8 @@ shmemc_ptr(const void *addr, int pe)
 int
 shmemc_addr_accessible(const void *addr, int pe)
 {
-    long r;
     uint64_t ua = (uint64_t) addr;
-
-    r = lookup_region(ua, proc.rank);
+    const long r = lookup_region(ua, proc.rank);
 
     return (r >= 0) ? 1 : 0;
 }
