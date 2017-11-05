@@ -15,10 +15,8 @@ shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
 shmemlib_libs="-lshmem -lshmemc-ucx -lshmemu"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
 
-# set to whichever comms library chosen
 comms_stanza="@UCX_LIBS@"
 
-# and make it available
 shmemlib_stanza="$shmemlib_stanza $comms_stanza"
 
 # check to see if linking required: if not, throw away link args
