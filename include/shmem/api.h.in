@@ -2866,7 +2866,7 @@ extern "C"
              )(ivar, cmp, cmp_value)
 
     /* see \ref shmem_ctx_long_put() */
-#define shmem_ctx_ctx_put(ctx, dest, source, nelems, pe)    \
+#define shmem_ctx_put(ctx, dest, source, nelems, pe)        \
     _Generic(*(dest),                                       \
              float: shmem_ctx_float_put,                    \
              double: shmem_ctx_double_put,                  \
@@ -2895,7 +2895,7 @@ extern "C"
              )(ctx, dest, source, nelems, pe)
 
     /* see \ref shmem_ctx_long_get() */
-#define shmem_ctx_ctx_get(ctx, dest, source, nelems, pe)    \
+#define shmem_ctx_get(ctx, dest, source, nelems, pe)        \
     _Generic(*(dest),                                       \
              float: shmem_ctx_float_get,                    \
              double: shmem_ctx_double_get,                  \
