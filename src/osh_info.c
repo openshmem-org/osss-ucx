@@ -84,6 +84,7 @@ output_version(void)
            INTERNAL_ERROR
 #endif /* PACKAGE_VERSION */
            );
+
 }
 
 static void
@@ -270,8 +271,8 @@ main(int argc, char *argv[])
 
     /* we want all the rest of it */
 
-    output_package();
     output_spec_version();
+    output_package();
     output_build_env();
     output_features();
     output_comms();
