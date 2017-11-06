@@ -14,6 +14,14 @@
 #endif /* ENABLE_PSHMEM */
 
 /*
+ * link-time constants
+ */
+shmem_ctx_t SHMEM_CTX_DEFAULT    = 0;
+shmem_ctx_t SHMEM_CTX_SERIALIZED = SHMEM_BIT_SET(0);
+shmem_ctx_t SHMEM_CTX_PRIVATE    = SHMEM_BIT_SET(1);
+shmem_ctx_t SHMEM_CTX_NOSTORE    = SHMEM_BIT_SET(2);
+
+/*
  * just hand back the default context for now
  */
 

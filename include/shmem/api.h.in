@@ -1163,7 +1163,12 @@ extern "C"
     /* see \ref shmem_long_atomic_swap() */                             \
     _type shmem_##_name##_atomic_swap(_type *target,                    \
                                       _type value,                      \
-                                      int pe) _WUR;
+                                      int pe) _WUR;                     \
+    /* see \ref shmem_ctx_long_atomic_swap() */                         \
+    _type shmem_ctx_##_name##_atomic_swap(shmem_ctx_t ctx,              \
+                                          _type *target,                \
+                                          _type value,                  \
+                                          int pe) _WUR;
 
     API_DECL_SWAP(float, float)
     API_DECL_SWAP(double, double)
@@ -1179,7 +1184,7 @@ extern "C"
     API_DECL_SWAP(size, size_t)
     API_DECL_SWAP(ptrdiff, ptrdiff_t)
 
-    #undef API_DECL_SWAP
+#undef API_DECL_SWAP
 
     long shmem_long_swap(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_swap) _WUR;
@@ -1222,7 +1227,12 @@ extern "C"
     /* see \ref shmem_long_atomic_compare_swap() */                     \
     _type shmem_##_name##_atomic_compare_swap(_type *target,            \
                                               _type cond,_type value,   \
-                                              int pe) _WUR;
+                                              int pe) _WUR;             \
+    /* see \ref shmem_ctx_long_atomic_compare_swap() */                 \
+    _type shmem_ctx_##_name##_atomic_compare_swap(shmem_ctx_t ctx,      \
+                                                  _type *target,        \
+                                                  _type cond, _type value, \
+                                                  int pe) _WUR;
 
     /* no reals */
     API_DECL_CSWAP(int, int)

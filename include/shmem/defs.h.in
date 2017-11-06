@@ -85,24 +85,43 @@ enum shmem_thread_levels {
     SHMEM_THREAD_MULTIPLE
 };
 
+/*
+ * context default and attributes
+ */
 typedef unsigned long shmem_ctx_t;
 
-#define SHMEM_CTX_DEFAULT     0
-#define SHMEM_CTX_SERIALIZED  SHMEM_BIT_SET(0)
-#define SHMEM_CTX_PRIVATE     SHMEM_BIT_SET(1)
-#define SHMEM_CTX_NOSTORE     SHMEM_BIT_SET(2)
+extern shmem_ctx_t SHMEM_CTX_DEFAULT;
+
+extern shmem_ctx_t SHMEM_CTX_SERIALIZED;
+extern shmem_ctx_t SHMEM_CTX_PRIVATE;
+extern shmem_ctx_t SHMEM_CTX_NOSTORE;
 
 /*
  * to declare AMOs
  */
-#define SHMEM_DECL_AMO1(_op, _name, _type)                          \
-    _type shmem_##_name##_atomic_##_op(_type *target, int pe) _WUR;
+#define SHMEM_DECL_AMO1(_op, _name, _type)                              \
+    _type shmem_##_name##_atomic_##_op(_type *target, int pe) _WUR;     \
+    _type shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,             \
+                                           _type *target, int pe) _WUR;
+
 #define SHMEM_DECL_AMO2(_op, _name, _type)                              \
-    _type shmem_##_name##_atomic_##_op(_type *target, _type value, int pe) _WUR;
-#define SHMEM_DECL_VOID_AMO1(_op, _name, _type)                 \
-    void shmem_##_name##_atomic_##_op(_type *target, int pe);
+    _type shmem_##_name##_atomic_##_op(_type *target, _type value,      \
+                                       int pe) _WUR;                    \
+    _type shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,             \
+                                           _type *target, _type value,  \
+                                           int pe) _WUR;
+
+#define SHMEM_DECL_VOID_AMO1(_op, _name, _type)                     \
+    void shmem_##_name##_atomic_##_op(_type *target, int pe);       \
+    void shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,          \
+                                          _type *target, int pe);
+
 #define SHMEM_DECL_VOID_AMO2(_op, _name, _type)                         \
-    void shmem_##_name##_atomic_##_op(_type *target, _type value, int pe);
+    void shmem_##_name##_atomic_##_op(_type *target, _type value,       \
+                                      int pe);                          \
+    void shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,              \
+                                          _type *target, _type value,   \
+                                          int pe);
 
 /*
  * deprecated shmem constants

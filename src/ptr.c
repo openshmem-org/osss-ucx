@@ -6,12 +6,6 @@
 
 #include "shmemc.h"
 
-#include <stdio.h>
-
-/*
- * boringly implemented stub
- */
-
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ptr = pshmem_ptr
 #define shmem_ptr pshmem_ptr
