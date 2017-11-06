@@ -60,13 +60,17 @@ SHMEMC_CTX_DECL_SWAP(64)
 #define shmemc_swap32(...) shmemc_ctx_swap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 #define shmemc_swap64(...) shmemc_ctx_swap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define SHMEMC_DECL_CSWAP(_size)                                \
-    uint64_t shmemc_cswap##_size(void *target,                  \
-                                 uint64_t cond, uint64_t value, \
-                                 int pe);
+#define SHMEMC_CTX_DECL_CSWAP(_size)                                \
+    uint64_t shmemc_ctx_cswap##_size(shmem_ctx_t ctx,               \
+                                     void *target,                  \
+                                     uint64_t cond, uint64_t value, \
+                                     int pe);
 
-SHMEMC_DECL_CSWAP(32)
-SHMEMC_DECL_CSWAP(64)
+SHMEMC_CTX_DECL_CSWAP(32)
+SHMEMC_CTX_DECL_CSWAP(64)
+
+#define shmemc_cswap32(...) shmemc_ctx_cswap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_cswap64(...) shmemc_ctx_cswap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 /*
  * adds and incs
@@ -95,14 +99,6 @@ SHMEMC_DECL_FETCH_ADD(64)
 
 SHMEMC_DECL_FETCH_INC(32)
 SHMEMC_DECL_FETCH_INC(64)
-
-#define SHMEMC_DECL_CSWAP(_size)                                \
-    uint64_t shmemc_cswap##_size(void *target,                  \
-                                 uint64_t cond, uint64_t value, \
-                                 int pe);
-
-SHMEMC_DECL_CSWAP(32)
-SHMEMC_DECL_CSWAP(64)
 
 /*
  * fetch and set

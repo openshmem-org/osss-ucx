@@ -348,7 +348,8 @@ HELPER_SWAP(64)
 
 #define HELPER_CSWAP(_size)                                             \
     inline static uint##_size##_t                                       \
-    helper_atomic_cswap##_size(uint64_t t,                              \
+    helper_atomic_cswap##_size(shmem_ctx_t ctx,                         \
+                               uint64_t t,                              \
                                uint##_size##_t c, uint##_size##_t v,    \
                                int pe)                                  \
     {                                                                   \
@@ -497,20 +498,21 @@ SHMEMC_FINC(64)
                            void *t, uint64_t v, int pe)             \
     {                                                               \
         return helper_atomic_swap##_size(ctx, (uint64_t) t, v, pe); \
-    }                                                               \
+    }
 
 SHMEMC_CTX_SWAP(32)
 SHMEMC_CTX_SWAP(64)
 
-#define SHMEMC_CSWAP(_size)                                         \
-    uint64_t                                                        \
-    shmemc_cswap##_size(void *t, uint64_t c, uint64_t v, int pe)    \
-    {                                                               \
-        return helper_atomic_cswap##_size((uint64_t) t, c, v, pe);  \
-    }                                                               \
+#define SHMEMC_CTX_CSWAP(_size)                                         \
+    uint64_t                                                            \
+    shmemc_ctx_cswap##_size(shmem_ctx_t ctx,                            \
+                            void *t, uint64_t c, uint64_t v, int pe)    \
+    {                                                                   \
+        return helper_atomic_cswap##_size(ctx, (uint64_t) t, c, v, pe); \
+    }
 
-SHMEMC_CSWAP(32)
-SHMEMC_CSWAP(64)
+SHMEMC_CTX_CSWAP(32)
+SHMEMC_CTX_CSWAP(64)
 
 /*
  * fetch & set
