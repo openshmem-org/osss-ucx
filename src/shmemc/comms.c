@@ -322,7 +322,8 @@ HELPER_ADD(64)
 
 #define HELPER_SWAP(_size)                                              \
     inline static uint##_size##_t                                       \
-    helper_atomic_swap##_size(uint64_t t, uint##_size##_t v, int pe)    \
+    helper_atomic_swap##_size(shmem_ctx_t ctx,                          \
+                              uint64_t t, uint##_size##_t v, int pe)    \
     {                                                                   \
         long r;                                                         \
         uint64_t r_t;                                                   \
@@ -490,15 +491,16 @@ SHMEMC_FINC(64)
  * swaps
  */
 
-#define SHMEMC_SWAP(_size)                                      \
-    uint64_t                                                    \
-    shmemc_swap##_size(void *t, uint64_t v, int pe)             \
-    {                                                           \
-        return helper_atomic_swap##_size((uint64_t) t, v, pe);  \
-    }                                                           \
+#define SHMEMC_CTX_SWAP(_size)                                      \
+    uint64_t                                                        \
+    shmemc_ctx_swap##_size(shmem_ctx_t ctx,                         \
+                           void *t, uint64_t v, int pe)             \
+    {                                                               \
+        return helper_atomic_swap##_size(ctx, (uint64_t) t, v, pe); \
+    }                                                               \
 
-SHMEMC_SWAP(32)
-SHMEMC_SWAP(64)
+SHMEMC_CTX_SWAP(32)
+SHMEMC_CTX_SWAP(64)
 
 #define SHMEMC_CSWAP(_size)                                         \
     uint64_t                                                        \
@@ -531,15 +533,16 @@ SHMEMC_FETCH(64)
 /*
  * TODO: use swap and ignore return?
  */
-#define SHMEMC_SET(_size)                                               \
+#define SHMEMC_CTX_SET(_size)                                           \
     void                                                                \
-    shmemc_set##_size(void *t, uint64_t v, int pe)                      \
+    shmemc_ctx_set##_size(shmem_ctx_t ctx,                              \
+                          void *t, uint64_t v, int pe)                  \
     {                                                                   \
-        (void) helper_atomic_swap##_size((uint64_t) t, v, pe);          \
+        (void) helper_atomic_swap##_size(ctx, (uint64_t) t, v, pe);     \
     }
 
-SHMEMC_SET(32)
-SHMEMC_SET(64)
+SHMEMC_CTX_SET(32)
+SHMEMC_CTX_SET(64)
 
 /*
  * fetched-bitwise
