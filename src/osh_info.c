@@ -12,14 +12,14 @@
 #include <time.h>
 #include <unistd.h>
 #include <getopt.h>
-#include <libgen.h>
+#include <libgen.h>             /* basename */
 
 static const int tag_width = 28;
 
 #define UNKNOWN        "unknown"
 #define INTERNAL_ERROR "not found [shouldn't happen]"
 
-inline static void
+static void
 output(const char *tag, const char *val)
 {
 #define STRMAX 64
@@ -28,46 +28,6 @@ output(const char *tag, const char *val)
     snprintf(buf, STRMAX, "%s:", tag);
     printf("%-*s %s\n", tag_width, buf, val);
 #undef STRMAX
-}
-
-static void
-output_package(void)
-{
-    output("Package name",
-#ifdef PACKAGE_NAME
-           PACKAGE_NAME
-#else
-           UNKNOWN
-#endif /* PACKAGE_NAME */
-           );
-
-    output("Package URL",
-#ifdef PACKAGE_URL
-            PACKAGE_URL
-#else
-           UNKNOWN
-#endif /* PACKAGE_URL */
-           );
-
-    output("Package bug report",
-#ifdef PACKAGE_BUGREPORT
-           PACKAGE_BUGREPORT
-#else
-           UNKNOWN
-#endif /* PACKAGE_BUGREPORT */
-           );
-}
-
-static void
-output_version(void)
-{
-    output("Package version",
-#ifdef PACKAGE_VERSION
-            PACKAGE_VERSION
-#else
-           UNKNOWN
-#endif /* PACKAGE_VERSION */
-           );
 }
 
 static void
@@ -81,9 +41,50 @@ output_spec_version(void)
     snprintf(buf, BUFMAX,
              "%d.%d",
              SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
-    output("Specification", buf);
+    output("OpenSHMEM Specification", buf);
 #undef BUFMAX
 #endif /* spec. version check */
+}
+
+static void
+output_package(void)
+{
+    output("OpenSHMEM Package name",
+#ifdef PACKAGE_NAME
+           PACKAGE_NAME
+#else
+           INTERNAL_ERROR
+#endif /* PACKAGE_NAME */
+           );
+
+    output("OpenSHMEM Package URL",
+#ifdef PACKAGE_URL
+            PACKAGE_URL
+#else
+           INTERNAL_ERROR
+#endif /* PACKAGE_URL */
+           );
+
+    output("OpenSHMEM bug report",
+#ifdef PACKAGE_BUGREPORT
+           PACKAGE_BUGREPORT
+#else
+           INTERNAL_ERROR
+#endif /* PACKAGE_BUGREPORT */
+           );
+}
+
+static void
+output_version(void)
+{
+    output("OpenSHMEM Package version",
+#ifdef PACKAGE_VERSION
+            PACKAGE_VERSION
+#else
+           INTERNAL_ERROR
+#endif /* PACKAGE_VERSION */
+           );
+
 }
 
 static void
@@ -225,7 +226,7 @@ output_help(void)
 static struct option opts[] = {
     { "version", no_argument, NULL, 'V' },
     { "help",    no_argument, NULL, 'h' },
-    { NULL,      no_argument, NULL, 0 }
+    { NULL,      no_argument, NULL, 0   }
 };
 
 
@@ -270,8 +271,8 @@ main(int argc, char *argv[])
 
     /* we want all the rest of it */
 
-    output_package();
     output_spec_version();
+    output_package();
     output_build_env();
     output_features();
     output_comms();
