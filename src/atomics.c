@@ -47,31 +47,32 @@
  * swap
  */
 
-#define SHMEM_TYPE_SWAP(_name, _type, _size)                            \
+#define SHMEM_CTX_TYPE_SWAP(_name, _type, _size)                        \
     _type                                                               \
-    shmem_##_name##_atomic_swap(_type *target, _type value, int pe)     \
+    shmem_ctx_##_name##_atomic_swap(shmem_ctx_t ctx,                    \
+                                    _type *target, _type value, int pe) \
     {                                                                   \
-        return shmemc_swap##_size(target, value, pe);                   \
+        return shmemc_ctx_swap##_size(ctx, target, value, pe);          \
     }
 
-SHMEM_TYPE_SWAP(int, int, 32)
+SHMEM_CTX_TYPE_SWAP(int, int, 32)
 #if __WORDSIZE == 64
-SHMEM_TYPE_SWAP(long, long, 64)
+SHMEM_CTX_TYPE_SWAP(long, long, 64)
 #else
-SHMEM_TYPE_SWAP(long, long, 32)
+SHMEM_CTX_TYPE_SWAP(long, long, 32)
 #endif
-SHMEM_TYPE_SWAP(longlong, long long, 64)
-SHMEM_TYPE_SWAP(float, float, 32)
-SHMEM_TYPE_SWAP(double, double, 64)
-SHMEM_TYPE_SWAP(uint, unsigned int, 32)
-SHMEM_TYPE_SWAP(ulong, unsigned long, 64)
-SHMEM_TYPE_SWAP(ulonglong, unsigned long long, 64)
-SHMEM_TYPE_SWAP(int32, int32_t, 32)
-SHMEM_TYPE_SWAP(int64, int64_t, 64)
-SHMEM_TYPE_SWAP(uint32, uint32_t, 32)
-SHMEM_TYPE_SWAP(uint64, uint64_t, 64)
-SHMEM_TYPE_SWAP(size, size_t, 64)
-SHMEM_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_SWAP(longlong, long long, 64)
+SHMEM_CTX_TYPE_SWAP(float, float, 32)
+SHMEM_CTX_TYPE_SWAP(double, double, 64)
+SHMEM_CTX_TYPE_SWAP(uint, unsigned int, 32)
+SHMEM_CTX_TYPE_SWAP(ulong, unsigned long, 64)
+SHMEM_CTX_TYPE_SWAP(ulonglong, unsigned long long, 64)
+SHMEM_CTX_TYPE_SWAP(int32, int32_t, 32)
+SHMEM_CTX_TYPE_SWAP(int64, int64_t, 64)
+SHMEM_CTX_TYPE_SWAP(uint32, uint32_t, 32)
+SHMEM_CTX_TYPE_SWAP(uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_SWAP(size, size_t, 64)
+SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_compare_swap = pshmem_int_atomic_compare_swap
