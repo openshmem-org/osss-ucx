@@ -2321,58 +2321,52 @@ extern "C"
      * broadcasts
      */
 
-    void shmem_broadcast64(void *target, const void *source,
-                           size_t nelems, int PE_root, int PE_start,
-                           int logPE_stride, int PE_size, long *pSync);
+#define API_BROADCAST_SIZE(_size)                                       \
+    /* see \ref shmem_broadcast64() */                                  \
+    void shmem_broadcast##_size(void *target, const void *source,       \
+                                size_t nelems, int PE_root, int PE_start, \
+                                int logPE_stride, int PE_size, long *pSync);
 
-    /* see \ref shmem_broadcast64() */
-    void shmem_broadcast32(void *target, const void *source,
-                           size_t nelems, int PE_root, int PE_start,
-                           int logPE_stride, int PE_size, long *pSync);
+    API_BROADCAST_SIZE(32)
+    API_BROADCAST_SIZE(64)
 
     /**
      * collects
      */
 
-    void shmem_fcollect64(void *target, const void *source,
-                          size_t nelems, int PE_start, int logPE_stride,
-                          int PE_size, long *pSync);
+#define API_COLLECT_NAME_SIZE(_opname, _size)                           \
+    /* see \ref shmem_##_opname##64() */                                \
+    void shmem_##_opname##_size(void *target, const void *source,       \
+                                size_t nelems, int PE_start, int logPE_stride, \
+                                int PE_size, long *pSync);
 
-    /* see \ref shmem_fcollect64() */
-    void shmem_fcollect32(void *target, const void *source,
-                          size_t nelems, int PE_start, int logPE_stride,
-                          int PE_size, long *pSync);
-
-    void shmem_collect64(void *target, const void *source,
-                         size_t nelems, int PE_start, int logPE_stride,
-                         int PE_size, long *pSync);
-    /* see \ref shmem_collect64() */
-    void shmem_collect32(void *target, const void *source,
-                         size_t nelems, int PE_start, int logPE_stride,
-                         int PE_size, long *pSync);
+    API_COLLECT_NAME_SIZE(fcollect, 32)
+    API_COLLECT_NAME_SIZE(fcollect, 64)
+    API_COLLECT_NAME_SIZE(collect, 32)
+    API_COLLECT_NAME_SIZE(collect, 64)
 
     /**
      * all-to-all collectives
      */
 
-    /* see \ref shmem_alltoall64() */
-    void shmem_alltoall32(void *target, const void *source, size_t nelems,
-                          int PE_start, int logPE_stride, int PE_size,
-                          long *pSync);
-    /* doc goes here */
-    void shmem_alltoall64(void *target, const void *source, size_t nelems,
-                          int PE_start, int logPE_stride, int PE_size,
-                          long *pSync);
-    /* see \ref shmem_alltoalls64() */
-    void shmem_alltoalls32(void *target, const void *source,
-                           ptrdiff_t dst, ptrdiff_t sst, size_t nelems,
-                           int PE_start, int logPE_stride, int PE_size,
-                           long *pSync);
-    /* doc goes here */
-    void shmem_alltoalls64(void *target, const void *source,
-                           ptrdiff_t dst, ptrdiff_t sst, size_t nelems,
-                           int PE_start, int logPE_stride, int PE_size,
-                           long *pSync);
+#define API_ALLTOALL_SIZE(_size)                                        \
+    /* see \ref shmem_alltoall64() */                                   \
+    void shmem_alltoall##_size(void *target, const void *source, size_t nelems, \
+                               int PE_start, int logPE_stride, int PE_size, \
+                               long *pSync);
+
+    API_ALLTOALL_SIZE(32)
+    API_ALLTOALL_SIZE(64)
+
+#define API_ALLTOALLS_SIZE(_size)                                       \
+    /* see \ref shmem_alltoalls64() */                                  \
+    void shmem_alltoalls##_size(void *target, const void *source,       \
+                                ptrdiff_t dst, ptrdiff_t sst, size_t nelems, \
+                                int PE_start, int logPE_stride, int PE_size, \
+                                long *pSync);
+
+    API_ALLTOALLS_SIZE(32)
+    API_ALLTOALLS_SIZE(64)
 
     /**
      * Contexts-based API
