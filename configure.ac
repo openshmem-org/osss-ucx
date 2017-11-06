@@ -164,6 +164,7 @@ AC_CONFIG_FILES([man/Makefile
 AC_CONFIG_FILES([include/Makefile
 		 include/shmem/defs.h
 		 include/shmem/depr.h
+		 include/shmem/cache.h
 		 include/shmem/api.h
 		 include/shmem.h
 		 include/pshmem.h include/pshmemx.h
