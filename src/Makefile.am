@@ -33,12 +33,12 @@ MY_SOURCES             = \
                                 init.c \
                                 lock.c \
                                 memalloc.c \
-                                pe-query.c \
                                 ptr.c \
                                 put.c \
                                 put-nbi.c \
                                 put-strided.c \
                                 quiet.c \
+				ranks.c  \
                                 reductions.c \
                                 shmalloc.c \
                                 version.c \
