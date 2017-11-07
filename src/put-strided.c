@@ -85,69 +85,75 @@ extern void shmem_complexd_put(COMPLEXIFY(double) *dest,
 #define shmem_iput128 pshmem_iput128
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_TYPED_IPUT(_name, _type)                                  \
+#define SHMEM_CTX_TYPED_IPUT(_name, _type)                              \
     void                                                                \
-    shmem_##_name##_iput(_type *target, const _type *source,            \
-                         ptrdiff_t tst, ptrdiff_t sst,                  \
-                         size_t nelems, int pe)                         \
+    shmem_ctx_##_name##_iput(shmem_ctx_t ctx,                           \
+                             _type *target, const _type *source,        \
+                             ptrdiff_t tst, ptrdiff_t sst,              \
+                             size_t nelems, int pe)                     \
     {                                                                   \
         const size_t the_size = sizeof(_type);                          \
         size_t ti = 0, si = 0;                                          \
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_put(target + ti, source + si, the_size, pe);         \
+            shmemc_ctx_put(ctx, target + ti, source + si, the_size, pe); \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
     }
 
-SHMEM_TYPED_IPUT(float, float)
-SHMEM_TYPED_IPUT(double, double)
-SHMEM_TYPED_IPUT(longdouble, long double)
-SHMEM_TYPED_IPUT(char, char)
-SHMEM_TYPED_IPUT(schar, signed char)
-SHMEM_TYPED_IPUT(short, short)
-SHMEM_TYPED_IPUT(int, int)
-SHMEM_TYPED_IPUT(long, long)
-SHMEM_TYPED_IPUT(longlong, long long)
-SHMEM_TYPED_IPUT(uchar, unsigned char)
-SHMEM_TYPED_IPUT(ushort, unsigned short)
-SHMEM_TYPED_IPUT(uint, unsigned int)
-SHMEM_TYPED_IPUT(ulong, unsigned long)
-SHMEM_TYPED_IPUT(ulonglong, unsigned long long)
-SHMEM_TYPED_IPUT(int8, int8_t)
-SHMEM_TYPED_IPUT(int16, int16_t)
-SHMEM_TYPED_IPUT(int32, int32_t)
-SHMEM_TYPED_IPUT(int64, int64_t)
-SHMEM_TYPED_IPUT(uint8, uint8_t)
-SHMEM_TYPED_IPUT(uint16, uint16_t)
-SHMEM_TYPED_IPUT(uint32, uint32_t)
-SHMEM_TYPED_IPUT(uint64, uint64_t)
-SHMEM_TYPED_IPUT(size, size_t)
-SHMEM_TYPED_IPUT(ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_IPUT(float, float)
+SHMEM_CTX_TYPED_IPUT(double, double)
+SHMEM_CTX_TYPED_IPUT(longdouble, long double)
+SHMEM_CTX_TYPED_IPUT(char, char)
+SHMEM_CTX_TYPED_IPUT(schar, signed char)
+SHMEM_CTX_TYPED_IPUT(short, short)
+SHMEM_CTX_TYPED_IPUT(int, int)
+SHMEM_CTX_TYPED_IPUT(long, long)
+SHMEM_CTX_TYPED_IPUT(longlong, long long)
+SHMEM_CTX_TYPED_IPUT(uchar, unsigned char)
+SHMEM_CTX_TYPED_IPUT(ushort, unsigned short)
+SHMEM_CTX_TYPED_IPUT(uint, unsigned int)
+SHMEM_CTX_TYPED_IPUT(ulong, unsigned long)
+SHMEM_CTX_TYPED_IPUT(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_IPUT(int8, int8_t)
+SHMEM_CTX_TYPED_IPUT(int16, int16_t)
+SHMEM_CTX_TYPED_IPUT(int32, int32_t)
+SHMEM_CTX_TYPED_IPUT(int64, int64_t)
+SHMEM_CTX_TYPED_IPUT(uint8, uint8_t)
+SHMEM_CTX_TYPED_IPUT(uint16, uint16_t)
+SHMEM_CTX_TYPED_IPUT(uint32, uint32_t)
+SHMEM_CTX_TYPED_IPUT(uint64, uint64_t)
+SHMEM_CTX_TYPED_IPUT(size, size_t)
+SHMEM_CTX_TYPED_IPUT(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_TYPED_IPUT(complexf, COMPLEXIFY(float))
-SHMEM_TYPED_IPUT(complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_IPUT(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_IPUT(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_IPUT(_size)                                         \
+#undef SHMEM_CTX_TYPED_IPUT
+
+#define SHMEM_CTX_SIZED_IPUT(_size)                                     \
     void                                                                \
-    shmem_iput##_size(void *target, const void *source,                 \
-                      ptrdiff_t tst, ptrdiff_t sst,                     \
-                      size_t nelems, int pe)                            \
+    shmem_ctx_iput##_size(shmem_ctx_t ctx,                              \
+                          void *target, const void *source,             \
+                          ptrdiff_t tst, ptrdiff_t sst,                 \
+                          size_t nelems, int pe)                        \
     {                                                                   \
         size_t ti = 0, si = 0;                                          \
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_put(target + ti, source + si, _size, pe);            \
+            shmemc_ctx_put(ctx, target + ti, source + si, _size, pe);   \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
     }
 
-SHMEM_SIZED_IPUT(8)
-SHMEM_SIZED_IPUT(16)
-SHMEM_SIZED_IPUT(32)
-SHMEM_SIZED_IPUT(64)
-SHMEM_SIZED_IPUT(128)
+SHMEM_CTX_SIZED_IPUT(8)
+SHMEM_CTX_SIZED_IPUT(16)
+SHMEM_CTX_SIZED_IPUT(32)
+SHMEM_CTX_SIZED_IPUT(64)
+SHMEM_CTX_SIZED_IPUT(128)
+
+#undef SHMEM_CTX_SIZED_IPUT
