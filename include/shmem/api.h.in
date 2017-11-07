@@ -2818,10 +2818,11 @@ extern "C"
 #if  __STDC_VERSION__ >= 201112L
 
     /* see \ref shmem_long_put() */
-#define shmem_put(selector, ...)                          \
-    _Generic((selector),                                  \
-             shmem_ctx_t *: shmem_ctx_put,                \
-             float *: shmem_float_put,                    \
+#define shmem_put(selector, ...)                        \
+    _Generic((selector),                                \
+             shmem_ctx_t: shmem_ctx_put,                \
+                                                        \
+             float *: shmem_float_put,                  \
              double *: shmem_double_put,                \
              long double *: shmem_longdouble_put,       \
              signed char *: shmem_schar_put,            \
@@ -2851,6 +2852,7 @@ extern "C"
 #define shmem_get(selector, ...)                        \
     _Generic((selector),                                \
              shmem_ctx_t: shmem_ctx_get,                \
+                                                        \
              float *: shmem_float_get,                  \
              double *: shmem_double_get,                \
              long double *: shmem_longdouble_get,       \
@@ -2881,6 +2883,7 @@ extern "C"
 #define shmem_p(selector, ...)                          \
     _Generic((selector),                                \
              shmem_ctx_t: shmem_ctx_p,                  \
+                                                        \
              float *: shmem_float_p,                    \
              double *: shmem_double_p,                  \
              long double *: shmem_longdouble_p,         \
@@ -2911,6 +2914,7 @@ extern "C"
 #define shmem_g(selector, ...)                          \
     _Generic(*(src),                                    \
              shmem_ctx_t: shmem_ctx_g,                  \
+                                                        \
              float *: shmem_float_g,                    \
              double *: shmem_double_g,                  \
              long double *: shmem_longdouble_g,         \
@@ -2941,6 +2945,7 @@ extern "C"
 #define shmem_iput(selector, ...)                           \
     _Generic((selector),                                    \
              shmem_ctx_t: shmem_ctx_iput,                   \
+                                                            \
              float *: shmem_float_iput,                     \
              double *: shmem_double_iput,                   \
              long double *: shmem_longdouble_iput,          \
@@ -2971,6 +2976,7 @@ extern "C"
 #define shmem_iget(selector, ...)                           \
     _Generic((selector),                                    \
              shmem_ctx_t: shmem_ctx_iget,                   \
+                                                            \
              float *: shmem_float_iget,                     \
              double *: shmem_double_iget,                   \
              long double *: shmem_longdouble_iget,          \
@@ -3001,6 +3007,7 @@ extern "C"
 #define shmem_atomic_swap(selector, ...)                        \
     _Generic((selector),                                        \
              shmem_ctx_t: shmem_ctx_atomic_swap,                \
+                                                                \
              float *: shmem_float_atomic_swap,                  \
              double *: shmem_double_atomic_swap,                \
              int *: shmem_int_atomic_swap,                      \
@@ -3025,6 +3032,7 @@ extern "C"
 #define shmem_atomic_compare_swap(selector, ...)                        \
     _Generic((selector),                                                \
              shmem_ctx_t: shmem_ctx_atomic_compare_swap,                \
+                                                                        \
              int *: shmem_int_atomic_compare_swap,                      \
              long *: shmem_long_atomic_compare_swap,                    \
              long long *: shmem_longlong_atomic_compare_swap,           \
@@ -3047,6 +3055,7 @@ extern "C"
 #define shmem_atomic_fetch_add(selector, ...)                           \
     _Generic((selector),                                                \
              shmem_ctx_t: shmem_ctx_atomic_fetch_add,                   \
+                                                                        \
              int *: shmem_int_atomic_fetch_add,                         \
              long *: shmem_long_atomic_fetch_add,                       \
              long long *: shmem_longlong_atomic_fetch_add,              \
@@ -3069,6 +3078,7 @@ extern "C"
 #define shmem_atomic_fetch_inc(selector, ...)                           \
     _Generic((selector),                                                \
              shmem_ctx_t: shmem_ctx_atomic_fetch_inc,                   \
+                                                                        \
              int *: shmem_int_atomic_fetch_inc,                         \
              long *: shmem_long_atomic_fetch_inc,                       \
              long long *: shmem_longlong_atomic_fetch_inc,              \
@@ -3091,6 +3101,7 @@ extern "C"
 #define shmem_atomic_fetch_and(selector, ...)                           \
     _Generic((selector),                                                \
              shmem_ctx_t: shmem_ctx_atomic_fetch_and,                   \
+                                                                        \
              unsigned int *: shmem_uint_atomic_fetch_and,               \
              unsigned long *: shmem_ulong_atomic_fetch_and,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_and,    \
@@ -3104,6 +3115,7 @@ extern "C"
 #define shmem_atomic_fetch_or(selector, ...)                        \
     _Generic((selector),                                            \
              shmem_ctx_t: shmem_ctx_atomic_fetch_or,                \
+                                                                    \
              unsigned int *: shmem_uint_atomic_fetch_or,            \
              unsigned long *: shmem_ulong_atomic_fetch_or,          \
              unsigned long long *: shmem_ulonglong_atomic_fetch_or, \
@@ -3117,6 +3129,7 @@ extern "C"
 #define shmem_atomic_fetch_xor(selector, ...)                           \
     _Generic((selector),                                                \
              shmem_ctx_t: shmem_ctx_atomic_fetch_xor,                   \
+                                                                        \
              unsigned int *: shmem_uint_atomic_fetch_xor,               \
              unsigned long *: shmem_ulong_atomic_fetch_xor,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_xor,    \
@@ -3130,6 +3143,7 @@ extern "C"
 #define shmem_atomic_add(selector, ...)                         \
     _Generic((selector),                                        \
              shmem_ctx_t: shmem_ctx_atomic_add,                 \
+                                                                \
              int *: shmem_int_atomic_add,                       \
              long *: shmem_long_atomic_add,                     \
              long long *: shmem_longlong_atomic_add,            \
@@ -3152,6 +3166,7 @@ extern "C"
 #define shmem_atomic_inc(selector, ...)                         \
     _Generic((selector),                                        \
              shmem_ctx_t: shmem_ctx_atomic_inc,                 \
+                                                                \
              int *: shmem_int_atomic_inc,                       \
              long *: shmem_long_atomic_inc,                     \
              long long *: shmem_longlong_atomic_inc,            \
@@ -3174,6 +3189,7 @@ extern "C"
 #define shmem_atomic_and(selector, ...)                         \
     _Generic((selector),                                        \
              shmem_ctx_t: shmem_ctx_atomic_and,                 \
+                                                                \
              unsigned int *: shmem_uint_atomic_and,             \
              unsigned long *: shmem_ulong_atomic_and,           \
              unsigned long long *: shmem_ulonglong_atomic_and,  \
@@ -3187,6 +3203,7 @@ extern "C"
 #define shmem_atomic_or(selector, ...)                          \
     _Generic((selector),                                        \
              shmem_ctx_t: shmem_ctx_atomic_or,                  \
+                                                                \
              unsigned int *: shmem_uint_atomic_or,              \
              unsigned long *: shmem_ulong_atomic_or,            \
              unsigned long long *: shmem_ulonglong_atomic_or,   \
@@ -3200,6 +3217,7 @@ extern "C"
 #define shmem_atomic_xor(selector, ...)                         \
     _Generic((selector),                                        \
              shmem_ctx_t: shmem_ctx_atomic_xor,                 \
+                                                                \
              unsigned int *: shmem_uint_atomic_xor,             \
              unsigned long *: shmem_ulong_atomic_xor,           \
              unsigned long long *: shmem_ulonglong_atomic_xor,  \
@@ -3213,6 +3231,7 @@ extern "C"
 #define shmem_atomic_fetch(selector, ...)                           \
     _Generic((selector),                                            \
              shmem_ctx_t: shmem_ctx_atomic_fetch,                   \
+                                                                    \
              float *: shmem_float_atomic_fetch,                     \
              double *: shmem_double_atomic_fetch,                   \
              int *: shmem_int_atomic_fetch,                         \
@@ -3237,6 +3256,7 @@ extern "C"
 #define shmem_atomic_set(selector, ...)                         \
     _Generic((selector),                                        \
              shmem_ctx_t: shmem_ctx_atomic_set,                 \
+                                                                \
              float *: shmem_float_atomic_set,                   \
              double *: shmem_double_atomic_set,                 \
              int *: shmem_int_atomic_set,                       \
