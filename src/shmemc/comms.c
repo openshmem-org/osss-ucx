@@ -378,6 +378,8 @@ HELPER_CSWAP(64)
  * bitwise helpers
  */
 
+/* NB UCX currently doesn't have API support for these ops */
+
 #define HELPER_FETCH_BITWISE_OP(_op, _opname, _size)                    \
     inline static uint##_size##_t                                       \
     helper_atomic_fetch_##_opname##_size(uint64_t t,                    \
@@ -400,7 +402,7 @@ HELPER_CSWAP(64)
             s = ucp_get(ep, &rval_orig, sizeof(rval_orig), r_t, rkey);  \
             assert(s == UCS_OK);                                        \
                                                                         \
-            rval = rval_orig _op v;                                     \
+            rval = (rval_orig) _op (v);                                 \
                                                                         \
             s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
                                         r_t, rkey, &ret);               \
