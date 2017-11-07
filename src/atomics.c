@@ -105,31 +105,34 @@ SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
  * conditional swap
  */
 
-#define SHMEM_TYPE_CSWAP(_name, _type, _size)                           \
+#define SHMEM_CTX_TYPE_CSWAP(_name, _type, _size)                       \
     _type                                                               \
-    shmem_##_name##_atomic_compare_swap(_type *target,                  \
-                                        _type cond, _type value,        \
-                                        int pe)                         \
+    shmem_ctx_##_name##_atomic_compare_swap(shmem_ctx_t ctx,            \
+                                            _type *target,              \
+                                            _type cond, _type value,    \
+                                            int pe)                     \
     {                                                                   \
-        return shmemc_cswap##_size(target, cond, value, pe);            \
+        return shmemc_ctx_cswap##_size(ctx, target, cond, value, pe);   \
     }
 
-SHMEM_TYPE_CSWAP(int, int, 32)
+SHMEM_CTX_TYPE_CSWAP(int, int, 32)
 #if __WORDSIZE == 64
-SHMEM_TYPE_CSWAP(long, long, 64)
+SHMEM_CTX_TYPE_CSWAP(long, long, 64)
 #else
-SHMEM_TYPE_CSWAP(long, long, 32)
+SHMEM_CTX_TYPE_CSWAP(long, long, 32)
 #endif
-SHMEM_TYPE_CSWAP(longlong, long long, 64)
-SHMEM_TYPE_CSWAP(uint, unsigned int, 32)
-SHMEM_TYPE_CSWAP(ulong, unsigned long, 64)
-SHMEM_TYPE_CSWAP(ulonglong, unsigned long long, 64)
-SHMEM_TYPE_CSWAP(int32, int32_t, 32)
-SHMEM_TYPE_CSWAP(int64, int64_t, 64)
-SHMEM_TYPE_CSWAP(uint32, uint32_t, 32)
-SHMEM_TYPE_CSWAP(uint64, uint64_t, 64)
-SHMEM_TYPE_CSWAP(size, size_t, 64)
-SHMEM_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_CSWAP(longlong, long long, 64)
+SHMEM_CTX_TYPE_CSWAP(uint, unsigned int, 32)
+SHMEM_CTX_TYPE_CSWAP(ulong, unsigned long, 64)
+SHMEM_CTX_TYPE_CSWAP(ulonglong, unsigned long long, 64)
+SHMEM_CTX_TYPE_CSWAP(int32, int32_t, 32)
+SHMEM_CTX_TYPE_CSWAP(int64, int64_t, 64)
+SHMEM_CTX_TYPE_CSWAP(uint32, uint32_t, 32)
+SHMEM_CTX_TYPE_CSWAP(uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_CSWAP(size, size_t, 64)
+SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
+
+#undef SHMEM_CTX_TYPE_CSWAP
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_fetch_add = pshmem_int_atomic_fetch_add

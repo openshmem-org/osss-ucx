@@ -321,8 +321,8 @@ extern "C"
                                        size_t nelems, int pe);          \
     /* see \ref shmem_ctx_long_i##_opname() */                          \
     void shmem_ctx_##_name##_i##_opname(shmem_ctx_t ctx,                \
-                                        _type *target,                  \
-                                        const _type *source,            \
+                                        _type *dest,                    \
+                                        const _type *src,               \
                                         ptrdiff_t tst, ptrdiff_t sst,   \
                                         size_t nelems, int pe);         \
     /* see \ref shmem_ctx_long_##_opname##_nbi() */                     \
@@ -381,19 +381,35 @@ extern "C"
     API_DECL_CTX_PUTGET(get, size, size_t)
     API_DECL_CTX_PUTGET(get, ptrdiff, ptrdiff_t)
 
+#undef API_DECL_CTX_PUTGET
+
 #define API_DECL_PUTGET(_opname, _name, _type)                          \
-    /* see \ref shmem_long_##_opname() */                               \
-    void shmem_##_name##_##_opname(_type *dest, const _type *src,       \
-                                   size_t nelems, int pe);              \
-    /* see \ref shmem_long_i##_opname() */                              \
-    void shmem_##_name##_i##_opname(_type *target,                      \
-                                    const _type *source,                \
-                                    ptrdiff_t tst, ptrdiff_t sst,       \
-                                    size_t nelems, int pe);             \
-    /* see \ref shmem_long_##_opname##_nbi() */                         \
-    void shmem_##_name##_##_opname##_nbi(_type *dest,                   \
-                                         const _type *src,              \
-                                         size_t nelems, int pe);
+    inline static void                                                  \
+    shmem_##_name##_##_opname(_type *dest, const _type *src,            \
+                              size_t nelems, int pe)                    \
+    {                                                                   \
+        shmem_ctx_##_name##_##_opname(SHMEM_CTX_DEFAULT,                \
+                                      dest, src, nelems, pe);           \
+    }                                                                   \
+    inline static void                                                  \
+    shmem_##_name##_i##_opname(_type *dest,                             \
+                               const _type *src,                        \
+                               ptrdiff_t tst, ptrdiff_t sst,            \
+                               size_t nelems, int pe)                   \
+    {                                                                   \
+        shmem_ctx_##_name##_i##_opname(SHMEM_CTX_DEFAULT,               \
+                                       dest, src,                       \
+                                       tst, sst,                        \
+                                       nelems, pe);                     \
+    }                                                                   \
+    inline static void                                                  \
+    shmem_##_name##_##_opname##_nbi(_type *dest,                        \
+                                    const _type *src,                   \
+                                    size_t nelems, int pe)              \
+    {                                                                   \
+        shmem_ctx_##_name##_##_opname##_nbi(SHMEM_CTX_DEFAULT,          \
+                                            dest, src, nelems, pe);     \
+    }
 
     API_DECL_PUTGET(put, float, float)
     API_DECL_PUTGET(put, double, double)
@@ -448,16 +464,10 @@ extern "C"
 #undef API_DECL_PUTGET
 
 #define API_DECL_CTX_PUTGET_SIZE(_opname, _size)                        \
-    /* see \ref shmem_long_##_opname() */                               \
-    void shmem_##_opname##_size(void *dest, const void *src,            \
-                                size_t nelems, int pe);                 \
     /* see \ref shmem_ctx_long_##_opname() */                           \
     void shmem_ctx_##_opname##_size(shmem_ctx_t ctx,                    \
                                     void *dest, const void *src,        \
                                     size_t nelems, int pe);             \
-    /* see \ref shmem_long_##_opname##_nbi() */                         \
-    void shmem_##_opname##_size##_nbi(void *dest, const void *src,      \
-                                      size_t nelems, int pe);           \
     /* see \ref shmem_ctx_long_##_opname() */                           \
     void shmem_ctx_##_opname##_size##_nbi(shmem_ctx_t ctx,              \
                                           void *dest, const void *src,  \
@@ -477,17 +487,41 @@ extern "C"
 
 #undef API_DECL_CTX_PUTGET_SIZE
 
-#define API_DECL_CTX_PUTGET_MEM(_opname)                                    \
-    /* see \ref shmem_long_##_opname() */                               \
-    void shmem_##_opname##mem(void *dest, const void *src,              \
-                              size_t nelems, int pe);                   \
+#define API_DECL_PUTGET_SIZE(_opname, _size)                            \
+    inline static void                                                  \
+    shmem_##_opname##_size(void *dest, const void *src,                 \
+                           size_t nelems, int pe)                       \
+    {                                                                   \
+        shmem_ctx_##_opname##_size(SHMEM_CTX_DEFAULT,                   \
+                                   dest, src, nelems, pe);              \
+    }                                                                   \
+    inline static void                                                  \
+    shmem_##_opname##_size##_nbi(void *dest, const void *src,           \
+                                 size_t nelems, int pe)                 \
+    {                                                                   \
+        shmem_ctx_##_opname##_size##_nbi(SHMEM_CTX_DEFAULT,             \
+                                         dest, src, nelems, pe);        \
+    }
+
+    API_DECL_PUTGET_SIZE(put, 8)
+    API_DECL_PUTGET_SIZE(put, 16)
+    API_DECL_PUTGET_SIZE(put, 32)
+    API_DECL_PUTGET_SIZE(put, 64)
+    API_DECL_PUTGET_SIZE(put, 128)
+
+    API_DECL_PUTGET_SIZE(get, 8)
+    API_DECL_PUTGET_SIZE(get, 16)
+    API_DECL_PUTGET_SIZE(get, 32)
+    API_DECL_PUTGET_SIZE(get, 64)
+    API_DECL_PUTGET_SIZE(get, 128)
+
+#undef API_DECL_PUTGET_SIZE
+
+#define API_DECL_CTX_PUTGET_MEM(_opname)                                \
     /* see \ref shmem_ctx_long_##_opname() */                           \
     void shmem_ctx_##_opname##mem(shmem_ctx_t ctx,                      \
                                   void *dest, const void *src,          \
                                   size_t nelems, int pe);               \
-    /* see \ref shmem_long_##_opname##_nbi() */                         \
-    void shmem_##_opname##mem##_nbi(void *dest, const void *src,        \
-                                    size_t nelems, int pe);             \
     /* see \ref shmem_ctx_long_##_opname() */                           \
     void shmem_ctx_##_opname##mem##_nbi(shmem_ctx_t ctx,                \
                                         void *dest, const void *src,    \
@@ -496,11 +530,68 @@ extern "C"
     API_DECL_CTX_PUTGET_MEM(put)
     API_DECL_CTX_PUTGET_MEM(get)
 
-#define API_DECL_P(_name, _type)                                    \
-        /* see \ref shmem_long_p() */                               \
-        void shmem_##_name##_p(_type *dest, _type src, int pe);     \
-        /* see \ref shmem_ctx_long_p() */                           \
-        void shmem_ctx_##_name##_p(_type *dest, _type src, int pe);
+#undef API_DECL_CTX_PUTGET_MEM
+
+#define API_DECL_PUTGET_MEM(_opname)                                    \
+    inline static void                                                  \
+    shmem_##_opname##mem(void *dest, const void *src,                   \
+                         size_t nelems, int pe)                         \
+    {                                                                   \
+        shmem_ctx_##_opname##mem(SHMEM_CTX_DEFAULT,                     \
+                                 dest, src, nelems, pe);                \
+    }                                                                   \
+    inline static void                                                  \
+    shmem_##_opname##mem_nbi(void *dest, const void *src,               \
+                             size_t nelems, int pe)                     \
+    {                                                                   \
+        shmem_ctx_##_opname##mem_nbi(SHMEM_CTX_DEFAULT,                 \
+                                     dest, src, nelems, pe);            \
+    }
+
+    API_DECL_PUTGET_MEM(put)
+    API_DECL_PUTGET_MEM(get)
+
+#undef API_DECL_PUTGET_MEM
+
+#define API_CTX_DECL_P(_name, _type)                                    \
+    /* see \ref shmem_ctx_long_p() */                                   \
+    void shmem_ctx_##_name##_p(shmem_ctx_t ctx,                         \
+                               _type *dest, _type src, int pe);
+
+    API_CTX_DECL_P(float, float)
+    API_CTX_DECL_P(double, double)
+    API_CTX_DECL_P(longdouble, long double)
+    API_CTX_DECL_P(schar, signed char)
+    API_CTX_DECL_P(char, char)
+    API_CTX_DECL_P(short, short)
+    API_CTX_DECL_P(int, int)
+    API_CTX_DECL_P(long, long)
+    API_CTX_DECL_P(longlong, long long)
+    API_CTX_DECL_P(uchar, unsigned char)
+    API_CTX_DECL_P(ushort, unsigned short)
+    API_CTX_DECL_P(uint, unsigned int)
+    API_CTX_DECL_P(ulong, unsigned long)
+    API_CTX_DECL_P(ulonglong, unsigned long long)
+    API_CTX_DECL_P(int8, int8_t)
+    API_CTX_DECL_P(int16, int16_t)
+    API_CTX_DECL_P(int32, int32_t)
+    API_CTX_DECL_P(int64, int64_t)
+    API_CTX_DECL_P(uint8, uint8_t)
+    API_CTX_DECL_P(uint16, uint16_t)
+    API_CTX_DECL_P(uint32, uint32_t)
+    API_CTX_DECL_P(uint64, uint64_t)
+    API_CTX_DECL_P(size, size_t)
+    API_CTX_DECL_P(ptrdiff, ptrdiff_t)
+
+#undef API_CTX_DECL_P
+
+#define API_DECL_P(_name, _type)                                        \
+    inline static void                                                  \
+    shmem_##_name##_p(_type *dest, _type src, int pe)                   \
+    {                                                                   \
+        shmem_ctx_##_name##_p(SHMEM_CTX_DEFAULT,                        \
+                              dest, src, pe);                           \
+    }
 
     API_DECL_P(float, float)
     API_DECL_P(double, double)
@@ -529,11 +620,45 @@ extern "C"
 
 #undef API_DECL_P
 
-#define API_DECL_G(_name, _type)                            \
-    /* see \ref shmem_long_g() */                           \
-    _type shmem_##_name##_g(const _type *dest, int pe);     \
+#define API_CTX_DECL_G(_name, _type)                        \
     /* see \ref shmem_ctx_long_g() */                       \
-    _type shmem_ctx_##_name##_g(const _type *dest, int pe);
+    _type shmem_ctx_##_name##_g(shmem_ctx_t ctx,            \
+                                const _type *dest, int pe);
+
+    API_CTX_DECL_G(float, float)
+    API_CTX_DECL_G(double, double)
+    API_CTX_DECL_G(longdouble, long double)
+    API_CTX_DECL_G(schar, signed char)
+    API_CTX_DECL_G(char, char)
+    API_CTX_DECL_G(short, short)
+    API_CTX_DECL_G(int, int)
+    API_CTX_DECL_G(long, long)
+    API_CTX_DECL_G(longlong, long long)
+    API_CTX_DECL_G(uchar, unsigned char)
+    API_CTX_DECL_G(ushort, unsigned short)
+    API_CTX_DECL_G(uint, unsigned int)
+    API_CTX_DECL_G(ulong, unsigned long)
+    API_CTX_DECL_G(ulonglong, unsigned long long)
+    API_CTX_DECL_G(int8, int8_t)
+    API_CTX_DECL_G(int16, int16_t)
+    API_CTX_DECL_G(int32, int32_t)
+    API_CTX_DECL_G(int64, int64_t)
+    API_CTX_DECL_G(uint8, uint8_t)
+    API_CTX_DECL_G(uint16, uint16_t)
+    API_CTX_DECL_G(uint32, uint32_t)
+    API_CTX_DECL_G(uint64, uint64_t)
+    API_CTX_DECL_G(size, size_t)
+    API_CTX_DECL_G(ptrdiff, ptrdiff_t)
+
+#undef API_CTX_DECL_G
+
+#define API_DECL_G(_name, _type)                            \
+    inline static _type                                     \
+    shmem_##_name##_g(_type *dest, int pe)                  \
+    {                                                       \
+        return shmem_ctx_##_name##_g(SHMEM_CTX_DEFAULT,     \
+                                     dest, pe);             \
+    }
 
     API_DECL_G(float, float)
     API_DECL_G(double, double)
@@ -561,7 +686,6 @@ extern "C"
     API_DECL_G(ptrdiff, ptrdiff_t)
 
 #undef API_DECL_G
-
 
     /*
      * barriers & syncs
@@ -981,7 +1105,7 @@ extern "C"
      */
     void *shmem_align(size_t alignment, size_t size) _WUR;
 
-#define API_DECL_TEST_AND_WAIT_UNTIL(_opname, _name, _type)                   \
+#define API_DECL_TEST_AND_WAIT_UNTIL(_opname, _name, _type)             \
     /* see \ref shmem_##_name##_opname() */                             \
     void shmem_##_name##_##_opname(_type *ivar,                         \
                                    shmem_cmp_t cmp,                     \
@@ -1108,7 +1232,8 @@ extern "C"
     /* see \ref shmem_##_name##_wait() */                               \
     void shmem_##_name##_##wait(_type *ivar,                            \
                                 _type cmp_value)                        \
-        _DEPRECATED_BY(shmem_##_name##_wait_until);
+        _DEPRECATED_BY(shmem_##_name##_wait_until with compare          \
+                       operator SHMEM_CMP_NE);
 
     API_DECL_WAIT(longdouble, long double)
     API_DECL_WAIT(schar, signed char)
@@ -1159,32 +1284,35 @@ extern "C"
      * @return None.
      *
      */
-#define API_DECL_SWAP(_name, _type)                                     \
-    /* see \ref shmem_long_atomic_swap() */                             \
-    _type shmem_##_name##_atomic_swap(_type *target,                    \
-                                      _type value,                      \
-                                      int pe) _WUR;                     \
+#define API_CTX_DECL_SWAP(_name, _type)                                 \
     /* see \ref shmem_ctx_long_atomic_swap() */                         \
     _type shmem_ctx_##_name##_atomic_swap(shmem_ctx_t ctx,              \
                                           _type *target,                \
                                           _type value,                  \
-                                          int pe) _WUR;
+                                          int pe) _WUR;                 \
+    /* see \ref shmem_long_atomic_swap() */                             \
+    inline static _type                                                 \
+    shmem_##_name##_atomic_swap(_type *target, _type value, int pe)     \
+    {                                                                   \
+        return shmem_ctx_##_name##_atomic_swap(SHMEM_CTX_DEFAULT,       \
+                                               target, value, pe);      \
+    }
 
-    API_DECL_SWAP(float, float)
-    API_DECL_SWAP(double, double)
-    API_DECL_SWAP(int, int)
-    API_DECL_SWAP(long, long)
-    API_DECL_SWAP(longlong, long long)
-    API_DECL_SWAP(uint, unsigned int)
-    API_DECL_SWAP(ulong, unsigned long)
-    API_DECL_SWAP(ulonglong, unsigned long long)
-    API_DECL_SWAP(int32, int32_t)
-    API_DECL_SWAP(int64, int64_t)
-    API_DECL_SWAP(uint32, uint32_t)
-    API_DECL_SWAP(size, size_t)
-    API_DECL_SWAP(ptrdiff, ptrdiff_t)
+    API_CTX_DECL_SWAP(float, float)
+    API_CTX_DECL_SWAP(double, double)
+    API_CTX_DECL_SWAP(int, int)
+    API_CTX_DECL_SWAP(long, long)
+    API_CTX_DECL_SWAP(longlong, long long)
+    API_CTX_DECL_SWAP(uint, unsigned int)
+    API_CTX_DECL_SWAP(ulong, unsigned long)
+    API_CTX_DECL_SWAP(ulonglong, unsigned long long)
+    API_CTX_DECL_SWAP(int32, int32_t)
+    API_CTX_DECL_SWAP(int64, int64_t)
+    API_CTX_DECL_SWAP(uint32, uint32_t)
+    API_CTX_DECL_SWAP(size, size_t)
+    API_CTX_DECL_SWAP(ptrdiff, ptrdiff_t)
 
-#undef API_DECL_SWAP
+#undef API_CTX_DECL_SWAP
 
     long shmem_long_swap(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_swap) _WUR;
@@ -1223,31 +1351,38 @@ extern "C"
      * @return None.
      *
      */
-#define API_DECL_CSWAP(_name, _type)                                    \
-    /* see \ref shmem_long_atomic_compare_swap() */                     \
-    _type shmem_##_name##_atomic_compare_swap(_type *target,            \
-                                              _type cond,_type value,   \
-                                              int pe) _WUR;             \
+#define API_CTX_DECL_CSWAP(_name, _type)                                \
     /* see \ref shmem_ctx_long_atomic_compare_swap() */                 \
     _type shmem_ctx_##_name##_atomic_compare_swap(shmem_ctx_t ctx,      \
                                                   _type *target,        \
                                                   _type cond, _type value, \
-                                                  int pe) _WUR;
+                                                  int pe) _WUR;         \
+    /* see \ref shmem_long_atomic_compare_swap() */                     \
+    inline static _type                                                 \
+    shmem_##_name##_atomic_compare_swap(_type *target,                  \
+                                        _type cond,_type value,         \
+                                        int pe)                         \
+    {                                                                   \
+        return shmem_ctx_##_name##_atomic_compare_swap(SHMEM_CTX_DEFAULT, \
+                                                       target,          \
+                                                       cond, value,     \
+                                                       pe);             \
+    }
 
     /* no reals */
-    API_DECL_CSWAP(int, int)
-    API_DECL_CSWAP(long, long)
-    API_DECL_CSWAP(longlong, long long)
-    API_DECL_CSWAP(uint, unsigned int)
-    API_DECL_CSWAP(ulong, unsigned long)
-    API_DECL_CSWAP(ulonglong, unsigned long long)
-    API_DECL_CSWAP(int32, int32_t)
-    API_DECL_CSWAP(int64, int64_t)
-    API_DECL_CSWAP(uint32, uint32_t)
-    API_DECL_CSWAP(size, size_t)
-    API_DECL_CSWAP(ptrdiff, ptrdiff_t)
+    API_CTX_DECL_CSWAP(int, int)
+    API_CTX_DECL_CSWAP(long, long)
+    API_CTX_DECL_CSWAP(longlong, long long)
+    API_CTX_DECL_CSWAP(uint, unsigned int)
+    API_CTX_DECL_CSWAP(ulong, unsigned long)
+    API_CTX_DECL_CSWAP(ulonglong, unsigned long long)
+    API_CTX_DECL_CSWAP(int32, int32_t)
+    API_CTX_DECL_CSWAP(int64, int64_t)
+    API_CTX_DECL_CSWAP(uint32, uint32_t)
+    API_CTX_DECL_CSWAP(size, size_t)
+    API_CTX_DECL_CSWAP(ptrdiff, ptrdiff_t)
 
-#undef API_DECL_SWAP
+#undef API_CTX_DECL_SWAP
 
     long shmem_long_cswap(long *target,
                           long cond, long value,

@@ -79,54 +79,58 @@ extern void shmem_complexd_get(COMPLEXIFY(double) *dest,
 #define shmem_iget128 pshmem_iget128
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_TYPED_IGET(_name, _type)                                  \
+#define SHMEM_CTX_TYPED_IGET(_name, _type)                              \
     void                                                                \
-    shmem_##_name##_iget(_type *target, const _type *source,            \
-                         ptrdiff_t tst, ptrdiff_t sst,                  \
-                         size_t nelems, int pe)                         \
+    shmem_ctx_##_name##_iget(shmem_ctx_t ctx,                           \
+                             _type *target, const _type *source,        \
+                             ptrdiff_t tst, ptrdiff_t sst,              \
+                             size_t nelems, int pe)                     \
     {                                                                   \
         const size_t the_size = sizeof(_type);                          \
         size_t ti = 0, si = 0;                                          \
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_get(target + ti, source + si, the_size, pe);         \
+            shmemc_ctx_get(ctx, target + ti, source + si, the_size, pe); \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
     }
 
-SHMEM_TYPED_IGET(float, float)
-SHMEM_TYPED_IGET(double, double)
-SHMEM_TYPED_IGET(longdouble, long double)
-SHMEM_TYPED_IGET(char, char)
-SHMEM_TYPED_IGET(schar, signed char)
-SHMEM_TYPED_IGET(short, short)
-SHMEM_TYPED_IGET(int, int)
-SHMEM_TYPED_IGET(long, long)
-SHMEM_TYPED_IGET(longlong, long long)
-SHMEM_TYPED_IGET(uchar, unsigned char)
-SHMEM_TYPED_IGET(ushort, unsigned short)
-SHMEM_TYPED_IGET(uint, unsigned int)
-SHMEM_TYPED_IGET(ulong, unsigned long)
-SHMEM_TYPED_IGET(ulonglong, unsigned long long)
-SHMEM_TYPED_IGET(int8, int8_t)
-SHMEM_TYPED_IGET(int16, int16_t)
-SHMEM_TYPED_IGET(int32, int32_t)
-SHMEM_TYPED_IGET(int64, int64_t)
-SHMEM_TYPED_IGET(uint8, uint8_t)
-SHMEM_TYPED_IGET(uint16, uint16_t)
-SHMEM_TYPED_IGET(uint32, uint32_t)
-SHMEM_TYPED_IGET(uint64, uint64_t)
-SHMEM_TYPED_IGET(size, size_t)
-SHMEM_TYPED_IGET(ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_IGET(float, float)
+SHMEM_CTX_TYPED_IGET(double, double)
+SHMEM_CTX_TYPED_IGET(longdouble, long double)
+SHMEM_CTX_TYPED_IGET(char, char)
+SHMEM_CTX_TYPED_IGET(schar, signed char)
+SHMEM_CTX_TYPED_IGET(short, short)
+SHMEM_CTX_TYPED_IGET(int, int)
+SHMEM_CTX_TYPED_IGET(long, long)
+SHMEM_CTX_TYPED_IGET(longlong, long long)
+SHMEM_CTX_TYPED_IGET(uchar, unsigned char)
+SHMEM_CTX_TYPED_IGET(ushort, unsigned short)
+SHMEM_CTX_TYPED_IGET(uint, unsigned int)
+SHMEM_CTX_TYPED_IGET(ulong, unsigned long)
+SHMEM_CTX_TYPED_IGET(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_IGET(int8, int8_t)
+SHMEM_CTX_TYPED_IGET(int16, int16_t)
+SHMEM_CTX_TYPED_IGET(int32, int32_t)
+SHMEM_CTX_TYPED_IGET(int64, int64_t)
+SHMEM_CTX_TYPED_IGET(uint8, uint8_t)
+SHMEM_CTX_TYPED_IGET(uint16, uint16_t)
+SHMEM_CTX_TYPED_IGET(uint32, uint32_t)
+SHMEM_CTX_TYPED_IGET(uint64, uint64_t)
+SHMEM_CTX_TYPED_IGET(size, size_t)
+SHMEM_CTX_TYPED_IGET(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_TYPED_IGET(complexf, COMPLEXIFY(float))
-SHMEM_TYPED_IGET(complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_IGET(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_IGET(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_IGET(_size)                                         \
+#undef SHMEM_CTX_TYPED_IGET
+
+#define SHMEM_CTX_SIZED_IGET(_size)                                     \
     void                                                                \
-    shmem_iget##_size(void *target, const void *source,                 \
+    shmem_ctx_iget##_size(shmem_ctx_t ctx,                              \
+                      void *target, const void *source,                 \
                       ptrdiff_t tst, ptrdiff_t sst,                     \
                       size_t nelems, int pe)                            \
     {                                                                   \
@@ -134,14 +138,16 @@ SHMEM_TYPED_IGET(complexd, COMPLEXIFY(double))
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_get(target + ti, source + si, _size, pe);            \
+            shmemc_ctx_get(ctx, target + ti, source + si, _size, pe);   \
             ti += tst;                                                  \
             si += sst;                                                  \
         }                                                               \
     }
 
-SHMEM_SIZED_IGET(8)
-SHMEM_SIZED_IGET(16)
-SHMEM_SIZED_IGET(32)
-SHMEM_SIZED_IGET(64)
-SHMEM_SIZED_IGET(128)
+SHMEM_CTX_SIZED_IGET(8)
+SHMEM_CTX_SIZED_IGET(16)
+SHMEM_CTX_SIZED_IGET(32)
+SHMEM_CTX_SIZED_IGET(64)
+SHMEM_CTX_SIZED_IGET(128)
+
+#undef SHMEM_CTX_SIZED_IGET

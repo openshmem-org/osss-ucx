@@ -119,26 +119,30 @@ SHMEM_CTX_TYPED_PUT(uint64, uint64_t)
 SHMEM_CTX_TYPED_PUT(size, size_t)
 SHMEM_CTX_TYPED_PUT(ptrdiff, ptrdiff_t)
 
-#define SHMEM_SIZED_PUT(_size)                                          \
+#define SHMEM_CTX_SIZED_PUT(_size)                                      \
     void                                                                \
-    shmem_put##_size(void *dest, const void *src,                       \
-                     size_t nelems, int pe)                             \
+    shmem_ctx_put##_size(shmem_ctx_t ctx,                               \
+                         void *dest, const void *src,                   \
+                         size_t nelems, int pe)                         \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
-        shmemc_put(dest, src, sized_nelems, pe);                        \
+        shmemc_ctx_put(ctx, dest, src, sized_nelems, pe);               \
     }
 
-SHMEM_SIZED_PUT(8)
-SHMEM_SIZED_PUT(16)
-SHMEM_SIZED_PUT(32)
-SHMEM_SIZED_PUT(64)
-SHMEM_SIZED_PUT(128)
+SHMEM_CTX_SIZED_PUT(8)
+SHMEM_CTX_SIZED_PUT(16)
+SHMEM_CTX_SIZED_PUT(32)
+SHMEM_CTX_SIZED_PUT(64)
+SHMEM_CTX_SIZED_PUT(128)
+
+#undef SHMEM_CTX_SIZED_PUT
 
 void
-shmem_putmem(void *dest, const void *src,
-             size_t nelems, int pe)
+shmem_ctx_putmem(shmem_ctx_t ctx,
+                 void *dest, const void *src,
+                 size_t nelems, int pe)
 {
-    shmemc_put(dest, src, nelems, pe);
+    shmemc_ctx_put(ctx, dest, src, nelems, pe);
 }
 
 #ifdef ENABLE_PSHMEM
@@ -193,37 +197,40 @@ shmem_putmem(void *dest, const void *src,
 #define shmem_complexd_p pshmem_complexd_p
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_TYPED_P_WRAPPER(_name, _type)                          \
+#define SHMEM_CTX_TYPED_P(_name, _type)                              \
     void                                                             \
-    shmem_##_name##_p(_type *addr, _type val, int pe)                \
+    shmem_ctx_##_name##_p(shmem_ctx_t ctx,                           \
+                          _type *addr, _type val, int pe)            \
     {                                                                \
-        shmemc_put(addr, &val, sizeof(val), pe);                     \
+        shmemc_ctx_put(ctx, addr, &val, sizeof(val), pe);            \
     }
 
-SHMEM_TYPED_P_WRAPPER(float, float)
-SHMEM_TYPED_P_WRAPPER(double, double)
-SHMEM_TYPED_P_WRAPPER(longdouble, long double)
-SHMEM_TYPED_P_WRAPPER(char, char)
-SHMEM_TYPED_P_WRAPPER(schar, signed char)
-SHMEM_TYPED_P_WRAPPER(short, short)
-SHMEM_TYPED_P_WRAPPER(int, int)
-SHMEM_TYPED_P_WRAPPER(long, long)
-SHMEM_TYPED_P_WRAPPER(longlong, long long)
-SHMEM_TYPED_P_WRAPPER(uchar, unsigned char)
-SHMEM_TYPED_P_WRAPPER(ushort, unsigned short)
-SHMEM_TYPED_P_WRAPPER(uint, unsigned int)
-SHMEM_TYPED_P_WRAPPER(ulong, unsigned long)
-SHMEM_TYPED_P_WRAPPER(ulonglong, unsigned long long)
-SHMEM_TYPED_P_WRAPPER(int8, int8_t)
-SHMEM_TYPED_P_WRAPPER(int16, int16_t)
-SHMEM_TYPED_P_WRAPPER(int32, int32_t)
-SHMEM_TYPED_P_WRAPPER(int64, int64_t)
-SHMEM_TYPED_P_WRAPPER(uint8, uint8_t)
-SHMEM_TYPED_P_WRAPPER(uint16, uint16_t)
-SHMEM_TYPED_P_WRAPPER(uint32, uint32_t)
-SHMEM_TYPED_P_WRAPPER(uint64, uint64_t)
-SHMEM_TYPED_P_WRAPPER(size, size_t)
-SHMEM_TYPED_P_WRAPPER(ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_P(float, float)
+SHMEM_CTX_TYPED_P(double, double)
+SHMEM_CTX_TYPED_P(longdouble, long double)
+SHMEM_CTX_TYPED_P(char, char)
+SHMEM_CTX_TYPED_P(schar, signed char)
+SHMEM_CTX_TYPED_P(short, short)
+SHMEM_CTX_TYPED_P(int, int)
+SHMEM_CTX_TYPED_P(long, long)
+SHMEM_CTX_TYPED_P(longlong, long long)
+SHMEM_CTX_TYPED_P(uchar, unsigned char)
+SHMEM_CTX_TYPED_P(ushort, unsigned short)
+SHMEM_CTX_TYPED_P(uint, unsigned int)
+SHMEM_CTX_TYPED_P(ulong, unsigned long)
+SHMEM_CTX_TYPED_P(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_P(int8, int8_t)
+SHMEM_CTX_TYPED_P(int16, int16_t)
+SHMEM_CTX_TYPED_P(int32, int32_t)
+SHMEM_CTX_TYPED_P(int64, int64_t)
+SHMEM_CTX_TYPED_P(uint8, uint8_t)
+SHMEM_CTX_TYPED_P(uint16, uint16_t)
+SHMEM_CTX_TYPED_P(uint32, uint32_t)
+SHMEM_CTX_TYPED_P(uint64, uint64_t)
+SHMEM_CTX_TYPED_P(size, size_t)
+SHMEM_CTX_TYPED_P(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_TYPED_P_WRAPPER(complexf, COMPLEXIFY(float))
-SHMEM_TYPED_P_WRAPPER(complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_P(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_P(complexd, COMPLEXIFY(double))
+
+#undef SHMEM_CTX_TYPED_P
