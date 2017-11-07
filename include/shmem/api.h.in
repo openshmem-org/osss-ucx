@@ -3416,7 +3416,7 @@ extern "C"
 
     /* see \ref shmem_long_wait() */
 #define shmem_wait(ivar, cmp_value)                         \
-    _Generic(*(ivar),                                       \
+    _Generic((ivar),                                        \
              short *: shmem_short_wait,                     \
              int *: shmem_int_wait,                         \
              long *: shmem_long_wait,                       \
@@ -3434,11 +3434,11 @@ extern "C"
              uint64_t *: shmem_uint64_wait,                 \
              size_t *: shmem_size_wait,                     \
              ptrdiff_t *: shmem_ptrdiff_wait                \
-             )(selector, __VA_ARGS__)
+             )(ivar, cmp_value)
 
     /* see \ref shmem_long_wait_until() */
 #define shmem_wait_until(ivar, cmp, cmp_value)                  \
-    _Generic(*(ivar),                                           \
+    _Generic((ivar),                                            \
              short *: shmem_short_wait_until,                   \
              int *: shmem_int_wait_until,                       \
              long *: shmem_long_wait_until,                     \
@@ -3456,11 +3456,11 @@ extern "C"
              uint64_t *: shmem_uint64_wait_until,               \
              size_t *: shmem_size_wait_until,                   \
              ptrdiff_t *: shmem_ptrdiff_wait_until              \
-             )(selector, __VA_ARGS__)
+             )(ivar, cmp, cmp_value)
 
     /* see \ref shmem_long_test() */
 #define shmem_test(ivar, cmp, cmp_value)                    \
-    _Generic(*(ivar),                                       \
+    _Generic((ivar),                                        \
              short *: shmem_short_test,                     \
              int *: shmem_int_test,                         \
              long *: shmem_long_test,                       \
@@ -3478,7 +3478,7 @@ extern "C"
              uint64_t *: shmem_uint64_test,                 \
              size_t *: shmem_size_test,                     \
              ptrdiff_t *: shmem_ptrdiff_test                \
-             )(selector, __VA_ARGS__)
+             )(ivar, cmp, cmp_value)
 
 #endif   /* __STDC_VERSION__ >= 201112L test */
 #endif /* __STDC_VERSION__ defined test */
