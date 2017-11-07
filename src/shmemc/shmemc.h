@@ -11,40 +11,43 @@
 #include <unistd.h>
 
 /**
- * API
+ * -- API -------------------------------------------------------------
  *
  **/
 
+/*
+ * setup and query
+ */
+
 void shmemc_init(void);
 void shmemc_finalize(void);
+void shmemc_trigger_globalexit(int status);
 
 char *shmemc_getenv(const char *name);
 
 int shmemc_my_pe(void);
 int shmemc_n_pes(void);
 
+void *shmemc_ptr(const void *target, int pe);
+int shmemc_pe_accessible(int pe);
+int shmemc_addr_accessible(const void *addr, int pe);
+
+/*
+ * -- Per-context routines --------------------------------------------
+ */
+
 void shmemc_ctx_fence(shmem_ctx_t ctx);
 void shmemc_ctx_quiet(shmem_ctx_t ctx);
-#define shmemc_fence() shmemc_ctx_fence(SHMEM_CTX_DEFAULT)
-#define shmemc_quiet() shmemc_ctx_quiet(SHMEM_CTX_DEFAULT)
-
-void *shmemc_ptr(const void *target, int pe);
 
 void shmemc_ctx_put(shmem_ctx_t ctx,
                     void *dest, const void *src, size_t nbytes, int pe);
-#define shmemc_put(...) shmemc_ctx_put(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 void shmemc_ctx_get(shmem_ctx_t ctx,
                     void *dest, const void *src, size_t nbytes, int pe);
-#define shmemc_get(...) shmemc_ctx_get(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 void shmemc_ctx_put_nbi(shmem_ctx_t ctx,
                         void *dest, const void *src, size_t nbytes, int pe);
-#define shmemc_put_nbi(...) shmemc_ctx_put_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                         void *dest, const void *src, size_t nbytes, int pe);
-#define shmemc_get_nbi(...) shmemc_ctx_get_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 /*
  * swappity
@@ -57,9 +60,6 @@ void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
 SHMEMC_CTX_DECL_SWAP(32)
 SHMEMC_CTX_DECL_SWAP(64)
 
-#define shmemc_swap32(...) shmemc_ctx_swap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_swap64(...) shmemc_ctx_swap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 #define SHMEMC_CTX_DECL_CSWAP(_size)                                \
     uint64_t shmemc_ctx_cswap##_size(shmem_ctx_t ctx,               \
                                      void *target,                  \
@@ -69,46 +69,48 @@ SHMEMC_CTX_DECL_SWAP(64)
 SHMEMC_CTX_DECL_CSWAP(32)
 SHMEMC_CTX_DECL_CSWAP(64)
 
-#define shmemc_cswap32(...) shmemc_ctx_cswap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_cswap64(...) shmemc_ctx_cswap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 /*
  * adds and incs
  */
 
-#define SHMEMC_DECL_ADD(_size)                                      \
-    void shmemc_add##_size(void *target, uint64_t value, int pe);
+#define SHMEMC_CTX_DECL_ADD(_size)                                      \
+    void shmemc_ctx_add##_size(shmem_ctx_t ctx,                         \
+                               void *target, uint64_t value, int pe);
 
-#define SHMEMC_DECL_INC(_size)                      \
-    void shmemc_inc##_size(void *target, int pe);
+#define SHMEMC_CTX_DECL_INC(_size)                      \
+    void shmemc_ctx_inc##_size(shmem_ctx_t ctx,         \
+                               void *target, int pe);
 
-SHMEMC_DECL_ADD(32)
-SHMEMC_DECL_ADD(64)
+SHMEMC_CTX_DECL_ADD(32)
+SHMEMC_CTX_DECL_ADD(64)
 
-SHMEMC_DECL_INC(32)
-SHMEMC_DECL_INC(64)
+SHMEMC_CTX_DECL_INC(32)
+SHMEMC_CTX_DECL_INC(64)
 
-#define SHMEMC_DECL_FETCH_ADD(_size)                                    \
-    uint64_t shmemc_fadd##_size(void *target, uint64_t value, int pe);
+#define SHMEMC_CTX_DECL_FETCH_ADD(_size)                                \
+    uint64_t shmemc_ctx_fadd##_size(shmem_ctx_t ctx,                    \
+                                    void *target, uint64_t value, int pe);
 
-#define SHMEMC_DECL_FETCH_INC(_size)                    \
-    uint64_t shmemc_finc##_size(void *target, int pe);
+#define SHMEMC_CTX_DECL_FETCH_INC(_size)                    \
+    uint64_t shmemc_ctx_finc##_size(shmem_ctx_t ctx,        \
+                                    void *target, int pe);
 
-SHMEMC_DECL_FETCH_ADD(32)
-SHMEMC_DECL_FETCH_ADD(64)
+SHMEMC_CTX_DECL_FETCH_ADD(32)
+SHMEMC_CTX_DECL_FETCH_ADD(64)
 
-SHMEMC_DECL_FETCH_INC(32)
-SHMEMC_DECL_FETCH_INC(64)
+SHMEMC_CTX_DECL_FETCH_INC(32)
+SHMEMC_CTX_DECL_FETCH_INC(64)
 
 /*
  * fetch and set
  */
 
-#define SHMEMC_DECL_FETCH(_size)                        \
-    uint64_t shmemc_fetch##_size(void *target, int pe);
+#define SHMEMC_CTX_DECL_FETCH(_size)                        \
+    uint64_t shmemc_ctx_fetch##_size(shmem_ctx_t ctx,       \
+                                     void *target, int pe);
 
-SHMEMC_DECL_FETCH(32)
-SHMEMC_DECL_FETCH(64)
+SHMEMC_CTX_DECL_FETCH(32)
+SHMEMC_CTX_DECL_FETCH(64)
 
 #define SHMEMC_CTX_DECL_SET(_size)                                      \
     void shmemc_ctx_set##_size(shmem_ctx_t ctx,                         \
@@ -117,40 +119,128 @@ SHMEMC_DECL_FETCH(64)
 SHMEMC_CTX_DECL_SET(32)
 SHMEMC_CTX_DECL_SET(64)
 
-#define shmemc_set32(...) shmemc_ctx_set32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_set64(...) shmemc_ctx_set64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 /*
  * bitwise
  */
 
-#define SHMEMC_DECL_BITWISE(_op, _size)                         \
-    void shmemc_##_op##_size(void *target, uint64_t value, int pe);
+#define SHMEMC_CTX_DECL_BITWISE(_op, _size)                             \
+    void shmemc_ctx_##_op##_size(shmem_ctx_t ctx,                       \
+                                 void *target, uint64_t value, int pe);
 
-SHMEMC_DECL_BITWISE(and, 32)
-SHMEMC_DECL_BITWISE(and, 64)
+SHMEMC_CTX_DECL_BITWISE(and, 32)
+SHMEMC_CTX_DECL_BITWISE(and, 64)
 
-SHMEMC_DECL_BITWISE(or, 32)
-SHMEMC_DECL_BITWISE(or, 64)
+SHMEMC_CTX_DECL_BITWISE(or, 32)
+SHMEMC_CTX_DECL_BITWISE(or, 64)
 
-SHMEMC_DECL_BITWISE(xor, 32)
-SHMEMC_DECL_BITWISE(xor, 64)
+SHMEMC_CTX_DECL_BITWISE(xor, 32)
+SHMEMC_CTX_DECL_BITWISE(xor, 64)
 
 /*
  * fetch-bitwise
  */
 
-#define SHMEMC_DECL_FETCH_BITWISE(_op, _size)                           \
-    uint64_t shmemc_fetch_##_op##_size(void *target, uint64_t value, int pe);
+#define SHMEMC_CTX_DECL_FETCH_BITWISE(_op, _size)                       \
+    uint64_t shmemc_ctx_fetch_##_op##_size(shmem_ctx_t ctx,             \
+                                           void *target, uint64_t value, int pe);
 
-SHMEMC_DECL_FETCH_BITWISE(and, 32)
-SHMEMC_DECL_FETCH_BITWISE(and, 64)
+SHMEMC_CTX_DECL_FETCH_BITWISE(and, 32)
+SHMEMC_CTX_DECL_FETCH_BITWISE(and, 64)
 
-SHMEMC_DECL_FETCH_BITWISE(or, 32)
-SHMEMC_DECL_FETCH_BITWISE(or, 64)
+SHMEMC_CTX_DECL_FETCH_BITWISE(or, 32)
+SHMEMC_CTX_DECL_FETCH_BITWISE(or, 64)
 
-SHMEMC_DECL_FETCH_BITWISE(xor, 32)
-SHMEMC_DECL_FETCH_BITWISE(xor, 64)
+SHMEMC_CTX_DECL_FETCH_BITWISE(xor, 32)
+SHMEMC_CTX_DECL_FETCH_BITWISE(xor, 64)
+
+/*
+ * Routines that now operate on default context
+ */
+
+#define shmemc_fence()                          \
+    shmemc_ctx_fence(SHMEM_CTX_DEFAULT)
+#define shmemc_quiet()                          \
+    shmemc_ctx_quiet(SHMEM_CTX_DEFAULT)
+
+#define shmemc_put(...)                             \
+    shmemc_ctx_put(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_get(...)                             \
+    shmemc_ctx_get(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_put_nbi(...)                             \
+    shmemc_ctx_put_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_get_nbi(...)                             \
+    shmemc_ctx_get_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_swap32(...)                              \
+    shmemc_ctx_swap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_swap64(...)                              \
+    shmemc_ctx_swap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_cswap32(...)                             \
+    shmemc_ctx_cswap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_cswap64(...)                             \
+    shmemc_ctx_cswap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_add32(...)                               \
+    shmemc_ctx_add32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_add64(...)                               \
+    shmemc_ctx_add64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_inc32(...)                               \
+    shmemc_ctx_inc32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_inc64(...)                               \
+    shmemc_ctx_inc64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_fadd32(...)                              \
+    shmemc_ctx_fadd32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fadd64(...)                              \
+    shmemc_ctx_fadd64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_finc32(...)                              \
+    shmemc_ctx_finc32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_finc64(...)                              \
+    shmemc_ctx_finc64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_fetch32(...)                             \
+    shmemc_ctx_fetch32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch64(...)                             \
+    shmemc_ctx_fetch64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_set32(...)                               \
+    shmemc_ctx_set32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_set64(...)                               \
+    shmemc_ctx_set64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_and32(...)                               \
+    shmemc_ctx_and32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_and64(...)                               \
+    shmemc_ctx_and64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_or32(...)                            \
+    shmemc_ctx_or32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_or64(...)                            \
+    shmemc_ctx_or64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_xor32(...)                               \
+    shmemc_ctx_xor32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_xor64(...)                               \
+    shmemc_ctx_xor64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_fetch_and32(...)                             \
+    shmemc_ctx_fetch_and32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_and64(...)                             \
+    shmemc_ctx_fetch_and64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_fetch_or32(...)                              \
+    shmemc_ctx_fetch_or32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_or64(...)                              \
+    shmemc_ctx_fetch_or64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
+#define shmemc_fetch_xor32(...)                             \
+    shmemc_ctx_fetch_xor32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_xor64(...)                             \
+    shmemc_ctx_fetch_xor64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 /*
  * locks
@@ -162,11 +252,10 @@ int  shmemc_test_lock(long *lock);
 
 /*
  * routine per-type and test to avoid branching
- *
  */
 
-#define SHMEMC_TEST(_size, _opname)                                     \
-    int shmemc_test_##_opname##_size(int##_size##_t *var,               \
+#define SHMEMC_TEST(_size, _opname)                         \
+    int shmemc_test_##_opname##_size(int##_size##_t *var,   \
                                      int##_size##_t value);
 
 SHMEMC_TEST(16, eq)
@@ -224,35 +313,31 @@ SHMEMC_WAITUNTIL(64, ge)
 /*
  * barriers & syncs
  */
-void shmemc_sync(int start, int log_stride, int size, long *pSync);
-void shmemc_sync_all(void);
 
-void shmemc_barrier(int start, int log_stride, int size, long *pSync);
-void shmemc_barrier_all(void);
+#define SHMEMC_DECL_BARRIER_SYNC(_op)                                   \
+    void shmemc_##_op(int start, int log_stride, int size, long *pSync); \
+    void shmemc_##_op##_all(void);
+
+SHMEMC_DECL_BARRIER_SYNC(sync)
+SHMEMC_DECL_BARRIER_SYNC(barrier)
 
 /*
  * broadcasts
  */
-void shmemc_broadcast32(void *target, const void *source,
-                        size_t nelems,
-                        int PE_root, int PE_start,
-                        int logPE_stride, int PE_size,
-                        long *pSync);
-void shmemc_broadcast64(void *target, const void *source,
-                        size_t nelems,
-                        int PE_root, int PE_start,
-                        int logPE_stride, int PE_size,
-                        long *pSync);
+
+#define SHMEMC_DECL_BROADCAST_SIZE(_size)                           \
+    void shmemc_broadcast##_size(void *target, const void *source,  \
+                                 size_t nelems,                     \
+                                 int PE_root, int PE_start,         \
+                                 int logPE_stride, int PE_size,     \
+                                 long *pSync);
+
+SHMEMC_DECL_BROADCAST_SIZE(32)
+SHMEMC_DECL_BROADCAST_SIZE(64)
 
 /*
- * zap the program
+ * TODO: reductions should get moved here in case comms-layer has
+ * hardware assist or similar
  */
-void shmemc_trigger_globalexit(int status);
-
-/*
- * accessibility
- */
-int shmemc_pe_accessible(int pe);
-int shmemc_addr_accessible(const void *addr, int pe);
 
 #endif /* ! _SHMEMC_H */
