@@ -136,7 +136,8 @@ AC_CHECK_TYPES([ptrdiff_t])
 # AC_FUNC_MALLOC
 # AC_FUNC_REALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([atexit gettimeofday gethostname uname getpagesize memset])
+AC_CHECK_FUNCS([atexit gettimeofday gethostname uname memset])
+AC_SEARCH_LIBS([log10], [m])
 
 AM_INIT_AUTOMAKE
 
