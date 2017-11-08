@@ -47,43 +47,67 @@ extern void shmem_complexd_get_nbi(COMPLEXIFY (double) * dest,
 #endif /* ENABLE_PSHMEM */
 
 
-#define SHMEM_TYPED_GET_NBI(_name, _type)                               \
+#define SHMEM_CTX_TYPED_GET_NBI(_name, _type)                           \
     void                                                                \
-    shmem_##_name##_get_nbi(_type *dest, const _type *src,              \
-                            size_t nelems, int pe)                      \
+    shmem_ctx_##_name##_get_nbi(shmem_ctx_t ctx,                        \
+                                _type *dest, const _type *src,          \
+                                size_t nelems, int pe)                  \
     {                                                                   \
         const size_t typed_nelems = nelems * sizeof (_type);            \
-        shmemc_get_nbi(dest, src, typed_nelems, pe);                    \
+        shmemc_ctx_get_nbi(ctx, dest, src, typed_nelems, pe);           \
     }
 
-SHMEM_TYPED_GET_NBI(char, char)
-SHMEM_TYPED_GET_NBI(short, short)
-SHMEM_TYPED_GET_NBI(int, int)
-SHMEM_TYPED_GET_NBI(long, long)
-SHMEM_TYPED_GET_NBI(longlong, long long)
-SHMEM_TYPED_GET_NBI(longdouble, long double)
-SHMEM_TYPED_GET_NBI(double, double)
-SHMEM_TYPED_GET_NBI(float, float)
-SHMEM_TYPED_GET_NBI(complexf, COMPLEXIFY(float))
-SHMEM_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_GET_NBI(float, float)
+SHMEM_CTX_TYPED_GET_NBI(double, double)
+SHMEM_CTX_TYPED_GET_NBI(longdouble, long double)
+SHMEM_CTX_TYPED_GET_NBI(char, char)
+SHMEM_CTX_TYPED_GET_NBI(schar, signed char)
+SHMEM_CTX_TYPED_GET_NBI(short, short)
+SHMEM_CTX_TYPED_GET_NBI(int, int)
+SHMEM_CTX_TYPED_GET_NBI(long, long)
+SHMEM_CTX_TYPED_GET_NBI(longlong, long long)
+SHMEM_CTX_TYPED_GET_NBI(uchar, unsigned char)
+SHMEM_CTX_TYPED_GET_NBI(ushort, unsigned short)
+SHMEM_CTX_TYPED_GET_NBI(uint, unsigned int)
+SHMEM_CTX_TYPED_GET_NBI(ulong, unsigned long)
+SHMEM_CTX_TYPED_GET_NBI(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_GET_NBI(int8, int8_t)
+SHMEM_CTX_TYPED_GET_NBI(int16, int16_t)
+SHMEM_CTX_TYPED_GET_NBI(int32, int32_t)
+SHMEM_CTX_TYPED_GET_NBI(int64, int64_t)
+SHMEM_CTX_TYPED_GET_NBI(uint8, uint8_t)
+SHMEM_CTX_TYPED_GET_NBI(uint16, uint16_t)
+SHMEM_CTX_TYPED_GET_NBI(uint32, uint32_t)
+SHMEM_CTX_TYPED_GET_NBI(uint64, uint64_t)
+SHMEM_CTX_TYPED_GET_NBI(size, size_t)
+SHMEM_CTX_TYPED_GET_NBI(ptrdiff, ptrdiff_t)
+/* for Fortran */
+SHMEM_CTX_TYPED_GET_NBI(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_GET_NBI(_size)                                      \
-    void                                                                \
-    shmem_get##_size##_nbi(void *dest, const void *src,                 \
-                           size_t nelems, int pe)                       \
-    {                                                                   \
-        const size_t sized_nelems = nelems * _size;                     \
-        shmemc_get_nbi(dest, src, sized_nelems, pe);                    \
+#undef SHMEM_CTX_TYPED_GET_NBI
+
+#define SHMEM_CTX_SIZED_GET_NBI(_size)                          \
+    void                                                        \
+    shmem_ctx_get##_size##_nbi(shmem_ctx_t ctx,                 \
+                               void *dest, const void *src,     \
+                               size_t nelems, int pe)           \
+    {                                                           \
+        const size_t sized_nelems = nelems * _size;             \
+        shmemc_ctx_get_nbi(ctx, dest, src, sized_nelems, pe);   \
     }
 
-SHMEM_SIZED_GET_NBI(8)
-SHMEM_SIZED_GET_NBI(16)
-SHMEM_SIZED_GET_NBI(32)
-SHMEM_SIZED_GET_NBI(64)
-SHMEM_SIZED_GET_NBI(128)
+SHMEM_CTX_SIZED_GET_NBI(8)
+SHMEM_CTX_SIZED_GET_NBI(16)
+SHMEM_CTX_SIZED_GET_NBI(32)
+SHMEM_CTX_SIZED_GET_NBI(64)
+SHMEM_CTX_SIZED_GET_NBI(128)
+
+#undef SHMEM_CTX_SIZED_GET_NBI
 
 void
-shmem_getmem_nbi(void *dest, const void *src, size_t nelems, int pe)
+shmem_ctx_getmem_nbi(shmem_ctx_t ctx,
+                     void *dest, const void *src, size_t nelems, int pe)
 {
-    shmemc_get_nbi(dest, src, nelems, pe);
+    shmemc_ctx_get_nbi(ctx, dest, src, nelems, pe);
 }

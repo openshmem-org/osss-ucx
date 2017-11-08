@@ -8,10 +8,6 @@
  *
  */
 
-#include <stdint.h>
-#include <stddef.h>             /* ptrdiff_t */
-#include <string.h>
-
 /*
  * stop deprecation warnings
  */
@@ -20,6 +16,10 @@
 #undef _SHMEM_IN_SOURCE_TREE_
 
 #include "fortran-common.h"
+
+#include <stdint.h>
+#include <stddef.h>             /* ptrdiff_t */
+#include <string.h>
 
 /**
  *
@@ -63,27 +63,6 @@ SHMEM_FORTRAN_QUERY_PE(shmem_n_pes, shmem_n_pes)
 /*
  * puts and gets
  */
-
-/*
- * Routines that are needed for Fortran, but aren't currently in the C
- * API
- */
-
-extern void shmem_complexf_put(COMPLEXIFY(float) * target,
-                               const COMPLEXIFY(float) * source,
-                               size_t nelems, int pe);
-extern void shmem_complexf_get(COMPLEXIFY(float) * target,
-                               const COMPLEXIFY(float) * source,
-                               size_t nelems, int pe);
-extern void shmem_complexf_iput(COMPLEXIFY(float) * target,
-                                const COMPLEXIFY(float) * source,
-                                ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                                int pe);
-extern void shmem_complexf_iget(COMPLEXIFY(float) * target,
-                                const COMPLEXIFY(float) * source,
-                                ptrdiff_t tst, ptrdiff_t sst, size_t nelems,
-                                int pe);
-
 
 #define SHMEM_FORTRAN_PUT(_fname, _cname, _ctype)                       \
     void                                                                \
@@ -168,26 +147,6 @@ FORTRANIFY(shmem_get)(long *target, const long *source, int *size, int *pe)
 /*
  * non-blocking implicit put/get
  */
-
-/*
- * Routines that are needed for Fortran, but aren't currently in the C
- * API
- */
-
-extern void shmem_complexf_put_nbi(COMPLEXIFY(float) * target,
-                                   const COMPLEXIFY(float) * source,
-                                   size_t nelems, int pe);
-extern void shmem_complexf_get_nbi(COMPLEXIFY(float) * target,
-                                   const COMPLEXIFY(float) * source,
-                                   size_t nelems, int pe);
-extern void shmem_complexf_iput_nbi(COMPLEXIFY(float) * target,
-                                    const COMPLEXIFY(float) * source,
-                                    ptrdiff_t tst, ptrdiff_t sst,
-                                    size_t nelems, int pe);
-extern void shmem_complexf_iget_nbi(COMPLEXIFY(float) * target,
-                                    const COMPLEXIFY(float) * source,
-                                    ptrdiff_t tst, ptrdiff_t sst,
-                                    size_t nelems, int pe);
 
 #define SHMEM_FORTRAN_PUT_NBI(_fname, _cname, _ctype)           \
     void                                                        \

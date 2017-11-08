@@ -13,7 +13,7 @@
  * Looking for better iov method in UCX
  */
 
-
+#if 0
 /*
  * these are needed for propagating into Fortran,
  * but aren't actually part of the API
@@ -26,6 +26,7 @@ extern void shmem_complexd_put(COMPLEXIFY(double) *dest,
                                const COMPLEXIFY(double) *src,
                                size_t nelems,
                                int pe);
+#endif
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_float_iput = pshmem_float_iput
