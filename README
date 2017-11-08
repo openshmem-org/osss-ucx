@@ -1,3 +1,9 @@
 # For license: see LICENSE file at top-level
 
-The all-new shinier OSSS OpenSHMEM Implementation
+This project is the Open Source Software Solutions (OSSS) OpenSHMEM
+Implementation on top of OpenUCX (UCX).
+
+Links:
+
+OpenSHMEM : http://www.openshmem.org/
+OpenUCX   : http://www.openucx.org/
