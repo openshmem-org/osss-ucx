@@ -33,6 +33,15 @@
 #endif /* __STDC_VERSION__ defined test */
 
 /*
+ * how to annotate functions as non-returning
+ */
+#if SHMEM_HAS_C11
+# define SHMEM_NORETURN _Noreturn
+#else
+# define SHMEM_NORETURN
+#endif /* SHMEM_HAS_C11 */
+
+/*
  * not all compilers support this annotation
  *
  */

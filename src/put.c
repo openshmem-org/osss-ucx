@@ -84,14 +84,6 @@
     {                                                                   \
         const size_t sized_nelems = nelems * sizeof(_type);             \
         shmemc_ctx_put(ctx, dest, src, sized_nelems, pe);               \
-    }                                                                   \
-    void                                                                \
-    shmem_##_name##_put(_type *dest, const _type *src,                  \
-                        size_t nelems, int pe)                          \
-    {                                                                   \
-        const size_t sized_nelems = nelems * sizeof(_type);             \
-        shmemc_ctx_put(SHMEM_CTX_DEFAULT,                               \
-                       dest, src, sized_nelems, pe);                    \
     }
 
 SHMEM_CTX_TYPED_PUT(float, float)
