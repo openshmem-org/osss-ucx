@@ -1,0 +1,48 @@
+.\" For license: see LICENSE file at top-level
+.TH osh_intro 1 "" "OSSS"
+.SH NAME
+\fBosh_intro\fP - Overview of OpenSHMEM programs
+.SH DESCRIPTION
+OpenSHMEM is a PGAS programming library that can use
+hardware capabilities such as RDMA for fast direct-to-memory
+communication.
+.LP
+This manual page documents the commands associated with this
+implementation.
+.LP
+.SH TOOLS
+.IP COMPILERS
+.RS 2
+.IP C 4
+This is the core interface that is always present.
+C programs can be compiled/linked using oshcc(1).
+.IP C++ 4
+If this interface has been enabled, C++ programs can be
+compiled/linked using oshcxx(1).
+.IP Fortran 4
+If this interface has been enabled, Fortran programs can be
+compiled/linked using oshfort(1).
+.RE
+.IP LAUNCHER
+.RS 2
+In this implementation, OpenSHMEM programs can be launched via
+oshrun(1).  Job scheduling systems, such as PBS/Torque, SLURM, and
+LSF, may provide compatible launchers as well (e.g. srun in SLURM,
+aprun in ALPS).
+.RE
+.IP INFORMATION
+.IP osh_info 4
+A utility that describes configuration settings of this
+implementation, osh_info(1).
+.SH SEE ALSO
+oshcc(1),
+.br
+oshcxx(1),
+.br
+oshfort(1),
+.br
+oshrun(1),
+.br
+osh_info(1).
+.SH OPENSHMEM
+http://www.openshmem.org/
