@@ -16,13 +16,21 @@
  * C and C++ do complex numbers differently
  *
  */
-
 #ifdef __cplusplus
 # include <complex>
 # define COMPLEXIFY(T) std::complex<T>
 #else  /* _cplusplus */
 # define COMPLEXIFY(T) T _Complex
 #endif  /* __cplusplus */
+
+/*
+ * does compiler support C11 ?
+ */
+#ifdef __STDC_VERSION__
+# if  __STDC_VERSION__ >= 201112L
+#  define SHMEM_HAS_C11 1
+# endif   /* __STDC_VERSION__ >= 201112L test */
+#endif /* __STDC_VERSION__ defined test */
 
 /*
  * not all compilers support this annotation

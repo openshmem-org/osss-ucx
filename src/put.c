@@ -8,15 +8,6 @@
 
 #include "shmem/defs.h"
 
-#if 0
-extern void shmem_ctx_complexf_put(COMPLEXIFY(float) * dest,
-                               const COMPLEXIFY(float) * src,
-                               size_t nelems, int pe);  /* ! API */
-extern void shmem_ctx_complexd_put(COMPLEXIFY(double) * dest,
-                               const COMPLEXIFY(double) * src,
-                               size_t nelems, int pe);    /* ! API */
-#endif
-
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_float_put = pshmem_ctx_float_put
 #define shmem_ctx_float_put pshmem_ctx_float_put

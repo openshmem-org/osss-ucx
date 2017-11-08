@@ -2516,8 +2516,7 @@ extern "C"
      *
      */
 
-#ifdef __STDC_VERSION__
-#if  __STDC_VERSION__ >= 201112L
+#if SHMEM_HAS_C11
 
     /* see \ref shmem_ctx_long_put() */
 #define shmem_ctx_put(ctx, dest, source, nelems, pe)        \
@@ -2941,16 +2940,14 @@ extern "C"
 
     /* no context- waits or tests */
 
-#endif   /* __STDC_VERSION__ >= 201112L test */
-#endif /* __STDC_VERSION__ defined test */
+#endif  /* SHMEM_HAS_C11 */
 
     /**
      * Possibly-contexts-based generics
      *
      */
 
-#ifdef __STDC_VERSION__
-#if  __STDC_VERSION__ >= 201112L
+#if SHMEM_HAS_C11
 
     /* see \ref shmem_long_put() */
 #define shmem_put(selector, ...)                        \
@@ -3480,8 +3477,7 @@ extern "C"
              ptrdiff_t *: shmem_ptrdiff_test                \
              )(ivar, cmp, cmp_value)
 
-#endif   /* __STDC_VERSION__ >= 201112L test */
-#endif /* __STDC_VERSION__ defined test */
+#endif  /* C11 */
 
     /*
      * deprecated cache routines

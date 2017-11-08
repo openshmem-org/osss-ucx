@@ -3,15 +3,6 @@
 #include "shmem/defs.h"
 #include "shmemc.h"
 
-#if 0
-extern void shmem_ctx_complexf_get(COMPLEXIFY(float) * dest,
-                               const COMPLEXIFY(float) * src,
-                               size_t nelems, int pe);  /* ! API */
-extern void shmem_ctx_complexd_get(COMPLEXIFY(double) * dest,
-                               const COMPLEXIFY(double) * src,
-                               size_t nelems, int pe);    /* ! API */
-#endif
-
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_float_get = pshmem_ctx_float_get
 #define shmem_ctx_float_get pshmem_ctx_float_get
