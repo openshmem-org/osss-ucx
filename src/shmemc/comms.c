@@ -97,6 +97,8 @@ inline static void *
 shmemc_ptr_helper(shmem_ctx_t ctx,
            const void *addr, int pe)
 {
+    /* check to see if UCX is new enough */
+#ifdef HAVE_UCP_RKEY_PTR
     long r;
     uint64_t ua = (uint64_t) addr;
     uint64_t r_addr;            /* address on other PE */
@@ -112,6 +114,7 @@ shmemc_ptr_helper(shmem_ctx_t ctx,
     if (s == UCS_OK) {
         return usable_addr;
     }
+#endif  /* HAVE_UCP_RKEY_PTR */
 
     return NULL;
 }

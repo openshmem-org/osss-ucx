@@ -362,7 +362,11 @@ disconnect_all_eps(void)
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
         ucs_status_ptr_t req =
+#ifdef HAVE_UCP_EP_CLOSE_NB
             ucp_ep_close_nb(proc.comms.eps[pe], UCP_EP_CLOSE_MODE_FLUSH);
+#else
+        ucp_disconnect_nb(proc.comms.eps[pe]);
+#endif  /* HAVE_UCP_EP_CLOSE_NB*/
 
         /* if not done immediately, wait */
         if (req != UCS_OK) {
@@ -370,7 +374,11 @@ disconnect_all_eps(void)
 
             do {
                 (void) ucp_worker_progress(proc.comms.wrkr);
+#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
                 s = ucp_request_check_status(req);
+#else
+                s = ucp_request_test(req, NULL);
+#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
             } while (s == UCS_INPROGRESS);
             ucp_request_free(req);
         }
