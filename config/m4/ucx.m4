@@ -11,29 +11,30 @@ AS_IF([test -d "$with_ucx"],
 	      UCX_LIBS="-L$with_ucx/lib -Wl,-rpath,$with_ucx/lib -lucp"
 	      LDFLAGS="$UCX_LIBS $LDFLAGS"
 	      AC_DEFINE([HAVE_UCX], [1], [UCX support])
+	      AC_MSG_NOTICE([UCX: checking for API features...])
 	      AC_LANG_PUSH([C])
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_ep_close_nb])],
-		[AC_MSG_NOTICE([UCX: found ucp_ep_close_nb])
+		[AC_MSG_NOTICE([UCX: ucp_ep_close_nb found])
  	         AC_DEFINE([HAVE_UCP_EP_CLOSE_NB], [1], [UCX has ucp_ep_close_nb])
 		],
-		[AC_MSG_NOTICE([UCX: NOT found ucp_ep_close_nb])
+		[AC_MSG_NOTICE([UCX: ucp_ep_close_nb NOT found])
 # 	         AC_DEFINE([HAVE_UCP_EP_CLOSE_NB], [0], [UCX does not have ucp_ep_close_nb])
 		])
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_rkey_ptr])],
-		[AC_MSG_NOTICE([UCX: found ucp_rkey_ptr])
+		[AC_MSG_NOTICE([UCX: found ucp_rkey_ptr found])
  	         AC_DEFINE([HAVE_UCP_RKEY_PTR], [1], [UCX has ucp_rkey_ptr])
 		],
-		[AC_MSG_NOTICE([UCX: NOT found ucp_rkey_ptr])
+		[AC_MSG_NOTICE([UCX: ucp_rkey_ptr NOT found])
 # 	         AC_DEFINE([HAVE_UCP_RKEY_PTR], [0], [UCX does not have ucp_rkey_ptr])
 		])
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_request_check_status])],
-		[AC_MSG_NOTICE([UCX: found ucp_request_check_status])
+		[AC_MSG_NOTICE([UCX: found ucp_request_check_status found])
  	         AC_DEFINE([HAVE_UCP_REQUEST_CHECK_STATUS], [1], [UCX has ucp_request_check_status])
 		],
-		[AC_MSG_NOTICE([UCX: NOT found ucp_request_check_status])
+		[AC_MSG_NOTICE([UCX: ucp_request_check_status NOT found])
 # 	         AC_DEFINE([HAVE_UCP_REQUEST_CHECK_STATUS], [0], [UCX does not have ucp_request_check_status])
 		])
 	      AC_LANG_POP([C])
