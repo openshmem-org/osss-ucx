@@ -157,9 +157,12 @@ AC_SUBST([PTHREAD_LIBS])
 
 AC_CONFIG_FILES([Makefile])
 
+AC_CONFIG_FILES([man/man1/Makefile
+		 man/man1/oshcc.1 man/man1/oshcxx.1 man/man1/oshfort.1
+		 man/man1/oshrun.1 man/man1/osh_info.1 man/man1/osh_intro.1
+		])
+
 AC_CONFIG_FILES([man/Makefile
-		 man/oshcc.1 man/oshcxx.1 man/oshfort.1
-		 man/oshrun.1 man/osh_info.1 man/osh_intro.1
 		])
 
 AC_CONFIG_FILES([include/Makefile
