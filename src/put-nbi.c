@@ -46,43 +46,68 @@ extern void shmem_complexd_put_nbi(COMPLEXIFY(double) * dest,
 /* # pragma weak shmem_put_nbi = pshmem_put_nbi */
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_TYPED_PUT_NBI(_name, _type)                               \
+#define SHMEM_CTX_TYPED_PUT_NBI(_name, _type)                           \
     void                                                                \
-    shmem_##_name##_put_nbi(_type *dest, const _type *src,              \
-                            size_t nelems, int pe)                      \
+    shmem_ctx_##_name##_put_nbi(shmem_ctx_t ctx,                        \
+                                _type *dest, const _type *src,          \
+                                size_t nelems, int pe)                  \
     {                                                                   \
         const size_t typed_nelems = nelems * sizeof(_type);             \
-        shmemc_put_nbi(dest, src, typed_nelems, pe);                    \
+        shmemc_ctx_put_nbi(ctx, dest, src, typed_nelems, pe);           \
     }
 
-SHMEM_TYPED_PUT_NBI(char, char)
-SHMEM_TYPED_PUT_NBI(short, short)
-SHMEM_TYPED_PUT_NBI(int, int)
-SHMEM_TYPED_PUT_NBI(long, long)
-SHMEM_TYPED_PUT_NBI(longlong, long long)
-SHMEM_TYPED_PUT_NBI(longdouble, long double)
-SHMEM_TYPED_PUT_NBI(double, double)
-SHMEM_TYPED_PUT_NBI(float, float)
-SHMEM_TYPED_PUT_NBI(complexf, COMPLEXIFY(float))
-SHMEM_TYPED_PUT_NBI(complexd, COMPLEXIFY(double))
 
-#define SHMEM_SIZED_PUT_NBI(_size)                                      \
+SHMEM_CTX_TYPED_PUT_NBI(float, float)
+SHMEM_CTX_TYPED_PUT_NBI(double, double)
+SHMEM_CTX_TYPED_PUT_NBI(longdouble, long double)
+SHMEM_CTX_TYPED_PUT_NBI(char, char)
+SHMEM_CTX_TYPED_PUT_NBI(schar, signed char)
+SHMEM_CTX_TYPED_PUT_NBI(short, short)
+SHMEM_CTX_TYPED_PUT_NBI(int, int)
+SHMEM_CTX_TYPED_PUT_NBI(long, long)
+SHMEM_CTX_TYPED_PUT_NBI(longlong, long long)
+SHMEM_CTX_TYPED_PUT_NBI(uchar, unsigned char)
+SHMEM_CTX_TYPED_PUT_NBI(ushort, unsigned short)
+SHMEM_CTX_TYPED_PUT_NBI(uint, unsigned int)
+SHMEM_CTX_TYPED_PUT_NBI(ulong, unsigned long)
+SHMEM_CTX_TYPED_PUT_NBI(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_PUT_NBI(int8, int8_t)
+SHMEM_CTX_TYPED_PUT_NBI(int16, int16_t)
+SHMEM_CTX_TYPED_PUT_NBI(int32, int32_t)
+SHMEM_CTX_TYPED_PUT_NBI(int64, int64_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint8, uint8_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint16, uint16_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint32, uint32_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint64, uint64_t)
+SHMEM_CTX_TYPED_PUT_NBI(size, size_t)
+SHMEM_CTX_TYPED_PUT_NBI(ptrdiff, ptrdiff_t)
+/* for Fortran */
+SHMEM_CTX_TYPED_PUT_NBI(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_PUT_NBI(complexd, COMPLEXIFY(double))
+
+#undef SHMEM_CTX_TYPED_PUT_NBI
+
+#define SHMEM_CTX_SIZED_PUT_NBI(_size)                                  \
     void                                                                \
-    shmem_put##_size##_nbi(void *dest, const void *src,                 \
+    shmem_ctx_put##_size##_nbi(shmem_ctx_t ctx,                         \
+                               void *dest, const void *src,             \
                            size_t nelems, int pe)                       \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
-        shmemc_put_nbi(dest, src, sized_nelems, pe);                    \
+        shmemc_ctx_put_nbi(ctx, dest, src, sized_nelems, pe);           \
     }
 
-SHMEM_SIZED_PUT_NBI(8)
-SHMEM_SIZED_PUT_NBI(16)
-SHMEM_SIZED_PUT_NBI(32)
-SHMEM_SIZED_PUT_NBI(64)
-SHMEM_SIZED_PUT_NBI(128)
+SHMEM_CTX_SIZED_PUT_NBI(8)
+SHMEM_CTX_SIZED_PUT_NBI(16)
+SHMEM_CTX_SIZED_PUT_NBI(32)
+SHMEM_CTX_SIZED_PUT_NBI(64)
+SHMEM_CTX_SIZED_PUT_NBI(128)
+
+#undef SHMEM_CTX_SIZED_PUT_NBI
 
 void
-shmem_putmem_nbi(void *dest, const void *src, size_t nelems, int pe)
+shmem_ctx_putmem_nbi(shmem_ctx_t ctx,
+                     void *dest, const void *src, size_t nelems, int pe)
 {
-    shmemc_put_nbi(dest, src, nelems, pe);
+    shmemc_ctx_put_nbi(ctx, dest, src, nelems, pe);
 }

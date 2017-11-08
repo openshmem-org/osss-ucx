@@ -9,70 +9,70 @@
 #include "shmem/defs.h"
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_float_put = pshmem_float_put
-#define shmem_float_put pshmem_float_put
-#pragma weak shmem_double_put = pshmem_double_put
-#define shmem_double_put pshmem_double_put
-#pragma weak shmem_longdouble_put = pshmem_longdouble_put
-#define shmem_longdouble_put pshmem_longdouble_put
-#pragma weak shmem_char_put = pshmem_char_put
-#define shmem_char_put pshmem_char_put
-#pragma weak shmem_schar_put = pshmem_schar_put
-#define shmem_schar_put pshmem_schar_put
-#pragma weak shmem_short_put = pshmem_short_put
-#define shmem_short_put pshmem_short_put
-#pragma weak shmem_int_put = pshmem_int_put
-#define shmem_int_put pshmem_int_put
-#pragma weak shmem_long_put = pshmem_long_put
-#define shmem_long_put pshmem_long_put
-#pragma weak shmem_longlong_put = pshmem_longlong_put
-#define shmem_longlong_put pshmem_longlong_put
-#pragma weak shmem_uchar_put = pshmem_uchar_put
-#define shmem_uchar_put pshmem_uchar_put
-#pragma weak shmem_ushort_put = pshmem_ushort_put
-#define shmem_ushort_put pshmem_ushort_put
-#pragma weak shmem_uint_put = pshmem_uint_put
-#define shmem_uint_put pshmem_uint_put
-#pragma weak shmem_ulong_put = pshmem_ulong_put
-#define shmem_ulong_put pshmem_ulong_put
-#pragma weak shmem_ulonglong_put = pshmem_ulonglong_put
-#define shmem_ulonglong_put pshmem_ulonglong_put
-#pragma weak shmem_int8_put = pshmem_int8_put
-#define shmem_int8_put pshmem_int8_put
-#pragma weak shmem_int16_put = pshmem_int16_put
-#define shmem_int16_put pshmem_int16_put
-#pragma weak shmem_int32_put = pshmem_int32_put
-#define shmem_int32_put pshmem_int32_put
-#pragma weak shmem_int64_put = pshmem_int64_put
-#define shmem_int64_put pshmem_int64_put
-#pragma weak shmem_uint8_put = pshmem_uint8_put
-#define shmem_uint8_put pshmem_uint8_put
-#pragma weak shmem_uint16_put = pshmem_uint16_put
-#define shmem_uint16_put pshmem_uint16_put
-#pragma weak shmem_uint32_put = pshmem_uint32_put
-#define shmem_uint32_put pshmem_uint32_put
-#pragma weak shmem_uint64_put = pshmem_uint64_put
-#define shmem_uint64_put pshmem_uint64_put
+#pragma weak shmem_ctx_float_put = pshmem_ctx_float_put
+#define shmem_ctx_float_put pshmem_ctx_float_put
+#pragma weak shmem_ctx_double_put = pshmem_ctx_double_put
+#define shmem_ctx_double_put pshmem_ctx_double_put
+#pragma weak shmem_ctx_longdouble_put = pshmem_ctx_longdouble_put
+#define shmem_ctx_longdouble_put pshmem_ctx_longdouble_put
+#pragma weak shmem_ctx_char_put = pshmem_ctx_char_put
+#define shmem_ctx_char_put pshmem_ctx_char_put
+#pragma weak shmem_ctx_schar_put = pshmem_ctx_schar_put
+#define shmem_ctx_schar_put pshmem_ctx_schar_put
+#pragma weak shmem_ctx_short_put = pshmem_ctx_short_put
+#define shmem_ctx_short_put pshmem_ctx_short_put
+#pragma weak shmem_ctx_int_put = pshmem_ctx_int_put
+#define shmem_ctx_int_put pshmem_ctx_int_put
+#pragma weak shmem_ctx_long_put = pshmem_ctx_long_put
+#define shmem_ctx_long_put pshmem_ctx_long_put
+#pragma weak shmem_ctx_longlong_put = pshmem_ctx_longlong_put
+#define shmem_ctx_longlong_put pshmem_ctx_longlong_put
+#pragma weak shmem_ctx_uchar_put = pshmem_ctx_uchar_put
+#define shmem_ctx_uchar_put pshmem_ctx_uchar_put
+#pragma weak shmem_ctx_ushort_put = pshmem_ctx_ushort_put
+#define shmem_ctx_ushort_put pshmem_ctx_ushort_put
+#pragma weak shmem_ctx_uint_put = pshmem_ctx_uint_put
+#define shmem_ctx_uint_put pshmem_ctx_uint_put
+#pragma weak shmem_ctx_ulong_put = pshmem_ctx_ulong_put
+#define shmem_ctx_ulong_put pshmem_ctx_ulong_put
+#pragma weak shmem_ctx_ulonglong_put = pshmem_ctx_ulonglong_put
+#define shmem_ctx_ulonglong_put pshmem_ctx_ulonglong_put
+#pragma weak shmem_ctx_int8_put = pshmem_ctx_int8_put
+#define shmem_ctx_int8_put pshmem_ctx_int8_put
+#pragma weak shmem_ctx_int16_put = pshmem_ctx_int16_put
+#define shmem_ctx_int16_put pshmem_ctx_int16_put
+#pragma weak shmem_ctx_int32_put = pshmem_ctx_int32_put
+#define shmem_ctx_int32_put pshmem_ctx_int32_put
+#pragma weak shmem_ctx_int64_put = pshmem_ctx_int64_put
+#define shmem_ctx_int64_put pshmem_ctx_int64_put
+#pragma weak shmem_ctx_uint8_put = pshmem_ctx_uint8_put
+#define shmem_ctx_uint8_put pshmem_ctx_uint8_put
+#pragma weak shmem_ctx_uint16_put = pshmem_ctx_uint16_put
+#define shmem_ctx_uint16_put pshmem_ctx_uint16_put
+#pragma weak shmem_ctx_uint32_put = pshmem_ctx_uint32_put
+#define shmem_ctx_uint32_put pshmem_ctx_uint32_put
+#pragma weak shmem_ctx_uint64_put = pshmem_ctx_uint64_put
+#define shmem_ctx_uint64_put pshmem_ctx_uint64_put
 
-#pragma weak shmem_put8 = pshmem_put8
-#define shmem_put8 pshmem_put8
-#pragma weak shmem_put16 = pshmem_put16
-#define shmem_put16 pshmem_put16
-#pragma weak shmem_put32 = pshmem_put32
-#define shmem_put32 pshmem_put32
-#pragma weak shmem_put64 = pshmem_put64
-#define shmem_put64 pshmem_put64
-#pragma weak shmem_put128 = pshmem_put128
-#define shmem_put128 pshmem_put128
+#pragma weak shmem_ctx_put8 = pshmem_ctx_put8
+#define shmem_ctx_put8 pshmem_ctx_put8
+#pragma weak shmem_ctx_put16 = pshmem_ctx_put16
+#define shmem_ctx_put16 pshmem_ctx_put16
+#pragma weak shmem_ctx_put32 = pshmem_ctx_put32
+#define shmem_ctx_put32 pshmem_ctx_put32
+#pragma weak shmem_ctx_put64 = pshmem_ctx_put64
+#define shmem_ctx_put64 pshmem_ctx_put64
+#pragma weak shmem_ctx_put128 = pshmem_ctx_put128
+#define shmem_ctx_put128 pshmem_ctx_put128
 
-#pragma weak shmem_putmem = pshmem_putmem
-#define shmem_putmem pshmem_putmem
+#pragma weak shmem_ctx_putmem = pshmem_ctx_putmem
+#define shmem_ctx_putmem pshmem_ctx_putmem
 
 /* for Fortran */
-#pragma weak shmem_complexf_put = pshmem_complexf_put
-#define shmem_complexf_put pshmem_complexf_put
-#pragma weak shmem_complexd_put = pshmem_complexd_put
-#define shmem_complexd_put pshmem_complexd_put
+#pragma weak shmem_ctx_complexf_put = pshmem_ctx_complexf_put
+#define shmem_ctx_complexf_put pshmem_ctx_complexf_put
+#pragma weak shmem_ctx_complexd_put = pshmem_ctx_complexd_put
+#define shmem_ctx_complexd_put pshmem_ctx_complexd_put
 
 #endif /* ENABLE_PSHMEM */
 
@@ -84,14 +84,6 @@
     {                                                                   \
         const size_t sized_nelems = nelems * sizeof(_type);             \
         shmemc_ctx_put(ctx, dest, src, sized_nelems, pe);               \
-    }                                                                   \
-    void                                                                \
-    shmem_##_name##_put(_type *dest, const _type *src,                  \
-                        size_t nelems, int pe)                          \
-    {                                                                   \
-        const size_t sized_nelems = nelems * sizeof(_type);             \
-        shmemc_ctx_put(SHMEM_CTX_DEFAULT,                               \
-                       dest, src, sized_nelems, pe);                    \
     }
 
 SHMEM_CTX_TYPED_PUT(float, float)
@@ -118,6 +110,9 @@ SHMEM_CTX_TYPED_PUT(uint32, uint32_t)
 SHMEM_CTX_TYPED_PUT(uint64, uint64_t)
 SHMEM_CTX_TYPED_PUT(size, size_t)
 SHMEM_CTX_TYPED_PUT(ptrdiff, ptrdiff_t)
+/* for Fortran */
+SHMEM_CTX_TYPED_PUT(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_PUT(complexd, COMPLEXIFY(double))
 
 #define SHMEM_CTX_SIZED_PUT(_size)                                      \
     void                                                                \
@@ -146,55 +141,55 @@ shmem_ctx_putmem(shmem_ctx_t ctx,
 }
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_float_p = pshmem_float_p
-#define shmem_float_p pshmem_float_p
-#pragma weak shmem_double_p = pshmem_double_p
-#define shmem_double_p pshmem_double_p
-#pragma weak shmem_longdouble_p = pshmem_longdouble_p
-#define shmem_longdouble_p pshmem_longdouble_p
-#pragma weak shmem_char_p = pshmem_char_p
-#define shmem_char_p pshmem_char_p
-#pragma weak shmem_schar_p = pshmem_schar_p
-#define shmem_schar_p pshmem_schar_p
-#pragma weak shmem_short_p = pshmem_short_p
-#define shmem_short_p pshmem_short_p
-#pragma weak shmem_int_p = pshmem_int_p
-#define shmem_int_p pshmem_int_p
-#pragma weak shmem_long_p = pshmem_long_p
-#define shmem_long_p pshmem_long_p
-#pragma weak shmem_longlong_p = pshmem_longlong_p
-#define shmem_longlong_p pshmem_longlong_p
-#pragma weak shmem_uchar_p = pshmem_uchar_p
-#define shmem_uchar_p pshmem_uchar_p
-#pragma weak shmem_ushort_p = pshmem_ushort_p
-#define shmem_ushort_p pshmem_ushort_p
-#pragma weak shmem_uint_p = pshmem_uint_p
-#define shmem_uint_p pshmem_uint_p
-#pragma weak shmem_ulong_p = pshmem_ulong_p
-#define shmem_ulong_p pshmem_ulong_p
-#pragma weak shmem_ulonglong_p = pshmem_ulonglong_p
-#define shmem_ulonglong_p pshmem_ulonglong_p
-#pragma weak shmem_int8_p = pshmem_int8_p
-#define shmem_int8_p pshmem_int8_p
-#pragma weak shmem_int16_p = pshmem_int16_p
-#define shmem_int16_p pshmem_int16_p
-#pragma weak shmem_int32_p = pshmem_int32_p
-#define shmem_int32_p pshmem_int32_p
-#pragma weak shmem_int64_p = pshmem_int64_p
-#define shmem_int64_p pshmem_int64_p
-#pragma weak shmem_uint8_p = pshmem_uint8_p
-#define shmem_uint8_p pshmem_uint8_p
-#pragma weak shmem_uint16_p = pshmem_uint16_p
-#define shmem_uint16_p pshmem_uint16_p
-#pragma weak shmem_uint32_p = pshmem_uint32_p
-#define shmem_uint32_p pshmem_uint32_p
-#pragma weak shmem_uint64_p = pshmem_uint64_p
-#define shmem_uint64_p pshmem_uint64_p
+#pragma weak shmem_ctx_float_p = pshmem_ctx_float_p
+#define shmem_ctx_float_p pshmem_ctx_float_p
+#pragma weak shmem_ctx_double_p = pshmem_ctx_double_p
+#define shmem_ctx_double_p pshmem_ctx_double_p
+#pragma weak shmem_ctx_longdouble_p = pshmem_ctx_longdouble_p
+#define shmem_ctx_longdouble_p pshmem_ctx_longdouble_p
+#pragma weak shmem_ctx_char_p = pshmem_ctx_char_p
+#define shmem_ctx_char_p pshmem_ctx_char_p
+#pragma weak shmem_ctx_schar_p = pshmem_ctx_schar_p
+#define shmem_ctx_schar_p pshmem_ctx_schar_p
+#pragma weak shmem_ctx_short_p = pshmem_ctx_short_p
+#define shmem_ctx_short_p pshmem_ctx_short_p
+#pragma weak shmem_ctx_int_p = pshmem_ctx_int_p
+#define shmem_ctx_int_p pshmem_ctx_int_p
+#pragma weak shmem_ctx_long_p = pshmem_ctx_long_p
+#define shmem_ctx_long_p pshmem_ctx_long_p
+#pragma weak shmem_ctx_longlong_p = pshmem_ctx_longlong_p
+#define shmem_ctx_longlong_p pshmem_ctx_longlong_p
+#pragma weak shmem_ctx_uchar_p = pshmem_ctx_uchar_p
+#define shmem_ctx_uchar_p pshmem_ctx_uchar_p
+#pragma weak shmem_ctx_ushort_p = pshmem_ctx_ushort_p
+#define shmem_ctx_ushort_p pshmem_ctx_ushort_p
+#pragma weak shmem_ctx_uint_p = pshmem_ctx_uint_p
+#define shmem_ctx_uint_p pshmem_ctx_uint_p
+#pragma weak shmem_ctx_ulong_p = pshmem_ctx_ulong_p
+#define shmem_ctx_ulong_p pshmem_ctx_ulong_p
+#pragma weak shmem_ctx_ulonglong_p = pshmem_ctx_ulonglong_p
+#define shmem_ctx_ulonglong_p pshmem_ctx_ulonglong_p
+#pragma weak shmem_ctx_int8_p = pshmem_ctx_int8_p
+#define shmem_ctx_int8_p pshmem_ctx_int8_p
+#pragma weak shmem_ctx_int16_p = pshmem_ctx_int16_p
+#define shmem_ctx_int16_p pshmem_ctx_int16_p
+#pragma weak shmem_ctx_int32_p = pshmem_ctx_int32_p
+#define shmem_ctx_int32_p pshmem_ctx_int32_p
+#pragma weak shmem_ctx_int64_p = pshmem_ctx_int64_p
+#define shmem_ctx_int64_p pshmem_ctx_int64_p
+#pragma weak shmem_ctx_uint8_p = pshmem_ctx_uint8_p
+#define shmem_ctx_uint8_p pshmem_ctx_uint8_p
+#pragma weak shmem_ctx_uint16_p = pshmem_ctx_uint16_p
+#define shmem_ctx_uint16_p pshmem_ctx_uint16_p
+#pragma weak shmem_ctx_uint32_p = pshmem_ctx_uint32_p
+#define shmem_ctx_uint32_p pshmem_ctx_uint32_p
+#pragma weak shmem_ctx_uint64_p = pshmem_ctx_uint64_p
+#define shmem_ctx_uint64_p pshmem_ctx_uint64_p
 /* for Fortran */
-#pragma weak shmem_complexf_p = pshmem_complexf_p
-#define shmem_complexf_p pshmem_complexf_p
-#pragma weak shmem_complexd_p = pshmem_complexd_p
-#define shmem_complexd_p pshmem_complexd_p
+#pragma weak shmem_ctx_complexf_p = pshmem_ctx_complexf_p
+#define shmem_ctx_complexf_p pshmem_ctx_complexf_p
+#pragma weak shmem_ctx_complexd_p = pshmem_ctx_complexd_p
+#define shmem_ctx_complexd_p pshmem_ctx_complexd_p
 #endif /* ENABLE_PSHMEM */
 
 #define SHMEM_CTX_TYPED_P(_name, _type)                              \
