@@ -385,6 +385,40 @@ HELPER_CSWAP(64)
 
 /* NB UCX currently doesn't have API support for these ops */
 
+#define NOTUCP_ATOMIC_BITWISE_OP(_op, _opname, _size)                   \
+    inline static ucs_status_t                                          \
+    ucp_atomic_##_opname##_size(ucp_ep_h ep,                            \
+                                uint##_size##_t val,                    \
+                                uint64_t remote_addr,                   \
+                                ucp_rkey_h rkey,                        \
+                                uint##_size##_t *result)                \
+    {                                                                   \
+        uint##_size##_t rval, rval_orig, ret;                           \
+        ucs_status_t s;                                                 \
+                                                                        \
+        do {                                                            \
+            s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
+                        remote_addr, rkey);                             \
+            assert(s == UCS_OK);                                        \
+                                                                        \
+            rval = (rval_orig) _op (val);                               \
+                                                                        \
+            s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
+                                        remote_addr, rkey, &ret);       \
+            assert(s == UCS_OK);                                        \
+        } while (ret != rval_orig);                                     \
+                                                                        \
+        *result = ret;                                                  \
+        return UCS_OK;                                                  \
+    }
+
+NOTUCP_ATOMIC_BITWISE_OP(&, and, 32)
+NOTUCP_ATOMIC_BITWISE_OP(&, and, 64)
+NOTUCP_ATOMIC_BITWISE_OP(|, or, 32)
+NOTUCP_ATOMIC_BITWISE_OP(|, or, 64)
+NOTUCP_ATOMIC_BITWISE_OP(^, xor, 32)
+NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
+
 #define HELPER_FETCH_BITWISE_OP(_op, _opname, _size)                    \
     inline static uint##_size##_t                                       \
     helper_atomic_fetch_##_opname##_size(shmem_ctx_t ctx,               \
@@ -394,7 +428,7 @@ HELPER_CSWAP(64)
     {                                                                   \
         long r;                                                         \
         uint64_t r_t;                                                   \
-        uint##_size##_t rval, rval_orig, ret;                           \
+        uint##_size##_t ret;                                            \
         ucp_rkey_h rkey;                                                \
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
@@ -404,35 +438,16 @@ HELPER_CSWAP(64)
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(pe);                                         \
                                                                         \
-        do {                                                            \
-            s = ucp_get(ep, &rval_orig, sizeof(rval_orig), r_t, rkey);  \
-            assert(s == UCS_OK);                                        \
-                                                                        \
-            rval = (rval_orig) _op (v);                                 \
-                                                                        \
-            s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
-                                        r_t, rkey, &ret);               \
-            assert(s == UCS_OK);                                        \
-        } while (ret != rval_orig);                                     \
+        s = ucp_atomic_##_opname##_size(ep, v, r_t, rkey, &ret);        \
+        assert(s == UCS_OK);                                            \
                                                                         \
         return ret;                                                     \
     }
 
-/*
- * and
- */
 HELPER_FETCH_BITWISE_OP(&, and, 32)
 HELPER_FETCH_BITWISE_OP(&, and, 64)
-
-/*
- * or
- */
 HELPER_FETCH_BITWISE_OP(|, or, 32)
 HELPER_FETCH_BITWISE_OP(|, or, 64)
-
-/*
- * xor
- */
 HELPER_FETCH_BITWISE_OP(^, xor, 32)
 HELPER_FETCH_BITWISE_OP(^, xor, 64)
 
@@ -449,7 +464,7 @@ HELPER_FETCH_BITWISE_OP(^, xor, 64)
     shmemc_ctx_add##_size(shmem_ctx_t ctx,                          \
                           void *t, uint64_t v, int pe)              \
     {                                                               \
-        (void) helper_atomic_add##_size(ctx, (uint64_t) t, v, pe);  \
+        helper_atomic_add##_size(ctx, (uint64_t) t, v, pe);         \
     }
 
 SHMEMC_CTX_ADD(32)
@@ -464,7 +479,7 @@ SHMEMC_CTX_ADD(64)
     shmemc_ctx_inc##_size(shmem_ctx_t ctx,                          \
                           void *t, int pe)                          \
     {                                                               \
-        (void) helper_atomic_add##_size(ctx, (uint64_t) t, 1, pe);  \
+        helper_atomic_add##_size(ctx, (uint64_t) t, 1, pe);         \
     }
 
 SHMEMC_CTX_INC(32)
