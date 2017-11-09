@@ -95,7 +95,7 @@ valid_pe_number(int pe)
  */
 inline static void *
 shmemc_ptr_helper(shmem_ctx_t ctx,
-           const void *addr, int pe)
+                  const void *addr, int pe)
 {
     /* check to see if UCX is new enough */
 #ifdef HAVE_UCP_RKEY_PTR
