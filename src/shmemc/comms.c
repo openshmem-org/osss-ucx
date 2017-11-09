@@ -383,6 +383,8 @@ HELPER_CSWAP(64)
  * bitwise helpers
  */
 
+#ifndef HAVE_UCP_BITWISE_ATOMICS
+
 /* NB UCX currently doesn't have API support for these ops */
 
 #define NOTUCP_ATOMIC_BITWISE_OP(_op, _opname, _size)                   \
@@ -418,6 +420,8 @@ NOTUCP_ATOMIC_BITWISE_OP(|, or, 32)
 NOTUCP_ATOMIC_BITWISE_OP(|, or, 64)
 NOTUCP_ATOMIC_BITWISE_OP(^, xor, 32)
 NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
+
+#endif  /* ! HAVE_UCP_BITWISE_ATOMICS */
 
 #define HELPER_FETCH_BITWISE_OP(_op, _opname, _size)                    \
     inline static uint##_size##_t                                       \
