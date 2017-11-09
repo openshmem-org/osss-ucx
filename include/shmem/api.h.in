@@ -812,6 +812,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
+     void shmem_ctx_fence(shmem_ctx_t ctx);
      void shmem_fence(void);
      @endcode
      *
@@ -825,7 +826,12 @@ extern "C"
      * BLAH
      *
      */
-    void shmem_fence(void);
+    void shmem_ctx_fence(shmem_ctx_t ctx);
+    inline static void
+    shmem_fence(void)
+    {
+        shmem_ctx_fence(SHMEM_CTX_DEFAULT);
+    }
 
     /**
      * @brief causes outbound communication to complete before
@@ -835,6 +841,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
+     void shmem_ctx_quiet(shmem_ctx_t ctx);
      void shmem_quiet(void);
      @endcode
      *
@@ -850,7 +857,12 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_quiet(void);
+    void shmem_ctx_quiet(shmem_ctx_t ctx);
+    inline static void
+    shmem_quiet(void)
+    {
+        shmem_ctx_quiet(SHMEM_CTX_DEFAULT);
+    }
 
     /*
      * accessibility
