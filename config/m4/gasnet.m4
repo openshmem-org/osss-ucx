@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 gasnet_happy=no
 
 AC_ARG_WITH([gasnet], [AS_HELP_STRING([--with-gasnet@<:@=DIR@:>@], [Use GASNet library])])

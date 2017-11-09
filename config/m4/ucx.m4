@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 ucx_happy=no
 
 AC_ARG_WITH([ucx],
