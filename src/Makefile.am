@@ -43,7 +43,13 @@ MY_SOURCES             = \
                                 shmalloc.c \
                                 version.c \
                                 waituntil.c
-MY_SOURCES            += dlmalloc.c
+
+liballocator_a_SOURCES = dlmalloc.c
+liballocator_a_CFLAGS  = -DONLY_MSPACES=1 -DHAVE_MORECORE=0 -DHAVE_MMAP=0 -DUSE_LOCKS=1
+liballocator_la_SOURCES = $(liballocator_a_SOURCES)
+liballocator_la_CFLAGS  = $(liballocator_a_CFLAGS)
+noinst_LIBRARIES       = liballocator.a
+noinst_LTLIBRARIES     = liballocator.la
 
 if ENABLE_FORTRAN
 MY_SOURCES            += fortran/fortran.c fortran/fortran-mem.c
@@ -69,10 +75,12 @@ libshmem_la_SOURCES    = $(LIBSHMEM_SOURCES)
 libshmem_la_CFLAGS     = $(AM_CFLAGS)
 libshmem_la_CPPFLAGS   = $(all_cppflags)
 libshmem_la_LDFLAGS    = -version-info 0:0:0
+libshmem_la_LIBADD     = liballocator.la
 
 lib_LIBRARIES          = libshmem.a
 libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
 libshmem_a_CPPFLAGS    = $(all_cppflags)
+libshmem_a_LIBADD      = liballocator.a
 
 bin_PROGRAMS           = osh_info
 osh_info_SOURCES       = osh_info.c

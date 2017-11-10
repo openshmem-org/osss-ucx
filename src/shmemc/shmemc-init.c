@@ -37,7 +37,9 @@ shmemc_init(void)
 
     shmemc_pmix_client_finalize();
 
+#if 0
     shmemc_barrier_all();
+#endif
 }
 
 void
