@@ -28,10 +28,11 @@ AM_SILENT_RULES([yes])
 # C/C++
 AC_PROG_CC_C99
 AC_PROG_CC_C_O
-# AC_PROG_CXX
-# AC_PROG_CXX_C_O
-# AC_PROG_CXXCPP
 AC_PROG_INSTALL
+
+AC_PROG_CXX
+AC_PROG_CXX_C_O
+AC_PROG_CXXCPP
 
 # Fortran-specific checks
 AC_PROG_FC
@@ -48,71 +49,7 @@ LT_INIT
 m4_include([config/m4/pmix.m4])
 m4_include([config/m4/ucx.m4])
 
-# Feature checks
-AC_ARG_ENABLE([debug],
-	AS_HELP_STRING([--enable-debug], [Enable library debug @<:@default=no@:>@]),
-	AS_IF([test "x$enableval" = "xyes"],
-		    AC_DEFINE([ENABLE_DEBUG], [1], [Enable debug])
-		    ),
-	[])
-AC_ARG_ENABLE([experimental],
-	AS_HELP_STRING([--enable-experimental],
-			[Enable non-standard extensions @<:@default=no@:>@]))
-AS_IF([test "x$enable_experimental" = "xyes"],
-	[AC_DEFINE([ENABLE_EXPERIMENTAL], [1], [Enable non-standard extensions])
-	AC_SUBST([ENABLE_EXPERIMENTAL], [1])],
-	[AC_SUBST([ENABLE_EXPERIMENTAL], [0])]
-	)
-AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
-
-AC_ARG_ENABLE([pshmem],
-	AS_HELP_STRING([--enable-pshmem],
-			[Enable Profiling interface @<:@default=no@:>@]))
-AS_IF([test "x$enable_pshmem" = "xyes"],
-	[AC_DEFINE([ENABLE_PSHMEM], [1], [Enable profiling interface])
-	 AC_SUBST([ENABLE_PSHMEM], [1])],
-	[AC_SUBST([ENABLE_PSHMEM], [0])]
-	)
-AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
-
-#
-# disabled by default
-#
-AC_ARG_ENABLE([fortran],
-	AS_HELP_STRING([--enable-fortran],
-			[Enable Fortran API support @<:@default=no@:>@]))
-AS_IF([test "x$enable_fortran" = "xyes"],
-	[AC_DEFINE([ENABLE_FORTRAN], [1], [Enable Fortran API])
-	 AC_SUBST([ENABLE_FORTRAN], [1])],
-	[AC_SUBST([ENABLE_FORTRAN], [0])]
-	)
-AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
-
-#
-# address translation
-#
-AC_ARG_ENABLE([fixed-addresses],
-	AS_HELP_STRING([--enable-fixed-addresses],
-			[Symmetric addresses are identical everywhere @<:@default=no@:>@]))
-AS_IF([test "x$enable_fixed_addresses" = "xyes"],
-	[AC_DEFINE([ENABLE_FIXED_ADDRESSES], [1], [Enable fixed symmetric addressesI])
-	 AC_SUBST([ENABLE_FIXED_ADDRESSES], [1])],
-	[AC_SUBST([ENABLE_FIXED_ADDRESSES], [0])]
-	)
-AM_CONDITIONAL([ENABLE_FIXED_ADDRESSES], [test "x$enable_fixed_addresses" = "xyes"])
-
-#
-# enabled by default
-#
-AC_ARG_ENABLE([cxx],
-	AS_HELP_STRING([--disable-cxx],
-			[Support C++ compiler? @<:@default=yes@:>@]))
-AS_IF([test "x$enable_cxx" != "xno"],
-	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ compiler])
-	 AC_SUBST([ENABLE_CXX], [1])],
-	[AC_SUBST([ENABLE_CXX], [0])]
-	)
-AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" != "xno"])
+m4_include([config/m4/confargs.m4])
 
 # static and shared library detection
 AS_IF([test "x$enable_static" = "xyes"],
@@ -132,7 +69,10 @@ AC_TYPE_SIZE_T
 
 AC_CHECK_TYPES([ptrdiff_t])
 
+#
 # Checks for library functions.
+#
+
 # AC_FUNC_MALLOC
 # AC_FUNC_REALLOC
 AC_FUNC_MMAP
@@ -150,16 +90,25 @@ AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compile
 # check for pthreads and how to set it up
 #
 m4_include([config/m4/ax_pthread.m4])
+
 AX_PTHREAD
+
 AC_SUBST([PTHREAD_CC])
 AC_SUBST([PTHREAD_CFLAGS])
 AC_SUBST([PTHREAD_LIBS])
 
+#
+# all the output files
+#
+
 AC_CONFIG_FILES([Makefile])
 
+AC_CONFIG_FILES([man/man1/Makefile
+		 man/man1/oshcc.1 man/man1/oshcxx.1 man/man1/oshfort.1
+		 man/man1/oshrun.1 man/man1/osh_info.1 man/man1/osh_intro.1
+		])
+
 AC_CONFIG_FILES([man/Makefile
-		 man/oshcc.1 man/oshcxx.1 man/oshfort.1
-		 man/oshrun.1 man/osh_info.1 man/osh_intro.1
 		])
 
 AC_CONFIG_FILES([include/Makefile
@@ -169,7 +118,8 @@ AC_CONFIG_FILES([include/Makefile
 		 include/shmem/api.h
 		 include/shmem.h
 		 include/pshmem.h include/pshmemx.h
-		 include/shmemx.h include/null-shmemx.h
+		 include/shmemx.h
+		 include/null-shmemx.h include/null-shmemx.fh
 		 include/shmem/defs.fh
 		 include/shmem.fh include/pshmem.fh
 		 include/shmemx.fh include/pshmemx.fh

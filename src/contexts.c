@@ -14,9 +14,13 @@
 #endif /* ENABLE_PSHMEM */
 
 /*
- * link-time constants
+ * link-time constants. TODO 2017-11-09: real implementation
  */
 shmem_ctx_t SHMEM_CTX_DEFAULT    = 0;
+
+/*
+ * context attributes
+ */
 shmem_ctx_t SHMEM_CTX_SERIALIZED = SHMEM_BIT_SET(0);
 shmem_ctx_t SHMEM_CTX_PRIVATE    = SHMEM_BIT_SET(1);
 shmem_ctx_t SHMEM_CTX_NOSTORE    = SHMEM_BIT_SET(2);
@@ -36,13 +40,8 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 /*
  * no-op for now
  */
+
 void
 shmem_ctx_destroy(shmem_ctx_t ctx)
 {
 }
-
-/*
- * implementation currently missing - in progress
- *
- * decls in shmem.h
- */

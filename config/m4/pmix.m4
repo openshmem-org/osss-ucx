@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 #
 # TODO: needs some work like for ucx/gasnet to allow location passed in too
 #

@@ -7,21 +7,21 @@
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_quiet = pshmem_quiet
-#define shmem_quiet pshmem_quiet
+#pragma weak shmem_ctx_quiet = pshmem_ctx_quiet
+#define shmem_ctx_quiet pshmem_ctx_quiet
 
-#pragma weak shmem_fence = pshmem_fence
-#define shmem_fence pshmem_fence
+#pragma weak shmem_ctx_fence = pshmem_ctx_fence
+#define shmem_ctx_fence pshmem_ctx_fence
 #endif /* ENABLE_PSHMEM */
 
 void
-shmem_quiet(void)
+shmem_ctx_quiet(shmem_ctx_t ctx)
 {
-    shmemc_quiet();
+    shmemc_ctx_quiet(ctx);
 }
 
 void
-shmem_fence(void)
+shmem_ctx_fence(shmem_ctx_t ctx)
 {
-    shmemc_fence();
+    shmemc_ctx_fence(ctx);
 }

@@ -9,10 +9,9 @@ SHMEM_HDRS             =  shmem/defs.h \
 
 
 #
-# deprecated locations of files from spec 1.0
+# deprecated locations of files from earlier specs.  Always required.
 #
-SHMEM_HDRS            += mpp/shmem.h
-
+SHMEM_HDRS            += mpp/shmem.h mpp/shmemx.h mpp/shmemx.fh
 
 
 #
@@ -30,8 +29,10 @@ endif # fortran
 #
 if ENABLE_EXPERIMENTAL
 SHMEMX_HEADER          = shmemx.h
+SHMEMX_HEADER_F        = shmemx.fh
 else
 SHMEMX_HEADER          = null-shmemx.h
+SHMEMX_HEADER_F        = null-shmemx.fh
 endif # experimental
 
 
@@ -73,3 +74,4 @@ nobase_include_HEADERS = $(SHMEM_HDRS)
 
 install-data-hook:
 	cp -p $(SHMEMX_HEADER) $(includedir)/shmemx.h
+	cp -p $(SHMEMX_HEADER_F) $(includedir)/shmemx.fh

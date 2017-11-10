@@ -468,6 +468,12 @@ extern "C"
     void shmem_ctx_##_opname##_size(shmem_ctx_t ctx,                    \
                                     void *dest, const void *src,        \
                                     size_t nelems, int pe);             \
+    /* see \ref shmem_ctx_long_i##_opname() */                          \
+    void shmem_ctx_i##_opname##_size(shmem_ctx_t ctx,                   \
+                                     void *dest,                        \
+                                     const void *src,                   \
+                                     ptrdiff_t tst, ptrdiff_t sst,      \
+                                     size_t nelems, int pe);            \
     /* see \ref shmem_ctx_long_##_opname() */                           \
     void shmem_ctx_##_opname##_size##_nbi(shmem_ctx_t ctx,              \
                                           void *dest, const void *src,  \
@@ -494,6 +500,14 @@ extern "C"
     {                                                                   \
         shmem_ctx_##_opname##_size(SHMEM_CTX_DEFAULT,                   \
                                    dest, src, nelems, pe);              \
+    }                                                                   \
+    inline static void                                                  \
+    shmem_i##_opname##_size(void *dest, const void *src,                \
+                            ptrdiff_t tst, ptrdiff_t sst,               \
+                            size_t nelems, int pe)                      \
+    {                                                                   \
+        shmem_ctx_i##_opname##_size(SHMEM_CTX_DEFAULT,                  \
+                                    dest, src, tst, sst, nelems, pe);   \
     }                                                                   \
     inline static void                                                  \
     shmem_##_opname##_size##_nbi(void *dest, const void *src,           \
@@ -812,6 +826,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
+     void shmem_ctx_fence(shmem_ctx_t ctx);
      void shmem_fence(void);
      @endcode
      *
@@ -825,7 +840,12 @@ extern "C"
      * BLAH
      *
      */
-    void shmem_fence(void);
+    void shmem_ctx_fence(shmem_ctx_t ctx);
+    inline static void
+    shmem_fence(void)
+    {
+        shmem_ctx_fence(SHMEM_CTX_DEFAULT);
+    }
 
     /**
      * @brief causes outbound communication to complete before
@@ -835,6 +855,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
+     void shmem_ctx_quiet(shmem_ctx_t ctx);
      void shmem_quiet(void);
      @endcode
      *
@@ -850,7 +871,12 @@ extern "C"
      * @return None.
      *
      */
-    void shmem_quiet(void);
+    void shmem_ctx_quiet(shmem_ctx_t ctx);
+    inline static void
+    shmem_quiet(void)
+    {
+        shmem_ctx_quiet(SHMEM_CTX_DEFAULT);
+    }
 
     /*
      * accessibility
