@@ -82,40 +82,22 @@ name_to_level(const char *name)
     return LOG_UNKNOWN;
 }
 
-/*
- * for private use before up and running
- */
-static void
-fatal(const char *fmt, ...)
-{
-        va_list ap;
-
-        va_start(ap, fmt);
-        {
-            fprintf(stderr, "FATAL: ");
-            vfprintf(stderr, fmt, ap);
-            fprintf(stderr, "\n");
-            fflush(stderr);
-        }
-        va_end(ap);
-
-        exit(EXIT_FAILURE);
-}
-
 void
 shmemu_logger_init(void)
 {
     if (proc.env.debug) {
 
         host = shmemu_gethostname();
-        assert(host != NULL);
+        if (host == NULL) {
+            host = "unknown";
+        }
 
         /* TODO "%" modifiers for extra info */
         if (proc.env.debug_file != NULL) {
             log_stream = fopen(proc.env.debug_file, "a");
             if (log_stream == NULL) {
-                fatal("can't open debug log file \"%s\"",
-                      proc.env.debug_file);
+                shmemu_fatal("can't open debug log file \"%s\"",
+                             proc.env.debug_file);
                 /* NOT REACHED */
             }
         }

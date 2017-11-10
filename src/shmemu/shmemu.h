@@ -10,6 +10,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include <sys/types.h>
+#include <stdarg.h>
 
 /*
  * how many elements in array T?
@@ -54,6 +55,11 @@ typedef enum shmemu_log {
                        LOG_REDUCTION | LOG_BARRIER | LOG_DEPRECATE | LOG_LOCK),
     LOG_UNKNOWN     = -1
 } shmemu_log_t;
+
+/*
+ * bail out on major problems early/late on during setup/finalize
+ */
+void shmemu_fatal(const char *fmt, ...);
 
 #ifdef ENABLE_DEBUG
 
