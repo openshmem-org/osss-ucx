@@ -6,8 +6,9 @@
 #include "shmem/defs.h"
 
 #include <pthread.h>
-#include <assert.h>
 #include <unistd.h>
+#include <string.h>
+#include <errno.h>
 
 /*
  * monitor thread and its sentinel
@@ -23,13 +24,17 @@ enum sentinel_values {
 static long shmemc_globalexit_sentinel = SENTINEL_ARMED;
 static int shmemc_globalexit_status = 0;
 
-inline static void
+static void
 terminate_thread(void)
 {
     int ps;
 
     ps = pthread_join(thread, NULL);
-    assert(ps == 0);
+    if (ps != 0) {
+        shmemu_fatal("unable to reap global_exit handler: %s",
+                     strerror(errno));
+        /* NOT REACHED */
+    }
 }
 
 static void *
@@ -45,13 +50,17 @@ progress(void *unused)
     return NULL;
 }
 
-inline static void
+static void
 start_thread(void)
 {
     int ps;
 
     ps = pthread_create(&thread, NULL, progress, NULL);
-    assert(ps == 0);
+    if (ps != 0) {
+        shmemu_fatal("unable to iniitalize global_exit handler: %s",
+                     strerror(errno));
+        /* NOT REACHED */
+    }
 }
 
 /*
@@ -80,7 +89,7 @@ shmemc_globalexit_finalize(void)
  * (also doing a redundant but harmless put-to-self to avoid loop
  * conditional/split)
  */
-inline static void
+static void
 tell_pes(void)
 {
     int i;

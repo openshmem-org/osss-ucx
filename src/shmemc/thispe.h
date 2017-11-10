@@ -10,6 +10,9 @@
  * -- for UCX --------------------------------------------------------
  */
 
+/*
+ * exchanged at start-up
+ */
 typedef struct worker_info {
     ucp_address_t *addr;        /* worker address */
     char *buf;                  /* allocated to copy remote worker */
@@ -42,11 +45,15 @@ typedef struct mem_region {
     mem_info_t *minfo;          /* nranks mem info */
 } mem_region_t;
 
+/*
+ * this comms-layer needs to know...
+ */
 typedef struct comms_info {
     ucp_context_h ctxt;         /* local communication context */
     ucp_config_t *cfg;          /* local config */
     ucp_worker_h wrkr;          /* local worker */
     worker_info_t *wrkrs;       /* nranks workers */
+                                /* TODO: wrkrs are transient, can throw away */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
     mem_region_t *regions;      /* exchanged symmetric regions */
     size_t nregions;            /* number of symmetric regions per PE */
@@ -76,6 +83,9 @@ typedef enum shmem_status {
     SHMEM_PE_UNKNOWN
 } shmem_status_t;
 
+/*
+ * each PE has this state info
+ */
 typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
     env_info_t env;             /* environment vars */
@@ -84,7 +94,7 @@ typedef struct thispe_info {
     int nranks;
     shmem_status_t status;      /* up, down, out to lunch etc */
     int refcount;               /* library initialization count */
-    int *peers;                 /* PEs in a node group */
+    int *peers;                 /* # PEs in a node group */
     int npeers;
 } thispe_info_t;
 
