@@ -22,12 +22,18 @@ static const int tag_width = 28;
 static void
 output(const char *tag, const char *val)
 {
+    if (tag != NULL) {
 #define STRMAX 64
-    char buf[STRMAX];
+        char buf[STRMAX];
 
-    snprintf(buf, STRMAX, "%s:", tag);
-    printf("%-*s %s\n", tag_width, buf, val);
+        snprintf(buf, STRMAX, "%s:", tag);
+        printf("%-*s ", tag_width, buf);
 #undef STRMAX
+    }
+
+    if (val != NULL) {
+        printf("%s\n", val);
+    }
 }
 
 static void
@@ -75,11 +81,11 @@ output_package(void)
 }
 
 static void
-output_version(void)
+output_version(int terse)
 {
-    output("OpenSHMEM Package version",
+    output(terse ? NULL : "OpenSHMEM Package version",
 #ifdef PACKAGE_VERSION
-            PACKAGE_VERSION
+           PACKAGE_VERSION
 #else
            INTERNAL_ERROR
 #endif /* PACKAGE_VERSION */
@@ -264,7 +270,7 @@ main(int argc, char *argv[])
         return 1;
     }
 
-    output_version();
+    output_version(version_only);
     if (version_only) {
         return 0;
     }
