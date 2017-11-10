@@ -47,18 +47,20 @@ MY_SOURCES            += dlmalloc.c
 
 if ENABLE_FORTRAN
 MY_SOURCES            += fortran/fortran.c fortran/fortran-mem.c
-endif
+endif # fortran
 
 if ENABLE_EXPERIMENTAL
 MY_SOURCES            += wtime.c
-  if ENABLE_FORTRAN
-    MY_SOURCES        += fortran/fortranx.c
-  endif
-endif
+
+if ENABLE_FORTRAN
+MY_SOURCES            += fortran/fortranx.c
+endif # fortran
+
+endif # experimental
 
 if ENABLE_PSHMEM
 MY_SOURCES            += profiling.c
-endif
+endif # pshmem
 
 LIBSHMEM_SOURCES       = $(MY_SOURCES)
 
