@@ -9,7 +9,8 @@
 #include "state.h"
 
 #include <stdlib.h>
-#include <assert.h>
+#include <string.h>
+#include <errno.h>
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_finalize = pshmem_finalize
@@ -55,7 +56,12 @@ shmem_init(void)
         shmemu_init();
 
         s = atexit(shmem_finalize);
-        assert(s == 0);
+        if (s != 0) {
+            logger(LOG_FATAL,
+                   "unable to register atexit() handler: %s",
+                   strerror(errno));
+            /* NOT REACHED */
+        }
 
         proc.status = SHMEM_PE_RUNNING;
         /* 'ere we go! */
