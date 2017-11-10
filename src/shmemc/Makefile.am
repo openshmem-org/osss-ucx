@@ -33,12 +33,15 @@ install-exec-hook:
 	cd $(bindir); \
 	cp -p oshcxx oshc++
 
-endif
+endif # c++
 
 if ENABLE_FORTRAN
 
 MY_WRAPPERS              += oshfort
 
-endif
+endif # fortran
+
+
+# install these
 
 bin_SCRIPTS               = $(MY_WRAPPERS)
