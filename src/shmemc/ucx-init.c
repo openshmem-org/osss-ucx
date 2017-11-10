@@ -442,7 +442,9 @@ shmemc_ucx_init(void)
 
     make_local_worker();
 
-    // dump();
+#if 0
+    dump();
+#endif
 
     /* don't need config info any more */
     ucp_config_release(proc.comms.cfg);
