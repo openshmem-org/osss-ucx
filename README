@@ -1,9 +1,10 @@
 # For license: see LICENSE file at top-level
 
 This project is the Open Source Software Solutions (OSSS) OpenSHMEM
-Implementation on top of OpenUCX (UCX).
+Implementation on top of OpenUCX (UCX) and PMIx.
 
 Links:
 
 OpenSHMEM : http://www.openshmem.org/
 OpenUCX   : http://www.openucx.org/
+PMIx      : https://pmix.github.io/pmix/
