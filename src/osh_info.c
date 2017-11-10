@@ -8,6 +8,7 @@
 #include "shmemu.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -267,12 +268,12 @@ main(int argc, char *argv[])
     /* usage info, and bail */
     if (help) {
         output_help();
-        return 1;
+        return EXIT_FAILURE;
     }
 
     output_version(version_only);
     if (version_only) {
-        return 0;
+        return EXIT_SUCCESS;
     }
 
     /* we want all the rest of it */
@@ -283,5 +284,5 @@ main(int argc, char *argv[])
     output_features();
     output_comms();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
