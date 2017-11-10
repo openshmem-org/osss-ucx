@@ -229,8 +229,8 @@ void
 shmemc_pmix_exchange_all_rkeys(void)
 {
     pmix_status_t ps;
-    pmix_pdata_t fetch;
     pmix_byte_object_t *bop;
+    pmix_pdata_t fetch;
     pmix_info_t waiter;
     int all = 1;
     int pe;
