@@ -21,14 +21,15 @@
 void shmemu_init(void);
 void shmemu_finalize(void);
 
+/*
+ * elapsed time in seconds since program started
+ */
 void shmemu_timer_init(void);
 void shmemu_timer_finalize(void);
 double shmemu_timer(void);
 
 char *shmemu_gethostname(void);
-
 int shmemu_parse_size(char *size_str, size_t *bytes_p);
-
 void *shmemu_round_down_address_to_pagesize(void *addr);
 
 /*
