@@ -57,7 +57,7 @@ start_thread(void)
 
     ps = pthread_create(&thread, NULL, progress, NULL);
     if (ps != 0) {
-        shmemu_fatal("unable to iniitalize global_exit handler: %s",
+        shmemu_fatal("unable to initialize global_exit handler: %s",
                      strerror(errno));
         /* NOT REACHED */
     }
