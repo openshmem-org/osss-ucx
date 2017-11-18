@@ -306,6 +306,15 @@ shmemc_pmix_client_finalize(void)
 }
 
 void
+shmemc_pmix_client_abort(int status)
+{
+    pmix_status_t ps;
+
+    ps = PMIx_Abort(status, NULL, NULL, 0);
+    assert(ps == PMIX_SUCCESS);
+}
+
+void
 shmemc_pmix_client_init(void)
 {
     pmix_proc_t my_proc;        /* about me */

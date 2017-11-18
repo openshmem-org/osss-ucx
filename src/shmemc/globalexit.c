@@ -43,7 +43,7 @@ progress(void *unused)
     shmemc_wait_ne_until64(&shmemc_globalexit_sentinel, SENTINEL_ARMED);
 
     if (shmemc_globalexit_sentinel == SENTINEL_ZAPPED) {
-        _exit(shmemc_globalexit_status);
+        shmemc_pmix_client_abort(shmemc_globalexit_status);
         /* NOT REACHED */
     }
 

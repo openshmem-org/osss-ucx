@@ -3,8 +3,9 @@
 #ifndef _SHMEMI_PMIX_H
 #define _SHMEMI_PMIX_H 1
 
-void shmemc_pmix_client_finalize(void);
 void shmemc_pmix_client_init(void);
+void shmemc_pmix_client_finalize(void);
+void shmemc_pmix_client_abort(int status);
 
 void shmemc_pmix_barrier_all(void);
 
