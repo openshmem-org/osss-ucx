@@ -91,9 +91,12 @@ extern void shmem_complexd_get(COMPLEXIFY(double) *dest,
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_ctx_get(ctx, target + ti, source + si, the_size, pe); \
-            ti += tst;                                                  \
-            si += sst;                                                  \
+            shmemc_ctx_get(ctx,                                         \
+                           &((char *)target)[ti],                       \
+                           &((char *)source)[si],                       \
+                           the_size, pe);                               \
+            ti += tst * the_size;                                       \
+            si += sst * the_size;                                       \
         }                                                               \
     }
 
@@ -138,9 +141,12 @@ SHMEM_CTX_TYPED_IGET(complexd, COMPLEXIFY(double))
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_ctx_get(ctx, target + ti, source + si, _size, pe);   \
-            ti += tst;                                                  \
-            si += sst;                                                  \
+            shmemc_ctx_get(ctx,                                         \
+                           &((char *)target)[ti],                       \
+                           &((char *)source)[si],                       \
+                           _size, pe);                                  \
+            ti += tst * _size;                                          \
+            si += sst * _size;                                          \
         }                                                               \
     }
 
