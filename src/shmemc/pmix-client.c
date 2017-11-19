@@ -266,6 +266,10 @@ shmemc_pmix_exchange_all_rkeys(void)
     }
 }
 
+/*
+ * TODO: I am aware this is in the wrong place
+ */
+
 static void
 init_regions(void)
 {
