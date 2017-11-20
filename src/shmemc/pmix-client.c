@@ -266,6 +266,10 @@ shmemc_pmix_exchange_all_rkeys(void)
     }
 }
 
+/*
+ * TODO: I am aware this is in the wrong place
+ */
+
 static void
 init_regions(void)
 {
@@ -297,12 +301,6 @@ void
 shmemc_pmix_barrier_all(void)
 {
     PMIx_Fence(NULL, 0, NULL, 0);
-}
-
-void
-shmemc_pmix_client_finalize(void)
-{
-    pmix_finalize_handler();
 }
 
 void
@@ -354,4 +352,19 @@ shmemc_pmix_client_init(void)
 
     /* and done */
     PMIX_VALUE_RELEASE(vp);
+}
+
+void
+shmemc_pmix_client_finalize(void)
+{
+    pmix_finalize_handler();
+}
+
+void
+shmemc_pmix_client_abort(int status)
+{
+    pmix_status_t ps;
+
+    ps = PMIx_Abort(status, NULL, NULL, 0);
+    assert(ps == PMIX_SUCCESS);
 }

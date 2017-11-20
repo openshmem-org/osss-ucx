@@ -13,10 +13,10 @@
 #include <errno.h>
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_finalize = pshmem_finalize
-#define shmem_finalize pshmem_finalize
 #pragma weak shmem_init = pshmem_init
 #define shmem_init pshmem_init
+#pragma weak shmem_finalize = pshmem_finalize
+#define shmem_finalize pshmem_finalize
 #endif /* ENABLE_PSHMEM */
 
 /*
@@ -80,6 +80,13 @@ shmem_init(void)
  *
  * TODO: invert this and shmem_init(), just a stub for now
  */
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_init_thread = pshmem_init_thread
+#define shmem_init_thread pshmem_init_thread
+#pragma weak shmem_query_thread = pshmem_query_thread
+#define shmem_query_thread pshmem_query_thread
+#endif /* ENABLE_PSHMEM */
 
 int
 shmem_init_thread(int requested, int *provided)

@@ -384,32 +384,15 @@ extern "C"
 #undef API_DECL_CTX_PUTGET
 
 #define API_DECL_PUTGET(_opname, _name, _type)                          \
-    inline static void                                                  \
-    shmem_##_name##_##_opname(_type *dest, const _type *src,            \
-                              size_t nelems, int pe)                    \
-    {                                                                   \
-        shmem_ctx_##_name##_##_opname(SHMEM_CTX_DEFAULT,                \
-                                      dest, src, nelems, pe);           \
-    }                                                                   \
-    inline static void                                                  \
-    shmem_##_name##_i##_opname(_type *dest,                             \
+    void shmem_##_name##_##_opname(_type *dest, const _type *src,       \
+                              size_t nelems, int pe);                   \
+    void shmem_##_name##_i##_opname(_type *dest,                        \
                                const _type *src,                        \
                                ptrdiff_t tst, ptrdiff_t sst,            \
-                               size_t nelems, int pe)                   \
-    {                                                                   \
-        shmem_ctx_##_name##_i##_opname(SHMEM_CTX_DEFAULT,               \
-                                       dest, src,                       \
-                                       tst, sst,                        \
-                                       nelems, pe);                     \
-    }                                                                   \
-    inline static void                                                  \
-    shmem_##_name##_##_opname##_nbi(_type *dest,                        \
+                               size_t nelems, int pe);                  \
+    void shmem_##_name##_##_opname##_nbi(_type *dest,                   \
                                     const _type *src,                   \
-                                    size_t nelems, int pe)              \
-    {                                                                   \
-        shmem_ctx_##_name##_##_opname##_nbi(SHMEM_CTX_DEFAULT,          \
-                                            dest, src, nelems, pe);     \
-    }
+                                    size_t nelems, int pe);
 
     API_DECL_PUTGET(put, float, float)
     API_DECL_PUTGET(put, double, double)
@@ -494,28 +477,13 @@ extern "C"
 #undef API_DECL_CTX_PUTGET_SIZE
 
 #define API_DECL_PUTGET_SIZE(_opname, _size)                            \
-    inline static void                                                  \
-    shmem_##_opname##_size(void *dest, const void *src,                 \
-                           size_t nelems, int pe)                       \
-    {                                                                   \
-        shmem_ctx_##_opname##_size(SHMEM_CTX_DEFAULT,                   \
-                                   dest, src, nelems, pe);              \
-    }                                                                   \
-    inline static void                                                  \
-    shmem_i##_opname##_size(void *dest, const void *src,                \
+    void shmem_##_opname##_size(void *dest, const void *src,            \
+                           size_t nelems, int pe);                      \
+    void shmem_i##_opname##_size(void *dest, const void *src,           \
                             ptrdiff_t tst, ptrdiff_t sst,               \
-                            size_t nelems, int pe)                      \
-    {                                                                   \
-        shmem_ctx_i##_opname##_size(SHMEM_CTX_DEFAULT,                  \
-                                    dest, src, tst, sst, nelems, pe);   \
-    }                                                                   \
-    inline static void                                                  \
-    shmem_##_opname##_size##_nbi(void *dest, const void *src,           \
-                                 size_t nelems, int pe)                 \
-    {                                                                   \
-        shmem_ctx_##_opname##_size##_nbi(SHMEM_CTX_DEFAULT,             \
-                                         dest, src, nelems, pe);        \
-    }
+                            size_t nelems, int pe);                     \
+    void shmem_##_opname##_size##_nbi(void *dest, const void *src,      \
+                                      size_t nelems, int pe);           \
 
     API_DECL_PUTGET_SIZE(put, 8)
     API_DECL_PUTGET_SIZE(put, 16)
@@ -546,21 +514,11 @@ extern "C"
 
 #undef API_DECL_CTX_PUTGET_MEM
 
-#define API_DECL_PUTGET_MEM(_opname)                                    \
-    inline static void                                                  \
-    shmem_##_opname##mem(void *dest, const void *src,                   \
-                         size_t nelems, int pe)                         \
-    {                                                                   \
-        shmem_ctx_##_opname##mem(SHMEM_CTX_DEFAULT,                     \
-                                 dest, src, nelems, pe);                \
-    }                                                                   \
-    inline static void                                                  \
-    shmem_##_opname##mem_nbi(void *dest, const void *src,               \
-                             size_t nelems, int pe)                     \
-    {                                                                   \
-        shmem_ctx_##_opname##mem_nbi(SHMEM_CTX_DEFAULT,                 \
-                                     dest, src, nelems, pe);            \
-    }
+#define API_DECL_PUTGET_MEM(_opname)                                \
+    void shmem_##_opname##mem(void *dest, const void *src,              \
+                              size_t nelems, int pe);                   \
+    void shmem_##_opname##mem_nbi(void *dest, const void *src,          \
+                                  size_t nelems, int pe);
 
     API_DECL_PUTGET_MEM(put)
     API_DECL_PUTGET_MEM(get)
@@ -599,13 +557,8 @@ extern "C"
 
 #undef API_CTX_DECL_P
 
-#define API_DECL_P(_name, _type)                                        \
-    inline static void                                                  \
-    shmem_##_name##_p(_type *dest, _type src, int pe)                   \
-    {                                                                   \
-        shmem_ctx_##_name##_p(SHMEM_CTX_DEFAULT,                        \
-                              dest, src, pe);                           \
-    }
+#define API_DECL_P(_name, _type)                            \
+    void shmem_##_name##_p(_type *dest, _type src, int pe);
 
     API_DECL_P(float, float)
     API_DECL_P(double, double)
@@ -667,12 +620,7 @@ extern "C"
 #undef API_CTX_DECL_G
 
 #define API_DECL_G(_name, _type)                            \
-    inline static _type                                     \
-    shmem_##_name##_g(_type *dest, int pe)                  \
-    {                                                       \
-        return shmem_ctx_##_name##_g(SHMEM_CTX_DEFAULT,     \
-                                     dest, pe);             \
-    }
+    _type shmem_##_name##_g(_type *dest, int pe);
 
     API_DECL_G(float, float)
     API_DECL_G(double, double)
@@ -841,11 +789,7 @@ extern "C"
      *
      */
     void shmem_ctx_fence(shmem_ctx_t ctx);
-    inline static void
-    shmem_fence(void)
-    {
-        shmem_ctx_fence(SHMEM_CTX_DEFAULT);
-    }
+    void shmem_fence(void);
 
     /**
      * @brief causes outbound communication to complete before
@@ -872,11 +816,7 @@ extern "C"
      *
      */
     void shmem_ctx_quiet(shmem_ctx_t ctx);
-    inline static void
-    shmem_quiet(void)
-    {
-        shmem_ctx_quiet(SHMEM_CTX_DEFAULT);
-    }
+    void shmem_quiet(void);
 
     /*
      * accessibility
@@ -1295,7 +1235,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     long shmem_long_atomic_swap(long *target, long value, int pe);
+     long shmem_ctx_long_atomic_swap(shmem_ctx_t ctx, long *target, long value, int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -1317,12 +1257,7 @@ extern "C"
                                           _type value,                  \
                                           int pe) _WUR;                 \
     /* see \ref shmem_long_atomic_swap() */                             \
-    inline static _type                                                 \
-    shmem_##_name##_atomic_swap(_type *target, _type value, int pe)     \
-    {                                                                   \
-        return shmem_ctx_##_name##_atomic_swap(SHMEM_CTX_DEFAULT,       \
-                                               target, value, pe);      \
-    }
+    _type shmem_##_name##_atomic_swap(_type *target, _type value, int pe);
 
     API_CTX_DECL_SWAP(float, float)
     API_CTX_DECL_SWAP(double, double)
@@ -1360,9 +1295,10 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     long shmem_long_atomic_compare_swap(long *target,
-                                         long cond, long value,
-                                         int pe);
+     long shmem_ctx_long_atomic_compare_swap(shmem_ctx_t ctx,
+                                             long *target,
+                                             long cond, long value,
+                                             int pe);
      @endcode
      *
      * @subsection f Fortran
@@ -1384,16 +1320,9 @@ extern "C"
                                                   _type cond, _type value, \
                                                   int pe) _WUR;         \
     /* see \ref shmem_long_atomic_compare_swap() */                     \
-    inline static _type                                                 \
-    shmem_##_name##_atomic_compare_swap(_type *target,                  \
-                                        _type cond,_type value,         \
-                                        int pe)                         \
-    {                                                                   \
-        return shmem_ctx_##_name##_atomic_compare_swap(SHMEM_CTX_DEFAULT, \
-                                                       target,          \
-                                                       cond, value,     \
-                                                       pe);             \
-    }
+    _type shmem_##_name##_atomic_compare_swap(_type *target,            \
+                                              _type cond,_type value,   \
+                                              int pe);
 
     /* no reals */
     API_CTX_DECL_CSWAP(int, int)
@@ -1898,7 +1827,7 @@ extern "C"
     SHMEM_DECL_AMO2(fetch_xor, int32, int32_t)
     /* see \ref shmem_ulong_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, int64, int64_t)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+   /* see \ref shmem_ulong_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint32, uint32_t)
     /* see \ref shmem_ulong_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint64, uint64_t)
@@ -1963,7 +1892,7 @@ extern "C"
      *
      * - C/C++:
      * @code
-     long shmem_long_atomic_fetch(const long *dest, int pe);
+     long shmem_ctx_long_atomic_fetch(shmem_ctx_t ctx, const long *dest, int pe);
      * @endcode
      *
      * - Fortran:
@@ -2057,7 +1986,7 @@ extern "C"
      *
      * - C/C++:
      * @code
-     void shmem_long_atomic_set(long *dest, long value, int pe);
+     void shmem_ctx_long_atomic_set(shmem_ctx_t ctx, long *dest, long value, int pe);
      * @endcode
      *
      * - Fortran:

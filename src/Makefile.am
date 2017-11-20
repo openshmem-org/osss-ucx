@@ -27,16 +27,12 @@ MY_SOURCES             = \
 				contexts.c \
                                 fcollect.c \
                                 get.c \
-                                get-nbi.c \
-                                get-strided.c \
                                 globalexit.c \
                                 init.c \
                                 lock.c \
                                 memalloc.c \
                                 ptr.c \
                                 put.c \
-                                put-nbi.c \
-                                put-strided.c \
                                 quiet.c \
 				ranks.c  \
                                 reductions.c \
