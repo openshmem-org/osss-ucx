@@ -25,8 +25,8 @@ pmix_finalize_handler(void)
 
     /* clean up allocations for exchanged buffers */
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        if (proc.comms.wrkrs[pe].buf != NULL) {
-            free(proc.comms.wrkrs[pe].buf);
+        if (proc.comms.xchg_wrkrs[pe].buf != NULL) {
+            free(proc.comms.xchg_wrkrs[pe].buf);
         }
     }
 
@@ -89,7 +89,7 @@ shmemc_pmix_publish_heap_info(void)
 
         snprintf(ia[1].key, PMIX_MAX_KEYLEN, region_size_fmt, proc.rank, r);
         ia[1].value.type = PMIX_SIZE;
-        ia[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].length;
+        ia[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
         ps = PMIx_Publish(ia, nfields);
         assert(ps == PMIX_SUCCESS);
@@ -128,9 +128,10 @@ shmemc_pmix_exchange_heap_info(void)
             ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
             assert(ps == PMIX_SUCCESS);
 
+            /* slightly redundant storage, but useful */
             proc.comms.regions[r].minfo[pe].base =
                 fetch_base.value.data.uint64;
-            proc.comms.regions[r].minfo[pe].length =
+            proc.comms.regions[r].minfo[pe].len =
                 fetch_size.value.data.size;
             proc.comms.regions[r].minfo[pe].end =
                 proc.comms.regions[r].minfo[pe].base +
@@ -155,8 +156,8 @@ shmemc_pmix_publish_worker(void)
     snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
     pi.value.type = PMIX_BYTE_OBJECT;
     bop = &pi.value.data.bo;
-    bop->bytes = (char *) proc.comms.wrkrs[proc.rank].addr;
-    bop->size = proc.comms.wrkrs[proc.rank].len;
+    bop->bytes = (char *) proc.comms.xchg_wrkrs[proc.rank].addr;
+    bop->size = proc.comms.xchg_wrkrs[proc.rank].len;
     ps = PMIx_Publish(&pi, 1);
     assert(ps == PMIX_SUCCESS);
 }
@@ -185,9 +186,9 @@ shmemc_pmix_exchange_workers(void)
         bop = &fetch.value.data.bo;
 
         /* save published worker */
-        proc.comms.wrkrs[i].buf = (char *) malloc(bop->size);
-        assert(proc.comms.wrkrs[i].buf != NULL);
-        memcpy(proc.comms.wrkrs[i].buf, bop->bytes, bop->size);
+        proc.comms.xchg_wrkrs[i].buf = (char *) malloc(bop->size);
+        assert(proc.comms.xchg_wrkrs[i].buf != NULL);
+        memcpy(proc.comms.xchg_wrkrs[i].buf, bop->bytes, bop->size);
     }
 }
 
