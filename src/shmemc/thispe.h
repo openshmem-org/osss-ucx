@@ -34,7 +34,7 @@ typedef struct mem_region_access {
 typedef struct mem_info {
     uint64_t base;              /* start of this heap */
     uint64_t end;               /* end of this heap */
-    size_t length;              /* its size (b) */
+    size_t len;                 /* its size (b) */
     mem_region_access_t racc;   /* for remote access */
 } mem_info_t;
 
@@ -52,8 +52,7 @@ typedef struct comms_info {
     ucp_context_h ctxt;         /* local communication context */
     ucp_config_t *cfg;          /* local config */
     ucp_worker_h wrkr;          /* local worker */
-    worker_info_t *wrkrs;       /* nranks workers */
-                                /* TODO: wrkrs are transient, can throw away */
+    worker_info_t *xchg_wrkrs;  /* nranks worker info exchanged */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
     mem_region_t *regions;      /* exchanged symmetric regions */
     size_t nregions;            /* number of symmetric regions per PE */

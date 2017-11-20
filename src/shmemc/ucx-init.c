@@ -156,7 +156,7 @@ make_init_params(ucp_params_t *p_p)
      * support because OpenSHMEM wants them
      */
     p_p->features  = UCP_FEATURE_RMA;
-    p_p->features |= UCP_FEATURE_WAKEUP;
+    p_p->features |= UCP_FEATURE_WAKEUP; /* for events */
     p_p->features |= UCP_FEATURE_AMO32;
     p_p->features |= UCP_FEATURE_AMO64;
 
@@ -169,16 +169,16 @@ make_init_params(ucp_params_t *p_p)
 inline static void
 allocate_workers(void)
 {
-    proc.comms.wrkrs = (worker_info_t *)
-        calloc(proc.nranks, sizeof(*(proc.comms.wrkrs)));
-    assert(proc.comms.wrkrs != NULL);
+    proc.comms.xchg_wrkrs = (worker_info_t *)
+        calloc(proc.nranks, sizeof(*(proc.comms.xchg_wrkrs)));
+    assert(proc.comms.xchg_wrkrs != NULL);
 }
 
 inline static void
 deallocate_workers(void)
 {
-    if (proc.comms.wrkrs != NULL) {
-        free(proc.comms.wrkrs);
+    if (proc.comms.xchg_wrkrs != NULL) {
+        free(proc.comms.xchg_wrkrs);
     }
 }
 
@@ -187,8 +187,8 @@ make_local_worker(void)
 {
     ucs_status_t s;
     ucp_worker_params_t wkpm;
-    ucp_address_t *a;
-    size_t l;
+    ucp_address_t *addr;
+    size_t len;
 
     wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
     wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
@@ -197,11 +197,11 @@ make_local_worker(void)
     assert(s == UCS_OK);
 
     /* get address for remote access to worker */
-    s = ucp_worker_get_address(proc.comms.wrkr, &a, &l);
+    s = ucp_worker_get_address(proc.comms.wrkr, &addr, &len);
     assert(s == UCS_OK);
 
-    proc.comms.wrkrs[proc.rank].addr = a;
-    proc.comms.wrkrs[proc.rank].len = l;
+    proc.comms.xchg_wrkrs[proc.rank].addr = addr;
+    proc.comms.xchg_wrkrs[proc.rank].len = len;
 }
 
 /*
@@ -301,11 +301,11 @@ reg_symmetric_heap(void)
     /* tell the PE what was given */
     def_symm_heap->base = (uint64_t) attr.address;
     def_symm_heap->end  = def_symm_heap->base + attr.length;
-    def_symm_heap->length = attr.length;
+    def_symm_heap->len  = attr.length;
 
     /* initialize the heap allocator */
     shmemm_mem_init((void *) def_symm_heap->base,
-                    def_symm_heap->length);
+                    def_symm_heap->len);
 }
 
 inline static void
@@ -340,7 +340,7 @@ reg_globals(void)
 
     globals->base = g_base;
     globals->end  = globals->base + len;
-    globals->length = len;
+    globals->len  = len;
 
     s = ucp_mem_map(proc.comms.ctxt, &mp, &globals->racc.mh);
     assert(s == UCS_OK);
@@ -401,7 +401,7 @@ shmemc_ucx_make_remote_endpoints(void)
         const int i = (pe + proc.rank) % proc.nranks;
 
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-        epm.address = (ucp_address_t *) proc.comms.wrkrs[i].buf;
+        epm.address = (ucp_address_t *) proc.comms.xchg_wrkrs[i].buf;
 
         s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[i]);
         assert(s == UCS_OK);
@@ -462,7 +462,7 @@ shmemc_ucx_finalize(void)
 
     if (proc.comms.wrkr) {
         ucp_worker_release_address(proc.comms.wrkr,
-                                   proc.comms.wrkrs[proc.rank].addr);
+                                   proc.comms.xchg_wrkrs[proc.rank].addr);
         ucp_worker_destroy(proc.comms.wrkr);
     }
     deallocate_workers();

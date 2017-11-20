@@ -2,6 +2,7 @@
 
 #include "state.h"
 
+#include <sched.h>
 #include <ucp/api/ucp.h>
 
 #if 0
@@ -48,9 +49,11 @@ COMMS_TEST_SIZE(64, ge, >=)
     {                                                                   \
         while (1) {                                                     \
             ucp_worker_wait_mem(proc.comms.wrkr, var);                  \
-            if ( *var _op value ) {                                     \
+            if ( (*var) _op (value) ) {                                 \
                 return;                                                 \
+                /* NOT REACHED */                                       \
             }                                                           \
+            sched_yield();                                              \
         }                                                               \
     }
 
