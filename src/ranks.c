@@ -8,13 +8,8 @@
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
-#pragma weak _my_pe = p_my_pe
-#define _my_pe p_my_pe
 #pragma weak shmem_my_pe = pshmem_my_pe
 #define shmem_my_pe pshmem_my_pe
-
-#pragma weak _num_pes = p_num_pes
-#define _num_pes p_num_pes
 #pragma weak shmem_n_pes = pshmem_n_pes
 #define shmem_n_pes pshmem_n_pes
 #endif /* ENABLE_PSHMEM */
@@ -30,6 +25,13 @@ shmem_n_pes(void)
 {
     return shmemc_n_pes();
 }
+
+#ifdef ENABLE_PSHMEM
+#pragma weak _my_pe = p_my_pe
+#define _my_pe p_my_pe
+#pragma weak _num_pes = p_num_pes
+#define _num_pes p_num_pes
+#endif /* ENABLE_PSHMEM */
 
 int
 _my_pe(void)

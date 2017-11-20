@@ -8,44 +8,56 @@
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
-extern void shmem_complexf_get_nbi(COMPLEXIFY (float) * dest,
-                                   const COMPLEXIFY (float) * src,
-                                   size_t nelems, int pe); /* ! API */
-extern void shmem_complexd_get_nbi(COMPLEXIFY (double) * dest,
-                                   const COMPLEXIFY (double) * src,
-                                   size_t nelems, int pe); /* ! API */
-#pragma weak shmem_short_get_nbi = pshmem_short_get_nbi
-#define shmem_short_get_nbi pshmem_short_get_nbi
-#pragma weak shmem_int_get_nbi = pshmem_int_get_nbi
-#define shmem_int_get_nbi pshmem_int_get_nbi
-#pragma weak shmem_char_get_nbi = pshmem_char_get_nbi
-#define shmem_char_get_nbi pshmem_char_get_nbi
-#pragma weak shmem_long_get_nbi = pshmem_long_get_nbi
-#define shmem_long_get_nbi pshmem_long_get_nbi
-#pragma weak shmem_longdouble_get_nbi = pshmem_longdouble_get_nbi
-#define shmem_longdouble_get_nbi pshmem_longdouble_get_nbi
-#pragma weak shmem_longlong_get_nbi = pshmem_longlong_get_nbi
-#define shmem_longlong_get_nbi pshmem_longlong_get_nbi
-#pragma weak shmem_double_get_nbi = pshmem_double_get_nbi
-#define shmem_double_get_nbi pshmem_double_get_nbi
-#pragma weak shmem_float_get_nbi = pshmem_float_get_nbi
-#define shmem_float_get_nbi pshmem_float_get_nbi
-#pragma weak shmem_complexf_get_nbi = pshmem_complexf_get_nbi
-#define shmem_complexf_get_nbi pshmem_complexf_get_nbi
-#pragma weak shmem_complexd_get_nbi = pshmem_complexd_get_nbi
-#define shmem_complexd_get_nbi pshmem_complexd_get_nbi
-#pragma weak shmem_getmem_nbi = pshmem_getmem_nbi
-#define shmem_getmem_nbi pshmem_getmem_nbi
-#pragma weak shmem_get32_nbi = pshmem_get32_nbi
-#define shmem_get32_nbi pshmem_get32_nbi
-#pragma weak shmem_get64_nbi = pshmem_get64_nbi
-#define shmem_get64_nbi pshmem_get64_nbi
-#pragma weak shmem_get128_nbi = pshmem_get128_nbi
-#define shmem_get128_nbi pshmem_get128_nbi
-/* # pragma weak pshmem_get_nbi = pshmem_long_get_nbi */
-/* # pragma weak shmem_get_nbi = pshmem_get_nbi */
+#pragma weak shmem_ctx_float_get_nbi = pshmem_ctx_float_get_nbi
+#define shmem_ctx_float_get_nbi pshmem_ctx_float_get_nbi
+#pragma weak shmem_ctx_double_get_nbi = pshmem_ctx_double_get_nbi
+#define shmem_ctx_double_get_nbi pshmem_ctx_double_get_nbi
+#pragma weak shmem_ctx_longdouble_get_nbi = pshmem_ctx_longdouble_get_nbi
+#define shmem_ctx_longdouble_get_nbi pshmem_ctx_longdouble_get_nbi
+#pragma weak shmem_ctx_char_get_nbi = pshmem_ctx_char_get_nbi
+#define shmem_ctx_char_get_nbi pshmem_ctx_char_get_nbi
+#pragma weak shmem_ctx_schar_get_nbi = pshmem_ctx_schar_get_nbi
+#define shmem_ctx_schar_get_nbi pshmem_ctx_schar_get_nbi
+#pragma weak shmem_ctx_short_get_nbi = pshmem_ctx_short_get_nbi
+#define shmem_ctx_short_get_nbi pshmem_ctx_short_get_nbi
+#pragma weak shmem_ctx_int_get_nbi = pshmem_ctx_int_get_nbi
+#define shmem_ctx_int_get_nbi pshmem_ctx_int_get_nbi
+#pragma weak shmem_ctx_long_get_nbi = pshmem_ctx_long_get_nbi
+#define shmem_ctx_long_get_nbi pshmem_ctx_long_get_nbi
+#pragma weak shmem_ctx_longlong_get_nbi = pshmem_ctx_longlong_get_nbi
+#define shmem_ctx_longlong_get_nbi pshmem_ctx_longlong_get_nbi
+#pragma weak shmem_ctx_uchar_get_nbi = pshmem_ctx_uchar_get_nbi
+#define shmem_ctx_uchar_get_nbi pshmem_ctx_uchar_get_nbi
+#pragma weak shmem_ctx_ushort_get_nbi = pshmem_ctx_ushort_get_nbi
+#define shmem_ctx_ushort_get_nbi pshmem_ctx_ushort_get_nbi
+#pragma weak shmem_ctx_uint_get_nbi = pshmem_ctx_uint_get_nbi
+#define shmem_ctx_uint_get_nbi pshmem_ctx_uint_get_nbi
+#pragma weak shmem_ctx_ulong_get_nbi = pshmem_ctx_ulong_get_nbi
+#define shmem_ctx_ulong_get_nbi pshmem_ctx_ulong_get_nbi
+#pragma weak shmem_ctx_ulonglong_get_nbi = pshmem_ctx_ulonglong_get_nbi
+#define shmem_ctx_ulonglong_get_nbi pshmem_ctx_ulonglong_get_nbi
+#pragma weak shmem_ctx_int8_get_nbi = pshmem_ctx_int8_get_nbi
+#define shmem_ctx_int8_get_nbi pshmem_ctx_int8_get_nbi
+#pragma weak shmem_ctx_int16_get_nbi = pshmem_ctx_int16_get_nbi
+#define shmem_ctx_int16_get_nbi pshmem_ctx_int16_get_nbi
+#pragma weak shmem_ctx_int32_get_nbi = pshmem_ctx_int32_get_nbi
+#define shmem_ctx_int32_get_nbi pshmem_ctx_int32_get_nbi
+#pragma weak shmem_ctx_int64_get_nbi = pshmem_ctx_int64_get_nbi
+#define shmem_ctx_int64_get_nbi pshmem_ctx_int64_get_nbi
+#pragma weak shmem_ctx_uint8_get_nbi = pshmem_ctx_uint8_get_nbi
+#define shmem_ctx_uint8_get_nbi pshmem_ctx_uint8_get_nbi
+#pragma weak shmem_ctx_uint16_get_nbi = pshmem_ctx_uint16_get_nbi
+#define shmem_ctx_uint16_get_nbi pshmem_ctx_uint16_get_nbi
+#pragma weak shmem_ctx_uint32_get_nbi = pshmem_ctx_uint32_get_nbi
+#define shmem_ctx_uint32_get_nbi pshmem_ctx_uint32_get_nbi
+#pragma weak shmem_ctx_uint64_get_nbi = pshmem_ctx_uint64_get_nbi
+#define shmem_ctx_uint64_get_nbi pshmem_ctx_uint64_get_nbi
+/* for Fortran */
+#pragma weak shmem_ctx_complexf_get_nbi = pshmem_ctx_complexf_get_nbi
+#define shmem_ctx_complexf_get_nbi pshmem_ctx_complexf_get_nbi
+#pragma weak shmem_ctx_complexd_get_nbi = pshmem_ctx_complexd_get_nbi
+#define shmem_ctx_complexd_get_nbi pshmem_ctx_complexd_get_nbi
 #endif /* ENABLE_PSHMEM */
-
 
 #define SHMEM_CTX_TYPED_GET_NBI(_name, _type)                           \
     void                                                                \
@@ -87,6 +99,19 @@ SHMEM_CTX_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
 
 #undef SHMEM_CTX_TYPED_GET_NBI
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_ctx_get8_nbi = pshmem_ctx_get8_nbi
+#define shmem_ctx_get8_nbi pshmem_ctx_get8_nbi
+#pragma weak shmem_ctx_get16_nbi = pshmem_ctx_get16_nbi
+#define shmem_ctx_get16_nbi pshmem_ctx_get16_nbi
+#pragma weak shmem_ctx_get32_nbi = pshmem_ctx_get32_nbi
+#define shmem_ctx_get32_nbi pshmem_ctx_get32_nbi
+#pragma weak shmem_ctx_get64_nbi = pshmem_ctx_get64_nbi
+#define shmem_ctx_get64_nbi pshmem_ctx_get64_nbi
+#pragma weak shmem_ctx_get128_nbi = pshmem_ctx_get128_nbi
+#define shmem_ctx_get128_nbi pshmem_ctx_get128_nbi
+#endif /* ENABLE_PSHMEM */
+
 #define SHMEM_CTX_SIZED_GET_NBI(_size)                          \
     void                                                        \
     shmem_ctx_get##_size##_nbi(shmem_ctx_t ctx,                 \
@@ -104,6 +129,11 @@ SHMEM_CTX_SIZED_GET_NBI(64)
 SHMEM_CTX_SIZED_GET_NBI(128)
 
 #undef SHMEM_CTX_SIZED_GET_NBI
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_ctx_getmem_nbi = pshmem_ctx_getmem_nbi
+#define shmem_ctx_getmem_nbi pshmem_ctx_getmem_nbi
+#endif /* ENABLE_PSHMEM */
 
 void
 shmem_ctx_getmem_nbi(shmem_ctx_t ctx,

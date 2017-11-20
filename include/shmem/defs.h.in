@@ -139,6 +139,15 @@ extern shmem_ctx_t SHMEM_CTX_NOSTORE;
                                            _type *target, _type value,  \
                                            int pe) _WUR;
 
+#define SHMEM_DECL_AMO3(_op, _name, _type)                              \
+    _type shmem_##_name##_atomic_##_op(_type *target,                   \
+                                       _type cond, type value,          \
+                                       int pe) _WUR;                    \
+    _type shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,             \
+                                           _type *target,               \
+                                           _type cond, _type value,     \
+                                           int pe) _WUR;
+
 #define SHMEM_DECL_VOID_AMO1(_op, _name, _type)                     \
     void shmem_##_name##_atomic_##_op(_type *target, int pe);       \
     void shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,          \
