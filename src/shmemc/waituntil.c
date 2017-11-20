@@ -2,6 +2,7 @@
 
 #include "state.h"
 
+#include <sched.h>
 #include <ucp/api/ucp.h>
 
 #if 0
@@ -51,6 +52,7 @@ COMMS_TEST_SIZE(64, ge, >=)
             if ( *var _op value ) {                                     \
                 return;                                                 \
             }                                                           \
+            sched_yield();                                              \
         }                                                               \
     }
 
