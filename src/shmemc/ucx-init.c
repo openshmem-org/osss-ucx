@@ -182,6 +182,12 @@ deallocate_workers(void)
     }
 }
 
+/*
+ * TODO note the below needs to be replaced with the default context
+ * creation process.  Do we need to exchange more info for newly
+ * created workers?  Sounds painful.  Maybe there's another way.
+ */
+
 inline static void
 make_local_worker(void)
 {
