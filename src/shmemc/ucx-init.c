@@ -253,6 +253,7 @@ dump_mapped_mem_info(const char *name, const mem_info_t *mp)
     assert(s == UCS_OK);
 }
 
+#if 0
 inline static void
 dump(void)
 {
@@ -271,6 +272,7 @@ dump(void)
     dump_mapped_mem_info("heap", def_symm_heap);
     dump_mapped_mem_info("globals", globals);
 }
+#endif
 
 inline static void
 reg_symmetric_heap(void)
