@@ -46,13 +46,35 @@ typedef struct mem_region {
 } mem_region_t;
 
 /*
+ * *Internal* OpenSMHEM context management handle
+ *
+ * NB difference between UCX context, and OpenSHMEM context.  Each
+ * OpenSHMEM context requires...
+ */
+struct shmemc_context {
+    ucp_worker_h wrkr;          /* UCP worker for this context */
+    /*
+     * parsed options during creation
+     */
+    long serialized;
+    long private;               /* default: no */
+    long nostore;
+    /*
+     * possibly other things
+     */
+};
+typedef struct shmemc_context *shmemc_context_h;
+
+/*
  * this comms-layer needs to know...
  */
 typedef struct comms_info {
     ucp_context_h ctxt;         /* local communication context */
     ucp_config_t *cfg;          /* local config */
     ucp_worker_h wrkr;          /* local worker */
-    worker_info_t *xchg_wrkrs;  /* nranks worker info exchanged */
+    shmemc_context_h *ctxts;    /* PE's contexts (replaces 1 worker ... */
+                                /* ... above).  Created on demand */
+    worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
     mem_region_t *regions;      /* exchanged symmetric regions */
     size_t nregions;            /* number of symmetric regions per PE */

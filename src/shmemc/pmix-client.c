@@ -25,8 +25,8 @@ pmix_finalize_handler(void)
 
     /* clean up allocations for exchanged buffers */
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        if (proc.comms.xchg_wrkrs[pe].buf != NULL) {
-            free(proc.comms.xchg_wrkrs[pe].buf);
+        if (proc.comms.xchg_wrkr_info[pe].buf != NULL) {
+            free(proc.comms.xchg_wrkr_info[pe].buf);
         }
     }
 
@@ -34,12 +34,6 @@ pmix_finalize_handler(void)
     if (proc.peers != NULL) {
         free(proc.peers);
     }
-}
-
-static void
-pmix_finalize_atexit(void)
-{
-    pmix_finalize_handler();
 }
 
 /*
@@ -156,8 +150,8 @@ shmemc_pmix_publish_worker(void)
     snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
     pi.value.type = PMIX_BYTE_OBJECT;
     bop = &pi.value.data.bo;
-    bop->bytes = (char *) proc.comms.xchg_wrkrs[proc.rank].addr;
-    bop->size = proc.comms.xchg_wrkrs[proc.rank].len;
+    bop->bytes = (char *) proc.comms.xchg_wrkr_info[proc.rank].addr;
+    bop->size = proc.comms.xchg_wrkr_info[proc.rank].len;
     ps = PMIx_Publish(&pi, 1);
     assert(ps == PMIX_SUCCESS);
 }
@@ -186,9 +180,9 @@ shmemc_pmix_exchange_workers(void)
         bop = &fetch.value.data.bo;
 
         /* save published worker */
-        proc.comms.xchg_wrkrs[i].buf = (char *) malloc(bop->size);
-        assert(proc.comms.xchg_wrkrs[i].buf != NULL);
-        memcpy(proc.comms.xchg_wrkrs[i].buf, bop->bytes, bop->size);
+        proc.comms.xchg_wrkr_info[i].buf = (char *) malloc(bop->size);
+        assert(proc.comms.xchg_wrkr_info[i].buf != NULL);
+        memcpy(proc.comms.xchg_wrkr_info[i].buf, bop->bytes, bop->size);
     }
 }
 

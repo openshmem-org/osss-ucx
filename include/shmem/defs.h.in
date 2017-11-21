@@ -11,6 +11,7 @@
  * utility
  */
 #define SHMEM_BIT_SET(_level) (1 << (_level))
+#define SHMEM_TEST_BIT(_val, _level) ( ((_val) & (_level)) == 1 )
 
 /*
  * C and C++ do complex numbers differently
@@ -29,7 +30,11 @@
 #ifdef __STDC_VERSION__
 # if  __STDC_VERSION__ >= 201112L
 #  define SHMEM_HAS_C11 1
+# else
+#  define SHMEM_HAS_C11 0
 # endif   /* __STDC_VERSION__ >= 201112L test */
+#else
+# define SHMEM_HAS_C11 0
 #endif /* __STDC_VERSION__ defined test */
 
 /*
@@ -114,15 +119,17 @@ enum shmem_thread_levels {
 };
 
 /*
- * context default and attributes
+ * default context, and context attributes
  */
-typedef unsigned long shmem_ctx_t;
+typedef void *shmem_ctx_t;
 
 extern shmem_ctx_t SHMEM_CTX_DEFAULT;
 
-extern shmem_ctx_t SHMEM_CTX_SERIALIZED;
-extern shmem_ctx_t SHMEM_CTX_PRIVATE;
-extern shmem_ctx_t SHMEM_CTX_NOSTORE;
+enum shmem_ctx_attrs {
+    SHMEM_CTX_SERIALIZED = SHMEM_BIT_SET(0),
+    SHMEM_CTX_PRIVATE    = SHMEM_BIT_SET(1),
+    SHMEM_CTX_NOSTORE    = SHMEM_BIT_SET(2)
+};
 
 /*
  * to declare AMOs

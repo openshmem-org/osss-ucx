@@ -4,7 +4,9 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmem/api.h"
+#include "thispe.h"
+#include "shmemc.h"
+#include "shmem/defs.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_create = pshmem_ctx_create
@@ -14,34 +16,26 @@
 #endif /* ENABLE_PSHMEM */
 
 /*
- * link-time constants. TODO 2017-11-09: real implementation
+ * link-time constants
  */
-shmem_ctx_t SHMEM_CTX_DEFAULT    = 0;
+shmem_ctx_t SHMEM_CTX_DEFAULT = NULL;
 
 /*
- * context attributes
- */
-shmem_ctx_t SHMEM_CTX_SERIALIZED = SHMEM_BIT_SET(0);
-shmem_ctx_t SHMEM_CTX_PRIVATE    = SHMEM_BIT_SET(1);
-shmem_ctx_t SHMEM_CTX_NOSTORE    = SHMEM_BIT_SET(2);
-
-/*
- * just hand back the default context for now
+ * create new context with supplied options
  */
 
 int
 shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 {
-    *ctxp = SHMEM_CTX_DEFAULT;
-
-    return 1;
+    return shmemc_context_create(options, (shmemc_context_h *) ctxp);
 }
 
 /*
- * no-op for now
+ * zap context
  */
 
 void
 shmem_ctx_destroy(shmem_ctx_t ctx)
 {
+    shmemc_context_destroy((shmemc_context_h) ctx);
 }

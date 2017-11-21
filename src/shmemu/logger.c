@@ -66,6 +66,7 @@ level_to_name(shmemu_log_t level)
     return "UNKNOWN";
 }
 
+#if 0
 static shmemu_log_t
 name_to_level(const char *name)
 {
@@ -81,6 +82,7 @@ name_to_level(const char *name)
 
     return LOG_UNKNOWN;
 }
+#endif
 
 void
 shmemu_logger_init(void)

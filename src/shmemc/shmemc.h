@@ -3,6 +3,8 @@
 #ifndef _SHMEMC_H
 #define _SHMEMC_H 1
 
+#include "thispe.h"
+#include "shmemc.h"
 #include "shmem/defs.h"
 
 #include <sys/types.h>          /* size_t */
@@ -11,7 +13,7 @@
 #include <unistd.h>
 
 /**
- * -- API -------------------------------------------------------------
+ * -- API --------------------------------------------------------------------
  *
  **/
 
@@ -33,7 +35,7 @@ int shmemc_pe_accessible(int pe);
 int shmemc_addr_accessible(const void *addr, int pe);
 
 /*
- * -- Per-context routines --------------------------------------------
+ * -- Per-context routines ---------------------------------------------------
  */
 
 void shmemc_ctx_fence(shmem_ctx_t ctx);
@@ -48,6 +50,10 @@ void shmemc_ctx_put_nbi(shmem_ctx_t ctx,
                         void *dest, const void *src, size_t nbytes, int pe);
 void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                         void *dest, const void *src, size_t nbytes, int pe);
+
+/*
+ * -- AMOs -------------------------------------------------------------------
+ */
 
 /*
  * swappity
@@ -154,7 +160,15 @@ SHMEMC_CTX_DECL_FETCH_BITWISE(xor, 32)
 SHMEMC_CTX_DECL_FETCH_BITWISE(xor, 64)
 
 /*
- * Routines that now operate on default context
+ * locks
+ */
+
+void shmemc_set_lock(long *lock);
+void shmemc_clear_lock(long *lock);
+int  shmemc_test_lock(long *lock);
+
+/*
+ * -- Routines that now operate on default context ---------------------------
  */
 
 #define shmemc_fence()                          \
@@ -243,14 +257,6 @@ SHMEMC_CTX_DECL_FETCH_BITWISE(xor, 64)
     shmemc_ctx_fetch_xor64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 /*
- * locks
- */
-
-void shmemc_set_lock(long *lock);
-void shmemc_clear_lock(long *lock);
-int  shmemc_test_lock(long *lock);
-
-/*
  * routine per-type and test to avoid branching
  */
 
@@ -311,7 +317,14 @@ SHMEMC_WAITUNTIL(32, ge)
 SHMEMC_WAITUNTIL(64, ge)
 
 /*
- * barriers & syncs
+ * -- Contexts ---------------------------------------------------------------
+ */
+
+int shmemc_context_create(long options, shmemc_context_h *ctxp);
+void shmemc_context_destroy(shmemc_context_h ctx);
+
+/*
+ * -- barriers & syncs -------------------------------------------------------
  */
 
 #define SHMEMC_DECL_BARRIER_SYNC(_op)                                   \
@@ -322,7 +335,7 @@ SHMEMC_DECL_BARRIER_SYNC(sync)
 SHMEMC_DECL_BARRIER_SYNC(barrier)
 
 /*
- * broadcasts
+ * -- broadcasts -------------------------------------------------------------
  */
 
 #define SHMEMC_DECL_BROADCAST_SIZE(_size)                           \
