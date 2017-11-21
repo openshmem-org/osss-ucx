@@ -8,6 +8,7 @@ LIBSHMEMC_SOURCES         = \
 				barrier.c \
 				broadcast.c \
 				comms.c \
+				contexts.c \
 				globalexit.c \
 				mcs-lock.c \
 				pmix-client.c \
