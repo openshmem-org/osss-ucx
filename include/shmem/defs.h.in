@@ -120,7 +120,7 @@ enum shmem_thread_levels {
 /*
  * context default and attributes
  */
-typedef unsigned long shmem_ctx_t;
+typedef void *shmem_ctx_t;
 
 extern shmem_ctx_t SHMEM_CTX_DEFAULT;
 
