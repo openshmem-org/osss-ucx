@@ -16,11 +16,6 @@
 #include <ucp/api/ucp.h>
 
 /*
- * give each new context an ID
- */
-static unsigned long id_track = 0;
-
-/*
  * create new context
  */
 
@@ -28,6 +23,7 @@ int
 shmemc_context_create(long options, shmemc_context_h *ctxp)
 {
 #if 0
+    static unsigned long id_track = 0; /* give each new context an ID */
     ucp_worker_params_t wkpm;
     ucs_status_t s;
     shmemc_context_h newone;
