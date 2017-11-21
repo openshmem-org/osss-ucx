@@ -22,6 +22,7 @@
 int
 shmemc_context_create(long options, shmemc_context_h *ctxp)
 {
+#if 0
     ucp_worker_params_t wkpm;
     ucs_status_t s;
     shmemc_context_h newone;
@@ -45,7 +46,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     assert(s == UCS_OK);
 
     *ctxp = newone;
-
+#endif
     return 0;
 }
 
@@ -56,6 +57,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
 void
 shmemc_context_destroy(shmemc_context_h ctx)
 {
+#if 0
     if (ctx != NULL) {
         if (ctx->wrkr != NULL) {
             /* spec 1.4 requires implicit quiet on destroy */
@@ -65,4 +67,5 @@ shmemc_context_destroy(shmemc_context_h ctx)
         }
         free(ctx);
     }
+#endif
 }
