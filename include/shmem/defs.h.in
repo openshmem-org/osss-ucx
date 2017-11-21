@@ -29,7 +29,11 @@
 #ifdef __STDC_VERSION__
 # if  __STDC_VERSION__ >= 201112L
 #  define SHMEM_HAS_C11 1
+# else
+#  define SHMEM_HAS_C11 0
 # endif   /* __STDC_VERSION__ >= 201112L test */
+#else
+# define SHMEM_HAS_C11 0
 #endif /* __STDC_VERSION__ defined test */
 
 /*
