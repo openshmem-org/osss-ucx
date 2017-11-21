@@ -169,16 +169,16 @@ make_init_params(ucp_params_t *p_p)
 inline static void
 allocate_workers(void)
 {
-    proc.comms.xchg_wrkrs = (worker_info_t *)
-        calloc(proc.nranks, sizeof(*(proc.comms.xchg_wrkrs)));
-    assert(proc.comms.xchg_wrkrs != NULL);
+    proc.comms.xchg_wrkr_info = (worker_info_t *)
+        calloc(proc.nranks, sizeof(*(proc.comms.xchg_wrkr_info)));
+    assert(proc.comms.xchg_wrkr_info != NULL);
 }
 
 inline static void
 deallocate_workers(void)
 {
-    if (proc.comms.xchg_wrkrs != NULL) {
-        free(proc.comms.xchg_wrkrs);
+    if (proc.comms.xchg_wrkr_info != NULL) {
+        free(proc.comms.xchg_wrkr_info);
     }
 }
 
@@ -200,8 +200,8 @@ make_local_worker(void)
     s = ucp_worker_get_address(proc.comms.wrkr, &addr, &len);
     assert(s == UCS_OK);
 
-    proc.comms.xchg_wrkrs[proc.rank].addr = addr;
-    proc.comms.xchg_wrkrs[proc.rank].len = len;
+    proc.comms.xchg_wrkr_info[proc.rank].addr = addr;
+    proc.comms.xchg_wrkr_info[proc.rank].len = len;
 }
 
 /*
@@ -401,7 +401,7 @@ shmemc_ucx_make_remote_endpoints(void)
         const int i = (pe + proc.rank) % proc.nranks;
 
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-        epm.address = (ucp_address_t *) proc.comms.xchg_wrkrs[i].buf;
+        epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[i].buf;
 
         s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[i]);
         assert(s == UCS_OK);
@@ -462,7 +462,7 @@ shmemc_ucx_finalize(void)
 
     if (proc.comms.wrkr) {
         ucp_worker_release_address(proc.comms.wrkr,
-                                   proc.comms.xchg_wrkrs[proc.rank].addr);
+                                   proc.comms.xchg_wrkr_info[proc.rank].addr);
         ucp_worker_destroy(proc.comms.wrkr);
     }
     deallocate_workers();
