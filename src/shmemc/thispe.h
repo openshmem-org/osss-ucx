@@ -59,6 +59,8 @@ struct shmemc_context {
     long serialized;
     long private;               /* default: no */
     long nostore;
+
+    unsigned long id;           /* internal tracking */
     /*
      * possibly other things
      */
