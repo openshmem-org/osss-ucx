@@ -62,6 +62,17 @@ shmem_align(size_t a, size_t s)
  * checking above
  */
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmalloc = pshmalloc
+#define shmalloc pshmalloc
+#pragma weak shfree = pshfree
+#define shfree pshfree
+#pragma weak shrealloc = pshrealloc
+#define shrealloc pshrealloc
+#pragma weak shmemalign = pshmemalign
+#define shmemalign pshmemalign
+#endif /* ENABLE_PSHMEM */
+
 void *
 shmalloc(size_t s)
 {
