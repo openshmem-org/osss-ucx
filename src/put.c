@@ -68,6 +68,7 @@
                             size_t nelems, int pe)                      \
     {                                                                   \
         const size_t sized_nelems = nelems * sizeof(_type);             \
+                                                                        \
         shmemc_ctx_put(ctx, dest, src, sized_nelems, pe);               \
     }
 
@@ -121,6 +122,7 @@ SHMEM_CTX_TYPED_PUT(complexd, COMPLEXIFY(double))
                          size_t nelems, int pe)                         \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
+                                                                        \
         shmemc_ctx_put(ctx, dest, src, sized_nelems, pe);               \
     }
 
@@ -438,6 +440,7 @@ SHMEM_CTX_SIZED_IPUT(128)
                                 size_t nelems, int pe)                  \
     {                                                                   \
         const size_t typed_nelems = nelems * sizeof(_type);             \
+                                                                        \
         shmemc_ctx_put_nbi(ctx, dest, src, typed_nelems, pe);           \
     }
 
@@ -492,6 +495,7 @@ SHMEM_CTX_TYPED_PUT_NBI(complexd, COMPLEXIFY(double))
                            size_t nelems, int pe)                       \
     {                                                                   \
         const size_t sized_nelems = nelems * _size;                     \
+                                                                        \
         shmemc_ctx_put_nbi(ctx, dest, src, sized_nelems, pe);           \
     }
 

@@ -82,16 +82,17 @@ translate_address(uint64_t local_addr, size_t region, int pe)
 }
 
 /*
- * 1 if PE is a valid rank, 0 otherwise
+ * Return non-zero if PE is a valid rank, 0 otherwise
  */
 inline static int
-valid_pe_number(int pe)
+is_valid_pe_number(int pe)
 {
-    return ( (proc.nranks > pe) && (pe >= 0) ) ? 1 : 0;
+    return (proc.nranks > pe) && (pe >= 0);
 }
 
 /*
- * see if addr is reachable using given context
+ * See if addr is reachable using given context.  Return usable
+ * address if so, otherwise NULL.
  */
 inline static void *
 shmemc_ptr_helper(shmem_ctx_t ctx,
@@ -124,6 +125,10 @@ shmemc_ptr_helper(shmem_ctx_t ctx,
  *
  **/
 
+/*
+ * -- ordering -----------------------------------------------------------
+ */
+
 void
 shmemc_ctx_fence(shmem_ctx_t ctx)
 {
@@ -149,7 +154,7 @@ shmemc_ptr(const void *addr, int pe)
 }
 
 /*
- * 1 if adddress is remotely accessible, 0 otherwise
+ * Return non-zero if adddress is remotely accessible, 0 otherwise
  */
 int
 shmemc_addr_accessible(const void *addr, int pe)
@@ -157,16 +162,16 @@ shmemc_addr_accessible(const void *addr, int pe)
     uint64_t ua = (uint64_t) addr;
     const long r = lookup_region(ua, proc.rank);
 
-    return (r >= 0) ? 1 : 0;
+    return (r >= 0);
 }
 
 /*
- * 1 if a valid PE #, 0 otherwise
+ * Return non-zero if a valid PE #, 0 otherwise
  */
 int
 shmemc_pe_accessible(int pe)
 {
-    return valid_pe_number(pe);
+    return is_valid_pe_number(pe);
 }
 
 /*

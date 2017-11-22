@@ -113,6 +113,7 @@ typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
     env_info_t env;             /* environment vars */
 
+    int thread_level;           /* current thread support */
     int rank;                   /* rank info */
     int nranks;
     shmem_status_t status;      /* up, down, out to lunch etc */
