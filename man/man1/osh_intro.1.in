@@ -48,5 +48,6 @@ oshfort(1),
 oshrun(1),
 .br
 osh_info(1).
-.SH OPENSHMEM
+.SH REFERENCES
 http://www.openshmem.org/
+http://www.pgas.org/
