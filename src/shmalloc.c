@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "shmemc.h"
 #include "memalloc.h"
 #include "shmem/defs.h"
 
@@ -30,31 +31,53 @@ int malloc_error = SHMEM_MALLOC_OK;
 void *
 shmem_malloc(size_t s)
 {
-    return shmemm_mem_malloc(s);
+    void *addr = shmemm_mem_malloc(s);
+
+    shmemc_barrier_all();
+
+    return addr;
 }
 
 void *
 shmem_calloc(size_t n, size_t s)
 {
-    return shmemm_mem_calloc(n, s);
+    void *addr = shmemm_mem_calloc(n, s);
+
+    shmemc_barrier_all();
+
+    return addr;
 }
 
 void
 shmem_free(void *p)
 {
+    shmemc_barrier_all();
+
     shmemm_mem_free(p);
 }
 
 void *
 shmem_realloc(void *p, size_t s)
 {
-    return shmemm_mem_realloc(p, s);
+    void *addr;
+
+    shmemc_barrier_all();
+
+    addr = shmemm_mem_realloc(p, s);
+
+    shmemc_barrier_all();
+
+    return addr;
 }
 
 void *
 shmem_align(size_t a, size_t s)
 {
-    return shmemm_mem_align(a, s);
+    void *addr = shmemm_mem_align(a, s);
+
+    shmemc_barrier_all();
+
+    return addr;
 }
 
 /*
