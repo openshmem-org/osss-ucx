@@ -67,6 +67,7 @@
                             size_t nelems, int pe)               \
     {                                                            \
         const size_t typed_nelems = nelems * sizeof (_type);     \
+                                                                 \
         shmemc_ctx_get(ctx, dest, src, typed_nelems, pe);        \
     }
 
@@ -120,6 +121,7 @@ SHMEM_CTX_TYPED_GET(complexd, COMPLEXIFY(double))
                          size_t nelems, int pe)                 \
     {                                                           \
         const size_t sized_nelems = nelems * _size;             \
+                                                                \
         shmemc_ctx_get(ctx, dest, src, sized_nelems, pe);       \
     }
 
@@ -202,6 +204,7 @@ shmem_ctx_getmem(shmem_ctx_t ctx,
                           const _type *addr, int pe)                  \
     {                                                                 \
         _type val;                                                    \
+                                                                      \
         shmemc_ctx_get(ctx, &val, addr, sizeof(val), pe);             \
         return val;                                                   \
     }
@@ -434,6 +437,7 @@ SHMEM_CTX_SIZED_IGET(128)
                                 size_t nelems, int pe)                  \
     {                                                                   \
         const size_t typed_nelems = nelems * sizeof (_type);            \
+                                                                        \
         shmemc_ctx_get_nbi(ctx, dest, src, typed_nelems, pe);           \
     }
 
@@ -487,6 +491,7 @@ SHMEM_CTX_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
                                size_t nelems, int pe)           \
     {                                                           \
         const size_t sized_nelems = nelems * _size;             \
+                                                                \
         shmemc_ctx_get_nbi(ctx, dest, src, sized_nelems, pe);   \
     }
 
