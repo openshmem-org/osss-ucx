@@ -13,6 +13,10 @@
 #include <errno.h>
 
 #ifdef ENABLE_PSHMEM
+#pragma weak shmem_init_thread = pshmem_init_thread
+#define shmem_init_thread pshmem_init_thread
+#pragma weak shmem_query_thread = pshmem_query_thread
+#define shmem_query_thread pshmem_query_thread
 #pragma weak shmem_init = pshmem_init
 #define shmem_init pshmem_init
 #pragma weak shmem_finalize = pshmem_finalize
@@ -42,11 +46,11 @@ shmem_finalize(void)
 }
 
 /*
- * initialize SHMEM portion of program with default threading model
+ * initialize SHMEM portion of program with threading model
  */
 
-void
-shmem_init(void)
+int
+shmem_init_thread(int requested, int *provided)
 {
     /* do nothing if multiple inits */
     if (proc.refcount == 0) {
@@ -64,38 +68,29 @@ shmem_init(void)
         }
 
         proc.status = SHMEM_PE_RUNNING;
-        /* 'ere we go! */
+
+        /* for now */
+        proc.thread_level = *provided = SHMEM_THREAD_SINGLE;
     }
 
     proc.refcount += 1;
 
     logger(LOG_INIT,
-           "leave \"%s\", refcount = %d",
+           "leave \"%s\", refcount = %d, thread support = %d",
            __func__,
-           proc.refcount);
+           proc.refcount,
+           proc.thread_level);
+
+    /* just declare success */
+    return 0;
 }
 
-/*
- * initialize SHMEM portion of program and request a threading model
- *
- * TODO: invert this and shmem_init(), just a stub for now
- */
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_init_thread = pshmem_init_thread
-#define shmem_init_thread pshmem_init_thread
-#pragma weak shmem_query_thread = pshmem_query_thread
-#define shmem_query_thread pshmem_query_thread
-#endif /* ENABLE_PSHMEM */
-
-int
-shmem_init_thread(int requested, int *provided)
+void
+shmem_init(void)
 {
-    *provided = SHMEM_THREAD_SINGLE;
+    int throwaway = 0;
 
-    shmem_init();
-
-    return 0;
+    (void) shmem_init_thread(SHMEM_THREAD_SINGLE, &throwaway);
 }
 
 /*
@@ -107,9 +102,12 @@ shmem_init_thread(int requested, int *provided)
 void
 shmem_query_thread(int *provided)
 {
-    *provided = SHMEM_THREAD_SINGLE;
+    *provided = proc.thread_level;
 }
 
+/*
+ * deprecated
+ */
 
 #ifdef ENABLE_PSHMEM
 #pragma weak start_pes = pstart_pes
