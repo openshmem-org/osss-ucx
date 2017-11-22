@@ -14,6 +14,8 @@
 
 #include <ucp/api/ucp.h>
 
+#define DUMP_DEBUG_INFO 0
+
 #define KB 1024L
 #define MB (KB * KB)
 #define GB (KB * MB)
@@ -31,20 +33,6 @@ char *
 shmemc_getenv(const char *name)
 {
     return getenv(name);
-}
-
-static void
-check_version(void)
-{
-    unsigned int maj, min, rel;
-
-    ucp_get_version(&maj, &min, &rel);
-
-    fprintf(say, "Piecewise query:\n");
-    fprintf(say, "    UCX version \"%u.%u.%u\"\n", maj, min, rel);
-    fprintf(say, "String query\n");
-    fprintf(say, "    UCX version \"%s\"\n", ucp_get_version_string());
-    fprintf(say, "\n");
 }
 
 inline static int
@@ -235,6 +223,21 @@ deallocate_endpoints(void)
 static mem_info_t *globals;
 static mem_info_t *def_symm_heap;
 
+#if DUMP_DEBUG_INFO
+inline static void
+check_version(void)
+{
+    unsigned int maj, min, rel;
+
+    ucp_get_version(&maj, &min, &rel);
+
+    fprintf(say, "Piecewise query:\n");
+    fprintf(say, "    UCX version \"%u.%u.%u\"\n", maj, min, rel);
+    fprintf(say, "String query\n");
+    fprintf(say, "    UCX version \"%s\"\n", ucp_get_version_string());
+    fprintf(say, "\n");
+}
+
 /*
  * debugging output
  */
@@ -271,6 +274,7 @@ dump(void)
     dump_mapped_mem_info("heap", def_symm_heap);
     dump_mapped_mem_info("globals", globals);
 }
+#endif /* DUMP_DEBUG_INFO */
 
 inline static void
 reg_symmetric_heap(void)
@@ -448,9 +452,9 @@ shmemc_ucx_init(void)
 
     make_local_worker();
 
-#if 0
+#if DUMP_DEBUG_INFO
     dump();
-#endif
+#endif /* DUMP_DEBUG_INFO */
 
     /* don't need config info any more */
     ucp_config_release(proc.comms.cfg);

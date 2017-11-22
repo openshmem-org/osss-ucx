@@ -20,9 +20,7 @@ processing elements.
 .SH NUMBER OF PROCESSING ELEMENTS
 .IP "-n N | -np N" 4
 Run the program on N processing elements (PEs or processors).
-Overrides any PE count from launch environment.
-.IP
-Required.
+Overrides any PE count inherited from launch environment.
 .LP
 .SH EXAMPLES
 The command

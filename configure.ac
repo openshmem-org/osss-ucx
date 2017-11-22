@@ -3,9 +3,14 @@
 
 # For license: see LICENSE file at top-level
 
+m4_define([PKG_MAJOR], 1)
+m4_define([PKG_MINOR], 0)
+
+m4_define([PKG_VERSION], [PKG_MAJOR.PKG_MINOR])
+
 AC_PREREQ([2.69])
 AC_INIT([OSSS/SBU Reference Implementation],
-	[1.0],
+	[PKG_VERSION],
 	[anthony.curtis@stonybrook.edu],
 	[],
 	[https://bitbucket.org/sbuopenshmem/osss-ucx.git])
@@ -67,6 +72,8 @@ AC_CHECK_HEADER_STDBOOL
 AC_C_INLINE
 AC_TYPE_SIZE_T
 
+AC_CHECK_TYPES([int64_t])
+AC_CHECK_TYPES([uint64_t])
 AC_CHECK_TYPES([ptrdiff_t])
 
 #

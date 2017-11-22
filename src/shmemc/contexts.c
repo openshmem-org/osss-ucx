@@ -23,6 +23,7 @@ int
 shmemc_context_create(long options, shmemc_context_h *ctxp)
 {
 #if 0
+    static unsigned long id_track = 0; /* give each new context an ID */
     ucp_worker_params_t wkpm;
     ucs_status_t s;
     shmemc_context_h newone;
@@ -35,6 +36,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     newone->serialized = SHMEM_TEST_BIT(options, SHMEM_CTX_SERIALIZED);
     newone->private    = SHMEM_TEST_BIT(options, SHMEM_CTX_PRIVATE);
     newone->nostore    = SHMEM_TEST_BIT(options, SHMEM_CTX_NOSTORE);
+    newone->id         = id_track ++;
 
     /* need to adjust mode depending on above */
     wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
