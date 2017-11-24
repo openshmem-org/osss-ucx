@@ -693,6 +693,33 @@ SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint64, uint64_t, 64)
                                          target, value, pe);            \
     }
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_set = pshmem_int_atomic_set
+#define shmem_int_atomic_set pshmem_int_atomic_set
+#pragma weak shmem_long_atomic_set = pshmem_long_atomic_set
+#define shmem_long_atomic_set pshmem_long_atomic_set
+#pragma weak shmem_longlong_atomic_set = pshmem_longlong_atomic_set
+#define shmem_longlong_atomic_set pshmem_longlong_atomic_set
+#pragma weak shmem_float_atomic_set = pshmem_float_atomic_set
+#define shmem_float_atomic_set pshmem_float_atomic_set
+#pragma weak shmem_double_atomic_set = pshmem_double_atomic_set
+#define shmem_double_atomic_set pshmem_double_atomic_set
+#pragma weak shmem_uint_atomic_set = pshmem_uint_atomic_set
+#define shmem_uint_atomic_set pshmem_uint_atomic_set
+#pragma weak shmem_ulong_atomic_set = pshmem_ulong_atomic_set
+#define shmem_ulong_atomic_set pshmem_ulong_atomic_set
+#pragma weak shmem_ulonglong_atomic_set = pshmem_ulonglong_atomic_set
+#define shmem_ulonglong_atomic_set pshmem_ulonglong_atomic_set
+#pragma weak shmem_int32_atomic_set = pshmem_int32_atomic_set
+#define shmem_int32_atomic_set pshmem_int32_atomic_set
+#pragma weak shmem_int64_atomic_set = pshmem_int64_atomic_set
+#define shmem_int64_atomic_set pshmem_int64_atomic_set
+#pragma weak shmem_size_atomic_set = pshmem_size_atomic_set
+#define shmem_size_atomic_set pshmem_size_atomic_set
+#pragma weak shmem_ptrdiff_atomic_set = pshmem_ptrdiff_atomic_set
+#define shmem_ptrdiff_atomic_set pshmem_ptrdiff_atomic_set
+#endif /* ENABLE_PSHMEM */
+
 API_DEF_VOID_AMO2(set, float, float)
 API_DEF_VOID_AMO2(set, double, double)
 API_DEF_VOID_AMO2(set, int, int)
@@ -708,6 +735,33 @@ API_DEF_VOID_AMO2(set, uint64, uint64_t)
 API_DEF_VOID_AMO2(set, size, size_t)
 API_DEF_VOID_AMO2(set, ptrdiff, ptrdiff_t)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_inc = pshmem_int_atomic_inc
+#define shmem_int_atomic_inc pshmem_int_atomic_inc
+#pragma weak shmem_long_atomic_inc = pshmem_long_atomic_inc
+#define shmem_long_atomic_inc pshmem_long_atomic_inc
+#pragma weak shmem_longlong_atomic_inc = pshmem_longlong_atomic_inc
+#define shmem_longlong_atomic_inc pshmem_longlong_atomic_inc
+#pragma weak shmem_uint_atomic_inc = pshmem_uint_atomic_inc
+#define shmem_uint_atomic_inc pshmem_uint_atomic_inc
+#pragma weak shmem_ulong_atomic_inc = pshmem_ulong_atomic_inc
+#define shmem_ulong_atomic_inc pshmem_ulong_atomic_inc
+#pragma weak shmem_ulonglong_atomic_inc = pshmem_ulonglong_atomic_inc
+#define shmem_ulonglong_atomic_inc pshmem_ulonglong_atomic_inc
+#pragma weak shmem_int32_atomic_inc = pshmem_int32_atomic_inc
+#define shmem_int32_atomic_inc pshmem_int32_atomic_inc
+#pragma weak shmem_int64_atomic_inc = pshmem_int64_atomic_inc
+#define shmem_int64_atomic_inc pshmem_int64_atomic_inc
+#pragma weak shmem_uint32_atomic_inc = pshmem_uint32_atomic_inc
+#define shmem_uint32_atomic_inc pshmem_uint32_atomic_inc
+#pragma weak shmem_uint64_atomic_inc = pshmem_uint64_atomic_inc
+#define shmem_uint64_atomic_inc pshmem_uint64_atomic_inc
+#pragma weak shmem_size_atomic_inc = pshmem_size_atomic_inc
+#define shmem_size_atomic_inc pshmem_size_atomic_inc
+#pragma weak shmem_ptrdiff_atomic_inc = pshmem_ptrdiff_atomic_inc
+#define shmem_ptrdiff_atomic_inc pshmem_ptrdiff_atomic_inc
+#endif /* ENABLE_PSHMEM */
+
 API_DEF_VOID_AMO1(inc, int, int)
 API_DEF_VOID_AMO1(inc, long, long)
 API_DEF_VOID_AMO1(inc, longlong, long long)
@@ -721,6 +775,33 @@ API_DEF_VOID_AMO1(inc, uint64, uint64_t)
 API_DEF_VOID_AMO1(inc, size, size_t)
 API_DEF_VOID_AMO1(inc, ptrdiff, ptrdiff_t)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_add = pshmem_int_atomic_add
+#define shmem_int_atomic_add pshmem_int_atomic_add
+#pragma weak shmem_long_atomic_add = pshmem_long_atomic_add
+#define shmem_long_atomic_add pshmem_long_atomic_add
+#pragma weak shmem_longlong_atomic_add = pshmem_longlong_atomic_add
+#define shmem_longlong_atomic_add pshmem_longlong_atomic_add
+#pragma weak shmem_uint_atomic_add = pshmem_uint_atomic_add
+#define shmem_uint_atomic_add pshmem_uint_atomic_add
+#pragma weak shmem_ulong_atomic_add = pshmem_ulong_atomic_add
+#define shmem_ulong_atomic_add pshmem_ulong_atomic_add
+#pragma weak shmem_ulonglong_atomic_add = pshmem_ulonglong_atomic_add
+#define shmem_ulonglong_atomic_add pshmem_ulonglong_atomic_add
+#pragma weak shmem_int32_atomic_add = pshmem_int32_atomic_add
+#define shmem_int32_atomic_add pshmem_int32_atomic_add
+#pragma weak shmem_int64_atomic_add = pshmem_int64_atomic_add
+#define shmem_int64_atomic_add pshmem_int64_atomic_add
+#pragma weak shmem_uint32_atomic_add = pshmem_uint32_atomic_add
+#define shmem_uint32_atomic_add pshmem_uint32_atomic_add
+#pragma weak shmem_uint64_atomic_add = pshmem_uint64_atomic_add
+#define shmem_uint64_atomic_add pshmem_uint64_atomic_add
+#pragma weak shmem_size_atomic_add = pshmem_size_atomic_add
+#define shmem_size_atomic_add pshmem_size_atomic_add
+#pragma weak shmem_ptrdiff_atomic_add = pshmem_ptrdiff_atomic_add
+#define shmem_ptrdiff_atomic_add pshmem_ptrdiff_atomic_add
+#endif /* ENABLE_PSHMEM */
+
 API_DEF_VOID_AMO2(add, int, int)
 API_DEF_VOID_AMO2(add, long, long)
 API_DEF_VOID_AMO2(add, longlong, long long)
@@ -733,6 +814,33 @@ API_DEF_VOID_AMO2(add, uint32, uint32_t)
 API_DEF_VOID_AMO2(add, uint64, uint64_t)
 API_DEF_VOID_AMO2(add, size, size_t)
 API_DEF_VOID_AMO2(add, ptrdiff, ptrdiff_t)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_fetch = pshmem_int_atomic_fetch
+#define shmem_int_atomic_fetch pshmem_int_atomic_fetch
+#pragma weak shmem_long_atomic_fetch = pshmem_long_atomic_fetch
+#define shmem_long_atomic_fetch pshmem_long_atomic_fetch
+#pragma weak shmem_longlong_atomic_fetch = pshmem_longlong_atomic_fetch
+#define shmem_longlong_atomic_fetch pshmem_longlong_atomic_fetch
+#pragma weak shmem_float_atomic_fetch = pshmem_float_atomic_fetch
+#define shmem_float_atomic_fetch pshmem_float_atomic_fetch
+#pragma weak shmem_double_atomic_fetch = pshmem_double_atomic_fetch
+#define shmem_double_atomic_fetch pshmem_double_atomic_fetch
+#pragma weak shmem_uint_atomic_fetch = pshmem_uint_atomic_fetch
+#define shmem_uint_atomic_fetch pshmem_uint_atomic_fetch
+#pragma weak shmem_ulong_atomic_fetch = pshmem_ulong_atomic_fetch
+#define shmem_ulong_atomic_fetch pshmem_ulong_atomic_fetch
+#pragma weak shmem_ulonglong_atomic_fetch = pshmem_ulonglong_atomic_fetch
+#define shmem_ulonglong_atomic_fetch pshmem_ulonglong_atomic_fetch
+#pragma weak shmem_int32_atomic_fetch = pshmem_int32_atomic_fetch
+#define shmem_int32_atomic_fetch pshmem_int32_atomic_fetch
+#pragma weak shmem_int64_atomic_fetch = pshmem_int64_atomic_fetch
+#define shmem_int64_atomic_fetch pshmem_int64_atomic_fetch
+#pragma weak shmem_size_atomic_fetch = pshmem_size_atomic_fetch
+#define shmem_size_atomic_fetch pshmem_size_atomic_fetch
+#pragma weak shmem_ptrdiff_atomic_fetch = pshmem_ptrdiff_atomic_fetch
+#define shmem_ptrdiff_atomic_fetch pshmem_ptrdiff_atomic_fetch
+#endif /* ENABLE_PSHMEM */
 
 API_DEF_AMO1(fetch, float, float)
 API_DEF_AMO1(fetch, double, double)
@@ -749,6 +857,33 @@ API_DEF_AMO1(fetch, uint64, uint64_t)
 API_DEF_AMO1(fetch, size, size_t)
 API_DEF_AMO1(fetch, ptrdiff, ptrdiff_t)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_fetch_inc = pshmem_int_atomic_fetch_inc
+#define shmem_int_atomic_fetch_inc pshmem_int_atomic_fetch_inc
+#pragma weak shmem_long_atomic_fetch_inc = pshmem_long_atomic_fetch_inc
+#define shmem_long_atomic_fetch_inc pshmem_long_atomic_fetch_inc
+#pragma weak shmem_longlong_atomic_fetch_inc = pshmem_longlong_atomic_fetch_inc
+#define shmem_longlong_atomic_fetch_inc pshmem_longlong_atomic_fetch_inc
+#pragma weak shmem_uint_atomic_fetch_inc = pshmem_uint_atomic_fetch_inc
+#define shmem_uint_atomic_fetch_inc pshmem_uint_atomic_fetch_inc
+#pragma weak shmem_ulong_atomic_fetch_inc = pshmem_ulong_atomic_fetch_inc
+#define shmem_ulong_atomic_fetch_inc pshmem_ulong_atomic_fetch_inc
+#pragma weak shmem_ulonglong_atomic_fetch_inc = pshmem_ulonglong_atomic_fetch_inc
+#define shmem_ulonglong_atomic_fetch_inc pshmem_ulonglong_atomic_fetch_inc
+#pragma weak shmem_int32_atomic_fetch_inc = pshmem_int32_atomic_fetch_inc
+#define shmem_int32_atomic_fetch_inc pshmem_int32_atomic_fetch_inc
+#pragma weak shmem_int64_atomic_fetch_inc = pshmem_int64_atomic_fetch_inc
+#define shmem_int64_atomic_fetch_inc pshmem_int64_atomic_fetch_inc
+#pragma weak shmem_uint32_atomic_fetch_inc = pshmem_uint32_atomic_fetch_inc
+#define shmem_uint32_atomic_fetch_inc pshmem_uint32_atomic_fetch_inc
+#pragma weak shmem_uint64_atomic_fetch_inc = pshmem_uint64_atomic_fetch_inc
+#define shmem_uint64_atomic_fetch_inc pshmem_uint64_atomic_fetch_inc
+#pragma weak shmem_size_atomic_fetch_inc = pshmem_size_atomic_fetch_inc
+#define shmem_size_atomic_fetch_inc pshmem_size_atomic_fetch_inc
+#pragma weak shmem_ptrdiff_atomic_fetch_inc = pshmem_ptrdiff_atomic_fetch_inc
+#define shmem_ptrdiff_atomic_fetch_inc pshmem_ptrdiff_atomic_fetch_inc
+#endif /* ENABLE_PSHMEM */
+
 API_DEF_AMO1(fetch_inc, int, int)
 API_DEF_AMO1(fetch_inc, long, long)
 API_DEF_AMO1(fetch_inc, longlong, long long)
@@ -762,6 +897,33 @@ API_DEF_AMO1(fetch_inc, uint64, uint64_t)
 API_DEF_AMO1(fetch_inc, size, size_t)
 API_DEF_AMO1(fetch_inc, ptrdiff, ptrdiff_t)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_fetch_add = pshmem_int_atomic_fetch_add
+#define shmem_int_atomic_fetch_add pshmem_int_atomic_fetch_add
+#pragma weak shmem_long_atomic_fetch_add = pshmem_long_atomic_fetch_add
+#define shmem_long_atomic_fetch_add pshmem_long_atomic_fetch_add
+#pragma weak shmem_longlong_atomic_fetch_add = pshmem_longlong_atomic_fetch_add
+#define shmem_longlong_atomic_fetch_add pshmem_longlong_atomic_fetch_add
+#pragma weak shmem_uint_atomic_fetch_add = pshmem_uint_atomic_fetch_add
+#define shmem_uint_atomic_fetch_add pshmem_uint_atomic_fetch_add
+#pragma weak shmem_ulong_atomic_fetch_add = pshmem_ulong_atomic_fetch_add
+#define shmem_ulong_atomic_fetch_add pshmem_ulong_atomic_fetch_add
+#pragma weak shmem_ulonglong_atomic_fetch_add = pshmem_ulonglong_atomic_fetch_add
+#define shmem_ulonglong_atomic_fetch_add pshmem_ulonglong_atomic_fetch_add
+#pragma weak shmem_int32_atomic_fetch_add = pshmem_int32_atomic_fetch_add
+#define shmem_int32_atomic_fetch_add pshmem_int32_atomic_fetch_add
+#pragma weak shmem_int64_atomic_fetch_add = pshmem_int64_atomic_fetch_add
+#define shmem_int64_atomic_fetch_add pshmem_int64_atomic_fetch_add
+#pragma weak shmem_uint32_atomic_fetch_add = pshmem_uint32_atomic_fetch_add
+#define shmem_uint32_atomic_fetch_add pshmem_uint32_atomic_fetch_add
+#pragma weak shmem_uint64_atomic_fetch_add = pshmem_uint64_atomic_fetch_add
+#define shmem_uint64_atomic_fetch_add pshmem_uint64_atomic_fetch_add
+#pragma weak shmem_size_atomic_fetch_add = pshmem_size_atomic_fetch_add
+#define shmem_size_atomic_fetch_add pshmem_size_atomic_fetch_add
+#pragma weak shmem_ptrdiff_atomic_fetch_add = pshmem_ptrdiff_atomic_fetch_add
+#define shmem_ptrdiff_atomic_fetch_add pshmem_ptrdiff_atomic_fetch_add
+#endif /* ENABLE_PSHMEM */
+
 API_DEF_AMO2(fetch_add, int, int)
 API_DEF_AMO2(fetch_add, long, long)
 API_DEF_AMO2(fetch_add, longlong, long long)
@@ -774,6 +936,37 @@ API_DEF_AMO2(fetch_add, uint32, uint32_t)
 API_DEF_AMO2(fetch_add, uint64, uint64_t)
 API_DEF_AMO2(fetch_add, size, size_t)
 API_DEF_AMO2(fetch_add, ptrdiff, ptrdiff_t)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_float_atomic_swap = pshmem_float_atomic_swap
+#define shmem_float_atomic_swap pshmem_float_atomic_swap
+#pragma weak shmem_double_atomic_swap = pshmem_double_atomic_swap
+#define shmem_double_atomic_swap pshmem_double_atomic_swap
+#pragma weak shmem_int_atomic_swap = pshmem_int_atomic_swap
+#define shmem_int_atomic_swap pshmem_int_atomic_swap
+#pragma weak shmem_long_atomic_swap = pshmem_long_atomic_swap
+#define shmem_long_atomic_swap pshmem_long_atomic_swap
+#pragma weak shmem_longlong_atomic_swap = pshmem_longlong_atomic_swap
+#define shmem_longlong_atomic_swap pshmem_longlong_atomic_swap
+#pragma weak shmem_uint_atomic_swap = pshmem_uint_atomic_swap
+#define shmem_uint_atomic_swap pshmem_uint_atomic_swap
+#pragma weak shmem_ulong_atomic_swap = pshmem_ulong_atomic_swap
+#define shmem_ulong_atomic_swap pshmem_ulong_atomic_swap
+#pragma weak shmem_ulonglong_atomic_swap = pshmem_ulonglong_atomic_swap
+#define shmem_ulonglong_atomic_swap pshmem_ulonglong_atomic_swap
+#pragma weak shmem_int32_atomic_swap = pshmem_int32_atomic_swap
+#define shmem_int32_atomic_swap pshmem_int32_atomic_swap
+#pragma weak shmem_int64_atomic_swap = pshmem_int64_atomic_swap
+#define shmem_int64_atomic_swap pshmem_int64_atomic_swap
+#pragma weak shmem_uint32_atomic_swap = pshmem_uint32_atomic_swap
+#define shmem_uint32_atomic_swap pshmem_uint32_atomic_swap
+#pragma weak shmem_uint64_atomic_swap = pshmem_uint64_atomic_swap
+#define shmem_uint64_atomic_swap pshmem_uint64_atomic_swap
+#pragma weak shmem_size_atomic_swap = pshmem_size_atomic_swap
+#define shmem_size_atomic_swap pshmem_size_atomic_swap
+#pragma weak shmem_ptrdiff_atomic_swap = pshmem_ptrdiff_atomic_swap
+#define shmem_ptrdiff_atomic_swap pshmem_ptrdiff_atomic_swap
+#endif /* ENABLE_PSHMEM */
 
 API_DEF_AMO2(swap, float, float)
 API_DEF_AMO2(swap, double, double)
@@ -790,6 +983,33 @@ API_DEF_AMO2(swap, uint64, uint64_t)
 API_DEF_AMO2(swap, size, size_t)
 API_DEF_AMO2(swap, ptrdiff, ptrdiff_t)
 
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_int_atomic_compare_swap = pshmem_int_atomic_compare_swap
+#define shmem_int_atomic_compare_swap pshmem_int_atomic_compare_swap
+#pragma weak shmem_long_atomic_compare_swap = pshmem_long_atomic_compare_swap
+#define shmem_long_atomic_compare_swap pshmem_long_atomic_compare_swap
+#pragma weak shmem_longlong_atomic_compare_swap = pshmem_longlong_atomic_compare_swap
+#define shmem_longlong_atomic_compare_swap pshmem_longlong_atomic_compare_swap
+#pragma weak shmem_uint_atomic_compare_swap = pshmem_uint_atomic_compare_swap
+#define shmem_uint_atomic_compare_swap pshmem_uint_atomic_compare_swap
+#pragma weak shmem_ulong_atomic_compare_swap = pshmem_ulong_atomic_compare_swap
+#define shmem_ulong_atomic_compare_swap pshmem_ulong_atomic_compare_swap
+#pragma weak shmem_ulonglong_atomic_compare_swap = pshmem_ulonglong_atomic_compare_swap
+#define shmem_ulonglong_atomic_compare_swap pshmem_ulonglong_atomic_compare_swap
+#pragma weak shmem_int32_atomic_compare_swap = pshmem_int32_atomic_compare_swap
+#define shmem_int32_atomic_compare_swap pshmem_int32_atomic_compare_swap
+#pragma weak shmem_int64_atomic_compare_swap = pshmem_int64_atomic_compare_swap
+#define shmem_int64_atomic_compare_swap pshmem_int64_atomic_compare_swap
+#pragma weak shmem_uint32_atomic_compare_swap = pshmem_uint32_atomic_compare_swap
+#define shmem_uint32_atomic_compare_swap pshmem_uint32_atomic_compare_swap
+#pragma weak shmem_uint64_atomic_compare_swap = pshmem_uint64_atomic_compare_swap
+#define shmem_uint64_atomic_compare_swap pshmem_uint64_atomic_compare_swap
+#pragma weak shmem_size_atomic_compare_swap = pshmem_size_atomic_compare_swap
+#define shmem_size_atomic_compare_swap pshmem_size_atomic_compare_swap
+#pragma weak shmem_ptrdiff_atomic_compare_swap = pshmem_ptrdiff_atomic_compare_swap
+#define shmem_ptrdiff_atomic_compare_swap pshmem_ptrdiff_atomic_compare_swap
+#endif /* ENABLE_PSHMEM */
+
 API_DEF_AMO3(compare_swap, int, int)
 API_DEF_AMO3(compare_swap, long, long)
 API_DEF_AMO3(compare_swap, longlong, long long)
@@ -802,6 +1022,148 @@ API_DEF_AMO3(compare_swap, uint32, uint32_t)
 API_DEF_AMO3(compare_swap, uint64, uint64_t)
 API_DEF_AMO3(compare_swap, size, size_t)
 API_DEF_AMO3(compare_swap, ptrdiff, ptrdiff_t)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_uint_atomic_fetch_xor = pshmem_uint_atomic_fetch_xor
+#define shmem_uint_atomic_fetch_xor pshmem_uint_atomic_fetch_xor
+#pragma weak shmem_ulong_atomic_fetch_xor = pshmem_ulong_atomic_fetch_xor
+#define shmem_ulong_atomic_fetch_xor pshmem_ulong_atomic_fetch_xor
+#pragma weak shmem_ulonglong_atomic_fetch_xor = pshmem_ulonglong_atomic_fetch_xor
+#define shmem_ulonglong_atomic_fetch_xor pshmem_ulonglong_atomic_fetch_xor
+#pragma weak shmem_int32_atomic_fetch_xor = pshmem_int32_atomic_fetch_xor
+#define shmem_int32_atomic_fetch_xor pshmem_int32_atomic_fetch_xor
+#pragma weak shmem_int64_atomic_fetch_xor = pshmem_int64_atomic_fetch_xor
+#define shmem_int64_atomic_fetch_xor pshmem_int64_atomic_fetch_xor
+#pragma weak shmem_uint32_atomic_fetch_xor = pshmem_uint32_atomic_fetch_xor
+#define shmem_uint32_atomic_fetch_xor pshmem_uint32_atomic_fetch_xor
+#pragma weak shmem_uint64_atomic_fetch_xor = pshmem_uint64_atomic_fetch_xor
+#define shmem_uint64_atomic_fetch_xor pshmem_uint64_atomic_fetch_xor
+
+#pragma weak shmem_uint_atomic_fetch_or = pshmem_uint_atomic_fetch_or
+#define shmem_uint_atomic_fetch_or pshmem_uint_atomic_fetch_or
+#pragma weak shmem_ulong_atomic_fetch_or = pshmem_ulong_atomic_fetch_or
+#define shmem_ulong_atomic_fetch_or pshmem_ulong_atomic_fetch_or
+#pragma weak shmem_ulonglong_atomic_fetch_or = pshmem_ulonglong_atomic_fetch_or
+#define shmem_ulonglong_atomic_fetch_or pshmem_ulonglong_atomic_fetch_or
+#pragma weak shmem_int32_atomic_fetch_or = pshmem_int32_atomic_fetch_or
+#define shmem_int32_atomic_fetch_or pshmem_int32_atomic_fetch_or
+#pragma weak shmem_int64_atomic_fetch_or = pshmem_int64_atomic_fetch_or
+#define shmem_int64_atomic_fetch_or pshmem_int64_atomic_fetch_or
+#pragma weak shmem_uint32_atomic_fetch_or = pshmem_uint32_atomic_fetch_or
+#define shmem_uint32_atomic_fetch_or pshmem_uint32_atomic_fetch_or
+#pragma weak shmem_uint64_atomic_fetch_or = pshmem_uint64_atomic_fetch_or
+#define shmem_uint64_atomic_fetch_or pshmem_uint64_atomic_fetch_or
+
+#pragma weak shmem_uint_atomic_fetch_and = pshmem_uint_atomic_fetch_and
+#define shmem_uint_atomic_fetch_and pshmem_uint_atomic_fetch_and
+#pragma weak shmem_ulong_atomic_fetch_and = pshmem_ulong_atomic_fetch_and
+#define shmem_ulong_atomic_fetch_and pshmem_ulong_atomic_fetch_and
+#pragma weak shmem_ulonglong_atomic_fetch_and = pshmem_ulonglong_atomic_fetch_and
+#define shmem_ulonglong_atomic_fetch_and pshmem_ulonglong_atomic_fetch_and
+#pragma weak shmem_int32_atomic_fetch_xor = pshmem_int32_atomic_fetch_xor
+#define shmem_int32_atomic_fetch_and pshmem_int32_atomic_fetch_and
+#pragma weak shmem_int64_atomic_fetch_and = pshmem_int64_atomic_fetch_and
+#define shmem_int64_atomic_fetch_and pshmem_int64_atomic_fetch_and
+#pragma weak shmem_uint32_atomic_fetch_and = pshmem_uint32_atomic_fetch_and
+#define shmem_uint32_atomic_fetch_and pshmem_uint32_atomic_fetch_and
+#pragma weak shmem_uint64_atomic_fetch_and = pshmem_uint64_atomic_fetch_and
+#define shmem_uint64_atomic_fetch_and pshmem_uint64_atomic_fetch_and
+#endif /* ENABLE_PSHMEM */
+
+API_DEF_AMO2(fetch_xor, uint, unsigned int)
+API_DEF_AMO2(fetch_xor, ulong, unsigned long)
+API_DEF_AMO2(fetch_xor, ulonglong, unsigned long long)
+API_DEF_AMO2(fetch_xor, int32, int32_t)
+API_DEF_AMO2(fetch_xor, int64, int64_t)
+API_DEF_AMO2(fetch_xor, uint32, uint32_t)
+API_DEF_AMO2(fetch_xor, uint64, uint64_t)
+
+API_DEF_AMO2(fetch_or, uint, unsigned int)
+API_DEF_AMO2(fetch_or, ulong, unsigned long)
+API_DEF_AMO2(fetch_or, ulonglong, unsigned long long)
+API_DEF_AMO2(fetch_or, int32, int32_t)
+API_DEF_AMO2(fetch_or, int64, int64_t)
+API_DEF_AMO2(fetch_or, uint32, uint32_t)
+API_DEF_AMO2(fetch_or, uint64, uint64_t)
+
+API_DEF_AMO2(fetch_and, uint, unsigned int)
+API_DEF_AMO2(fetch_and, ulong, unsigned long)
+API_DEF_AMO2(fetch_and, ulonglong, unsigned long long)
+API_DEF_AMO2(fetch_and, int32, int32_t)
+API_DEF_AMO2(fetch_and, int64, int64_t)
+API_DEF_AMO2(fetch_and, uint32, uint32_t)
+API_DEF_AMO2(fetch_and, uint64, uint64_t)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_uint_atomic_xor = pshmem_uint_atomic_xor
+#define shmem_uint_atomic_xor pshmem_uint_atomic_xor
+#pragma weak shmem_ulong_atomic_xor = pshmem_ulong_atomic_xor
+#define shmem_ulong_atomic_xor pshmem_ulong_atomic_xor
+#pragma weak shmem_ulonglong_atomic_xor = pshmem_ulonglong_atomic_xor
+#define shmem_ulonglong_atomic_xor pshmem_ulonglong_atomic_xor
+#pragma weak shmem_int32_atomic_xor = pshmem_int32_atomic_xor
+#define shmem_int32_atomic_xor pshmem_int32_atomic_xor
+#pragma weak shmem_int64_atomic_xor = pshmem_int64_atomic_xor
+#define shmem_int64_atomic_xor pshmem_int64_atomic_xor
+#pragma weak shmem_uint32_atomic_xor = pshmem_uint32_atomic_xor
+#define shmem_uint32_atomic_xor pshmem_uint32_atomic_xor
+#pragma weak shmem_uint64_atomic_xor = pshmem_uint64_atomic_xor
+#define shmem_uint64_atomic_xor pshmem_uint64_atomic_xor
+
+#pragma weak shmem_uint_atomic_or = pshmem_uint_atomic_or
+#define shmem_uint_atomic_or pshmem_uint_atomic_or
+#pragma weak shmem_ulong_atomic_or = pshmem_ulong_atomic_or
+#define shmem_ulong_atomic_or pshmem_ulong_atomic_or
+#pragma weak shmem_ulonglong_atomic_or = pshmem_ulonglong_atomic_or
+#define shmem_ulonglong_atomic_or pshmem_ulonglong_atomic_or
+#pragma weak shmem_int32_atomic_or = pshmem_int32_atomic_or
+#define shmem_int32_atomic_or pshmem_int32_atomic_or
+#pragma weak shmem_int64_atomic_or = pshmem_int64_atomic_or
+#define shmem_int64_atomic_or pshmem_int64_atomic_or
+#pragma weak shmem_uint32_atomic_or = pshmem_uint32_atomic_or
+#define shmem_uint32_atomic_or pshmem_uint32_atomic_or
+#pragma weak shmem_uint64_atomic_or = pshmem_uint64_atomic_or
+#define shmem_uint64_atomic_or pshmem_uint64_atomic_or
+
+#pragma weak shmem_uint_atomic_and = pshmem_uint_atomic_and
+#define shmem_uint_atomic_and pshmem_uint_atomic_and
+#pragma weak shmem_ulong_atomic_and = pshmem_ulong_atomic_and
+#define shmem_ulong_atomic_and pshmem_ulong_atomic_and
+#pragma weak shmem_ulonglong_atomic_and = pshmem_ulonglong_atomic_and
+#define shmem_ulonglong_atomic_and pshmem_ulonglong_atomic_and
+#pragma weak shmem_int32_atomic_xor = pshmem_int32_atomic_xor
+#define shmem_int32_atomic_and pshmem_int32_atomic_and
+#pragma weak shmem_int64_atomic_and = pshmem_int64_atomic_and
+#define shmem_int64_atomic_and pshmem_int64_atomic_and
+#pragma weak shmem_uint32_atomic_and = pshmem_uint32_atomic_and
+#define shmem_uint32_atomic_and pshmem_uint32_atomic_and
+#pragma weak shmem_uint64_atomic_and = pshmem_uint64_atomic_and
+#define shmem_uint64_atomic_and pshmem_uint64_atomic_and
+#endif /* ENABLE_PSHMEM */
+
+API_DEF_VOID_AMO2(xor, uint, unsigned int)
+API_DEF_VOID_AMO2(xor, ulong, unsigned long)
+API_DEF_VOID_AMO2(xor, ulonglong, unsigned long long)
+API_DEF_VOID_AMO2(xor, int32, int32_t)
+API_DEF_VOID_AMO2(xor, int64, int64_t)
+API_DEF_VOID_AMO2(xor, uint32, uint32_t)
+API_DEF_VOID_AMO2(xor, uint64, uint64_t)
+
+API_DEF_VOID_AMO2(or, uint, unsigned int)
+API_DEF_VOID_AMO2(or, ulong, unsigned long)
+API_DEF_VOID_AMO2(or, ulonglong, unsigned long long)
+API_DEF_VOID_AMO2(or, int32, int32_t)
+API_DEF_VOID_AMO2(or, int64, int64_t)
+API_DEF_VOID_AMO2(or, uint32, uint32_t)
+API_DEF_VOID_AMO2(or, uint64, uint64_t)
+
+API_DEF_VOID_AMO2(and, uint, unsigned int)
+API_DEF_VOID_AMO2(and, ulong, unsigned long)
+API_DEF_VOID_AMO2(and, ulonglong, unsigned long long)
+API_DEF_VOID_AMO2(and, int32, int32_t)
+API_DEF_VOID_AMO2(and, int64, int64_t)
+API_DEF_VOID_AMO2(and, uint32, uint32_t)
+API_DEF_VOID_AMO2(and, uint64, uint64_t)
 
 /*
  *-----------------------------------------------------------------------
