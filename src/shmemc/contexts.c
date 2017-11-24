@@ -11,9 +11,12 @@
 #include "shmem/defs.h"
 
 #include <stdlib.h>
-#include <assert.h>
 
 #include <ucp/api/ucp.h>
+
+#if 0
+static unsigned long id_track = 0; /* give each new context an ID */
+#endif
 
 /*
  * create new context
@@ -23,8 +26,6 @@ int
 shmemc_context_create(long options, shmemc_context_h *ctxp)
 {
 #if 0
-    static unsigned long id_track = 0; /* give each new context an ID */
-    ucp_worker_params_t wkpm;
     ucs_status_t s;
     shmemc_context_h newone;
 
@@ -38,14 +39,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     newone->nostore    = SHMEM_TEST_BIT(options, SHMEM_CTX_NOSTORE);
     newone->id         = id_track ++;
 
-    /* need to adjust mode depending on above */
-    wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
-    wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
-
-    s = ucp_worker_create(proc.comms.ctxt,
-                          &wkpm,
-                          &newone->wrkr);
-    assert(s == UCS_OK);
+    /* set up new endpoints */
 
     *ctxp = newone;
 #endif
@@ -63,9 +57,9 @@ shmemc_context_destroy(shmemc_context_h ctx)
     if (ctx != NULL) {
         if (ctx->wrkr != NULL) {
             /* spec 1.4 requires implicit quiet on destroy */
-            shmemc_ctx_quiet(ctx->wrkr);
+            shmemc_ctx_quiet(ctx, proc.comms.wrkr);
 
-            ucp_worker_destroy(ctx->wrkr);
+            /* kill endpoints */
         }
         free(ctx);
     }
