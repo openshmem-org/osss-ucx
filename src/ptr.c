@@ -6,6 +6,8 @@
 
 #include "shmemc.h"
 
+#include "shmem/defs.h"
+
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ptr = pshmem_ptr
 #define shmem_ptr pshmem_ptr
@@ -14,5 +16,5 @@
 void *
 shmem_ptr(const void *target, int pe)
 {
-    return shmemc_ptr(target, pe);
+    return shmemc_ctx_ptr(SHMEM_CTX_DEFAULT, target, pe);
 }

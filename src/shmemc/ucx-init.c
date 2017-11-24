@@ -133,22 +133,19 @@ read_environment(void)
 }
 
 inline static void
-make_init_params(ucp_params_t *p_p)
+make_init_params(ucp_params_t *pmp)
 {
-    p_p->field_mask =
+    pmp->field_mask =
         UCP_PARAM_FIELD_FEATURES |
         UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
 
-    /*
-     * we'll try at first to get both 32- and 64-bit direct AMO
-     * support because OpenSHMEM wants them
-     */
-    p_p->features  = UCP_FEATURE_RMA;
-    p_p->features |= UCP_FEATURE_WAKEUP; /* for events */
-    p_p->features |= UCP_FEATURE_AMO32;
-    p_p->features |= UCP_FEATURE_AMO64;
+    pmp->features =
+        UCP_FEATURE_RMA |
+        UCP_FEATURE_WAKEUP |    /* for events */
+        UCP_FEATURE_AMO32 |
+        UCP_FEATURE_AMO64;
 
-    p_p->estimated_num_eps = proc.nranks;
+    pmp->estimated_num_eps = proc.nranks;
 }
 
 /*
@@ -366,7 +363,7 @@ dereg_globals(void)
 }
 
 inline static void
-disconnect_all_eps(void)
+disconnect_all_endpoints(void)
 {
     int pe;
 
@@ -449,7 +446,7 @@ shmemc_ucx_init(void)
      */
     allocate_workers();
     allocate_endpoints();
-
+    /* create_default_context(); */
     make_local_worker();
 
 #if DUMP_DEBUG_INFO
@@ -467,7 +464,7 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-    disconnect_all_eps();
+    disconnect_all_endpoints();
     deallocate_endpoints();
 
     if (proc.comms.wrkr) {

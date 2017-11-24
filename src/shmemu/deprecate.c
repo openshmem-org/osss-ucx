@@ -4,8 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef ENABLE_DEBUG
-
 #include "shmemu.h"
 
 #include "uthash.h"
@@ -74,5 +72,3 @@ shmemu_deprecate_finalize(void)
         HASH_DEL(table, cur);
     }
 }
-
-#endif /* ENABLE_DEBUG */

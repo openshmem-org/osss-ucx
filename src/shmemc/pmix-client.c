@@ -58,6 +58,8 @@ parse_peers(char *peerstr)
     }
 }
 
+#ifndef ENABLE_FIXED_ADDRESSES
+
 /*
  * formats are <pe>:<region-index>:region:<key>
  */
@@ -134,6 +136,7 @@ shmemc_pmix_exchange_heap_info(void)
 
     }
 }
+#endif /* ! ENABLE_FIXED_ADDRESSES */
 
 static const char *wrkr_exch_fmt = "%d:wrkr:addr";
 

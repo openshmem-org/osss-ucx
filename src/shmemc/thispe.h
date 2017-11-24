@@ -52,7 +52,8 @@ typedef struct mem_region {
  * OpenSHMEM context requires...
  */
 struct shmemc_context {
-    ucp_worker_h wrkr;          /* UCP worker for this context */
+    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
+
     /*
      * parsed options during creation
      */
@@ -61,6 +62,7 @@ struct shmemc_context {
     long nostore;
 
     unsigned long id;           /* internal tracking */
+
     /*
      * possibly other things
      */
@@ -74,10 +76,10 @@ typedef struct comms_info {
     ucp_context_h ctxt;         /* local communication context */
     ucp_config_t *cfg;          /* local config */
     ucp_worker_h wrkr;          /* local worker */
-    shmemc_context_h *ctxts;    /* PE's contexts (replaces 1 worker ... */
-                                /* ... above).  Created on demand */
     worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
+    shmemc_context_h *ctxts;    /* PE's contexts (replaces EPs above). */
+                                /* Created on demand */
     mem_region_t *regions;      /* exchanged symmetric regions */
     size_t nregions;            /* number of symmetric regions per PE */
 } comms_info_t;

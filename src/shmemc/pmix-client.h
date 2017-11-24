@@ -9,8 +9,10 @@ void shmemc_pmix_client_abort(int status);
 
 void shmemc_pmix_barrier_all(void);
 
+#ifndef ENABLE_FIXED_ADDRESSES
 void shmemc_pmix_publish_heap_info(void);
 void shmemc_pmix_exchange_heap_info(void);
+#endif /* ! ENABLE_FIXED_ADDRESSES */
 
 void shmemc_pmix_publish_worker(void);
 void shmemc_pmix_exchange_workers(void);

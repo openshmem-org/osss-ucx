@@ -12,11 +12,16 @@
 #include <ucp/api/ucp.h>
 
 /*
- * shortcut to look up the UCP endpoint
+ * shortcut to look up the UCP endpoint of a context
  */
 inline static ucp_ep_h
-lookup_ucp_ep(int pe)
+lookup_ucp_ep(shmem_ctx_t ctx, int pe)
 {
+#if 0
+    const shmem_context_h ch = (shmem_context_h) ctx;
+
+    return proc.comms.ctxts[ch->id].eps[pe];
+#endif
     return proc.comms.eps[pe];
 }
 
@@ -25,11 +30,7 @@ in_region(uint64_t addr, size_t region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
 
-    if ( (mi.base <= addr) && (addr < mi.end) ) {
-        return 1;
-    }
-
-    return 0;
+    return (mi.base <= addr) && (addr < mi.end);
 }
 
 /*
@@ -148,9 +149,9 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
  */
 
 void *
-shmemc_ptr(const void *addr, int pe)
+shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
-    return shmemc_ptr_helper(SHMEM_CTX_DEFAULT, addr, pe);
+    return shmemc_ptr_helper(ctx, addr, pe);
 }
 
 /*
@@ -193,7 +194,7 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     r = lookup_region(ud, proc.rank);
     r_dest = translate_address(ud, r, pe);
     rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
+    ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_put(ep, src, nbytes, r_dest, rkey);
     assert(s == UCS_OK);
@@ -214,7 +215,7 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     r = lookup_region(us, proc.rank);
     r_src = translate_address(us, r, pe);
     rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
+    ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_get(ep, dest, nbytes, r_src, rkey);
     assert(s == UCS_OK);
@@ -240,7 +241,7 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     r = lookup_region(ud, proc.rank);
     r_dest = translate_address(ud, r, pe);
     rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
+    ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, rkey);
     assert(s == UCS_OK || s == UCS_INPROGRESS);
@@ -261,7 +262,7 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     r = lookup_region(us, proc.rank);
     r_src = translate_address(us, r, pe);
     rkey = lookup_rkey(r, pe);
-    ep = lookup_ucp_ep(pe);
+    ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, rkey);
     assert(s == UCS_OK || s == UCS_INPROGRESS);
@@ -292,7 +293,7 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
         r = lookup_region(t, proc.rank);                                \
         r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
-        ep = lookup_ucp_ep(pe);                                         \
+        ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_fadd##_size(ep, v, r_t, rkey, &ret);             \
         assert(s == UCS_OK);                                            \
@@ -317,7 +318,7 @@ HELPER_FADD(64)
         r = lookup_region(t, proc.rank);                            \
         r_t = translate_address(t, r, pe);                          \
         rkey = lookup_rkey(r, pe);                                  \
-        ep = lookup_ucp_ep(pe);                                     \
+        ep = lookup_ucp_ep(ctx, pe);                                \
                                                                     \
         s = ucp_atomic_add##_size(ep, v, r_t, rkey);                \
         assert(s == UCS_OK);                                        \
@@ -345,7 +346,7 @@ HELPER_ADD(64)
         r = lookup_region(t, proc.rank);                                \
         r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
-        ep = lookup_ucp_ep(pe);                                         \
+        ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_swap##_size(ep, v, r_t, rkey, &ret);             \
         assert(s == UCS_OK);                                            \
@@ -373,7 +374,7 @@ HELPER_SWAP(64)
         r = lookup_region(t, proc.rank);                                \
         r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
-        ep = lookup_ucp_ep(pe);                                         \
+        ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_cswap##_size(ep, c, v, r_t, rkey, &ret);         \
         assert(s == UCS_OK);                                            \
@@ -445,7 +446,7 @@ NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
         r = lookup_region(t, proc.rank);                                \
         r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
-        ep = lookup_ucp_ep(pe);                                         \
+        ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_##_opname##_size(ep, v, r_t, rkey, &ret);        \
         assert(s == UCS_OK);                                            \
