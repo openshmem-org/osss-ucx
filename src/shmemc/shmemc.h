@@ -30,7 +30,7 @@ char *shmemc_getenv(const char *name);
 int shmemc_my_pe(void);
 int shmemc_n_pes(void);
 
-void *shmemc_ptr(const void *target, int pe);
+void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);
 int shmemc_addr_accessible(const void *addr, int pe);
 
@@ -175,6 +175,9 @@ int  shmemc_test_lock(long *lock);
     shmemc_ctx_fence(SHMEM_CTX_DEFAULT)
 #define shmemc_quiet()                          \
     shmemc_ctx_quiet(SHMEM_CTX_DEFAULT)
+
+#define shmemc_ptr(...)                             \
+    shmemc_ctx_ptr(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #define shmemc_put(...)                             \
     shmemc_ctx_put(SHMEM_CTX_DEFAULT, __VA_ARGS__)
