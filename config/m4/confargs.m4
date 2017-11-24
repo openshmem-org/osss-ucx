@@ -7,6 +7,8 @@ AC_ARG_ENABLE([debug],
 		    AC_DEFINE([ENABLE_DEBUG], [1], [Enable debug])
 		    ),
 	[])
+AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" = "xyes"])
+
 AC_ARG_ENABLE([experimental],
 	AS_HELP_STRING([--enable-experimental],
 			[Enable non-standard extensions @<:@default=no@:>@]))
