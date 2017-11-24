@@ -19,12 +19,18 @@ shmemc_init(void)
     shmemc_ucx_init();
 
     /* now heap registered... */
-    /* TODO: don't do this if all addresses fixed */
+
+#ifndef ENABLE_FIXED_ADDRESSES
     shmemc_pmix_publish_heap_info();
+#endif /* ! ENABLE_FIXED_ADDRESSES */
+
     shmemc_pmix_publish_worker();
     shmemc_pmix_barrier_all();
 
+#ifndef ENABLE_FIXED_ADDRESSES
     shmemc_pmix_exchange_heap_info();
+#endif /* ! ENABLE_FIXED_ADDRESSES */
+
     /* exchange worker info and then create EPs */
     shmemc_pmix_exchange_workers();
     shmemc_ucx_make_remote_endpoints();
