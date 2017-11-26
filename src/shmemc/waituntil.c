@@ -1,6 +1,7 @@
 /* For license: see LICENSE file at top-level */
 
 #include "state.h"
+#include "shmemu.h"
 
 #include <unistd.h>
 #include <sched.h>
@@ -54,7 +55,6 @@ COMMS_TEST_SIZE(64, ge, >=)
                 return;                                                 \
                 /* NOT REACHED */                                       \
             }                                                           \
-            usleep(1e4);                                                \
             sched_yield();                                              \
         }                                                               \
     }
