@@ -37,11 +37,11 @@ shmem_ctx_fence(shmem_ctx_t ctx)
 void
 shmem_fence(void)
 {
-    shmem_ctx_fence(SHMEM_CTX_DEFAULT);
+    shmemc_ctx_fence(SHMEM_CTX_DEFAULT);
 }
 
 void
 shmem_quiet(void)
 {
-    shmem_ctx_quiet(SHMEM_CTX_DEFAULT);
+    shmemc_ctx_quiet(SHMEM_CTX_DEFAULT);
 }

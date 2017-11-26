@@ -2,6 +2,7 @@
 
 #include "state.h"
 
+#include <unistd.h>
 #include <sched.h>
 #include <ucp/api/ucp.h>
 
@@ -15,7 +16,7 @@
                                  int##_size##_t value)                  \
     {                                                                   \
         ucp_worker_wait_mem(proc.comms.wrkr, var);                      \
-        return ( *var _op value ) ? 1 : 0;                              \
+        return ( (*var) _op (value) ) ? 1 : 0;                          \
     }
 
 COMMS_TEST_SIZE(16, eq, ==)
@@ -53,6 +54,7 @@ COMMS_TEST_SIZE(64, ge, >=)
                 return;                                                 \
                 /* NOT REACHED */                                       \
             }                                                           \
+            usleep(1e4);                                                \
             sched_yield();                                              \
         }                                                               \
     }
