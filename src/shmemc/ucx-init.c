@@ -111,7 +111,7 @@ read_environment(void)
     if (e != NULL) {
         const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
 
-        assert(r == 0);
+        shmemu_assert("shmemu_parse_size", r == 0);
     }
 
     e = shmemc_getenv("SHMEM_DEBUG");
@@ -392,6 +392,27 @@ disconnect_all_endpoints(void)
     }
 }
 
+inline static void
+init_memory_regions(void)
+{
+    size_t i;
+
+    /* TODO: hardwire for now: globals + default symmetric heap */
+    proc.comms.nregions = 2;
+
+    /* init that many regions on me */
+    proc.comms.regions =
+        (mem_region_t *) malloc(proc.comms.nregions * sizeof(mem_region_t));
+    assert(proc.comms.regions != NULL);
+
+    /* now prep for all PEs to exchange */
+    for (i = 0; i < proc.comms.nregions; i += 1) {
+        proc.comms.regions[i].minfo =
+            (mem_info_t *) malloc(proc.nranks * sizeof(mem_info_t));
+        assert(proc.comms.regions[i].minfo != NULL);
+    }
+}
+
 /**
  * API
  *
@@ -433,6 +454,8 @@ shmemc_ucx_init(void)
     assert(s == UCS_OK);
 
     read_environment();
+
+    init_memory_regions();
 
     /* local shortcuts TODO: hardwired index */
     globals = & proc.comms.regions[0].minfo[proc.rank];

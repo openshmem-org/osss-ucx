@@ -1,7 +1,7 @@
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
-compiler="${OSH_CXX-@CXX@}"
+compiler="${OSH_CXX-g++}"
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@

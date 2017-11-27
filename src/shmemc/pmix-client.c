@@ -39,7 +39,7 @@ pmix_finalize_handler(void)
 /*
  * read out the peer PE numbers
  */
-static void
+inline static void
 parse_peers(char *peerstr)
 {
     int i = 0;
@@ -264,31 +264,6 @@ shmemc_pmix_exchange_all_rkeys(void)
     }
 }
 
-/*
- * TODO: I am aware this is in the wrong place
- */
-
-static void
-init_regions(void)
-{
-    size_t i;
-
-    /* TODO: hardwire for now: globals + default symmetric heap */
-    proc.comms.nregions = 2;
-
-    /* init that many regions on me */
-    proc.comms.regions =
-        (mem_region_t *) malloc(proc.comms.nregions * sizeof(mem_region_t));
-    assert(proc.comms.regions != NULL);
-
-    /* now prep for all PEs to exchange */
-    for (i = 0; i < proc.comms.nregions; i += 1) {
-        proc.comms.regions[i].minfo =
-            (mem_info_t *) malloc(proc.nranks * sizeof(mem_info_t));
-        assert(proc.comms.regions[i].minfo != NULL);
-    }
-}
-
 /* -------------------------------------------------------------- */
 
 /*
@@ -345,8 +320,6 @@ shmemc_pmix_client_init(void)
     assert(ps == PMIX_SUCCESS);
 
     parse_peers(vp->data.string);
-
-    init_regions();
 
     /* and done */
     PMIX_VALUE_RELEASE(vp);

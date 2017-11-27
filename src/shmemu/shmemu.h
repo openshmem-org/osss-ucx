@@ -62,6 +62,17 @@ typedef enum shmemu_log {
  */
 void shmemu_fatal(const char *fmt, ...);
 
+/*
+ * our own assertion check (e.g. to name the calling function)
+ */
+#define shmemu_assert(_name, _cond)                                     \
+    do {                                                                \
+        if (! (_cond)) {                                                \
+            shmemu_fatal("In \"%s\" assertion failed: %s",              \
+                         _name, #_cond);                                \
+        }                                                               \
+    } while (0)
+
 #ifdef ENABLE_DEBUG
 
 void shmemu_logger(shmemu_log_t level, const char *fmt, ...);
@@ -80,7 +91,6 @@ void shmemu_deprecate_finalize(void);
 # define shmemu_deprecate_finalize()
 
 #endif /* ENABLE_DEBUG */
-
 
 
 #include <sys/types.h>
