@@ -109,7 +109,7 @@ shmemc_ptr_helper(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(ua, proc.rank);
-    r_addr = translate_address(ua, r, pe);
+    r_addr = translate_address(ua, (size_t) r, pe);
     rkey = lookup_rkey(r, pe);
 
     s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
@@ -192,7 +192,7 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(ud, proc.rank);
-    r_dest = translate_address(ud, r, pe);
+    r_dest = translate_address(ud, (size_t) r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -213,7 +213,7 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(us, proc.rank);
-    r_src = translate_address(us, r, pe);
+    r_src = translate_address(us, (size_t) r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -239,7 +239,7 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(ud, proc.rank);
-    r_dest = translate_address(ud, r, pe);
+    r_dest = translate_address(ud, (size_t) r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -260,7 +260,7 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(us, proc.rank);
-    r_src = translate_address(us, r, pe);
+    r_src = translate_address(us, (size_t) r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -291,7 +291,7 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, r, pe);                              \
+        r_t = translate_address(t, (size_t) r, pe);                     \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
@@ -316,7 +316,7 @@ HELPER_FADD(64)
         ucs_status_t s;                                             \
                                                                     \
         r = lookup_region(t, proc.rank);                            \
-        r_t = translate_address(t, r, pe);                          \
+        r_t = translate_address(t, (size_t) r, pe);                 \
         rkey = lookup_rkey(r, pe);                                  \
         ep = lookup_ucp_ep(ctx, pe);                                \
                                                                     \
@@ -344,7 +344,7 @@ HELPER_ADD(64)
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, r, pe);                              \
+        r_t = translate_address(t, (size_t) r, pe);                     \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
@@ -372,7 +372,7 @@ HELPER_SWAP(64)
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, r, pe);                              \
+        r_t = translate_address(t, (size_t) r, pe);                     \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
@@ -444,7 +444,7 @@ NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, r, pe);                              \
+        r_t = translate_address(t, (size_t) r, pe);                     \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
