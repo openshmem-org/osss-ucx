@@ -320,9 +320,6 @@ shmemc_pmix_client_init(void)
     assert(ps == PMIX_SUCCESS);
 
     parse_peers(vp->data.string);
-
-    /* and done */
-    PMIX_VALUE_RELEASE(vp);
 }
 
 void
