@@ -1,5 +1,9 @@
 /* For license: see LICENSE file at top-level */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "shmemu.h"
 #include "state.h"
 
@@ -26,7 +30,7 @@ lookup_ucp_ep(shmem_ctx_t ctx, int pe)
 }
 
 inline static int
-in_region(uint64_t addr, size_t region, int pe)
+in_region(uint64_t addr, long region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
 
@@ -55,7 +59,7 @@ lookup_region(uint64_t addr, int pe)
  * find remote rkey
  */
 inline static ucp_rkey_h
-lookup_rkey(size_t region, int pe)
+lookup_rkey(long region, int pe)
 {
     return proc.comms.regions[region].minfo[pe].racc.rkey;
 }
@@ -70,7 +74,7 @@ get_base(int region, int pe)
  * translate remote address
  */
 inline static uint64_t
-translate_address(uint64_t local_addr, size_t region, int pe)
+translate_address(uint64_t local_addr, long region, int pe)
 {
 #ifdef ENABLE_FIXED_ADDRESSES
     return local_addr;
