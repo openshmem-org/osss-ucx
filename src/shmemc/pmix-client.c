@@ -39,7 +39,7 @@ pmix_finalize_handler(void)
 /*
  * read out the peer PE numbers
  */
-static void
+inline static void
 parse_peers(char *peerstr)
 {
     int i = 0;
@@ -320,8 +320,6 @@ shmemc_pmix_client_init(void)
     assert(ps == PMIX_SUCCESS);
 
     parse_peers(vp->data.string);
-
-    // init_regions();
 
     /* and done */
     PMIX_VALUE_RELEASE(vp);
