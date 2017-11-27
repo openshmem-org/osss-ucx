@@ -111,7 +111,7 @@ read_environment(void)
     if (e != NULL) {
         const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
 
-        assert(r == 0);
+        shmemu_assert("shmemu_parse_size", r == 0);
     }
 
     e = shmemc_getenv("SHMEM_DEBUG");
