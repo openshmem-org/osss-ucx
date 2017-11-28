@@ -33,7 +33,7 @@ static FILE *say;
  * no special treatment required here
  *
  */
-char *
+inline static char *
 shmemc_getenv(const char *name)
 {
     return getenv(name);
@@ -115,7 +115,9 @@ read_environment(void)
     if (e != NULL) {
         const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
 
-        shmemu_assert("shmemu_parse_size", r == 0);
+        if (r != 0) {
+            shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
+        }
     }
 
     e = shmemc_getenv("SHMEM_DEBUG");
