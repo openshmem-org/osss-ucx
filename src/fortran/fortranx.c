@@ -64,11 +64,11 @@ FORTRANIFY(shmemx_int8_xor)(long *target, long *value, int *pe)
         shmemx_##_cname##_put_nb(target, source, *size, *pe, desc);     \
     }
 
-#define SHMEMX_FORTRAN_PUT_SIZE_NB(Size, _cname, _ctype)                \
+#define SHMEMX_FORTRAN_PUT_SIZE_NB(_size, _cname, _ctype)               \
     void                                                                \
-    FORTRANIFY(shmemx_put##Size##_nb)(_ctype *target, const _ctype *source, \
-                                      int *size, int *pe,               \
-                                      shmemx_request_handle_t *desc)    \
+    FORTRANIFY(shmemx_put##_size##_nb)(_ctype *target, const _ctype *source, \
+                                       int *size, int *pe,              \
+                                       shmemx_request_handle_t *desc)   \
     {                                                                   \
         shmemx_##_cname##_put_nb(target, source, *size, *pe, desc);     \
     }
@@ -98,11 +98,11 @@ SHMEMX_FORTRAN_PUT_SIZE_NB(128, longlong, long long)
         shmemx_##_cname##_get_nb(target, source, *size, *pe, desc);     \
     }
 
-#define SHMEMX_FORTRAN_GET_SIZE_NB(Size, _cname, _ctype)                \
+#define SHMEMX_FORTRAN_GET_SIZE_NB(_size, _cname, _ctype)               \
     void                                                                \
-    FORTRANIFY(shmemx_get##Size##_nb)(_ctype *target, const _ctype *source, \
-                                      int *size, int *pe,               \
-                                      shmemx_request_handle_t *desc)    \
+    FORTRANIFY(shmemx_get##_size##_nb)(_ctype *target, const _ctype *source, \
+                                       int *size, int *pe,              \
+                                       shmemx_request_handle_t *desc)   \
     {                                                                   \
         shmemx_##_cname##_get_nb(target, source, *size, *pe, desc);     \
     }
