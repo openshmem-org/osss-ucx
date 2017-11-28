@@ -18,28 +18,6 @@
 #include <pmix/pmix_common.h>
 #include <ucp/api/ucp.h>
 
-inline static void
-pmix_finalize_handler(void)
-{
-    pmix_status_t ps;
-    int pe;
-
-    ps = PMIx_Finalize();
-    assert(ps == PMIX_SUCCESS);
-
-    /* clean up allocations for exchanged buffers */
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        if (proc.comms.xchg_wrkr_info[pe].buf != NULL) {
-            free(proc.comms.xchg_wrkr_info[pe].buf);
-        }
-    }
-
-    /* clean up memory recording peer PEs */
-    if (proc.peers != NULL) {
-        free(proc.peers);
-    }
-}
-
 /*
  * read out the peer PE numbers
  */
@@ -329,7 +307,23 @@ shmemc_pmix_client_init(void)
 void
 shmemc_pmix_client_finalize(void)
 {
-    pmix_finalize_handler();
+    pmix_status_t ps;
+    int pe;
+
+    ps = PMIx_Finalize();
+    assert(ps == PMIX_SUCCESS);
+
+    /* clean up allocations for exchanged buffers */
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        if (proc.comms.xchg_wrkr_info[pe].buf != NULL) {
+            free(proc.comms.xchg_wrkr_info[pe].buf);
+        }
+    }
+
+    /* clean up memory recording peer PEs */
+    if (proc.peers != NULL) {
+        free(proc.peers);
+    }
 }
 
 void
