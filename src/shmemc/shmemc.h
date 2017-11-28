@@ -25,8 +25,6 @@ void shmemc_init(void);
 void shmemc_finalize(void);
 void shmemc_trigger_globalexit(int status);
 
-char *shmemc_getenv(const char *name);
-
 int shmemc_my_pe(void);
 int shmemc_n_pes(void);
 

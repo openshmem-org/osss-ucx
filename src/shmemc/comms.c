@@ -30,7 +30,7 @@ lookup_ucp_ep(shmem_ctx_t ctx, int pe)
 }
 
 inline static int
-in_region(uint64_t addr, long region, int pe)
+in_region(uint64_t addr, size_t region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
 
@@ -43,11 +43,11 @@ in_region(uint64_t addr, long region, int pe)
 inline static long
 lookup_region(uint64_t addr, int pe)
 {
-    size_t i;
+    size_t r;
 
-    for (i = 0; i < proc.comms.nregions; i += 1) {
-        if (in_region(addr, i, pe)) {
-            return (long) i;
+    for (r = 0; r < proc.comms.nregions; r += 1) {
+        if (in_region(addr, r, pe)) {
+            return (long) r;
             /* NOT REACHED */
         }
     }
@@ -59,13 +59,13 @@ lookup_region(uint64_t addr, int pe)
  * find remote rkey
  */
 inline static ucp_rkey_h
-lookup_rkey(long region, int pe)
+lookup_rkey(size_t region, int pe)
 {
     return proc.comms.regions[region].minfo[pe].racc.rkey;
 }
 
 inline static uint64_t
-get_base(int region, int pe)
+get_base(size_t region, int pe)
 {
     return proc.comms.regions[region].minfo[pe].base;
 }
@@ -74,7 +74,7 @@ get_base(int region, int pe)
  * translate remote address
  */
 inline static uint64_t
-translate_address(uint64_t local_addr, long region, int pe)
+translate_address(uint64_t local_addr, size_t region, int pe)
 {
 #ifdef ENABLE_FIXED_ADDRESSES
     return local_addr;
@@ -113,7 +113,9 @@ shmemc_ptr_helper(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(ua, proc.rank);
-    r_addr = translate_address(ua, (size_t) r, pe);
+    shmemu_assert("shmemc_ptr_helper", r >= 0);
+
+    r_addr = translate_address(ua, r, pe);
     rkey = lookup_rkey(r, pe);
 
     s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
@@ -196,7 +198,9 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(ud, proc.rank);
-    r_dest = translate_address(ud, (size_t) r, pe);
+    shmemu_assert("shmemc_ctx_put", r >= 0);
+
+    r_dest = translate_address(ud, r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -217,7 +221,9 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(us, proc.rank);
-    r_src = translate_address(us, (size_t) r, pe);
+    shmemu_assert("shmemc_ctx_get", r >= 0);
+
+    r_src = translate_address(us, r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -243,7 +249,9 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(ud, proc.rank);
-    r_dest = translate_address(ud, (size_t) r, pe);
+    shmemu_assert("shmemc_ctx_put_nbi", r >= 0);
+
+    r_dest = translate_address(ud, r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -264,7 +272,9 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     ucs_status_t s;
 
     r = lookup_region(us, proc.rank);
-    r_src = translate_address(us, (size_t) r, pe);
+    shmemu_assert("shmemc_ctx_get_nbi", r >= 0);
+
+    r_src = translate_address(us, r, pe);
     rkey = lookup_rkey(r, pe);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -285,7 +295,8 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
 #define HELPER_FADD(_size)                                              \
     inline static uint##_size##_t                                       \
     helper_atomic_fetch_add##_size(shmem_ctx_t ctx,                     \
-                                   uint64_t t, uint##_size##_t v, int pe) \
+                                   uint64_t t, uint##_size##_t v,       \
+                                   int pe)                              \
     {                                                                   \
         long r;                                                         \
         uint64_t r_t;                                                   \
@@ -295,7 +306,9 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, (size_t) r, pe);                     \
+        shmemu_assert("atomic_fetch_add" #_size, r >= 0);               \
+                                                                        \
+        r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
@@ -311,7 +324,8 @@ HELPER_FADD(64)
 #define HELPER_ADD(_size)                                           \
     inline static void                                              \
     helper_atomic_add##_size(shmem_ctx_t ctx,                       \
-                             uint64_t t, uint##_size##_t v, int pe) \
+                             uint64_t t, uint##_size##_t v,         \
+                             int pe)                                \
     {                                                               \
         long r;                                                     \
         uint64_t r_t;                                               \
@@ -320,7 +334,9 @@ HELPER_FADD(64)
         ucs_status_t s;                                             \
                                                                     \
         r = lookup_region(t, proc.rank);                            \
-        r_t = translate_address(t, (size_t) r, pe);                 \
+        shmemu_assert("atomic_add" #_size, r >= 0);                 \
+                                                                    \
+        r_t = translate_address(t, r, pe);                          \
         rkey = lookup_rkey(r, pe);                                  \
         ep = lookup_ucp_ep(ctx, pe);                                \
                                                                     \
@@ -338,7 +354,8 @@ HELPER_ADD(64)
 #define HELPER_SWAP(_size)                                              \
     inline static uint##_size##_t                                       \
     helper_atomic_swap##_size(shmem_ctx_t ctx,                          \
-                              uint64_t t, uint##_size##_t v, int pe)    \
+                              uint64_t t, uint##_size##_t v,            \
+                              int pe)                                   \
     {                                                                   \
         long r;                                                         \
         uint64_t r_t;                                                   \
@@ -348,7 +365,9 @@ HELPER_ADD(64)
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, (size_t) r, pe);                     \
+        shmemu_assert("atomic_swap" #_size, r >= 0);                    \
+                                                                        \
+        r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
@@ -376,7 +395,9 @@ HELPER_SWAP(64)
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, (size_t) r, pe);                     \
+        shmemu_assert("atomic_compare_swap" #_size, r >= 0);            \
+                                                                        \
+        r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
@@ -448,7 +469,9 @@ NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
         ucs_status_t s;                                                 \
                                                                         \
         r = lookup_region(t, proc.rank);                                \
-        r_t = translate_address(t, (size_t) r, pe);                     \
+        shmemu_assert("atomic_fetch_" #_opname #_size, r >= 0);         \
+                                                                        \
+        r_t = translate_address(t, r, pe);                              \
         rkey = lookup_rkey(r, pe);                                      \
         ep = lookup_ucp_ep(ctx, pe);                                    \
                                                                         \
