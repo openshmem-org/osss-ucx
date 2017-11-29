@@ -48,7 +48,7 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
 }
 
 /*
- * chosen implementation.  Later can be seelcted through e.g. env var
+ * chosen implementation.  Later can be selected through e.g. env var
  */
 static void (*barrier_sync_helper)(int start, int log2stride,
                                    int size, long *pSync) =
