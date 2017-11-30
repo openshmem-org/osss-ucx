@@ -146,7 +146,6 @@ shmemc_pmix_exchange_workers(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
-    pmix_byte_object_t *bop;
     pmix_info_t waiter;
     int all = 1;
     int pe;
@@ -157,12 +156,12 @@ shmemc_pmix_exchange_workers(void)
     PMIX_PDATA_CONSTRUCT(&fetch);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
+        const pmix_byte_object_t *bop = &fetch.value.data.bo;
         const int i = (pe + proc.rank) % proc.nranks;
 
         snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
         ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
         assert(ps == PMIX_SUCCESS);
-        bop = &fetch.value.data.bo;
 
         /* save published worker */
         proc.comms.xchg_wrkr_info[i].buf = (char *) malloc(bop->size);
@@ -181,14 +180,14 @@ shmemc_pmix_publish_my_rkeys(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
-    pmix_byte_object_t *bop;
-    ucs_status_t s;
     void *packed_rkey;
     size_t rkey_len;
     size_t r;
 
     for (r = 0; r < proc.comms.nregions; r += 1) {
-        s = ucp_rkey_pack(proc.comms.ctxt,
+        pmix_byte_object_t *bop = &pi.value.data.bo;
+        const ucs_status_t s =
+            ucp_rkey_pack(proc.comms.ctxt,
                           proc.comms.regions[r].minfo[proc.rank].racc.mh,
                           &packed_rkey, &rkey_len
                           );
@@ -197,7 +196,6 @@ shmemc_pmix_publish_my_rkeys(void)
         PMIX_INFO_CONSTRUCT(&pi);
         snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, r);
         pi.value.type = PMIX_BYTE_OBJECT;
-        bop = &pi.value.data.bo;
         bop->bytes = (char *) packed_rkey;
         bop->size = rkey_len;
         ps = PMIx_Publish(&pi, 1);
@@ -209,12 +207,10 @@ void
 shmemc_pmix_exchange_all_rkeys(void)
 {
     pmix_status_t ps;
-    pmix_byte_object_t *bop;
     pmix_pdata_t fetch;
     pmix_info_t waiter;
     int all = 1;
     int pe;
-    ucs_status_t s;
     size_t r;
 
     PMIX_INFO_CONSTRUCT(&waiter);
@@ -225,13 +221,14 @@ shmemc_pmix_exchange_all_rkeys(void)
     for (r = 0; r < proc.comms.nregions; r += 1) {
 
         for (pe = 0; pe < proc.nranks; pe += 1) {
+            const pmix_byte_object_t *bop = &fetch.value.data.bo;
             const int i = (pe + proc.rank) % proc.nranks;
+            ucs_status_t s;
 
             snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, r);
 
             ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
             assert(ps == PMIX_SUCCESS);
-            bop = &fetch.value.data.bo; /* shortcut */
             proc.comms.regions[r].minfo[i].racc.rkey =
                 (ucp_rkey_h) malloc(bop->size);
             assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL);
