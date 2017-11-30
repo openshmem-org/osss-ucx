@@ -42,7 +42,7 @@ MY_SOURCES             = \
 #
 # separate out the memory allocation routines
 #
-liballocator_a_SOURCES = dlmalloc.c memalloc.c
+liballocator_a_SOURCES = allocator/dlmalloc.c allocator/memalloc.c
 liballocator_a_CFLAGS  = \
 			-DONLY_MSPACES=1 \
 			-DHAVE_MORECORE=0 \

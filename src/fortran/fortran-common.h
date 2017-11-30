@@ -12,7 +12,7 @@
 #define FORTRANIFY(_sym) FC_FUNC_(_sym, _sym)
 
 #define FORTRANIFY_VOID_VOID(_f)                \
-    void FORTRANIFY(_f) (void) { _f(); }
+    void FORTRANIFY(_f)(void) { _f(); }
 
 #define FORTRANIFY_CACHE(_name)                 \
     void                                        \

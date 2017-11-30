@@ -9,7 +9,8 @@
 #include "shmemc.h"
 #include "state.h"
 #include "globalexit.h"
-#include "memalloc.h"
+
+#include "allocator/memalloc.h"
 
 #include <stdlib.h>             /* getenv */
 #include <string.h>
