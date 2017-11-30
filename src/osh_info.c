@@ -20,7 +20,7 @@ static const int tag_width = 28;
 #define UNKNOWN        "unknown"
 #define INTERNAL_ERROR "not found [shouldn't happen]"
 
-static void
+inline static void
 output(const char *tag, const char *val)
 {
     if (tag != NULL) {
@@ -37,7 +37,7 @@ output(const char *tag, const char *val)
     }
 }
 
-static void
+inline static void
 output_spec_version(void)
 {
 #if defined(SHMEM_MAJOR_VERSION) && defined(SHMEM_MINOR_VERSION)
@@ -53,8 +53,8 @@ output_spec_version(void)
 #endif /* spec. version check */
 }
 
-static void
-output_package(void)
+inline static void
+output_package_name(void)
 {
     output("OpenSHMEM Package name",
 #ifdef PACKAGE_NAME
@@ -63,7 +63,11 @@ output_package(void)
            INTERNAL_ERROR
 #endif /* PACKAGE_NAME */
            );
+}
 
+inline static void
+output_package_contact(void)
+{
     output("OpenSHMEM Package URL",
 #ifdef PACKAGE_URL
             PACKAGE_URL
@@ -72,7 +76,7 @@ output_package(void)
 #endif /* PACKAGE_URL */
            );
 
-    output("OpenSHMEM bug report",
+    output("OpenSHMEM Bug Report",
 #ifdef PACKAGE_BUGREPORT
            PACKAGE_BUGREPORT
 #else
@@ -81,7 +85,7 @@ output_package(void)
            );
 }
 
-static void
+inline static void
 output_version(int terse)
 {
     output(terse ? NULL : "OpenSHMEM Package version",
@@ -94,7 +98,7 @@ output_version(int terse)
 
 }
 
-static void
+inline static void
 output_build_env(void)
 {
     char *host;
@@ -124,7 +128,7 @@ output_build_env(void)
 #endif /* CONFIG_FLAGS */
 }
 
-static void
+inline static void
 output_features(void)
 {
     output("Static libraries",
@@ -192,7 +196,7 @@ output_features(void)
            );
 }
 
-static void
+inline static void
 output_comms(void)
 {
     output("UCX Install",
@@ -214,7 +218,7 @@ output_comms(void)
 
 static char *progname;
 
-static void
+inline static void
 output_help(void)
 {
     fprintf(stderr,
@@ -240,13 +244,13 @@ static struct option opts[] = {
 int
 main(int argc, char *argv[])
 {
-    int version_only = 0;
+    int just_version = 0;
     int help = 0;
 
     progname = basename(argv[0]);
 
     while (1) {
-        int c = getopt_long(argc, argv, "hV", opts, NULL);
+        const int c = getopt_long(argc, argv, "hV", opts, NULL);
 
         if (c == -1) {
             break;
@@ -257,7 +261,7 @@ main(int argc, char *argv[])
             help = 1;
             break;
         case 'V':
-            version_only = 1;
+            just_version = 1;
             break;
         default:
             help = 1;
@@ -271,18 +275,18 @@ main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    output_version(version_only);
-    if (version_only) {
-        return EXIT_SUCCESS;
+    if (just_version) {
+        output_version(just_version);
     }
-
-    /* we want all the rest of it */
-
-    output_spec_version();
-    output_package();
-    output_build_env();
-    output_features();
-    output_comms();
+    else {
+        output_package_name();
+        output_version(just_version);
+        output_package_contact();
+        output_spec_version();
+        output_build_env();
+        output_features();
+        output_comms();
+    }
 
     return EXIT_SUCCESS;
 }
