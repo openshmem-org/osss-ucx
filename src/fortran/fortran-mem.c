@@ -1,14 +1,19 @@
 /* For license: see LICENSE file at top-level */
 
-#include <stdio.h>
-#include <stddef.h>
-#include <stdint.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
 
 #include "shmem/defs.h"
 #include "shmemc.h"
 #include "shmemu.h"
-#include "memalloc.h"
 #include "fortran-common.h"
+
+#include "allocator/memalloc.h"
+
+#include <stdio.h>
+#include <stddef.h>
+#include <stdint.h>
 
 /**
  *

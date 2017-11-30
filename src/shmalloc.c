@@ -6,8 +6,9 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
-#include "memalloc.h"
 #include "shmem/defs.h"
+
+#include "allocator/memalloc.h"
 
 #include <stdio.h>
 #include <sys/types.h>
