@@ -9,10 +9,9 @@ PMIx 1.2.x release.  Some API changes cause problems later on:
 
     PMIx 1.2.4      : https://github.com/pmix/pmix/releases
 
-UCX releases to date (<= 1.2.1) don't support all the things I use,
-so:
+UCX releases to date 1.2.1 and upcoming 1.2.2 work:
 
-    UCX from github : https://github.com/openucx/ucx
+    UCX from github : https://github.com/openucx/ucx/releases
 
 Sequence
 ========
