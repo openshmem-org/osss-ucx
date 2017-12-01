@@ -678,7 +678,7 @@ shmem_ctx_getmem_nbi(shmem_ctx_t ctx,
         shmem_ctx_##_name##_i##_opname(SHMEM_CTX_DEFAULT,               \
                                        dest, src,                       \
                                        tst, sst,                        \
-                                       nelems, pe);                     \
+                                       sizeof(_type) * nelems, pe);     \
     }
 
 API_DECL_PUTGET(get, float, float)
@@ -764,7 +764,8 @@ API_DECL_PUTGET(get, ptrdiff, ptrdiff_t)
                             size_t nelems, int pe)                      \
     {                                                                   \
         shmem_ctx_i##_opname##_size(SHMEM_CTX_DEFAULT,                  \
-                                    dest, src, tst, sst, nelems, pe);   \
+                                    dest, src, tst, sst,                \
+                                    _size * nelems, pe);                \
     }
 
 API_DECL_PUTGET_SIZE(get, 8)
