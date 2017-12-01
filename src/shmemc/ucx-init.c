@@ -439,7 +439,16 @@ shmemc_ucx_make_remote_endpoints(void)
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[i].buf;
 
         s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[i]);
-        assert(s == UCS_OK);
+
+        /*
+         * this can fail if we have e.g. mlx4 and not mlx5 infiniband
+         */
+        if (s != UCS_OK) {
+            shmemu_fatal("Unable to create remote endpoints: %s",
+                         ucs_status_string(s)
+                         );
+            /* NOT REACHED */
+        }
     }
 }
 

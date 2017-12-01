@@ -5,7 +5,7 @@
 
 void shmemc_pmix_client_init(void);
 void shmemc_pmix_client_finalize(void);
-void shmemc_pmix_client_abort(int status);
+void shmemc_pmix_client_abort(const char *msg, int status);
 
 void shmemc_pmix_barrier_all(void);
 
