@@ -853,12 +853,15 @@ API_DECL_PUTGET_MEM(get)
 #define shmem_ptrdiff_g pshmem_ptrdiff_g
 #endif /* ENABLE_PSHMEM */
 
-#define API_DECL_G(_name, _type)                            \
-    _type                                                   \
-    shmem_##_name##_g(_type *dest, int pe)                  \
-    {                                                       \
-        return shmem_ctx_##_name##_g(SHMEM_CTX_DEFAULT,     \
-                                     dest, pe);             \
+#define API_DECL_G(_name, _type)                                      \
+    _type                                                             \
+    shmem_##_name##_g(_type *dest, int pe)                            \
+    {                                                                 \
+        _type val;                                                    \
+                                                                      \
+        shmemc_ctx_get(SHMEM_CTX_DEFAULT,                             \
+                       &val, dest, sizeof(val), pe);                  \
+        return val;                                                   \
     }
 
 API_DECL_G(float, float)

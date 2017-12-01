@@ -861,8 +861,8 @@ API_DECL_PUTGET_MEM(put)
     void                                                                \
     shmem_##_name##_p(_type *dest, _type src, int pe)                   \
     {                                                                   \
-        shmem_ctx_##_name##_p(SHMEM_CTX_DEFAULT,                        \
-                              dest, src, pe);                           \
+        shmemc_ctx_put(SHMEM_CTX_DEFAULT,                               \
+                       dest, &src, sizeof(src), pe);                    \
     }
 
 API_DECL_P(float, float)
