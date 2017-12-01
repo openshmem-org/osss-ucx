@@ -60,15 +60,13 @@
 #define shmem_ctx_complexd_get pshmem_ctx_complexd_get
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_CTX_TYPED_GET(_name, _type)                        \
-    void                                                         \
-    shmem_ctx_##_name##_get(shmem_ctx_t ctx,                     \
-                            _type *dest, const _type *src,       \
-                            size_t nelems, int pe)               \
-    {                                                            \
-        const size_t typed_nelems = nelems * sizeof (_type);     \
-                                                                 \
-        shmemc_ctx_get(ctx, dest, src, typed_nelems, pe);        \
+#define SHMEM_CTX_TYPED_GET(_name, _type)                           \
+    void                                                            \
+    shmem_ctx_##_name##_get(shmem_ctx_t ctx,                        \
+                            _type *dest, const _type *src,          \
+                            size_t nelems, int pe)                  \
+    {                                                               \
+        shmemc_ctx_get(ctx, dest, src, sizeof(_type) * nelems, pe); \
     }
 
 SHMEM_CTX_TYPED_GET(float, float)
@@ -120,9 +118,7 @@ SHMEM_CTX_TYPED_GET(complexd, COMPLEXIFY(double))
                          void *dest, const void *src,           \
                          size_t nelems, int pe)                 \
     {                                                           \
-        const size_t sized_nelems = nelems * _size;             \
-                                                                \
-        shmemc_ctx_get(ctx, dest, src, sized_nelems, pe);       \
+        shmemc_ctx_get(ctx, dest, src, _size * nelems, pe);     \
     }
 
 SHMEM_CTX_SIZED_GET(8)
@@ -436,9 +432,7 @@ SHMEM_CTX_SIZED_IGET(128)
                                 _type *dest, const _type *src,          \
                                 size_t nelems, int pe)                  \
     {                                                                   \
-        const size_t typed_nelems = nelems * sizeof (_type);            \
-                                                                        \
-        shmemc_ctx_get_nbi(ctx, dest, src, typed_nelems, pe);           \
+        shmemc_ctx_get_nbi(ctx, dest, src, sizeof(_type) * nelems, pe); \
     }
 
 SHMEM_CTX_TYPED_GET_NBI(float, float)
@@ -490,9 +484,7 @@ SHMEM_CTX_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
                                void *dest, const void *src,     \
                                size_t nelems, int pe)           \
     {                                                           \
-        const size_t sized_nelems = nelems * _size;             \
-                                                                \
-        shmemc_ctx_get_nbi(ctx, dest, src, sized_nelems, pe);   \
+        shmemc_ctx_get_nbi(ctx, dest, src, _size * nelems, pe); \
     }
 
 SHMEM_CTX_SIZED_GET_NBI(8)
@@ -655,13 +647,27 @@ shmem_ctx_getmem_nbi(shmem_ctx_t ctx,
 #define shmem_uint64_get_nbi pshmem_uint64_get_nbi
 #endif /* ENABLE_PSHMEM */
 
+/*
+ * note use of shmem layer for iget() at the moment, not shmemc
+ */
+
 #define API_DECL_PUTGET(_opname, _name, _type)                          \
     void                                                                \
     shmem_##_name##_##_opname(_type *dest, const _type *src,            \
                               size_t nelems, int pe)                    \
     {                                                                   \
-        shmem_ctx_##_name##_##_opname(SHMEM_CTX_DEFAULT,                \
-                                      dest, src, nelems, pe);           \
+        shmemc_ctx_##_opname(SHMEM_CTX_DEFAULT,                         \
+                             dest, src,                                 \
+                             sizeof(_type) * nelems, pe);               \
+    }                                                                   \
+    void                                                                \
+    shmem_##_name##_##_opname##_nbi(_type *dest,                        \
+                                    const _type *src,                   \
+                                    size_t nelems, int pe)              \
+    {                                                                   \
+        shmemc_ctx_##_opname##_nbi(SHMEM_CTX_DEFAULT,                   \
+                                   dest, src,                           \
+                                   sizeof(_type) * nelems, pe);         \
     }                                                                   \
     void                                                                \
     shmem_##_name##_i##_opname(_type *dest,                             \
@@ -673,14 +679,6 @@ shmem_ctx_getmem_nbi(shmem_ctx_t ctx,
                                        dest, src,                       \
                                        tst, sst,                        \
                                        nelems, pe);                     \
-    }                                                                   \
-    void                                                                \
-    shmem_##_name##_##_opname##_nbi(_type *dest,                        \
-                                    const _type *src,                   \
-                                    size_t nelems, int pe)              \
-    {                                                                   \
-        shmem_ctx_##_name##_##_opname##_nbi(SHMEM_CTX_DEFAULT,          \
-                                            dest, src, nelems, pe);     \
     }
 
 API_DECL_PUTGET(get, float, float)
@@ -750,8 +748,15 @@ API_DECL_PUTGET(get, ptrdiff, ptrdiff_t)
     shmem_##_opname##_size(void *dest, const void *src,                 \
                            size_t nelems, int pe)                       \
     {                                                                   \
-        shmem_ctx_##_opname##_size(SHMEM_CTX_DEFAULT,                   \
-                                   dest, src, nelems, pe);              \
+        shmemc_ctx_##_opname(SHMEM_CTX_DEFAULT,                         \
+                             dest, src, _size * nelems, pe);            \
+    }                                                                   \
+    void                                                                \
+    shmem_##_opname##_size##_nbi(void *dest, const void *src,           \
+                                 size_t nelems, int pe)                 \
+    {                                                                   \
+        shmemc_ctx_##_opname##_nbi(SHMEM_CTX_DEFAULT,                   \
+                                   dest, src, _size * nelems, pe);      \
     }                                                                   \
     void                                                                \
     shmem_i##_opname##_size(void *dest, const void *src,                \
@@ -760,13 +765,6 @@ API_DECL_PUTGET(get, ptrdiff, ptrdiff_t)
     {                                                                   \
         shmem_ctx_i##_opname##_size(SHMEM_CTX_DEFAULT,                  \
                                     dest, src, tst, sst, nelems, pe);   \
-    }                                                                   \
-    void                                                                \
-    shmem_##_opname##_size##_nbi(void *dest, const void *src,           \
-                                 size_t nelems, int pe)                 \
-    {                                                                   \
-        shmem_ctx_##_opname##_size##_nbi(SHMEM_CTX_DEFAULT,             \
-                                         dest, src, nelems, pe);        \
     }
 
 API_DECL_PUTGET_SIZE(get, 8)
@@ -789,14 +787,14 @@ API_DECL_PUTGET_SIZE(get, 128)
     shmem_##_opname##mem(void *dest, const void *src,                   \
                          size_t nelems, int pe)                         \
     {                                                                   \
-        shmem_ctx_##_opname##mem(SHMEM_CTX_DEFAULT,                     \
-                                 dest, src, nelems, pe);                \
+        shmemc_ctx_##_opname(SHMEM_CTX_DEFAULT,                         \
+                             dest, src, nelems, pe);                    \
     }                                                                   \
     void                                                                \
     shmem_##_opname##mem_nbi(void *dest, const void *src,               \
                              size_t nelems, int pe)                     \
     {                                                                   \
-        shmem_ctx_##_opname##mem_nbi(SHMEM_CTX_DEFAULT,                 \
+        shmemc_ctx_##_opname##_nbi(SHMEM_CTX_DEFAULT,                   \
                                      dest, src, nelems, pe);            \
     }
 
