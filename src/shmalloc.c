@@ -32,7 +32,7 @@ int malloc_error = SHMEM_MALLOC_OK;
 void *
 shmem_malloc(size_t s)
 {
-    void *addr = shmemm_mem_malloc(s);
+    void *addr = shmema_mem_malloc(s);
 
     shmemc_barrier_all();
 
@@ -42,7 +42,7 @@ shmem_malloc(size_t s)
 void *
 shmem_calloc(size_t n, size_t s)
 {
-    void *addr = shmemm_mem_calloc(n, s);
+    void *addr = shmema_mem_calloc(n, s);
 
     shmemc_barrier_all();
 
@@ -54,7 +54,7 @@ shmem_free(void *p)
 {
     shmemc_barrier_all();
 
-    shmemm_mem_free(p);
+    shmema_mem_free(p);
 }
 
 void *
@@ -64,7 +64,7 @@ shmem_realloc(void *p, size_t s)
 
     shmemc_barrier_all();
 
-    addr = shmemm_mem_realloc(p, s);
+    addr = shmema_mem_realloc(p, s);
 
     shmemc_barrier_all();
 
@@ -74,7 +74,7 @@ shmem_realloc(void *p, size_t s)
 void *
 shmem_align(size_t a, size_t s)
 {
-    void *addr = shmemm_mem_align(a, s);
+    void *addr = shmema_mem_align(a, s);
 
     shmemc_barrier_all();
 

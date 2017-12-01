@@ -8,13 +8,13 @@
 /*
  * memory allocation
  */
-void shmemm_mem_init(void *base, size_t capacity);
-void shmemm_mem_finalize(void);
-void *shmemm_mem_base(void);
-void *shmemm_mem_malloc(size_t size);
-void *shmemm_mem_calloc(size_t count, size_t size);
-void shmemm_mem_free(void *addr);
-void *shmemm_mem_realloc(void *addr, size_t new_size);
-void *shmemm_mem_align(size_t alignment, size_t size);
+void shmema_mem_init(void *base, size_t capacity);
+void shmema_mem_finalize(void);
+void *shmema_mem_base(void);
+void *shmema_mem_malloc(size_t size);
+void *shmema_mem_calloc(size_t count, size_t size);
+void shmema_mem_free(void *addr);
+void *shmema_mem_realloc(void *addr, size_t new_size);
+void *shmema_mem_align(size_t alignment, size_t size);
 
 #endif /* ! _SHMEM_MEMALLOC_H */
