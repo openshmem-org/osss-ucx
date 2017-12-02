@@ -23,7 +23,7 @@
 
 void shmemc_init(void);
 void shmemc_finalize(void);
-void shmemc_trigger_globalexit(int status);
+void shmemc_global_exit(int status);
 
 int shmemc_my_pe(void);
 int shmemc_n_pes(void);

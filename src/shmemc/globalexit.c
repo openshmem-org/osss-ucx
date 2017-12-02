@@ -101,13 +101,13 @@ tell_pes(void)
     for (i = 0; i < proc.nranks; i += 1) {
         shmemc_put(&shmemc_globalexit_sentinel,
                    &shmemc_globalexit_sentinel,
-                   1,
+                   sizeof(shmemc_globalexit_sentinel),
                    i);
     }
 }
 
 void
-shmemc_trigger_globalexit(int status)
+shmemc_global_exit(int status)
 {
 
     shmemc_globalexit_status = status;
