@@ -92,19 +92,24 @@ typedef struct comms_info {
  * implementations support some environment variables
  */
 typedef struct env_info {
-    /* required */
-    int print_version;
+    /*
+     * required
+     */
+    int print_version;          /* produce info output? */
     int print_info;
     size_t def_heap_size;       /* TODO: expand for multiple heaps */
     int debug;                  /* are we doing debugging? */
 
-    /* this implementation */
+    /*
+     * this implementation
+     */
     char *debug_file;           /* where does debugging output go? */
 } env_info_t;
 
 typedef enum shmem_status {
     SHMEM_PE_SHUTDOWN = 0,
     SHMEM_PE_RUNNING,
+    SHMEM_PE_FAILED,
     SHMEM_PE_UNKNOWN
 } shmem_status_t;
 
