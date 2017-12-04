@@ -109,6 +109,14 @@ typedef enum shmem_status {
 } shmem_status_t;
 
 /*
+ * PEs can belong to teams
+ */
+typedef struct shmem_team {
+    unsigned long id;           /* team ID */
+    int *members;               /* list of PEs in the team */
+} shmem_team_t;
+
+/*
  * each PE has this state info
  */
 typedef struct thispe_info {
@@ -122,6 +130,7 @@ typedef struct thispe_info {
     int refcount;               /* library initialization count */
     int *peers;                 /* # PEs in a node group */
     int npeers;
+    shmem_team_t *teams;        /* PE teams we belong to */
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */
