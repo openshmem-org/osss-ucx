@@ -28,8 +28,8 @@
  * finish SHMEM portion of program, release resources
  */
 
-void
-shmem_finalize(void)
+static void
+finalize_helper(void)
 {
     /* do nothing if multiple finalizes */
     if (proc.refcount > 0) {
@@ -46,12 +46,8 @@ shmem_finalize(void)
     }
 }
 
-/*
- * initialize SHMEM portion of program with threading model
- */
-
-int
-shmem_init_thread(int requested, int *provided)
+inline static int
+init_thread_helper(int requested, int *provided)
 {
     /* do nothing if multiple inits */
     if (proc.refcount == 0) {
@@ -60,7 +56,7 @@ shmem_init_thread(int requested, int *provided)
         shmemc_init();
         shmemu_init();
 
-        s = atexit(shmem_finalize);
+        s = atexit(finalize_helper);
         if (s != 0) {
             logger(LOG_FATAL,
                    "unable to register atexit() handler: %s",
@@ -112,12 +108,34 @@ shmem_init_thread(int requested, int *provided)
     return 0;
 }
 
+/*
+ * -- API --------------------------------------------------------------------
+ */
+
+/*
+ * initialize SHMEM portion of program with threading model
+ */
+
+int
+shmem_init_thread(int requested, int *provided)
+{
+    return init_thread_helper(requested, provided);
+}
+
 void
 shmem_init(void)
 {
-    int throwaway = 0;
+    (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
+}
 
-    (void) shmem_init_thread(SHMEM_THREAD_SINGLE, &throwaway);
+/*
+ * finish SHMEM portion of program, release resources
+ */
+
+void
+shmem_finalize(void)
+{
+    finalize_helper();
 }
 
 /*
