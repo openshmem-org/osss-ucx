@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_init_thread = pshmem_init_thread
@@ -63,14 +64,40 @@ shmem_init_thread(int requested, int *provided)
         if (s != 0) {
             logger(LOG_FATAL,
                    "unable to register atexit() handler: %s",
-                   strerror(errno));
+                   strerror(errno)
+                   );
             /* NOT REACHED */
         }
 
         proc.status = SHMEM_PE_RUNNING;
 
         /* for now */
-        proc.thread_level = *provided = SHMEM_THREAD_SINGLE;
+        switch(requested) {
+        case SHMEM_THREAD_SINGLE:
+            break;
+        case SHMEM_THREAD_FUNNELED:
+            break;
+        case SHMEM_THREAD_SERIALIZED:
+            break;
+        case SHMEM_THREAD_MULTIPLE: /* unsupported for now */
+            requested = SHMEM_THREAD_SERIALIZED;
+            break;
+        default:
+            logger(LOG_FATAL,
+                   "unknown thread level %d requested",
+                   requested
+                   );
+            /* NOT REACHED */
+            break;
+        }
+
+        /* save and return */
+        proc.thread_level = requested;
+        if (provided != NULL) {
+            *provided = requested;
+        }
+
+        proc.invoking_thread = pthread_self();
     }
 
     proc.refcount += 1;

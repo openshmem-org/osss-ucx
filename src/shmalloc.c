@@ -8,6 +8,7 @@
 #include "shmemc.h"
 #include "shmem/defs.h"
 
+#include "shmem_mutex.h"
 #include "allocator/memalloc.h"
 
 #include <stdio.h>
@@ -29,10 +30,14 @@ int malloc_error = SHMEM_MALLOC_OK;
 #define shmem_align pshmem_align
 #endif /* ENABLE_PSHMEM */
 
+static pthread_mutex_t m_alloc = PTHREAD_MUTEX_INITIALIZER;
+
 void *
 shmem_malloc(size_t s)
 {
-    void *addr = shmema_mem_malloc(s);
+    void *addr;
+
+    SHMEML_MUTEX_PROTECT(addr = shmema_mem_malloc(s), &m_alloc);
 
     shmemc_barrier_all();
 
@@ -42,7 +47,9 @@ shmem_malloc(size_t s)
 void *
 shmem_calloc(size_t n, size_t s)
 {
-    void *addr = shmema_mem_calloc(n, s);
+    void *addr;
+
+    SHMEML_MUTEX_PROTECT(addr = shmema_mem_calloc(n, s), &m_alloc);
 
     shmemc_barrier_all();
 
@@ -54,8 +61,13 @@ shmem_free(void *p)
 {
     shmemc_barrier_all();
 
-    shmema_mem_free(p);
+    SHMEML_MUTEX_PROTECT(shmema_mem_free(p), &m_alloc);
 }
+
+/*
+ * realloc can cause memory to move around, so we protect it before
+ * *and* after (spec 1.4rc5, p. 25)
+ */
 
 void *
 shmem_realloc(void *p, size_t s)
@@ -64,7 +76,7 @@ shmem_realloc(void *p, size_t s)
 
     shmemc_barrier_all();
 
-    addr = shmema_mem_realloc(p, s);
+    SHMEML_MUTEX_PROTECT(addr = shmema_mem_realloc(p, s), &m_alloc);
 
     shmemc_barrier_all();
 
@@ -74,7 +86,9 @@ shmem_realloc(void *p, size_t s)
 void *
 shmem_align(size_t a, size_t s)
 {
-    void *addr = shmema_mem_align(a, s);
+    void *addr;
+
+    SHMEML_MUTEX_PROTECT(addr = shmema_mem_align(a, s), &m_alloc);
 
     shmemc_barrier_all();
 
