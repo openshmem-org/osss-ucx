@@ -370,32 +370,40 @@ dereg_globals(void)
 }
 
 inline static void
+blocking_ep_disconnect(ucp_ep_h ep)
+{
+    ucs_status_t s;
+    ucs_status_ptr_t req =
+#ifdef HAVE_UCP_EP_CLOSE_NB
+        ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH)
+#else
+        ucp_disconnect_nb(ep)
+#endif  /* HAVE_UCP_EP_CLOSE_NB*/
+        ;
+
+    /* if not done immediately, wait */
+    if (req == UCS_OK) {
+        return;
+    }
+
+    do {
+        (void) ucp_worker_progress(proc.comms.wrkr);
+#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
+        s = ucp_request_check_status(req);
+#else
+        s = ucp_request_test(req, NULL);
+#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
+    } while (s == UCS_INPROGRESS);
+    ucp_request_free(req);
+}
+
+inline static void
 disconnect_all_endpoints(void)
 {
     int pe;
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        ucs_status_ptr_t req =
-#ifdef HAVE_UCP_EP_CLOSE_NB
-            ucp_ep_close_nb(proc.comms.eps[pe], UCP_EP_CLOSE_MODE_FLUSH);
-#else
-        ucp_disconnect_nb(proc.comms.eps[pe]);
-#endif  /* HAVE_UCP_EP_CLOSE_NB*/
-
-        /* if not done immediately, wait */
-        if (req != UCS_OK) {
-            ucs_status_t s;
-
-            do {
-                (void) ucp_worker_progress(proc.comms.wrkr);
-#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
-                s = ucp_request_check_status(req);
-#else
-                s = ucp_request_test(req, NULL);
-#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
-            } while (s == UCS_INPROGRESS);
-            ucp_request_free(req);
-        }
+        blocking_ep_disconnect(proc.comms.eps[pe]);
     }
 }
 
