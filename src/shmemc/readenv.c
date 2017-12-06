@@ -109,46 +109,49 @@ static const int val_width = 12;
 void
 shmemc_print_env_vars(FILE *stream)
 {
-    fprintf(stream, "Environment Variable Information\n");
-    fprintf(stream, "\n");
-    fprintf(stream, "%s\n\n",
+    fprintf(stream, "# Environment Variable Information\n");
+    fprintf(stream, "#\n");
+    fprintf(stream, "# %s\n",
             "From specification:");
-    fprintf(stream, "%-*s (= %-*s) %s\n",
+    fprintf(stream, "#\n");
+    fprintf(stream, "# %-*s (= %-*s) %s\n",
             var_width,
             "SHMEM_VERSION",
             val_width,
             humanize(proc.env.print_version),
             "print library version at start-up");
-    fprintf(stream, "%-*s (= %-*s) %s\n",
+    fprintf(stream, "# %-*s (= %-*s) %s\n",
             var_width,
             "SHMEM_INFO",
             val_width,
             humanize(proc.env.print_info),
             "print this information");
-    fprintf(stream, "%-*s (= %-*lu) %s\n",
+    fprintf(stream, "# %-*s (= %-*lu) %s\n",
             var_width,
             "SHMEM_SYMMETRIC_SIZE",
             val_width,
             proc.env.def_heap_size,
             "set the size of the symmetric heap");
-    fprintf(stream, "%-*s (= %-*s) %s\n",
+    fprintf(stream, "# %-*s (= %-*s) %s\n",
             var_width,
             "SHMEM_DEBUG",
             val_width,
             humanize(proc.env.debug),
             "enable run debugging (if configured)");
 
-    fprintf(stream, "\n");
-    fprintf(stream, "%s\n\n",
+    fprintf(stream, "#\n");
+    fprintf(stream, "# %s\n",
             "Specific to this implementation:");
-    fprintf(stream, "%-*s (= %-*s) %s\n",
+    fprintf(stream, "#\n");
+    fprintf(stream, "# %-*s (= %-*s) %s\n",
             var_width,
             "SHMEM_DEBUG_FILE",
             val_width,
             (proc.env.debug_file != NULL) ? proc.env.debug_file : "none",
             "file to receive debugging information");
 
-    fprintf(stream, "\n\n");
+    fprintf(stream, "#\n");
+    fprintf(stream, "\n");
 
     fflush(stream);
 }
