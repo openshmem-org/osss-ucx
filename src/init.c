@@ -7,6 +7,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
+#include "info.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -44,6 +45,11 @@ finalize_helper(void)
         proc.refcount = 0;      /* finalized is finalized */
         proc.status = SHMEM_PE_SHUTDOWN;
     }
+}
+
+inline static void
+print_env_vars(void)
+{
 }
 
 inline static int
@@ -94,8 +100,16 @@ init_thread_helper(int requested, int *provided)
         }
 
         proc.invoking_thread = pthread_self();
-    }
 
+        if (proc.rank == 0) {
+            if (proc.env.print_version) {
+                osh_info.package_version(0);
+            }
+            if (proc.env.print_info) {
+                print_env_vars();
+            }
+        }
+    }
     proc.refcount += 1;
 
     logger(LOG_INIT,

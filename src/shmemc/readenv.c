@@ -67,11 +67,11 @@ read_environment(void)
 
     CHECK_ENV(e, VERSION);
     if (e != NULL) {
-        proc.env.print_version = 1;
+        proc.env.print_version = option_enabled_test(e);
     }
     CHECK_ENV(e, INFO);
     if (e != NULL) {
-        proc.env.print_info = 1;
+        proc.env.print_info = option_enabled_test(e);
     }
     CHECK_ENV(e, SYMMETRIC_SIZE);
     if (e != NULL) {
