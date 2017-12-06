@@ -9,6 +9,7 @@
 #include "shmemc.h"
 #include "state.h"
 #include "globalexit.h"
+#include "readenv.h"
 
 #include "allocator/memalloc.h"
 
@@ -29,115 +30,6 @@
  * debugging output stream
  */
 static FILE *say;
-
-/**
- * no special treatment required here
- *
- */
-inline static char *
-shmemc_getenv(const char *name)
-{
-    return getenv(name);
-}
-
-inline static int
-option_enabled_test(const char *str)
-{
-    int ret = 0;
-
-    if ((strncasecmp(str, "y", 1) == 0) ||
-        (strncasecmp(str, "on", 2) == 0) ||
-        (atoi(str) > 0)) {
-        ret = 1;
-    }
-
-    return ret;
-}
-
-/*
- * backward-compatible environment variables
- */
-inline static void
-backcompat_environment(void)
-{
-    int overwrite = 1;
-    char *e;
-
-    /*
-     * defined in spec
-     */
-    e = shmemc_getenv("SMA_VERSION");
-    if (e != NULL) {
-        (void) setenv("SHMEM_VERSION", "1", overwrite);
-    }
-    e = shmemc_getenv("SMA_INFO");
-    if (e != NULL) {
-        (void) setenv("SHMEM_INFO", "1", overwrite);
-    }
-    e = shmemc_getenv("SMA_SYMMETRIC_SIZE");
-    if (e != NULL) {
-        (void) setenv("SHMEM_SYMMETRIC_SIZE", e, overwrite);
-    }
-    e = shmemc_getenv("SMA_DEBUG");
-    if (e != NULL) {
-        (void) setenv("SHMEM_DEBUG", "y", overwrite);
-    }
-}
-
-/*
- * read & save all our environment variables
- */
-inline static void
-read_environment(void)
-{
-    char *e;
-
-    /* init environment */
-    proc.env.print_version = 0;
-    proc.env.print_info = 0;
-    proc.env.def_heap_size = 4 * MB;
-    proc.env.debug = 0;
-
-    backcompat_environment();
-
-    /*
-     * defined in spec
-     */
-    e = shmemc_getenv("SHMEM_VERSION");
-    if (e != NULL) {
-        proc.env.print_version = 1;
-    }
-    e = shmemc_getenv("SHMEM_INFO");
-    if (e != NULL) {
-        proc.env.print_info = 1;
-    }
-
-    e = shmemc_getenv("SHMEM_SYMMETRIC_SIZE");
-    if (e != NULL) {
-        const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
-
-        if (r != 0) {
-            shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
-        }
-    }
-
-    e = shmemc_getenv("SHMEM_DEBUG");
-    if (e != NULL) {
-        proc.env.debug = option_enabled_test(e);
-    }
-
-    /*
-     * this implementation also has...
-     */
-
-    e = shmemc_getenv("SHMEM_DEBUG_FILE");
-    if (e != NULL) {
-        proc.env.debug_file = strdup(e); /* free at end */
-    }
-    else {
-        proc.env.debug_file = NULL;
-    }
-}
 
 inline static void
 make_init_params(ucp_params_t *pmp)
