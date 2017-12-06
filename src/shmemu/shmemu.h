@@ -13,6 +13,14 @@
 #include <stdarg.h>
 
 /*
+ * units for asking for symmetric heap size
+ */
+#define SHMEMU_KB 1024L
+#define SHMEMU_MB (SHMEMU_KB * SHMEMU_KB)
+#define SHMEMU_GB (SHMEMU_KB * SHMEMU_MB)
+#define SHMEMU_TB (SHMEMU_KB * SHMEMU_GB)
+
+/*
  * how many elements in array T?
  *
  */
@@ -117,8 +125,9 @@ SHMEMU_DECL_MATH_FUNC(int32, int32_t)
 SHMEMU_DECL_MATH_FUNC(int64, int64_t)
 SHMEMU_DECL_MATH_FUNC(uint32, uint32_t)
 SHMEMU_DECL_MATH_FUNC(uint64, uint64_t)
-SHMEMU_DECL_MATH_FUNC(complexd, double complex)
-SHMEMU_DECL_MATH_FUNC(complexf, float complex)
+/* for Fortran */
+SHMEMU_DECL_MATH_FUNC(complexd, COMPLEXIFY(double))
+SHMEMU_DECL_MATH_FUNC(complexf, COMPLEXIFY(float))
 
 /**
  * these are the logical operations.  Note: these are *bitwise*.
