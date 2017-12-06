@@ -27,7 +27,7 @@ output(const char *tag, const char *val)
         char buf[STRMAX];
 
         snprintf(buf, STRMAX, "%s:", tag);
-        printf("%-*s ", tag_width, buf);
+        printf("# %-*s ", tag_width, buf);
 #undef STRMAX
     }
 
