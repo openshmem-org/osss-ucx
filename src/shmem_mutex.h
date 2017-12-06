@@ -41,11 +41,11 @@ shmeml_mutex_unlock(pthread_mutex_t *mp)
     }
 }
 
-#define SHMEML_MUTEX_PROTECT(_fn, _mp)          \
-    do {                                        \
-        shmeml_mutex_lock(_mp);                 \
-        _fn;                                    \
-        shmeml_mutex_lock(_mp);                 \
+#define SHMEML_MUTEX_PROTECT(_fn, _mp)            \
+    do {                                          \
+        shmeml_mutex_lock(_mp);                   \
+        _fn;                                      \
+        shmeml_mutex_unlock(_mp);                 \
     } while (0)
 
 #endif /* ! _SHMEM_MUTEX_H */
