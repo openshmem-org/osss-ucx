@@ -203,25 +203,6 @@ make_local_worker(void)
 }
 
 /*
- * endpoint tables
- */
-inline static void
-allocate_endpoints(void)
-{
-    proc.comms.eps = (ucp_ep_h *)
-        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
-    assert(proc.comms.eps != NULL);
-}
-
-inline static void
-deallocate_endpoints(void)
-{
-    if (proc.comms.eps != NULL) {
-        free(proc.comms.eps);
-    }
-}
-
-/*
  * a couple of shortcuts
  */
 static mem_info_t *globals;
@@ -369,40 +350,70 @@ dereg_globals(void)
     assert(s == UCS_OK);
 }
 
+/*
+ * endpoint tables
+ */
+inline static void
+allocate_endpoints(void)
+{
+    proc.comms.eps = (ucp_ep_h *)
+        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
+    assert(proc.comms.eps != NULL);
+}
+
+inline static void
+deallocate_endpoints(void)
+{
+    if (proc.comms.eps != NULL) {
+        free(proc.comms.eps);
+    }
+}
+
 inline static void
 blocking_ep_disconnect(ucp_ep_h ep)
 {
-    ucs_status_t s;
-    ucs_status_ptr_t req =
-#ifdef HAVE_UCP_EP_CLOSE_NB
-        ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH)
-#else
-        ucp_disconnect_nb(ep)
-#endif  /* HAVE_UCP_EP_CLOSE_NB*/
-        ;
+    ucs_status_ptr_t req;
 
-    /* if not done immediately, wait */
-    if (req == UCS_OK) {
+    if (ep == NULL) {
         return;
     }
 
-    do {
-        (void) ucp_worker_progress(proc.comms.wrkr);
-#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
-        s = ucp_request_check_status(req);
+#ifdef HAVE_UCP_EP_CLOSE_NB
+    req = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
 #else
-        s = ucp_request_test(req, NULL);
+    req = ucp_disconnect_nb(ep);
+#endif  /* HAVE_UCP_EP_CLOSE_NB */
+
+    if (req == UCS_OK) {
+        return;
+    }
+    else if (UCS_PTR_IS_ERR(req)) {
+        ucp_request_cancel(proc.comms.wrkr, req);
+        return;
+    }
+    else {
+        ucs_status_t s;
+
+        do {
+            (void) ucp_worker_progress(proc.comms.wrkr);
+#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
+            s = ucp_request_check_status(req);
+#else
+            s = ucp_request_test(req, NULL);
 #endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
-    } while (s == UCS_INPROGRESS);
-    ucp_request_free(req);
+        } while (s == UCS_INPROGRESS);
+        ucp_request_free(req);
+    }
 }
 
 inline static void
 disconnect_all_endpoints(void)
 {
-    int pe;
+    int i;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (i = 0; i < proc.nranks; i += 1) {
+        const int pe = (i + proc.rank) % proc.nranks;
+
         blocking_ep_disconnect(proc.comms.eps[pe]);
     }
 }
@@ -438,15 +449,15 @@ shmemc_ucx_make_remote_endpoints(void)
 {
     ucs_status_t s;
     ucp_ep_params_t epm;
-    int pe;
+    int i;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        const int i = (pe + proc.rank) % proc.nranks;
+    for (i = 0; i < proc.nranks; i += 1) {
+        const int pe = (i + proc.rank) % proc.nranks;
 
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-        epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[i].buf;
+        epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
-        s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[i]);
+        s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[pe]);
 
         /*
          * this can fail if we have e.g. mlx4 and not mlx5 infiniband
@@ -511,7 +522,7 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-    disconnect_all_endpoints();
+    // disconnect_all_endpoints();
     deallocate_endpoints();
 
     if (proc.comms.wrkr) {
