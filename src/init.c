@@ -50,6 +50,15 @@ finalize_helper(void)
 inline static void
 print_env_vars(void)
 {
+    printf("Environment Variable Information\n");
+    printf("\n");
+    printf("    SHMEM_VERSION:        print library version\n");
+    printf("    SHMEM_INFO:           print this information\n");
+    printf("    SHMEM_SYMMETRIC_SIZE: set the size of the symmetric heap\n");
+    printf("                            (understands K,M,G,T units)\n");
+    printf("    SHMEM_DEBUG:          enable run debugging (if configured)\n");
+    printf("    SHMEM_DEBUG_FILE:     file to receive debugging information\n");
+    printf("\n");
 }
 
 inline static int
