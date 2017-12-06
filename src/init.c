@@ -7,10 +7,13 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
+#include "info.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <pthread.h>
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_init_thread = pshmem_init_thread
@@ -27,8 +30,8 @@
  * finish SHMEM portion of program, release resources
  */
 
-void
-shmem_finalize(void)
+static void
+finalize_helper(void)
 {
     /* do nothing if multiple finalizes */
     if (proc.refcount > 0) {
@@ -45,12 +48,8 @@ shmem_finalize(void)
     }
 }
 
-/*
- * initialize SHMEM portion of program with threading model
- */
-
-int
-shmem_init_thread(int requested, int *provided)
+inline static int
+init_thread_helper(int requested, int *provided)
 {
     /* do nothing if multiple inits */
     if (proc.refcount == 0) {
@@ -59,20 +58,54 @@ shmem_init_thread(int requested, int *provided)
         shmemc_init();
         shmemu_init();
 
-        s = atexit(shmem_finalize);
+        s = atexit(finalize_helper);
         if (s != 0) {
             logger(LOG_FATAL,
                    "unable to register atexit() handler: %s",
-                   strerror(errno));
+                   strerror(errno)
+                   );
             /* NOT REACHED */
         }
 
         proc.status = SHMEM_PE_RUNNING;
 
         /* for now */
-        proc.thread_level = *provided = SHMEM_THREAD_SINGLE;
-    }
+        switch(requested) {
+        case SHMEM_THREAD_SINGLE:
+            break;
+        case SHMEM_THREAD_FUNNELED:
+            break;
+        case SHMEM_THREAD_SERIALIZED:
+            break;
+        case SHMEM_THREAD_MULTIPLE: /* unsupported for now */
+            requested = SHMEM_THREAD_SERIALIZED;
+            break;
+        default:
+            logger(LOG_FATAL,
+                   "unknown thread level %d requested",
+                   requested
+                   );
+            /* NOT REACHED */
+            break;
+        }
 
+        /* save and return */
+        proc.thread_level = requested;
+        if (provided != NULL) {
+            *provided = requested;
+        }
+
+        proc.invoking_thread = pthread_self();
+
+        if (proc.rank == 0) {
+            if (proc.env.print_version) {
+                osh_info.package_version(0);
+            }
+            if (proc.env.print_info) {
+                shmemc_print_env_vars(stdout);
+            }
+        }
+    }
     proc.refcount += 1;
 
     logger(LOG_INIT,
@@ -85,12 +118,34 @@ shmem_init_thread(int requested, int *provided)
     return 0;
 }
 
+/*
+ * -- API --------------------------------------------------------------------
+ */
+
+/*
+ * initialize SHMEM portion of program with threading model
+ */
+
+int
+shmem_init_thread(int requested, int *provided)
+{
+    return init_thread_helper(requested, provided);
+}
+
 void
 shmem_init(void)
 {
-    int throwaway = 0;
+    (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
+}
 
-    (void) shmem_init_thread(SHMEM_THREAD_SINGLE, &throwaway);
+/*
+ * finish SHMEM portion of program, release resources
+ */
+
+void
+shmem_finalize(void)
+{
+    finalize_helper();
 }
 
 /*

@@ -6,6 +6,4 @@
 void shmemc_globalexit_init(void);
 void shmemc_globalexit_finalize(void);
 
-void shmemc_trigger_globalexit(int status);
-
 #endif /* ! _SHMEMC_GLOBALEXIT_H */

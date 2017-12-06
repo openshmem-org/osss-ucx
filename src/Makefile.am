@@ -28,6 +28,7 @@ MY_SOURCES             = \
                                 fcollect.c \
                                 get.c \
                                 globalexit.c \
+                                info.c \
                                 init.c \
                                 lock.c \
                                 ptr.c \
@@ -86,6 +87,6 @@ libshmem_a_CPPFLAGS    = $(all_cppflags)
 libshmem_a_LIBADD      = liballocator.a
 
 bin_PROGRAMS           = osh_info
-osh_info_SOURCES       = osh_info.c
+osh_info_SOURCES       = osh_info.c info.c
 osh_info_CPPFLAGS      = $(all_cppflags)
 osh_info_LDFLAGS       = $(shmemu_ldflags) $(shmemu_libs)

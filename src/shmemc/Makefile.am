@@ -13,6 +13,7 @@ LIBSHMEMC_SOURCES         = \
 				mcs-lock.c \
 				pmix-client.c \
 				ranks.c \
+				readenv.c \
 				shmemc-init.c \
 				state.c \
 				ucx-init.c \

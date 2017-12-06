@@ -162,7 +162,7 @@ shmemu_logger(shmemu_log_t level, const char *fmt, ...)
         fflush(log_stream);
 
         if (level == LOG_FATAL) {
-            shmemc_trigger_globalexit(1);
+            shmemc_global_exit(1);
         }
     }
 }

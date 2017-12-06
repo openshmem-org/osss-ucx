@@ -324,10 +324,10 @@ shmemc_pmix_client_finalize(void)
 }
 
 void
-shmemc_pmix_client_abort(int status)
+shmemc_pmix_client_abort(const char *msg, int status)
 {
     pmix_status_t ps;
 
-    ps = PMIx_Abort(status, NULL, NULL, 0);
+    ps = PMIx_Abort(status, msg, NULL, 0);
     assert(ps == PMIX_SUCCESS);
 }

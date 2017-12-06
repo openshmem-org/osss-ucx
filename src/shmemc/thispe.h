@@ -92,21 +92,34 @@ typedef struct comms_info {
  * implementations support some environment variables
  */
 typedef struct env_info {
-    /* required */
-    int print_version;
+    /*
+     * required
+     */
+    int print_version;          /* produce info output? */
     int print_info;
     size_t def_heap_size;       /* TODO: expand for multiple heaps */
     int debug;                  /* are we doing debugging? */
 
-    /* this implementation */
+    /*
+     * this implementation
+     */
     char *debug_file;           /* where does debugging output go? */
 } env_info_t;
 
 typedef enum shmem_status {
     SHMEM_PE_SHUTDOWN = 0,
     SHMEM_PE_RUNNING,
+    SHMEM_PE_FAILED,
     SHMEM_PE_UNKNOWN
 } shmem_status_t;
+
+/*
+ * PEs can belong to teams
+ */
+typedef struct shmem_team {
+    unsigned long id;           /* team ID */
+    int *members;               /* list of PEs in the team */
+} shmem_team_t;
 
 /*
  * each PE has this state info
@@ -116,12 +129,15 @@ typedef struct thispe_info {
     env_info_t env;             /* environment vars */
 
     int thread_level;           /* current thread support */
+    pthread_t invoking_thread;  /* thread that called shmem_init*() */
+
     int rank;                   /* rank info */
     int nranks;
     shmem_status_t status;      /* up, down, out to lunch etc */
     int refcount;               /* library initialization count */
     int *peers;                 /* # PEs in a node group */
     int npeers;
+    shmem_team_t *teams;        /* PE teams we belong to */
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */

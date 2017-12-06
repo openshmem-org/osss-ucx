@@ -9,6 +9,7 @@
 #include "shmemc.h"
 #include "state.h"
 #include "globalexit.h"
+#include "readenv.h"
 
 #include "allocator/memalloc.h"
 
@@ -29,115 +30,6 @@
  * debugging output stream
  */
 static FILE *say;
-
-/**
- * no special treatment required here
- *
- */
-inline static char *
-shmemc_getenv(const char *name)
-{
-    return getenv(name);
-}
-
-inline static int
-option_enabled_test(const char *str)
-{
-    int ret = 0;
-
-    if ((strncasecmp(str, "y", 1) == 0) ||
-        (strncasecmp(str, "on", 2) == 0) ||
-        (atoi(str) > 0)) {
-        ret = 1;
-    }
-
-    return ret;
-}
-
-/*
- * backward-compatible environment variables
- */
-inline static void
-backcompat_environment(void)
-{
-    int overwrite = 1;
-    char *e;
-
-    /*
-     * defined in spec
-     */
-    e = shmemc_getenv("SMA_VERSION");
-    if (e != NULL) {
-        (void) setenv("SHMEM_VERSION", "1", overwrite);
-    }
-    e = shmemc_getenv("SMA_INFO");
-    if (e != NULL) {
-        (void) setenv("SHMEM_INFO", "1", overwrite);
-    }
-    e = shmemc_getenv("SMA_SYMMETRIC_SIZE");
-    if (e != NULL) {
-        (void) setenv("SHMEM_SYMMETRIC_SIZE", e, overwrite);
-    }
-    e = shmemc_getenv("SMA_DEBUG");
-    if (e != NULL) {
-        (void) setenv("SHMEM_DEBUG", "y", overwrite);
-    }
-}
-
-/*
- * read & save all our environment variables
- */
-inline static void
-read_environment(void)
-{
-    char *e;
-
-    /* init environment */
-    proc.env.print_version = 0;
-    proc.env.print_info = 0;
-    proc.env.def_heap_size = 4 * MB;
-    proc.env.debug = 0;
-
-    backcompat_environment();
-
-    /*
-     * defined in spec
-     */
-    e = shmemc_getenv("SHMEM_VERSION");
-    if (e != NULL) {
-        proc.env.print_version = 1;
-    }
-    e = shmemc_getenv("SHMEM_INFO");
-    if (e != NULL) {
-        proc.env.print_info = 1;
-    }
-
-    e = shmemc_getenv("SHMEM_SYMMETRIC_SIZE");
-    if (e != NULL) {
-        const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
-
-        if (r != 0) {
-            shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
-        }
-    }
-
-    e = shmemc_getenv("SHMEM_DEBUG");
-    if (e != NULL) {
-        proc.env.debug = option_enabled_test(e);
-    }
-
-    /*
-     * this implementation also has...
-     */
-
-    e = shmemc_getenv("SHMEM_DEBUG_FILE");
-    if (e != NULL) {
-        proc.env.debug_file = strdup(e); /* free at end */
-    }
-    else {
-        proc.env.debug_file = NULL;
-    }
-}
 
 inline static void
 make_init_params(ucp_params_t *pmp)
@@ -200,25 +92,6 @@ make_local_worker(void)
 
     proc.comms.xchg_wrkr_info[proc.rank].addr = addr;
     proc.comms.xchg_wrkr_info[proc.rank].len = len;
-}
-
-/*
- * endpoint tables
- */
-inline static void
-allocate_endpoints(void)
-{
-    proc.comms.eps = (ucp_ep_h *)
-        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
-    assert(proc.comms.eps != NULL);
-}
-
-inline static void
-deallocate_endpoints(void)
-{
-    if (proc.comms.eps != NULL) {
-        free(proc.comms.eps);
-    }
 }
 
 /*
@@ -369,33 +242,71 @@ dereg_globals(void)
     assert(s == UCS_OK);
 }
 
+/*
+ * endpoint tables
+ */
+inline static void
+allocate_endpoints(void)
+{
+    proc.comms.eps = (ucp_ep_h *)
+        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
+    assert(proc.comms.eps != NULL);
+}
+
+inline static void
+deallocate_endpoints(void)
+{
+    if (proc.comms.eps != NULL) {
+        free(proc.comms.eps);
+    }
+}
+
+inline static void
+blocking_ep_disconnect(ucp_ep_h ep)
+{
+    ucs_status_ptr_t req;
+
+    if (ep == NULL) {
+        return;
+    }
+
+#ifdef HAVE_UCP_EP_CLOSE_NB
+    req = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
+#else
+    req = ucp_disconnect_nb(ep);
+#endif  /* HAVE_UCP_EP_CLOSE_NB */
+
+    if (req == UCS_OK) {
+        return;
+    }
+    else if (UCS_PTR_IS_ERR(req)) {
+        ucp_request_cancel(proc.comms.wrkr, req);
+        return;
+    }
+    else {
+        ucs_status_t s;
+
+        do {
+            (void) ucp_worker_progress(proc.comms.wrkr);
+#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
+            s = ucp_request_check_status(req);
+#else
+            s = ucp_request_test(req, NULL);
+#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
+        } while (s == UCS_INPROGRESS);
+        ucp_request_free(req);
+    }
+}
+
 inline static void
 disconnect_all_endpoints(void)
 {
-    int pe;
+    int i;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        ucs_status_ptr_t req =
-#ifdef HAVE_UCP_EP_CLOSE_NB
-            ucp_ep_close_nb(proc.comms.eps[pe], UCP_EP_CLOSE_MODE_FLUSH);
-#else
-        ucp_disconnect_nb(proc.comms.eps[pe]);
-#endif  /* HAVE_UCP_EP_CLOSE_NB*/
+    for (i = 0; i < proc.nranks; i += 1) {
+        const int pe = (i + proc.rank) % proc.nranks;
 
-        /* if not done immediately, wait */
-        if (req != UCS_OK) {
-            ucs_status_t s;
-
-            do {
-                (void) ucp_worker_progress(proc.comms.wrkr);
-#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
-                s = ucp_request_check_status(req);
-#else
-                s = ucp_request_test(req, NULL);
-#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
-            } while (s == UCS_INPROGRESS);
-            ucp_request_free(req);
-        }
+        blocking_ep_disconnect(proc.comms.eps[pe]);
     }
 }
 
@@ -430,16 +341,25 @@ shmemc_ucx_make_remote_endpoints(void)
 {
     ucs_status_t s;
     ucp_ep_params_t epm;
-    int pe;
+    int i;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
-        const int i = (pe + proc.rank) % proc.nranks;
+    for (i = 0; i < proc.nranks; i += 1) {
+        const int pe = (i + proc.rank) % proc.nranks;
 
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-        epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[i].buf;
+        epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
-        s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[i]);
-        assert(s == UCS_OK);
+        s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[pe]);
+
+        /*
+         * this can fail if we have e.g. mlx4 and not mlx5 infiniband
+         */
+        if (s != UCS_OK) {
+            shmemu_fatal("Unable to create remote endpoints: %s",
+                         ucs_status_string(s)
+                         );
+            /* NOT REACHED */
+        }
     }
 }
 
@@ -494,7 +414,7 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-    disconnect_all_endpoints();
+    // disconnect_all_endpoints();
     deallocate_endpoints();
 
     if (proc.comms.wrkr) {

@@ -23,7 +23,7 @@
 
 void shmemc_init(void);
 void shmemc_finalize(void);
-void shmemc_trigger_globalexit(int status);
+void shmemc_global_exit(int status);
 
 int shmemc_my_pe(void);
 int shmemc_n_pes(void);
@@ -31,6 +31,8 @@ int shmemc_n_pes(void);
 void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);
 int shmemc_addr_accessible(const void *addr, int pe);
+
+void shmemc_print_env_vars(FILE *stream);
 
 /*
  * -- Per-context routines ---------------------------------------------------
