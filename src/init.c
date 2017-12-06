@@ -47,17 +47,57 @@ finalize_helper(void)
     }
 }
 
+inline static char *
+humanize(int v)
+{
+    return (v == 0) ? "no" : "yes";
+}
+
+static const int var_width = 20;
+static const int val_width = 12;
+
 inline static void
 print_env_vars(void)
 {
     printf("Environment Variable Information\n");
     printf("\n");
-    printf("    SHMEM_VERSION:        print library version\n");
-    printf("    SHMEM_INFO:           print this information\n");
-    printf("    SHMEM_SYMMETRIC_SIZE: set the size of the symmetric heap\n");
-    printf("                            (understands K,M,G,T units)\n");
-    printf("    SHMEM_DEBUG:          enable run debugging (if configured)\n");
-    printf("    SHMEM_DEBUG_FILE:     file to receive debugging information\n");
+    printf("  %s\n\n",
+           "From specification:");
+    printf("  %-*s = %-*s %s\n",
+           var_width,
+           "SHMEM_VERSION",
+           val_width,
+           humanize(proc.env.print_version),
+           "print library version at start-up");
+    printf("  %-*s = %-*s %s\n",
+           var_width,
+           "SHMEM_INFO",
+           val_width,
+           humanize(proc.env.print_info),
+           "print this information");
+    printf("  %-*s = %-*lu %s\n",
+           var_width,
+           "SHMEM_SYMMETRIC_SIZE",
+           val_width,
+           proc.env.def_heap_size,
+           "set the size of the symmetric heap");
+    printf("  %-*s = %-*s %s\n",
+           var_width,
+           "SHMEM_DEBUG",
+           val_width,
+           humanize(proc.env.debug),
+           "enable run debugging (if configured)");
+
+    printf("\n");
+    printf("  %s\n\n",
+           "Specific to this implementation:");
+    printf("  %-*s = %-*s %s\n",
+           var_width,
+           "SHMEM_DEBUG_FILE",
+           val_width,
+           (proc.env.debug_file != NULL) ? proc.env.debug_file : "none",
+           "file to receive debugging information\n");
+
     printf("\n");
 }
 
