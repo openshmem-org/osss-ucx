@@ -16,12 +16,6 @@
  * internal helpers
  */
 
-inline static char *
-shmemc_getenv(char *name)
-{
-    return getenv(name);
-}
-
 inline static int
 option_enabled_test(char *str)
 {
@@ -36,15 +30,21 @@ option_enabled_test(char *str)
     return ret;
 }
 
+inline static char *
+humanize(int v)
+{
+    return (v == 0) ? "no" : "yes";
+}
+
 /*
  * read & save all our environment variables
  */
 
 #define CHECK_ENV(_e, _name)                        \
     do {                                            \
-        (_e) = shmemc_getenv("SHMEM_" #_name);      \
+        (_e) = getenv("SHMEM_" #_name);             \
         if ((_e) == NULL) {                         \
-            (_e) = shmemc_getenv("SMA_" #_name);    \
+            (_e) = getenv("SMA_" #_name);           \
         }                                           \
     } while (0)
 
@@ -96,12 +96,6 @@ read_environment(void)
 }
 
 #undef CHECK_ENV
-
-inline static char *
-humanize(int v)
-{
-    return (v == 0) ? "no" : "yes";
-}
 
 static const int var_width = 20;
 static const int val_width = 12;
