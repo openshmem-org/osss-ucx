@@ -124,7 +124,7 @@ shmemc_print_env_vars(FILE *stream)
             var_width,
             "SHMEM_SYMMETRIC_SIZE",
             val_width,
-            proc.env.def_heap_size,
+            (unsigned long) proc.env.def_heap_size,
             "set the size of the symmetric heap");
     fprintf(stream, "# %-*s (= %-*s) %s\n",
             var_width,
