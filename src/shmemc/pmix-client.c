@@ -200,6 +200,8 @@ shmemc_pmix_publish_my_rkeys(void)
         bop->size = rkey_len;
         ps = PMIx_Publish(&pi, 1);
         assert(ps == PMIX_SUCCESS);
+
+        ucp_rkey_buffer_release(packed_rkey);
     }
 }
 
@@ -310,10 +312,15 @@ shmemc_pmix_client_finalize(void)
     ps = PMIx_Finalize();
     assert(ps == PMIX_SUCCESS);
 
-    /* clean up allocations for exchanged buffers */
     for (pe = 0; pe < proc.nranks; pe += 1) {
+        size_t r;
+
+        /* clean up allocations for exchanged buffers */
         if (proc.comms.xchg_wrkr_info[pe].buf != NULL) {
             free(proc.comms.xchg_wrkr_info[pe].buf);
+        }
+        for (r = 0; r < proc.comms.nregions; r += 1) {
+            ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
         }
     }
 
