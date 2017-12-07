@@ -414,7 +414,7 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-    // disconnect_all_endpoints();
+    disconnect_all_endpoints();
     deallocate_endpoints();
 
     if (proc.comms.wrkr) {
