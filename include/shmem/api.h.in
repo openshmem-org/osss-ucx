@@ -1346,7 +1346,7 @@ extern "C"
     int shmem_int_cswap(int *target,
                         int cond, int value,
                         int pe)
-        _DEPRECATED_BY(shmem_long_atomic_compare_swap) _WUR;
+        _DEPRECATED_BY(shmem_int_atomic_compare_swap) _WUR;
     long long shmem_longlong_cswap(long long *target,
                                    long long_cond,
                                    long long value,
