@@ -71,19 +71,29 @@ get_base(size_t region, int pe)
 }
 
 /*
- * translate remote address
+ * translate remote address:
+ *
+ * if all addresses aligned, remote always == local
+ *
+ * otherwise globals are always aligned, but translate shmalloc'ed
+ * variables
  */
 inline static uint64_t
 translate_address(uint64_t local_addr, size_t region, int pe)
 {
-#ifdef ENABLE_FIXED_ADDRESSES
+#ifdef ENABLE_ALIGNED_ADDRESSES
     return local_addr;
 #else
-    const uint64_t my_offset = local_addr - get_base(region, proc.rank);
-    const uint64_t remote_addr = my_offset + get_base(region, pe);
+    if (region == 0) {
+        return local_addr;
+    }
+    else {
+        const uint64_t my_offset = local_addr - get_base(region, proc.rank);
+        const uint64_t remote_addr = my_offset + get_base(region, pe);
 
-    return remote_addr;
-#endif /* ENABLE_FIXED_ADDRESSES */
+        return remote_addr;
+    }
+#endif /* ENABLE_ALIGNED_ADDRESSES */
 }
 
 /*

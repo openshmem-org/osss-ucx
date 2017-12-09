@@ -1,6 +1,10 @@
 # For license: see LICENSE file at top-level
 
 # Feature checks
+
+#
+# debugging output: disabled by default
+#
 AC_ARG_ENABLE([debug],
 	AS_HELP_STRING([--enable-debug], [Enable library debug outptut @<:@default=no@:>@]),
 	AS_IF([test "x$enableval" = "xyes"],
@@ -9,6 +13,9 @@ AC_ARG_ENABLE([debug],
 	[])
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" = "xyes"])
 
+#
+# non-standard/proposed API features (shmemx): disabled by default
+#
 AC_ARG_ENABLE([experimental],
 	AS_HELP_STRING([--enable-experimental],
 			[Enable non-standard extensions @<:@default=no@:>@]))
@@ -19,6 +26,9 @@ AS_IF([test "x$enable_experimental" = "xyes"],
 	)
 AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
 
+#
+# profiling API: disabled by default
+#
 AC_ARG_ENABLE([pshmem],
 	AS_HELP_STRING([--enable-pshmem],
 			[Enable Profiling interface @<:@default=no@:>@]))
@@ -30,7 +40,7 @@ AS_IF([test "x$enable_pshmem" = "xyes"],
 AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
 
 #
-# disabled by default
+# fortran API: disabled by default
 #
 AC_ARG_ENABLE([fortran],
 	AS_HELP_STRING([--enable-fortran],
@@ -43,20 +53,33 @@ AS_IF([test "x$enable_fortran" = "xyes"],
 AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
 
 #
-# address translation
+# address translation: disabled by default
 #
-AC_ARG_ENABLE([fixed-addresses],
-	AS_HELP_STRING([--enable-fixed-addresses],
+AC_ARG_ENABLE([aligned-addresses],
+	AS_HELP_STRING([--enable-aligned-addresses],
 			[Symmetric addresses are identical everywhere @<:@default=no@:>@]))
-AS_IF([test "x$enable_fixed_addresses" = "xyes"],
-	[AC_DEFINE([ENABLE_FIXED_ADDRESSES], [1], [Enable fixed symmetric addressesI])
-	 AC_SUBST([ENABLE_FIXED_ADDRESSES], [1])],
-	[AC_SUBST([ENABLE_FIXED_ADDRESSES], [0])]
+AS_IF([test "x$enable_aligned_addresses" = "xyes"],
+	[AC_DEFINE([ENABLE_ALIGNED_ADDRESSES], [1], [Enable aligned symmetric addresses])
+	 AC_SUBST([ENABLE_ALIGNED_ADDRESSES], [1])],
+	[AC_SUBST([ENABLE_ALIGNED_ADDRESSES], [0])]
 	)
-AM_CONDITIONAL([ENABLE_FIXED_ADDRESSES], [test "x$enable_fixed_addresses" = "xyes"])
+AM_CONDITIONAL([ENABLE_ALIGNED_ADDRESSES], [test "x$enable_aligned_addresses" = "xyes"])
 
 #
-# enabled by default
+# threads: disabled by default
+#
+AC_ARG_ENABLE([threads],
+	AS_HELP_STRING([--enable-threads],
+			[This implementation will support threading levels @<:@default=no@:>@]))
+AS_IF([test "x$enable_threads" = "xyes"],
+	[AC_DEFINE([ENABLE_THREADS], [1], [Enable threading support])
+	 AC_SUBST([ENABLE_THREADS], [1])],
+	[AC_SUBST([ENABLE_THREADS], [0])]
+	)
+AM_CONDITIONAL([ENABLE_THREADS], [test "x$enable_threads" = "xyes"])
+
+#
+# C++ compiler/linker: enabled by default
 #
 AC_ARG_ENABLE([cxx],
 	AS_HELP_STRING([--disable-cxx],

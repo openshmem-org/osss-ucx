@@ -20,16 +20,16 @@ shmemc_init(void)
 
     /* now heap registered... */
 
-#ifndef ENABLE_FIXED_ADDRESSES
+#ifndef ENABLE_ALIGNED_ADDRESSES
     shmemc_pmix_publish_heap_info();
-#endif /* ! ENABLE_FIXED_ADDRESSES */
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
     shmemc_pmix_publish_worker();
     shmemc_pmix_barrier_all();
 
-#ifndef ENABLE_FIXED_ADDRESSES
+#ifndef ENABLE_ALIGNED_ADDRESSES
     shmemc_pmix_exchange_heap_info();
-#endif /* ! ENABLE_FIXED_ADDRESSES */
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
     /* exchange worker info and then create EPs */
     shmemc_pmix_exchange_workers();
