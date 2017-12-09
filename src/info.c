@@ -178,6 +178,14 @@ output_features(void)
 #endif /* ENABLE_ALIGNED_ADDRESSES */
            );
 
+    output("Thread support",
+#ifdef ENABLE_THREADS
+           "on"
+#else
+           "off"
+#endif /* ENABLE_THREADS */
+           );
+
     output("Experimental API",
 #ifdef ENABLE_EXPERIMENTAL
            "on"
