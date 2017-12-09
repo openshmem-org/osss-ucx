@@ -88,10 +88,15 @@ read_environment(void)
      */
 
     proc.env.debug_file = NULL;
+    proc.env.xpmem_kludge = 0;
 
     CHECK_ENV(e, DEBUG_FILE);
     if (e != NULL) {
         proc.env.debug_file = strdup(e); /* free at end */
+    }
+    CHECK_ENV(e, XPMEM_KLUDGE);
+    if (e != NULL) {
+        proc.env.xpmem_kludge = option_enabled_test(e);
     }
 }
 
