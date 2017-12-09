@@ -25,7 +25,7 @@ Overrides any PE count inherited from launch environment.
 .SH ENVIRONMENT
 OpenSHMEM environment variables are prefixed with "SHMEM_".  Some
 older SHMEM implementations had variables prefixed with "SMA_": these
-are still supported in OpenSHMEM, but dare eprecated.  If both are set
+are still supported in OpenSHMEM, but are deprecated.  If both are set
 for a given variable, the "SHMEM_" one will be used.
 .LP
 Boolean flags are enabled with a non-zero value, or "y", "yes";
