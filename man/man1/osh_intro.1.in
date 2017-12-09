@@ -31,9 +31,11 @@ LSF, may provide compatible launchers as well (e.g. srun in SLURM,
 aprun in ALPS).
 .RE
 .IP INFORMATION
+.RS 4
 .IP osh_info 4
 A utility that describes configuration settings of this
 implementation, osh_info(1).
+.RE
 .SH ENVIRONMENT
 .IP "pkg-config osss-ucx"
 If configured in the user's environment, this implementation can be
