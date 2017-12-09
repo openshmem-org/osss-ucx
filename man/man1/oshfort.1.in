@@ -32,10 +32,10 @@ when the OpenSHMEM library is built.  To override, set the
 .LP
 environment variable.
 .SH NOTES
-The OpenSHMEM specification does not say anything about
-how OpenSHMEM programs are compiled, linked and launched.
-These wrapper programs are supplied as part of the Reference
-Library for convenience.
+The OpenSHMEM specification does not say anything normative about how
+OpenSHMEM programs are compiled, linked and launched.  These wrapper
+programs are supplied as part of the Reference Library for
+convenience.
 .SH SEE ALSO
 osh_info(1).
 .SH OPENSHMEM
