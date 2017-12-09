@@ -12,7 +12,7 @@ Source Software Solutions (OSSS) Reference Implementation.
 .LP
 .SH TOOLS
 .IP COMPILERS
-.RS 2
+.RS 4
 .IP "C" 8
 This is the core interface that is always present.
 C programs can be compiled/linked using oshcc(1).
@@ -24,7 +24,7 @@ If this interface has been enabled, Fortran programs can be
 compiled/linked using oshfort(1).
 .RE
 .IP LAUNCHER
-.RS 2
+.RS 4
 In this implementation, OpenSHMEM programs can be launched via
 oshrun(1).  Job scheduling systems, such as PBS/Torque, SLURM, and
 LSF, may provide compatible launchers as well (e.g. srun in SLURM,

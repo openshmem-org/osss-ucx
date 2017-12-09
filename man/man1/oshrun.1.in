@@ -4,7 +4,7 @@
 \fBoshrun\fP \- run an OpenSHMEM program
 .SH SYNOPSIS
 \fBoshrun\fP
-.RS
+.RS 4
 .br
 [launcher pass-through arguments]
 .br
@@ -28,10 +28,10 @@ for a given variable, the "SHMEM_" one will be used.
 .LP
 Boolean flags are enabled with a non-zero value, or "y", "yes";
 disabled with zero value, or "n", "no".
-.RS
+.RS 4
 .LP
 Required by specification
-.RS
+.RS 4
 .IP "SHMEM_VERSION (bool)"
 print library version at start-up
 .IP "SHMEM_INFO (bool)"
@@ -43,7 +43,7 @@ enable run debugging (if configured).
 .RE
 .LP
 This implementation also has
-.RS
+.RS 4
 .IP "SHMEM_DEBUG_FILE (string)"
 file to receive debugging information.
 .RE
@@ -51,7 +51,7 @@ file to receive debugging information.
 .SH EXAMPLES
 The command
 .LP
-.RS
+.RS 4
 $ oshrun -np 4 ./sping.x -e 8192
 .RE
 .LP

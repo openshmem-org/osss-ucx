@@ -4,7 +4,7 @@
 \fBoshfort\fP \- compile an OpenSHMEM Fortran program
 .SH SYNOPSIS
 \fBoshfort\fP
-.RS
+.RS 4
 .br
 [ underlying compiler flags ]
 .br
@@ -17,7 +17,7 @@ details from the user.
 .SH EXAMPLES
 The command
 .LP
-.RS
+.RS 4
 $ oshfort -g -o foo.exe foo.f
 .RE
 .LP
@@ -26,7 +26,7 @@ compiles foo.f into the OpenSHMEM executable foo.exe.
 The underlying compiler/linker invoked by this wrapper is determined
 when the OpenSHMEM library is built.  To override, set the
 .LP
-.RS
+.RS 4
 \f(CROSH_FC\fP
 .RE
 .LP
