@@ -50,4 +50,5 @@ oshrun(1),
 osh_info(1).
 .SH REFERENCES
 http://www.openshmem.org/
+.br
 http://www.pgas.org/
