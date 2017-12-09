@@ -30,6 +30,7 @@ for a given variable, the "SHMEM_" one will be used.
 .LP
 Boolean flags are enabled with a non-zero value, or "y", "yes";
 disabled with zero value, or "n", "no".
+.RS
 .IP "SHMEM_VERSION (bool)"
 print library version at start-up
 .IP "SHMEM_INFO (bool)"
@@ -40,6 +41,7 @@ set the size of the symmetric heap.  Can use K,M,G,T units
 enable run debugging (if configured).
 .IP "SHMEM_DEBUG_FILE (string)"
 file to receive debugging information.
+.RE
 .SH EXAMPLES
 The command
 .LP
