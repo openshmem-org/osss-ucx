@@ -10,14 +10,12 @@
 .br
 [ -n N | -np N ]
 .br
-program
-.br
 program [arguments...]
 .RE
 .SH DESCRIPTION
 \fBoshrun\fP runs an OpenSHMEM program on the given number of
 processing elements.
-.SH NUMBER OF PROCESSING ELEMENTS
+.SH OPTIONS
 .IP "-n N | -np N" 4
 Run the program on N processing elements (PEs or processors).
 Overrides any PE count inherited from launch environment.
@@ -31,6 +29,9 @@ for a given variable, the "SHMEM_" one will be used.
 Boolean flags are enabled with a non-zero value, or "y", "yes";
 disabled with zero value, or "n", "no".
 .RS
+.LP
+Required by specification
+.RS
 .IP "SHMEM_VERSION (bool)"
 print library version at start-up
 .IP "SHMEM_INFO (bool)"
@@ -39,8 +40,13 @@ print information about supported environment variables
 set the size of the symmetric heap.  Can use K,M,G,T units
 .IP "SHMEM_DEBUG (bool)"
 enable run debugging (if configured).
+.RE
+.LP
+This implementation also has
+.RS
 .IP "SHMEM_DEBUG_FILE (string)"
 file to receive debugging information.
+.RE
 .RE
 .SH EXAMPLES
 The command
