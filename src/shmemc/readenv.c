@@ -102,12 +102,11 @@ read_environment(void)
 
 #undef CHECK_ENV
 
-static const char *prefix = "# ";
 static const int var_width = 22;
 static const int val_width = 12;
 
 void
-shmemc_print_env_vars(FILE *stream)
+shmemc_print_env_vars(FILE *stream, const char *prefix)
 {
     fprintf(stream, "%sEnvironment Variable Information\n",
             prefix);

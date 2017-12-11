@@ -32,7 +32,7 @@ void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);
 int shmemc_addr_accessible(const void *addr, int pe);
 
-void shmemc_print_env_vars(FILE *stream);
+void shmemc_print_env_vars(FILE *stream, const char *prefix);
 
 /*
  * -- Per-context routines ---------------------------------------------------
