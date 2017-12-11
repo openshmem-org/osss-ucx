@@ -120,32 +120,6 @@ get_remote_key_and_addr(uint64_t laddr, int pe,
     *raddr = translate_address(laddr, r, pe);
 }
 
-/*
- * See if addr is reachable using given context.  Return usable
- * address if so, otherwise NULL.
- */
-inline static void *
-shmemc_ptr_helper(shmem_ctx_t ctx,
-                  const void *addr, int pe)
-{
-    /* check to see if UCX is new enough */
-#ifdef HAVE_UCP_RKEY_PTR
-    uint64_t r_addr;            /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for remote address */
-    void *usable_addr = NULL;
-    ucs_status_t s;
-
-    get_remote_key_and_addr((uint64_t) addr, pe, &rkey, &r_addr);
-
-    s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
-    if (s == UCS_OK) {
-        return usable_addr;
-    }
-#endif  /* HAVE_UCP_RKEY_PTR */
-
-    return NULL;
-}
-
 /**
  * API
  *
@@ -173,10 +147,31 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
  * -- accessible memory pointers -----------------------------------------
  */
 
+/*
+ * See if addr is reachable using given context.  Return usable
+ * address if so, otherwise NULL.
+ */
+
 void *
 shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
-    return shmemc_ptr_helper(ctx, addr, pe);
+    /* check to see if UCX is new enough */
+#ifdef HAVE_UCP_RKEY_PTR
+    uint64_t r_addr;            /* address on other PE */
+    ucp_rkey_h rkey;            /* rkey for remote address */
+    void *usable_addr = NULL;
+    ucs_status_t s;
+
+    get_remote_key_and_addr((uint64_t) addr, pe, &rkey, &r_addr);
+
+    s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
+    if (s == UCS_OK) {
+        return usable_addr;
+        /* NOT REACHED */
+    }
+#endif  /* HAVE_UCP_RKEY_PTR */
+
+    return NULL;
 }
 
 /*
