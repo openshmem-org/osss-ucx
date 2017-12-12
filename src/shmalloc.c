@@ -17,6 +17,14 @@
 
 int malloc_error = SHMEM_MALLOC_OK;
 
+#ifdef ENABLE_THREADS
+static pthread_mutex_t m_alloc = PTHREAD_MUTEX_INITIALIZER;
+#endif /* ENABLE_THREADS */
+
+/*
+ * -- API --------------------------------------------------------------------
+ */
+
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_malloc = pshmem_malloc
 #define shmem_malloc pshmem_malloc
@@ -29,8 +37,6 @@ int malloc_error = SHMEM_MALLOC_OK;
 #pragma weak shmem_align = pshmem_align
 #define shmem_align pshmem_align
 #endif /* ENABLE_PSHMEM */
-
-static pthread_mutex_t m_alloc = PTHREAD_MUTEX_INITIALIZER;
 
 void *
 shmem_malloc(size_t s)

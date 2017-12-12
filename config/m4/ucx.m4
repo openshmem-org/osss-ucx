@@ -36,6 +36,7 @@ AS_IF([test -d "$with_ucx"],
 		],
 		[AC_MSG_NOTICE([UCX: ucp_request_check_status NOT found])
 		])
+	      # we'll use the following as a representative of supporting bitwise AMOs
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_atomic_and64])],
 		[AC_MSG_NOTICE([UCX: ucp_atomic_and64 found])

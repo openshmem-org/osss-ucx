@@ -170,12 +170,20 @@ output_features(void)
 #endif /* ENABLE_DEBUG */
            );
 
-    output("Fixed symmetric addresses",
-#ifdef ENABLE_FIXED_ADDRESSES
+    output("Aligned symmetric addresses",
+#ifdef ENABLE_ALIGNED_ADDRESSES
            "on"
 #else
            "off"
-#endif /* ENABLE_FIXED_ADDRESSES */
+#endif /* ENABLE_ALIGNED_ADDRESSES */
+           );
+
+    output("Thread support",
+#ifdef ENABLE_THREADS
+           "on"
+#else
+           "off"
+#endif /* ENABLE_THREADS */
            );
 
     output("Experimental API",

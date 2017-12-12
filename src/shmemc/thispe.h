@@ -104,6 +104,7 @@ typedef struct env_info {
      * this implementation
      */
     char *debug_file;           /* where does debugging output go? */
+    int xpmem_kludge;           /* protect against UCX bug temporarily */
 } env_info_t;
 
 typedef enum shmem_status {

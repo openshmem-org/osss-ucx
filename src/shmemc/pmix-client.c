@@ -40,7 +40,7 @@ parse_peers(char *peerstr)
     }
 }
 
-#ifndef ENABLE_FIXED_ADDRESSES
+#ifndef ENABLE_ALIGNED_ADDRESSES
 
 /*
  * formats are <pe>:<region-index>:region:<key>
@@ -58,8 +58,8 @@ shmemc_pmix_publish_heap_info(void)
 
     PMIX_INFO_CREATE(ia, nfields);    /* base, size */
 
-    /* everyone publishes their info */
-    for (r = 0; r < proc.comms.nregions; r += 1) {
+    /* everyone publishes their info (except for globals) */
+    for (r = 1; r < proc.comms.nregions; r += 1) {
         snprintf(ia[0].key, PMIX_MAX_KEYLEN, region_base_fmt, proc.rank, r);
         ia[0].value.type = PMIX_UINT64;
         ia[0].value.data.uint64 =
@@ -93,7 +93,8 @@ shmemc_pmix_exchange_heap_info(void)
     PMIX_PDATA_CONSTRUCT(&fetch_base);
     PMIX_PDATA_CONSTRUCT(&fetch_size);
 
-    for (r = 0; r < proc.comms.nregions; r += 1) {
+    /* exchange regions (except for globals) */
+    for (r = 1; r < proc.comms.nregions; r += 1) {
 
         for (pe = 0; pe < proc.nranks; pe += 1) {
             /* can I merge these?  No luck so far */
@@ -118,7 +119,7 @@ shmemc_pmix_exchange_heap_info(void)
 
     }
 }
-#endif /* ! ENABLE_FIXED_ADDRESSES */
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 static const char *wrkr_exch_fmt = "%d:wrkr:addr";
 

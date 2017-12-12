@@ -336,12 +336,12 @@ FORTRANIFY_VOID_VOID(shmem_quiet)
  * wait operations
  */
 
-#define FORTRANIFY_WAIT_UNTIL(Name, Type)                       \
-    void                                                        \
-    FORTRANIFY(shmem_##Name##_wait_until)(Type *ivar, int *cmp, \
-                                          Type *cmp_value)      \
-    {                                                           \
-        shmem_##Type##_wait_until(ivar, *cmp, *cmp_value);      \
+#define FORTRANIFY_WAIT_UNTIL(Name, Type)                               \
+    void                                                                \
+    FORTRANIFY(shmem_##Name##_wait_until)(Type *ivar, int *cmp,         \
+                                          Type *cmp_value)              \
+    {                                                                   \
+        shmem_##Type##_wait_until(ivar, (shmem_cmp_t) *cmp, *cmp_value); \
     }
 
 #define FORTRANIFY_WAIT(Name, Type)                                 \
@@ -359,7 +359,7 @@ FORTRANIFY_WAIT(int8, long)
 void
 FORTRANIFY(shmem_wait_until)(int *ivar, int *cmp, int *cmp_value)
 {
-    shmem_int_wait_until(ivar, *cmp, *cmp_value);
+    shmem_int_wait_until(ivar, (shmem_cmp_t) *cmp, *cmp_value);
 }
 
 void

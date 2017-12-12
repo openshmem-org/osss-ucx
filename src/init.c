@@ -102,7 +102,7 @@ init_thread_helper(int requested, int *provided)
                 osh_info.package_version(0);
             }
             if (proc.env.print_info) {
-                shmemc_print_env_vars(stdout);
+                shmemc_print_env_vars(stdout, "# ");
             }
         }
     }

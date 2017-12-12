@@ -4,28 +4,54 @@
 \fBoshrun\fP \- run an OpenSHMEM program
 .SH SYNOPSIS
 \fBoshrun\fP
-.RS
+.RS 4
 .br
 [launcher pass-through arguments]
 .br
 [ -n N | -np N ]
-.br
-program
 .br
 program [arguments...]
 .RE
 .SH DESCRIPTION
 \fBoshrun\fP runs an OpenSHMEM program on the given number of
 processing elements.
-.SH NUMBER OF PROCESSING ELEMENTS
+.SH OPTIONS
 .IP "-n N | -np N" 4
 Run the program on N processing elements (PEs or processors).
 Overrides any PE count inherited from launch environment.
 .LP
+.SH ENVIRONMENT
+OpenSHMEM environment variables are prefixed with "SHMEM_".  Some
+older SHMEM implementations had variables prefixed with "SMA_": these
+are still supported in OpenSHMEM, but are deprecated.  If both are set
+for a given variable, the "SHMEM_" one will be used.
+.LP
+Boolean flags are enabled with a non-zero value, or "y", "yes";
+disabled with zero value, or "n", "no".
+.RS 4
+.LP
+Required by specification
+.RS 4
+.IP "SHMEM_VERSION (bool)"
+print library version at start-up
+.IP "SHMEM_INFO (bool)"
+print information about supported environment variables
+.IP "SHMEM_SYMMETRIC_SIZE (number)"
+set the size of the symmetric heap.  Can use K,M,G,T units
+.IP "SHMEM_DEBUG (bool)"
+enable run debugging (if configured).
+.RE
+.LP
+This implementation also has
+.RS 4
+.IP "SHMEM_DEBUG_FILE (string)"
+file to receive debugging information.
+.RE
+.RE
 .SH EXAMPLES
 The command
 .LP
-.RS
+.RS 4
 $ oshrun -np 4 ./sping.x -e 8192
 .RE
 .LP
@@ -33,9 +59,10 @@ runs the Quadrics ping-pong example code on 4 processing elements, and
 passes the arguments "-e" and "8192" through to the OpenSHMEM program.
 .SH NOTES
 .LP
-The OpenSHMEM specification does not say anything about how OpenSHMEM
-programs are compiled, linked and launched.  These wrapper programs
-are supplied as part of the Reference Library for convenience.
+The OpenSHMEM specification does not say anything normative about how
+OpenSHMEM programs are compiled, linked and launched.  These wrapper
+programs are supplied as part of the Reference Library for
+convenience.
 .SH SEE ALSO
 osh_intro(1).
 .SH OPENSHMEM
