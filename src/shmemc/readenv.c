@@ -59,7 +59,7 @@ read_environment(void)
 
     proc.env.print_version = 0;
     proc.env.print_info = 0;
-    proc.env.def_heap_size = 4 * SHMEMU_MB;
+    proc.env.def_heap_size = 32 * SHMEMU_MB; /* arbitrary value */
     proc.env.debug = 0;
 
     CHECK_ENV(e, VERSION);
@@ -117,7 +117,8 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "Variable",
             val_width, "Value",
             "Description");
-    fprintf(stream, "%s------------------------------------------------------------------------\n",
+    fprintf(stream, "%s%s\n\n",
+            "------------------------------------------------------------------------",
             prefix);
     fprintf(stream, "%s\n",
             prefix);
