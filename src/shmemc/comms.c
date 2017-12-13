@@ -229,8 +229,12 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     assert(s == UCS_OK);
 }
 
+/*
+ * strided ops currently build on put/get in upper API
+ */
+
 /**
- * Return values from put_nbi/get_nbi probably need more handling
+ * Return status from UCP nbi routines probably needs more handling
  *
  */
 
