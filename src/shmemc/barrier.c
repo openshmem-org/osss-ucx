@@ -27,7 +27,7 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
         int i;
 
         /* wait for the rest of the AS to poke me */
-        shmemc_wait_eq_until64(pSync, npokes);
+        shmemc_wait_eq_until64(pSync, npokes + SHMEM_SYNC_VALUE);
         *pSync = SHMEM_SYNC_VALUE;
 
         /* send acks out */
