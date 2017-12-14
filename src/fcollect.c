@@ -4,7 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <sys/types.h>
+#include "state.h"
+#include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_fcollect32 = pshmem_fcollect32
@@ -16,26 +17,23 @@
 
 
 /**
- * Collective concatenation of 32-bit data from participating PEs
+ * Collective concatenation of 32/64-bit data from participating PEs
  * into a target array on all those PEs
  */
 
-void
-shmem_fcollect32(void *target, const void *source, size_t nelems,
-                 int PE_start, int logPE_stride, int PE_size,
-                 long *pSync)
-{
-}
+#define SHMEM_FCOLLECT(_bits, _bytes)                                   \
+    void                                                                \
+    shmem_fcollect##_bits(void *target, const void *source,             \
+                          size_t nelems,                                \
+                          int PE_start, int logPE_stride,               \
+                          int PE_size,                                  \
+                          long *pSync)                                  \
+    {                                                                   \
+        shmemc_fcollect##_bits(target, source,                          \
+                               nelems,                                  \
+                               PE_start, logPE_stride, PE_size,         \
+                               pSync);                                  \
+    }
 
-
-/**
- * Collective concatenation of 64-bit data from participating PEs
- * into a target array on all those PEs
- */
-
-void
-shmem_fcollect64(void *target, const void *source, size_t nelems,
-                 int PE_start, int logPE_stride, int PE_size,
-                 long *pSync)
-{
-}
+SHMEM_FCOLLECT(32, 4)
+SHMEM_FCOLLECT(64, 8)

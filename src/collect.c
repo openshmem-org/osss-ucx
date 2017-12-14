@@ -4,7 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <sys/types.h>
+#include "state.h"
+#include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_collect32 = pshmem_collect32
@@ -15,26 +16,29 @@
 #endif /* ENABLE_PSHMEM */
 
 /**
- * Collective concatenation of 32-bit data from participating PEs
- * into a target array on all those PEs
+ * collect puts nelems (can vary from PE to PE) from source on each
+ * PE in the set to target on all PEs in the set.  source -> target is
+ * done in PE order.
+ *
+ * We set up a wavefront that propagates the accumulated offsets and
+ * then overlaps forwarding the extra offset contribution from each PE
+ * with actually sending source -> target.  Control data goes left to
+ * right, application data goes "top to bottom", as it were.
+ *
  */
 
-void
-shmem_collect32(void *target, const void *source, size_t nelems,
-                int PE_start, int logPE_stride, int PE_size,
-                long *pSync)
-{
-}
+#define SHMEM_COLLECT(_bits, _bytes)                                    \
+    void                                                                \
+    shmem_collect##_bits(void *target, const void *source,              \
+                         size_t nelems,                                 \
+                         int PE_start, int logPE_stride, int PE_size,   \
+                         long *pSync)                                   \
+    {                                                                   \
+        shmemc_collect##_bits(target, source,                           \
+                              nelems,                                   \
+                              PE_start, logPE_stride, PE_size,          \
+                              pSync);                                   \
+    }
 
-
-/**
- * Collective concatenation of 64-bit data from participating PEs
- * into a target array on all those PEs
- */
-
-void
-shmem_collect64(void *target, const void *source, size_t nelems,
-                int PE_start, int logPE_stride, int PE_size,
-                long *pSync)
-{
-}
+SHMEM_COLLECT(32, 4)
+SHMEM_COLLECT(64, 8)
