@@ -31,49 +31,13 @@
     void                                                                \
     shmem_collect##_bits(void *target, const void *source,              \
                          size_t nelems,                                 \
-                         int start, int logstride, int size,            \
+                         int PE_start, int logPE_stride, int PE_size,   \
                          long *pSync)                                   \
     {                                                                   \
-        const int step = 1 << logstride;                                \
-        const int last_pe = start + step * (size - 1);                  \
-                                                                        \
-        /* initialize left-most or wait for left-neighbor to notify */  \
-        if (proc.rank == start) {                                       \
-            *pSync = 0;                                                 \
-        }                                                               \
-        else {                                                          \
-            shmemc_wait_ne_until64(pSync, SHMEM_SYNC_VALUE);            \
-        }                                                               \
-                                                                        \
-        /*                                                              \
-         * forward my contribution to (notify) right neighbor if not    \
-         * last PE in set                                               \
-         */                                                             \
-        if (proc.rank < last_pe) {                                      \
-            const long next_off = *pSync + nelems;                      \
-                                                                        \
-            shmemc_put(pSync, &next_off,                                \
-                       sizeof(next_off),                                \
-                       proc.rank + step);                               \
-        }                                                               \
-                                                                        \
-        /* send my array slice to target everywhere */                  \
-        {                                                               \
-            const long tidx = *pSync * _bytes;                          \
-            int i;                                                      \
-            int pe = start;                                             \
-                                                                        \
-            for (i = 0; i < size; i += 1) {                             \
-                shmemc_put(&((char *)target)[tidx], source,             \
-                           nelems * _bytes,                             \
-                           pe);                                         \
-                pe += step;                                             \
-            }                                                           \
-        }                                                               \
-                                                                        \
-        /* clean up, and wait for everyone to finish */                 \
-        *pSync = SHMEM_SYNC_VALUE;                                      \
-        shmemc_barrier(start, logstride, size, pSync);                  \
+        shmemc_collect##_bits(target, source,                           \
+                              nelems,                                   \
+                              PE_start, logPE_stride, PE_size,          \
+                              pSync);                                   \
     }
 
 SHMEM_COLLECT(32, 4)

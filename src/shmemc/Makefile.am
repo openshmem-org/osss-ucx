@@ -7,8 +7,10 @@ OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 LIBSHMEMC_SOURCES         = \
 				barrier.c \
 				broadcast.c \
+				collect.c \
 				comms.c \
 				contexts.c \
+				fcollect.c \
 				globalexit.c \
 				mcs-lock.c \
 				pmix-client.c \

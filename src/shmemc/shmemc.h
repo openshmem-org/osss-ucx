@@ -352,6 +352,30 @@ SHMEMC_DECL_BROADCAST_SIZE(32)
 SHMEMC_DECL_BROADCAST_SIZE(64)
 
 /*
+ * -- collects ---------------------------------------------------------------
+ */
+
+#define SHMEMC_DECL_FCOLLECT_SIZE(_size)                             \
+    void shmemc_fcollect##_size(void *target, const void *source,    \
+                                size_t nelems,                       \
+                                int PE_start,                        \
+                                int logPE_stride, int PE_size,       \
+                                long *pSync);
+
+SHMEMC_DECL_FCOLLECT_SIZE(32)
+SHMEMC_DECL_FCOLLECT_SIZE(64)
+
+#define SHMEMC_DECL_COLLECT_SIZE(_size)                             \
+    void shmemc_collect##_size(void *target, const void *source,    \
+                               size_t nelems,                       \
+                               int PE_start,                        \
+                               int logPE_stride, int PE_size,       \
+                               long *pSync);
+
+SHMEMC_DECL_COLLECT_SIZE(32)
+SHMEMC_DECL_COLLECT_SIZE(64)
+
+/*
  * TODO: reductions should get moved here in case comms-layer has
  * hardware assist or similar
  */
