@@ -62,10 +62,6 @@ endif # fortran
 if ENABLE_EXPERIMENTAL
 MY_SOURCES            += wtime.c
 
-if ENABLE_FORTRAN
-MY_SOURCES            += fortran/fortranx.c
-endif # fortran
-
 endif # experimental
 
 if ENABLE_PSHMEM
