@@ -39,3 +39,21 @@ shmem_ctx_destroy(shmem_ctx_t ctx)
 {
     shmemc_context_destroy((shmemc_context_h) ctx);
 }
+
+#ifdef ENABLE_EXPERIMENTAL
+
+/*
+ * tell OpenSHMEM there's region of communication coming up
+ */
+
+void
+shmemx_ctx_start_session(shmem_ctx_t ctx)
+{
+}
+
+void
+shmemx_ctx_end_session(shmem_ctx_t ctx)
+{
+}
+
+#endif  /* ENABLE_EXPERIMENTAL */

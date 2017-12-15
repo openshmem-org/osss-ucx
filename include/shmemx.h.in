@@ -14,81 +14,6 @@ extern "C"
      * new ideas (not part of formal 1.x API)
      */
 
-    typedef void *shmemx_request_handle_t;
-
-    void shmemx_short_put_nb(short *dest, const short *src, size_t nelems,
-                             int pe, shmemx_request_handle_t *desc);
-    void shmemx_int_put_nb(int *dest, const int *src, size_t nelems,
-                           int pe, shmemx_request_handle_t *desc);
-    void shmemx_long_put_nb(long *dest, const long *src, size_t nelems,
-                            int pe, shmemx_request_handle_t *desc);
-    void shmemx_longlong_put_nb(long long *dest, const long long *src,
-                                size_t nelems, int pe,
-                                shmemx_request_handle_t *desc);
-    void shmemx_longdouble_put_nb(long double *dest, const long double *src,
-                                  size_t nelems, int pe,
-                                  shmemx_request_handle_t *desc);
-    void shmemx_double_put_nb(double *dest, const double *src,
-                              size_t nelems, int pe,
-                              shmemx_request_handle_t *desc);
-    void shmemx_complexd_put_nb(COMPLEXIFY(double) * dest,
-                                const COMPLEXIFY(double) * src,
-                                size_t nelems, int pe
-                                , shmemx_request_handle_t *desc);
-    void shmemx_float_put_nb(float *dest, const float *src, size_t nelems,
-                             int pe, shmemx_request_handle_t *desc);
-    void shmemx_putmem_nb(void *dest, const void *src, size_t nelems,
-                          int pe, shmemx_request_handle_t *desc);
-    void shmemx_put32_nb(void *dest, const void *src, size_t nelems,
-                         int pe, shmemx_request_handle_t *desc);
-    void shmemx_put64_nb(void *dest, const void *src, size_t nelems,
-                         int pe, shmemx_request_handle_t *desc);
-    void shmemx_put128_nb(void *dest, const void *src, size_t nelems,
-                          int pe, shmemx_request_handle_t *desc);
-
-    void shmemx_short_get_nb(short *dest, const short *src, size_t nelems,
-                             int pe, shmemx_request_handle_t *desc);
-    void shmemx_int_get_nb(int *dest, const int *src, size_t nelems,
-                           int pe, shmemx_request_handle_t *desc);
-    void shmemx_long_get_nb(long *dest, const long *src, size_t nelems,
-                            int pe, shmemx_request_handle_t *desc);
-    void shmemx_longlong_get_nb(long long *dest, const long long *src,
-                                size_t nelems, int pe,
-                                shmemx_request_handle_t *desc);
-    void shmemx_longdouble_get_nb(long double *dest, const long double *src,
-                                  size_t nelems, int pe,
-                                  shmemx_request_handle_t *desc);
-    void shmemx_double_get_nb(double *dest, const double *src,
-                              size_t nelems, int pe,
-                              shmemx_request_handle_t *desc);
-    void shmemx_complexd_get_nb(COMPLEXIFY(double) * dest,
-                                const COMPLEXIFY(double) * src,
-                                size_t nelems, int pe,
-                                shmemx_request_handle_t *desc);
-    void shmemx_float_get_nb(float *dest, const float *src, size_t nelems,
-                             int pe, shmemx_request_handle_t *desc);
-    void shmemx_getmem_nb(void *dest, const void *src, size_t nelems,
-                          int pe, shmemx_request_handle_t *desc);
-    void shmemx_get32_nb(void *dest, const void *src, size_t nelems,
-                         int pe, shmemx_request_handle_t *desc);
-    void shmemx_get64_nb(void *dest, const void *src, size_t nelems,
-                         int pe, shmemx_request_handle_t *desc);
-    void shmemx_get128_nb(void *dest, const void *src, size_t nelems,
-                          int pe, shmemx_request_handle_t *desc);
-
-    void shmemx_wait_req(shmemx_request_handle_t desc);
-    void shmemx_test_req(shmemx_request_handle_t desc, int *flag);
-
-    /*
-     * renamed & non-blocking memory management
-     *
-     */
-    void *shmalloc_nb(size_t size) _WUR;
-    void  shfree_nb(void *addr);
-
-#define shmemx_malloc_nb(s)   shmalloc_nb(s)
-#define shmemx_free_nb(a)     shfree_nb(a)
-
     /*
      * wallclock time
      *
@@ -102,12 +27,7 @@ extern "C"
      *
      * @substitute c C/C++
      * @code
-     double shmemx_wtime(void);
-     * @endcode
-     *
-     * @subsection f Fortran
-     * @code
-     double precision shmemx_wtime()
+     double shmemx_wtime(void)
      * @endcode
      *
      * @return Returns the number of seconds since the program started(epoch).
@@ -134,13 +54,7 @@ extern "C"
      *
      * @substitute c C/C++
      * @code
-     void *shmemx_lookup_remote_addr(void *addr, int pe);
-     * @endcode
-     *
-     * @subsection f Fortran
-     * @code
-     integer pe
-     integer shmemx_lookup_remote_addr(addr, pe)
+     void *shmemx_lookup_remote_addr(void *addr, int pe)
      * @endcode
      *
      * @return Returns the address corresponding to "addr" on PE "pe"
@@ -162,12 +76,7 @@ extern "C"
      *
      * @substitute c C/C++
      * @code
-     int shmemx_fence_test(void);
-     * @endcode
-     *
-     * @subsection f Fortran
-     * @code
-     logical shmemx_fence_test
+     int shmemx_fence_test(void)
      * @endcode
      *
      * @return Returns non-zero if all communication operations issued
@@ -184,12 +93,7 @@ extern "C"
      *
      * @substitute c C/C++
      * @code
-     int shmemx_quiet_test(void);
-     * @endcode
-     *
-     * @subsection f Fortran
-     * @code
-     logical shmemx_quiet_test
+     int shmemx_quiet_test(void)
      * @endcode
      *
      * @return Returns non-zero if all communication operations issued
@@ -197,6 +101,12 @@ extern "C"
      *
      */
     int shmemx_quiet_test(void);
+
+    /*
+     * context sessions
+     */
+    void shmemx_ctx_start_session(shmem_ctx_t ctx);
+    void shmemx_ctx_end_session(shmem_ctx_t ctx);
 
 #ifdef __cplusplus
 }
