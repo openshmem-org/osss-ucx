@@ -295,8 +295,8 @@ SHMEM_CTX_TYPED_G(complexd, COMPLEXIFY(double))
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
             shmemc_ctx_get(ctx,                                         \
-                           &((char *)target)[ti],                       \
-                           &((char *)source)[si],                       \
+                           &((char *) target)[ti],                      \
+                           &((char *) source)[si],                      \
                            the_size, pe);                               \
             ti += tst * the_size;                                       \
             si += sst * the_size;                                       \
@@ -358,8 +358,8 @@ SHMEM_CTX_TYPED_IGET(complexd, COMPLEXIFY(double))
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
             shmemc_ctx_get(ctx,                                         \
-                           &((char *)target)[ti],                       \
-                           &((char *)source)[si],                       \
+                           &((char *) target)[ti],                      \
+                           &((char *) source)[si],                      \
                            _size, pe);                                  \
             ti += tst * _size;                                          \
             si += sst * _size;                                          \

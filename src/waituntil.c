@@ -45,7 +45,7 @@
 #define SHMEM_TYPE_WAIT_UNTIL(_opname, _type, _size)                    \
     void                                                                \
     shmem_##_opname##_wait_until(_type *ivar,                           \
-                                 shmem_cmp_t cmp,                       \
+                                 int cmp,                               \
                                  _type cmp_value)                       \
     {                                                                   \
         switch (cmp) {                                                  \
