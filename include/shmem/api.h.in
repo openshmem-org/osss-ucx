@@ -1074,7 +1074,7 @@ extern "C"
 #define API_DECL_TEST_AND_WAIT_UNTIL(_opname, _name, _type)             \
     /* see \ref shmem_##_name##_opname() */                             \
     void shmem_##_name##_##_opname(_type *ivar,                         \
-                                   shmem_cmp_t cmp,                     \
+                                   int cmp,                             \
                                    _type cmp_value);
 
     /**
@@ -1084,7 +1084,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void shmem_long_test(long *ivar, shmem_cmp_t cmp, long cmp_value);
+     void shmem_long_test(long *ivar, int cmp, long cmp_value);
      @endcode
      *
      * @subsection f Fortran
@@ -1130,7 +1130,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void shmem_long_wait_until(long *ivar, shmem_cmp_t cmp, long cmp_value);
+     void shmem_long_wait_until(long *ivar, int cmp, long cmp_value);
      @endcode
      *
      * @subsection f Fortran
