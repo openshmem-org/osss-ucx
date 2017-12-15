@@ -15,19 +15,42 @@
 
 #include <ucp/api/ucp.h>
 
+
+/*
+ * -- macro helpers ----------------------------------------------------------
+ */
+
 /*
  * shortcut to look up the UCP endpoint of a context
  */
-inline static ucp_ep_h
-lookup_ucp_ep(shmem_ctx_t ctx, int pe)
-{
 #if 0
-    const shmem_context_h ch = (shmem_context_h) ctx;
-
-    return proc.comms.ctxts[ch->id].eps[pe];
+const shmem_context_h ch = (shmem_context_h) _ctx;
+return proc.comms.ctxts[ch->id].eps[_pe];
 #endif
-    return proc.comms.eps[pe];
-}
+
+#define LOOKUP_UCP_EP(_ctx, _pe)                \
+    proc.comms.eps[_pe]
+
+/*
+ * find remote rkey
+ */
+#define LOOKUP_RKEY(_region, _pe)                       \
+    proc.comms.regions[_region].minfo[_pe].racc.rkey
+
+/*
+ * where the heap lives
+ */
+#define GET_BASE(_region, _pe)                      \
+    proc.comms.regions[_region].minfo[_pe].base
+
+/*
+ * Return non-zero if PE is a valid rank, 0 otherwise
+ */
+#define IS_VALID_PE_NUMBER(_pe) ((proc.nranks > _pe) && (_pe >= 0))
+
+/*
+ * -- helpers ----------------------------------------------------------------
+ */
 
 inline static int
 in_region(uint64_t addr, size_t region, int pe)
@@ -56,21 +79,6 @@ lookup_region(uint64_t addr, int pe)
 }
 
 /*
- * find remote rkey
- */
-inline static ucp_rkey_h
-lookup_rkey(size_t region, int pe)
-{
-    return proc.comms.regions[region].minfo[pe].racc.rkey;
-}
-
-inline static uint64_t
-get_base(size_t region, int pe)
-{
-    return proc.comms.regions[region].minfo[pe].base;
-}
-
-/*
  * translate remote address:
  *
  * if all addresses aligned, remote always == local
@@ -88,8 +96,8 @@ translate_address(uint64_t local_addr, size_t region, int pe)
         return local_addr;
     }
     else {
-        const uint64_t my_offset = local_addr - get_base(region, proc.rank);
-        const uint64_t remote_addr = my_offset + get_base(region, pe);
+        const uint64_t my_offset = local_addr - GET_BASE(region, proc.rank);
+        const uint64_t remote_addr = my_offset + GET_BASE(region, pe);
 
         return remote_addr;
     }
@@ -97,28 +105,17 @@ translate_address(uint64_t local_addr, size_t region, int pe)
 }
 
 /*
- * Return non-zero if PE is a valid rank, 0 otherwise
- */
-inline static int
-is_valid_pe_number(int pe)
-{
-    return (proc.nranks > pe) && (pe >= 0);
-}
-
-/*
  * All ops here need to find remote keys and addresses
  */
-inline static void
-get_remote_key_and_addr(uint64_t laddr, int pe,
-                        ucp_rkey_h *rkey, uint64_t *raddr)
-{
-    const long r = lookup_region(laddr, proc.rank);
-
-    shmemu_assert("remote key/address lookup", r >= 0);
-
-    *rkey = lookup_rkey(r, pe);
-    *raddr = translate_address(laddr, r, pe);
-}
+#define GET_REMOTE_KEY_AND_ADDR(_laddr, _pe, _rkey_p, _raddr_p) \
+    do {                                                        \
+        const long r = lookup_region(_laddr, proc.rank);        \
+                                                                \
+        shmemu_assert("remote key/address lookup", r >= 0);     \
+                                                                \
+        *_rkey_p = LOOKUP_RKEY(r, _pe);                         \
+        *_raddr_p = translate_address(_laddr, r, _pe);          \
+    } while (0)
 
 /**
  * API
@@ -162,7 +159,7 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
     void *usable_addr = NULL;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) addr, pe, &rkey, &r_addr);
+    GET_REMOTE_KEY_AND_ADDR((uint64_t) addr, pe, &rkey, &r_addr);
 
     s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
     if (s == UCS_OK) {
@@ -192,7 +189,7 @@ shmemc_addr_accessible(const void *addr, int pe)
 int
 shmemc_pe_accessible(int pe)
 {
-    return is_valid_pe_number(pe);
+    return IS_VALID_PE_NUMBER(pe);
 }
 
 /*
@@ -209,8 +206,8 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) dest, pe, &rkey, &r_dest);
-    ep = lookup_ucp_ep(ctx, pe);
+    GET_REMOTE_KEY_AND_ADDR((uint64_t) dest, pe, &rkey, &r_dest);
+    ep = LOOKUP_UCP_EP(ctx, pe);
 
     s = ucp_put(ep, src, nbytes, r_dest, rkey);
     assert(s == UCS_OK);
@@ -226,8 +223,8 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) src, pe, &rkey, &r_src);
-    ep = lookup_ucp_ep(ctx, pe);
+    GET_REMOTE_KEY_AND_ADDR((uint64_t) src, pe, &rkey, &r_src);
+    ep = LOOKUP_UCP_EP(ctx, pe);
 
     s = ucp_get(ep, dest, nbytes, r_src, rkey);
     assert(s == UCS_OK);
@@ -252,8 +249,8 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) dest, pe, &rkey, &r_dest);
-    ep = lookup_ucp_ep(ctx, pe);
+    GET_REMOTE_KEY_AND_ADDR((uint64_t) dest, pe, &rkey, &r_dest);
+    ep = LOOKUP_UCP_EP(ctx, pe);
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, rkey);
     assert(s == UCS_OK || s == UCS_INPROGRESS);
@@ -269,8 +266,8 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) src, pe, &rkey, &r_src);
-    ep = lookup_ucp_ep(ctx, pe);
+    GET_REMOTE_KEY_AND_ADDR((uint64_t) src, pe, &rkey, &r_src);
+    ep = LOOKUP_UCP_EP(ctx, pe);
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, rkey);
     assert(s == UCS_OK || s == UCS_INPROGRESS);
@@ -298,8 +295,8 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
                                                                         \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
-        ep = lookup_ucp_ep(ctx, pe);                                    \
+        GET_REMOTE_KEY_AND_ADDR(t, pe, &rkey, &r_t);                    \
+        ep = LOOKUP_UCP_EP(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_fadd##_size(ep, v, r_t, rkey, &ret);             \
         assert(s == UCS_OK);                                            \
@@ -321,8 +318,8 @@ HELPER_FADD(64)
         ucp_ep_h ep;                                                \
         ucs_status_t s;                                             \
                                                                     \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                \
-        ep = lookup_ucp_ep(ctx, pe);                                \
+        GET_REMOTE_KEY_AND_ADDR(t, pe, &rkey, &r_t);                \
+        ep = LOOKUP_UCP_EP(ctx, pe);                                \
                                                                     \
         s = ucp_atomic_add##_size(ep, v, r_t, rkey);                \
         assert(s == UCS_OK);                                        \
@@ -347,8 +344,8 @@ HELPER_ADD(64)
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
                                                                         \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
-        ep = lookup_ucp_ep(ctx, pe);                                    \
+        GET_REMOTE_KEY_AND_ADDR(t, pe, &rkey, &r_t);                    \
+        ep = LOOKUP_UCP_EP(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_swap##_size(ep, v, r_t, rkey, &ret);             \
         assert(s == UCS_OK);                                            \
@@ -372,8 +369,8 @@ HELPER_SWAP(64)
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
                                                                         \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
-        ep = lookup_ucp_ep(ctx, pe);                                    \
+        GET_REMOTE_KEY_AND_ADDR(t, pe, &rkey, &r_t);                    \
+        ep = LOOKUP_UCP_EP(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_cswap##_size(ep, c, v, r_t, rkey, &ret);         \
         assert(s == UCS_OK);                                            \
@@ -441,8 +438,8 @@ NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
                                                                         \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
-        ep = lookup_ucp_ep(ctx, pe);                                    \
+        GET_REMOTE_KEY_AND_ADDR(t, pe, &rkey, &r_t);                    \
+        ep = LOOKUP_UCP_EP(ctx, pe);                                    \
                                                                         \
         s = ucp_atomic_##_opname##_size(ep, v, r_t, rkey, &ret);        \
         assert(s == UCS_OK);                                            \
