@@ -13,7 +13,7 @@ static mspace myspace;
  * initialize the memory pool
  */
 void
-shmema_mem_init(void *base, size_t capacity)
+shmema_init(void *base, size_t capacity)
 {
     myspace = create_mspace_with_base(base, capacity, 1);
 }
@@ -22,7 +22,7 @@ shmema_mem_init(void *base, size_t capacity)
  * clean up memory pool
  */
 void
-shmema_mem_finalize(void)
+shmema_finalize(void)
 {
     destroy_mspace(myspace);
 }
@@ -31,7 +31,7 @@ shmema_mem_finalize(void)
  * return start of pool
  */
 void *
-shmema_mem_base(void)
+shmema_base(void)
 {
     return myspace;
 }
@@ -43,7 +43,7 @@ shmema_mem_base(void)
 #define MIN_MALLOC_SIZE 64
 
 void *
-shmema_mem_malloc(size_t size)
+shmema_malloc(size_t size)
 {
     void *addr = mspace_malloc(myspace, size);
 
@@ -55,7 +55,7 @@ shmema_mem_malloc(size_t size)
  */
 
 void *
-shmema_mem_calloc(size_t count, size_t size)
+shmema_calloc(size_t count, size_t size)
 {
     void *addr = mspace_calloc(myspace, count, size);
 
@@ -66,7 +66,7 @@ shmema_mem_calloc(size_t count, size_t size)
  * release memory previously allocated at ADDR
  */
 void
-shmema_mem_free(void *addr)
+shmema_free(void *addr)
 {
     mspace_free(myspace, addr);
 }
@@ -75,7 +75,7 @@ shmema_mem_free(void *addr)
  * resize ADDR to NEW_SIZE bytes
  */
 void *
-shmema_mem_realloc(void *addr, size_t new_size)
+shmema_realloc(void *addr, size_t new_size)
 {
     void *new_addr = mspace_realloc(myspace, addr, new_size);
 
@@ -86,7 +86,7 @@ shmema_mem_realloc(void *addr, size_t new_size)
  * allocate memory of SIZE bytes, aligning to ALIGNMENT
  */
 void *
-shmema_mem_align(size_t alignment, size_t size)
+shmema_align(size_t alignment, size_t size)
 {
     void *aligned_addr = mspace_memalign(myspace, alignment, size);
 

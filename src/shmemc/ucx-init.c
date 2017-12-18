@@ -191,8 +191,7 @@ reg_symmetric_heap(void)
     def_symm_heap->len  = attr.length;
 
     /* initialize the heap allocator */
-    shmema_mem_init((void *) def_symm_heap->base,
-                    def_symm_heap->len);
+    shmema_init((void *) def_symm_heap->base, def_symm_heap->len);
 }
 
 inline static void
@@ -202,6 +201,8 @@ dereg_symmetric_heap(void)
 
     s = ucp_mem_unmap(proc.comms.ctxt, def_symm_heap->racc.mh);
     assert(s == UCS_OK);
+
+    shmema_finalize();
 }
 
 inline static void
