@@ -199,10 +199,10 @@ dereg_symmetric_heap(void)
 {
     ucs_status_t s;
 
+    shmema_finalize();
+
     s = ucp_mem_unmap(proc.comms.ctxt, def_symm_heap->racc.mh);
     assert(s == UCS_OK);
-
-    shmema_finalize();
 }
 
 inline static void
