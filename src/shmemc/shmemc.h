@@ -4,6 +4,7 @@
 #define _SHMEMC_H 1
 
 #include "thispe.h"
+#include "state.h"
 #include "shmemc.h"
 #include "shmem/defs.h"
 
@@ -25,8 +26,8 @@ void shmemc_init(void);
 void shmemc_finalize(void);
 void shmemc_global_exit(int status);
 
-int shmemc_my_pe(void);
-int shmemc_n_pes(void);
+inline static int shmemc_my_pe(void) { return proc.rank; }
+inline static int shmemc_n_pes(void) { return proc.nranks; }
 
 void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);

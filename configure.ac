@@ -104,6 +104,10 @@ AC_SUBST([PTHREAD_CC])
 AC_SUBST([PTHREAD_CFLAGS])
 AC_SUBST([PTHREAD_LIBS])
 
+m4_include([config/m4/ax_prog_doxygen.m4])
+
+DX_INIT_DOXYGEN([openshmem])
+
 #
 # all the output files
 #
