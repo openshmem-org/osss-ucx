@@ -14,7 +14,6 @@ LIBSHMEMC_SOURCES         = \
 				globalexit.c \
 				mcs-lock.c \
 				pmix-client.c \
-				ranks.c \
 				readenv.c \
 				shmemc-init.c \
 				state.c \

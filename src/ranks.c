@@ -4,8 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemu.h"
 #include "shmemc.h"
+#include "shmemu.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_my_pe = pshmem_my_pe
