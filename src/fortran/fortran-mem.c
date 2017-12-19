@@ -107,7 +107,7 @@ FORTRANIFY(shpalloc)(uintptr_t **addr, int *length,
         /* NOT REACHED */
     }
 
-    symm_addr = shmema_mem_malloc(*length * scale);
+    symm_addr = shmema_malloc(*length * scale);
 
     /* pass back status code */
     *errcode = malloc_error;
@@ -158,7 +158,7 @@ FORTRANIFY(shpdeallc)(uintptr_t **addr, int *errcode, int *abort)
            "shpdeallc(addr = %p, errcode = %d, abort = %d)",
            *addr, *errcode, *abort);
 
-    shmema_mem_free(*addr);
+    shmema_free(*addr);
 
     /* pass back status code */
     *errcode = malloc_error;
@@ -198,7 +198,7 @@ void
 FORTRANIFY(shpclmove)(uintptr_t **addr, int *length,
                       int *errcode, int *abort)
 {
-    *addr = shmema_mem_realloc(*addr, *length);
+    *addr = shmema_realloc(*addr, *length);
 
     /* pass back status code */
     *errcode = malloc_error;
