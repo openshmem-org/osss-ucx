@@ -844,18 +844,3 @@ FORTRANIFY(shmem_info_get_name)(char *name)
         len += 1;
     }
 }
-
-/**
- *
- * DEPRECATED API
- *
- * cache flushing
- */
-
-FORTRANIFY_VOID_VOID(shmem_clear_cache_inv)
-FORTRANIFY_VOID_VOID(shmem_set_cache_inv)
-FORTRANIFY_VOID_VOID(shmem_udcflush)
-
-FORTRANIFY_CACHE(shmem_set_cache_line_inv)
-FORTRANIFY_CACHE(shmem_clear_cache_line_inv)
-FORTRANIFY_CACHE(shmem_udcflush_line)
