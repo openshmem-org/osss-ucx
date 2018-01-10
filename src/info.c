@@ -120,11 +120,6 @@ output_build_env(void)
 
     host = shmemu_gethostname();
     output("Execution host", (host != NULL) ? host : UNKNOWN);
-
-    /* command-line that built the library */
-#ifdef CONFIG_FLAGS
-    output("Configure", CONFIG_FLAGS);
-#endif /* CONFIG_FLAGS */
 }
 
 static void
