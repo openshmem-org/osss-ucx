@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem_mutex.h"
+
 #include "shmemc.h"
 
 #include <sys/types.h>
@@ -28,11 +30,13 @@
                            int logPE_stride, int PE_size,               \
                            long *pSync)                                 \
     {                                                                   \
-        shmemc_broadcast##_name(target, source,                         \
-                                nelems,                                 \
-                                PE_root, PE_start,                      \
-                                logPE_stride, PE_size,                  \
-                                pSync);                                 \
+        SHMEML_MUTEX_PROTECT(shmemc_broadcast##_name(target, source,    \
+                                                     nelems,            \
+                                                     PE_root, PE_start, \
+                                                     logPE_stride,      \
+                                                     PE_size,           \
+                                                     pSync)             \
+                             );                                         \
     }
 
 SHMEM_BROADCAST_TYPE(32)
