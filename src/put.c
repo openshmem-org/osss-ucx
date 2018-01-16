@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem_mutex.h"
+
 #include "shmemc.h"
 
 #include "shmem/api.h"
@@ -67,7 +69,10 @@
                             _type *dest, const _type *src,              \
                             size_t nelems, int pe)                      \
     {                                                                   \
-        shmemc_ctx_put(ctx, dest, src, sizeof(_type) * nelems, pe);     \
+        SHMEML_MUTEX_PROTECT(shmemc_ctx_put(ctx,                        \
+                                            dest, src,                  \
+                                            sizeof(_type) * nelems,     \
+                                            pe));                       \
     }
 
 SHMEM_CTX_TYPED_PUT(float, float)
@@ -119,7 +124,10 @@ SHMEM_CTX_TYPED_PUT(complexd, COMPLEXIFY(double))
                          void *dest, const void *src,                   \
                          size_t nelems, int pe)                         \
     {                                                                   \
-        shmemc_ctx_put(ctx, dest, src, _size * nelems, pe);             \
+        SHMEML_MUTEX_PROTECT(shmemc_ctx_put(ctx,                        \
+                                            dest, src,                  \
+                                            _size * nelems,             \
+                                            pe));                       \
     }
 
 SHMEM_CTX_SIZED_PUT(8)
@@ -140,7 +148,10 @@ shmem_ctx_putmem(shmem_ctx_t ctx,
                  void *dest, const void *src,
                  size_t nelems, int pe)
 {
-    shmemc_ctx_put(ctx, dest, src, nelems, pe);
+    SHMEML_MUTEX_PROTECT(shmemc_ctx_put(ctx,
+                                        dest, src,
+                                        nelems,
+                                        pe));
 }
 
 #ifdef ENABLE_PSHMEM
@@ -195,12 +206,15 @@ shmem_ctx_putmem(shmem_ctx_t ctx,
 #define shmem_ctx_complexd_p pshmem_ctx_complexd_p
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_CTX_TYPED_P(_name, _type)                              \
-    void                                                             \
-    shmem_ctx_##_name##_p(shmem_ctx_t ctx,                           \
-                          _type *addr, _type val, int pe)            \
-    {                                                                \
-        shmemc_ctx_put(ctx, addr, &val, sizeof(val), pe);            \
+#define SHMEM_CTX_TYPED_P(_name, _type)                                 \
+    void                                                                \
+    shmem_ctx_##_name##_p(shmem_ctx_t ctx,                              \
+                          _type *addr, _type val, int pe)               \
+    {                                                                   \
+        SHMEML_MUTEX_PROTECT(shmemc_ctx_put(ctx,                        \
+                                            addr, &val,                 \
+                                            sizeof(val),                \
+                                            pe));                       \
     }
 
 SHMEM_CTX_TYPED_P(float, float)
@@ -292,17 +306,16 @@ SHMEM_CTX_TYPED_P(complexd, COMPLEXIFY(double))
                              ptrdiff_t tst, ptrdiff_t sst,              \
                              size_t nelems, int pe)                     \
     {                                                                   \
-        const size_t the_size = sizeof(_type);                          \
         size_t ti = 0, si = 0;                                          \
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_ctx_put(ctx,                                         \
-                           &((char *) target)[ti],                      \
-                           &((char *) source)[si],                      \
-                           the_size, pe);                               \
-            ti += tst * the_size;                                       \
-            si += sst * the_size;                                       \
+            shmem_ctx_##_name##_put(ctx,                                \
+                                    &(target[ti]),                      \
+                                    &(source[si]),                      \
+                                    1, pe);                             \
+            ti += tst;                                                  \
+            si += sst;                                                  \
         }                                                               \
     }
 
@@ -360,12 +373,12 @@ SHMEM_CTX_TYPED_IPUT(complexd, COMPLEXIFY(double))
         size_t i;                                                       \
                                                                         \
         for (i = 0; i < nelems; i += 1) {                               \
-            shmemc_ctx_put(ctx,                                         \
-                           &((char *) target)[ti],                      \
-                           &((char *) source)[si],                      \
-                           _size, pe);                                  \
-            ti += tst * _size;                                          \
-            si += sst * _size;                                          \
+            shmem_ctx_put##_size(ctx,                                   \
+                                 (void *) &((char *) target)[ti],       \
+                                 (void *) &((char *) source)[si],       \
+                                 1, pe);                                \
+            ti += tst;                                                  \
+            si += sst;                                                  \
         }                                                               \
     }
 
@@ -435,7 +448,10 @@ SHMEM_CTX_SIZED_IPUT(128)
                                 _type *dest, const _type *src,          \
                                 size_t nelems, int pe)                  \
     {                                                                   \
-        shmemc_ctx_put_nbi(ctx, dest, src, sizeof(_type) * nelems, pe); \
+        SHMEML_MUTEX_PROTECT(shmemc_ctx_put_nbi(ctx,                    \
+                                                dest, src,              \
+                                                sizeof(_type) * nelems, \
+                                                pe));                   \
     }
 
 
@@ -488,7 +504,10 @@ SHMEM_CTX_TYPED_PUT_NBI(complexd, COMPLEXIFY(double))
                                void *dest, const void *src,             \
                                size_t nelems, int pe)                   \
     {                                                                   \
-        shmemc_ctx_put_nbi(ctx, dest, src, _size * nelems, pe);         \
+        SHMEML_MUTEX_PROTECT(shmemc_ctx_put_nbi(ctx,                    \
+                                                dest, src,              \
+                                                _size * nelems,         \
+                                                pe));                   \
     }
 
 SHMEM_CTX_SIZED_PUT_NBI(8)
@@ -508,7 +527,10 @@ void
 shmem_ctx_putmem_nbi(shmem_ctx_t ctx,
                      void *dest, const void *src, size_t nelems, int pe)
 {
-    shmemc_ctx_put_nbi(ctx, dest, src, nelems, pe);
+    SHMEML_MUTEX_PROTECT(shmemc_ctx_put_nbi(ctx,
+                                            dest, src,
+                                            nelems,
+                                            pe));
 }
 
 
@@ -652,7 +674,7 @@ shmem_ctx_putmem_nbi(shmem_ctx_t ctx,
 #endif /* ENABLE_PSHMEM */
 
 /*
- * note use of shmem layer for iput() at the moment, not shmemc
+ * note use of shmem layer to allow the thread wrappers to propagate
  */
 
 #define API_DECL_PUTGET(_opname, _name, _type)                          \
@@ -660,18 +682,18 @@ shmem_ctx_putmem_nbi(shmem_ctx_t ctx,
     shmem_##_name##_##_opname(_type *dest, const _type *src,            \
                               size_t nelems, int pe)                    \
     {                                                                   \
-        shmemc_ctx_##_opname(SHMEM_CTX_DEFAULT,                         \
-                             dest, src,                                 \
-                             sizeof(_type) * nelems, pe);               \
+        shmem_ctx_##_name##_##_opname(SHMEM_CTX_DEFAULT,                \
+                                      dest, src,                        \
+                                      nelems, pe);                      \
     }                                                                   \
     void                                                                \
     shmem_##_name##_##_opname##_nbi(_type *dest,                        \
                                     const _type *src,                   \
                                     size_t nelems, int pe)              \
     {                                                                   \
-        shmemc_ctx_##_opname##_nbi(SHMEM_CTX_DEFAULT,                   \
-                                   dest, src,                           \
-                                   sizeof(_type) * nelems, pe);         \
+        shmem_ctx_##_name##_##_opname##_nbi(SHMEM_CTX_DEFAULT,          \
+                                            dest, src,                  \
+                                            nelems, pe);                \
     }                                                                   \
     void                                                                \
     shmem_##_name##_i##_opname(_type *dest,                             \
@@ -682,7 +704,7 @@ shmem_ctx_putmem_nbi(shmem_ctx_t ctx,
         shmem_ctx_##_name##_i##_opname(SHMEM_CTX_DEFAULT,               \
                                        dest, src,                       \
                                        tst, sst,                        \
-                                       sizeof(_type) * nelems, pe);     \
+                                       nelems, pe);                     \
     }
 
 API_DECL_PUTGET(put, float, float)
@@ -752,15 +774,15 @@ API_DECL_PUTGET(put, ptrdiff, ptrdiff_t)
     shmem_##_opname##_size(void *dest, const void *src,                 \
                            size_t nelems, int pe)                       \
     {                                                                   \
-        shmemc_ctx_##_opname(SHMEM_CTX_DEFAULT,                         \
-                             dest, src, _size * nelems, pe);            \
+        shmem_ctx_##_opname##_size(SHMEM_CTX_DEFAULT,                   \
+                                   dest, src, nelems, pe);              \
     }                                                                   \
     void                                                                \
     shmem_##_opname##_size##_nbi(void *dest, const void *src,           \
                                  size_t nelems, int pe)                 \
     {                                                                   \
-        shmemc_ctx_##_opname##_nbi(SHMEM_CTX_DEFAULT,                   \
-                                   dest, src, _size * nelems, pe);      \
+        shmem_ctx_##_opname##_size##_nbi(SHMEM_CTX_DEFAULT,             \
+                                         dest, src, nelems, pe);        \
     }                                                                   \
     void                                                                \
     shmem_i##_opname##_size(void *dest, const void *src,                \
@@ -769,7 +791,7 @@ API_DECL_PUTGET(put, ptrdiff, ptrdiff_t)
     {                                                                   \
         shmem_ctx_i##_opname##_size(SHMEM_CTX_DEFAULT,                  \
                                     dest, src, tst, sst,                \
-                                    _size * nelems, pe);                \
+                                    nelems, pe);                        \
     }                                                                   \
 
 API_DECL_PUTGET_SIZE(put, 8)
@@ -792,15 +814,15 @@ API_DECL_PUTGET_SIZE(put, 128)
     shmem_##_opname##mem(void *dest, const void *src,                   \
                          size_t nelems, int pe)                         \
     {                                                                   \
-        shmemc_ctx_##_opname(SHMEM_CTX_DEFAULT,                         \
-                             dest, src, nelems, pe);                    \
+        shmem_ctx_##_opname##mem(SHMEM_CTX_DEFAULT,                     \
+                                 dest, src, nelems, pe);                \
     }                                                                   \
     void                                                                \
     shmem_##_opname##mem_nbi(void *dest, const void *src,               \
                              size_t nelems, int pe)                     \
     {                                                                   \
-        shmemc_ctx_##_opname##_nbi(SHMEM_CTX_DEFAULT,                   \
-                                   dest, src, nelems, pe);              \
+        shmem_ctx_##_opname##mem_nbi(SHMEM_CTX_DEFAULT,                 \
+                                     dest, src, nelems, pe);            \
     }
 
 API_DECL_PUTGET_MEM(put)
@@ -858,12 +880,12 @@ API_DECL_PUTGET_MEM(put)
 #define shmem_ptrdiff_p pshmem_ptrdiff_p
 #endif /* ENABLE_PSHMEM */
 
-#define API_DECL_P(_name, _type)                                        \
-    void                                                                \
-    shmem_##_name##_p(_type *dest, _type src, int pe)                   \
-    {                                                                   \
-        shmemc_ctx_put(SHMEM_CTX_DEFAULT,                               \
-                       dest, &src, sizeof(src), pe);                    \
+#define API_DECL_P(_name, _type)                        \
+    void                                                \
+    shmem_##_name##_p(_type *dest, _type src, int pe)   \
+    {                                                   \
+        shmem_ctx_##_name##_put(SHMEM_CTX_DEFAULT,      \
+                                dest, &src, 1, pe);     \
     }
 
 API_DECL_P(float, float)
