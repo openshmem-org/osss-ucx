@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem_mutex.h"
+
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
@@ -18,17 +20,21 @@
 void
 shmem_set_lock(long *lock)
 {
-    shmemc_set_lock((long *) lock);
+    SHMEML_MUTEX_PROTECT(shmemc_set_lock(lock));
 }
 
 void
 shmem_clear_lock(long *lock)
 {
-    shmemc_clear_lock((long *) lock);
+    SHMEML_MUTEX_PROTECT(shmemc_clear_lock(lock));
 }
 
 int
 shmem_test_lock(long *lock)
 {
-    return shmemc_test_lock((long *) lock);
+    int s;
+
+    SHMEML_MUTEX_PROTECT(s = shmemc_test_lock(lock));
+
+    return s;
 }
