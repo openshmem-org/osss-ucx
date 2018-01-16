@@ -35,10 +35,18 @@ finalize_helper(void)
 {
     /* do nothing if multiple finalizes */
     if (proc.refcount > 0) {
+        const pthread_t this = pthread_self();
+
         logger(LOG_FINALIZE,
                "enter \"%s\", refcount = %d",
                __func__,
                proc.refcount);
+
+        if (this != proc.invoking_thread) {
+            logger(LOG_FINALIZE,
+                   "mis-match: thread %lu initialized, but %lu finalized",
+                   proc.invoking_thread, this);
+        }
 
         shmemu_finalize();
         shmemc_finalize();
