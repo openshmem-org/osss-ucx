@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem_mutex.h"
+
 #include "state.h"
 #include "shmemc.h"
 
@@ -34,10 +36,13 @@
                          int PE_start, int logPE_stride, int PE_size,   \
                          long *pSync)                                   \
     {                                                                   \
-        shmemc_collect##_bits(target, source,                           \
-                              nelems,                                   \
-                              PE_start, logPE_stride, PE_size,          \
-                              pSync);                                   \
+        SHMEML_MUTEX_PROTECT(shmemc_collect##_bits(target, source,      \
+                                                   nelems,              \
+                                                   PE_start,            \
+                                                   logPE_stride,        \
+                                                   PE_size,             \
+                                                   pSync)               \
+                             );                                         \
     }
 
 SHMEM_COLLECT(32, 4)
