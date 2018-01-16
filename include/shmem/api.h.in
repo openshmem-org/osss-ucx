@@ -514,7 +514,7 @@ extern "C"
 
 #undef API_DECL_CTX_PUTGET_MEM
 
-#define API_DECL_PUTGET_MEM(_opname)                                \
+#define API_DECL_PUTGET_MEM(_opname)                                    \
     void shmem_##_opname##mem(void *dest, const void *src,              \
                               size_t nelems, int pe);                   \
     void shmem_##_opname##mem_nbi(void *dest, const void *src,          \
@@ -590,7 +590,7 @@ extern "C"
 #define API_CTX_DECL_G(_name, _type)                        \
     /* see \ref shmem_ctx_long_g() */                       \
     _type shmem_ctx_##_name##_g(shmem_ctx_t ctx,            \
-                                const _type *dest, int pe);
+                                const _type *src, int pe);
 
     API_CTX_DECL_G(float, float)
     API_CTX_DECL_G(double, double)
@@ -620,7 +620,7 @@ extern "C"
 #undef API_CTX_DECL_G
 
 #define API_DECL_G(_name, _type)                            \
-    _type shmem_##_name##_g(_type *dest, int pe);
+    _type shmem_##_name##_g(const _type *src, int pe);
 
     API_DECL_G(float, float)
     API_DECL_G(double, double)

@@ -77,8 +77,7 @@ init_thread_helper(int requested, int *provided)
             break;
         case SHMEM_THREAD_SERIALIZED:
             break;
-        case SHMEM_THREAD_MULTIPLE: /* unsupported for now */
-            requested = SHMEM_THREAD_SERIALIZED;
+        case SHMEM_THREAD_MULTIPLE:
             break;
         default:
             logger(LOG_FATAL,

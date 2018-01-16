@@ -7,61 +7,63 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#ifdef ENABLE_THREADS
+
 #include "state.h"
 
 #include "shmem/defs.h"
 
 #include <pthread.h>
 
-#ifdef ENABLE_THREADS
+extern pthread_mutex_t comms_mutex;
 
 inline static void
-shmeml_mutex_init(pthread_mutex_t *mp)
+shmeml_mutex_init(void)
 {
-    if (proc.thread_level > SHMEM_THREAD_SINGLE) {
-        pthread_mutex_init(mp, NULL);
+    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+        pthread_mutex_init(&comms_mutex, NULL);
     }
 }
 
 inline static void
-shmeml_mutex_destroy(pthread_mutex_t *mp)
+shmeml_mutex_destroy(void)
 {
-    if (proc.thread_level > SHMEM_THREAD_SINGLE) {
-        pthread_mutex_destroy(mp);
+    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+        pthread_mutex_destroy(&comms_mutex);
     }
 }
 
 inline static void
-shmeml_mutex_lock(pthread_mutex_t *mp)
+shmeml_mutex_lock(void)
 {
-    if (proc.thread_level > SHMEM_THREAD_SINGLE) {
-        pthread_mutex_lock(mp);
+    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+        pthread_mutex_lock(&comms_mutex);
     }
 }
 
 inline static void
-shmeml_mutex_unlock(pthread_mutex_t *mp)
+shmeml_mutex_unlock(void)
 {
-    if (proc.thread_level > SHMEM_THREAD_SINGLE) {
-        pthread_mutex_unlock(mp);
+    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+        pthread_mutex_unlock(&comms_mutex);
     }
 }
 
-#define SHMEML_MUTEX_PROTECT(_fn, _mp)            \
+#define SHMEML_MUTEX_PROTECT(_fn)                 \
     do {                                          \
-        shmeml_mutex_lock(_mp);                   \
+        shmeml_mutex_lock();                      \
         _fn;                                      \
-        shmeml_mutex_unlock(_mp);                 \
+        shmeml_mutex_unlock();                    \
     } while (0)
 
 #else
 
-#define shmeml_mutex_init(_mp)
-#define shmeml_mutex_destroy(_mp)
-#define shmeml_mutex_lock(_mp)
-#define shmeml_mutex_unlock(_mp)
+#define shmeml_mutex_init()
+#define shmeml_mutex_destroy()
+#define shmeml_mutex_lock()
+#define shmeml_mutex_unlock()
 
-#define SHMEML_MUTEX_PROTECT(_fn, _mp) _fn
+#define SHMEML_MUTEX_PROTECT(_fn) _fn
 
 #endif  /* ENABLE_THREADS */
 

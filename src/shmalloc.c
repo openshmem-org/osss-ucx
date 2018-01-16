@@ -17,10 +17,6 @@
 
 int malloc_error = SHMEM_MALLOC_OK;
 
-#ifdef ENABLE_THREADS
-static pthread_mutex_t m_alloc = PTHREAD_MUTEX_INITIALIZER;
-#endif /* ENABLE_THREADS */
-
 /*
  * -- API --------------------------------------------------------------------
  */
@@ -43,7 +39,7 @@ shmem_malloc(size_t s)
 {
     void *addr;
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_malloc(s), &m_alloc);
+    SHMEML_MUTEX_PROTECT(addr = shmema_malloc(s));
 
     shmemc_barrier_all();
 
@@ -55,7 +51,7 @@ shmem_calloc(size_t n, size_t s)
 {
     void *addr;
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_calloc(n, s), &m_alloc);
+    SHMEML_MUTEX_PROTECT(addr = shmema_calloc(n, s));
 
     shmemc_barrier_all();
 
@@ -67,7 +63,7 @@ shmem_free(void *p)
 {
     shmemc_barrier_all();
 
-    SHMEML_MUTEX_PROTECT(shmema_free(p), &m_alloc);
+    SHMEML_MUTEX_PROTECT(shmema_free(p));
 }
 
 /*
@@ -82,7 +78,7 @@ shmem_realloc(void *p, size_t s)
 
     shmemc_barrier_all();
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_realloc(p, s), &m_alloc);
+    SHMEML_MUTEX_PROTECT(addr = shmema_realloc(p, s));
 
     shmemc_barrier_all();
 
@@ -94,7 +90,7 @@ shmem_align(size_t a, size_t s)
 {
     void *addr;
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_align(a, s), &m_alloc);
+    SHMEML_MUTEX_PROTECT(addr = shmema_align(a, s));
 
     shmemc_barrier_all();
 
