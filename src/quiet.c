@@ -6,6 +6,8 @@
 
 #include "shmemc.h"
 
+#include "shmem_mutex.h"
+
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_quiet = pshmem_ctx_quiet
 #define shmem_ctx_quiet pshmem_ctx_quiet
@@ -17,13 +19,13 @@
 void
 shmem_ctx_quiet(shmem_ctx_t ctx)
 {
-    shmemc_ctx_quiet(ctx);
+    SHMEML_MUTEX_PROTECT(shmemc_ctx_quiet(ctx));
 }
 
 void
 shmem_ctx_fence(shmem_ctx_t ctx)
 {
-    shmemc_ctx_fence(ctx);
+    SHMEML_MUTEX_PROTECT(shmemc_ctx_fence(ctx));
 }
 
 #ifdef ENABLE_PSHMEM
@@ -35,13 +37,13 @@ shmem_ctx_fence(shmem_ctx_t ctx)
 #endif /* ENABLE_PSHMEM */
 
 void
-shmem_fence(void)
+shmem_quiet(void)
 {
-    shmemc_ctx_fence(SHMEM_CTX_DEFAULT);
+    SHMEML_MUTEX_PROTECT(shmemc_ctx_quiet(SHMEM_CTX_DEFAULT));
 }
 
 void
-shmem_quiet(void)
+shmem_fence(void)
 {
-    shmemc_ctx_quiet(SHMEM_CTX_DEFAULT);
+    SHMEML_MUTEX_PROTECT(shmemc_ctx_fence(SHMEM_CTX_DEFAULT));
 }
