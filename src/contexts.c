@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem_mutex.h"
+
 #include "thispe.h"
 #include "shmemc.h"
 #include "shmem/defs.h"
@@ -27,7 +29,12 @@ shmem_ctx_t SHMEM_CTX_DEFAULT = NULL;
 int
 shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 {
-    return shmemc_context_create(options, (shmemc_context_h *) ctxp);
+    int s;
+
+    SHMEML_MUTEX_PROTECT(s = shmemc_context_create(options,
+                                                   (shmemc_context_h *) ctxp));
+
+    return s;
 }
 
 /*
@@ -37,7 +44,7 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 void
 shmem_ctx_destroy(shmem_ctx_t ctx)
 {
-    shmemc_context_destroy((shmemc_context_h) ctx);
+    SHMEML_MUTEX_PROTECT(shmemc_context_destroy((shmemc_context_h) ctx));
 }
 
 #ifdef ENABLE_EXPERIMENTAL
