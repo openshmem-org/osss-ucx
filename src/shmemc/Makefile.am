@@ -12,7 +12,7 @@ LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				fcollect.c \
 				globalexit.c \
-				mcs-lock.c \
+				locks.c \
 				pmix-client.c \
 				readenv.c \
 				shmemc-init.c \
