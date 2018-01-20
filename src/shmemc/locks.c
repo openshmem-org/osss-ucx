@@ -1,10 +1,10 @@
 /* For license: see LICENSE file at top-level */
 
 /*
- * ------------------------------------------------------------------
+ * Rewrite of an original MCS lock code by
  *
- * Low-level lock routines
- *
+ *    Copyright (c) 1996-2002 by Quadrics Supercomputers World Ltd.
+ *    Copyright (c) 2003-2005 by Quadrics Ltd.
  */
 
 #include "shmemc.h"
@@ -13,7 +13,11 @@
 #include "memfence.h"
 
 #include <sys/types.h>
-#include <string.h>
+
+/*
+ * this overlays an opaque blob we can move around with AMOs, and the
+ * signalling/PE parts
+ */
 
 typedef union shmem_lock {
     struct data_split {
@@ -23,13 +27,18 @@ typedef union shmem_lock {
     int32_t blob;
 } shmem_lock_t;
 
-#define SHMEM_LOCK_FREE -1
-#define SHMEM_LOCK_RESET 0
+enum shmem_lock_state {
+    SHMEM_LOCK_FREE = -1,
+    SHMEM_LOCK_RESET
+};
 
+/*
+ * spread lock ownership around PEs
+ */
 inline static int
 lock_owner(void *addr)
 {
-    uintptr_t la = (uintptr_t) addr;
+    const uintptr_t la = (uintptr_t) addr;
 
     return (la >> 3) % proc.nranks;
 }
@@ -54,11 +63,12 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
     if (t.d.locked) {
         int16_t me = proc.rank;
 
-        node->d.locked =1;
+        node->d.locked = 1;
         LOAD_STORE_FENCE();
 
         shmemc_put(&(node->d.next), &(me), sizeof(me), t.d.next);
 
+        /* sit here until unlocked */
         shmemc_wait_eq_until16(&(node->d.locked), 0);
     }
 }
@@ -92,6 +102,7 @@ inline static int
 test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
     shmem_lock_t t;
+    int ret;
 
     shmemc_get(&(t.blob), &(lock->blob), sizeof(t.blob), lock_owner(lock));
 
@@ -101,13 +112,19 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 
     if (t.blob == SHMEM_LOCK_RESET) {
         set_lock(node, lock);
-        return 0;
+        ret = 0;
+        /* NOT REACHED */
+    }
+    else {
+        ret = 1;
     }
 
-    return 1;
+    return ret;
 }
 
-
+/**
+ * API
+ */
 
 void
 shmemc_set_lock(long *lock)
