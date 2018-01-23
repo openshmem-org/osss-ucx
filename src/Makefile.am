@@ -26,13 +26,12 @@ MY_SOURCES             = \
                                 collect.c \
 				contexts.c \
                                 fcollect.c \
-                                get.c \
                                 globalexit.c \
                                 info.c \
                                 init.c \
                                 lock.c \
                                 ptr.c \
-                                put.c \
+                                putget.c \
                                 quiet.c \
 				ranks.c  \
                                 reductions.c \
