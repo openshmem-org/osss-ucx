@@ -46,7 +46,7 @@ return proc.comms.ctxts[ch->id].eps[_pe];
 /*
  * Return non-zero if PE is a valid rank, 0 otherwise
  */
-#define IS_VALID_PE_NUMBER(_pe) ((proc.nranks > _pe) && (_pe >= 0))
+#define IS_VALID_PE_NUMBER(_pe) ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
 
 /*
  * -- helpers ----------------------------------------------------------------
