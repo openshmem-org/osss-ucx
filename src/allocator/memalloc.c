@@ -40,8 +40,6 @@ shmema_base(void)
  * allocate SIZE bytes from the pool
  */
 
-#define MIN_MALLOC_SIZE 64
-
 void *
 shmema_malloc(size_t size)
 {
