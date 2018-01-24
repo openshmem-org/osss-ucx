@@ -106,7 +106,7 @@ enum shmem_cmp_constants {
 /*
  * init sync variables
  */
-#define SHMEM_SYNC_VALUE                (-1L)
+#define SHMEM_SYNC_VALUE                0L
 
 /*
  * thread support levels

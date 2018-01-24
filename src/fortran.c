@@ -19,7 +19,6 @@
 #include "shmem/api.h"
 #undef _SHMEM_IN_SOURCE_TREE_
 
-#include "shmem/defs.h"
 #include "shmemc.h"
 #include "shmemu.h"
 #include "allocator/memalloc.h"
