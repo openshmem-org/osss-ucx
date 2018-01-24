@@ -56,9 +56,7 @@ noinst_LIBRARIES       = liballocator.a
 noinst_LTLIBRARIES     = liballocator.la
 
 if ENABLE_FORTRAN
-MY_SOURCES            += fortran/fortran.c
-MY_SOURCES            += fortran/fortran-mem.c
-MY_SOURCES            += fortran/fortran-cache.c
+MY_SOURCES            += fortran.c
 endif # fortran
 
 if ENABLE_EXPERIMENTAL
