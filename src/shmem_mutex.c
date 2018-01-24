@@ -10,4 +10,8 @@
 
 pthread_mutex_t comms_mutex = PTHREAD_MUTEX_INITIALIZER;
 
+#else
+
+static const int not_empty; /* ISO C forbids empty translation units */
+
 #endif  /* ENABLE_THREADS */
