@@ -201,15 +201,15 @@ shmemc_ctx_put(shmem_ctx_t ctx,
                void *dest, const void *src,
                size_t nbytes, int pe)
 {
-    uint64_t r_dest;            /* address on other PE */
+    uint64_t rdest;             /* address on other PE */
     ucp_rkey_h rkey;            /* rkey for remote address */
     ucp_ep_h ep;
     ucs_status_t s;
 
-    GET_REMOTE_KEY_AND_ADDR((uint64_t) dest, pe, &rkey, &r_dest);
+    GET_REMOTE_KEY_AND_ADDR((uint64_t) dest, pe, &rkey, &rdest);
     ep = LOOKUP_UCP_EP(ctx, pe);
 
-    s = ucp_put(ep, src, nbytes, r_dest, rkey);
+    s = ucp_put(ep, src, nbytes, rdest, rkey);
     assert(s == UCS_OK);
 }
 
@@ -244,15 +244,15 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
                    void *dest, const void *src,
                    size_t nbytes, int pe)
 {
-    uint64_t r_dest;
+    uint64_t rdest;
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
 
-    GET_REMOTE_KEY_AND_ADDR((uint64_t) dest, pe, &rkey, &r_dest);
+    GET_REMOTE_KEY_AND_ADDR((uint64_t) dest, pe, &rkey, &rdest);
     ep = LOOKUP_UCP_EP(ctx, pe);
 
-    s = ucp_put_nbi(ep, src, nbytes, r_dest, rkey);
+    s = ucp_put_nbi(ep, src, nbytes, rdest, rkey);
     assert(s == UCS_OK || s == UCS_INPROGRESS);
 }
 

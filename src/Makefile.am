@@ -47,6 +47,7 @@ liballocator_a_SOURCES = allocator/dlmalloc.c allocator/memalloc.c
 liballocator_a_CFLAGS  = \
 			-DONLY_MSPACES=1 \
 			-DHAVE_MORECORE=0 \
+			-DHAVE_MMAP=0 \
 			-DUSE_LOCKS=1 \
 			-DREALLOC_ZERO_BYTES_FREES=1
 liballocator_la_SOURCES = $(liballocator_a_SOURCES)
