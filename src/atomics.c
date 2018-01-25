@@ -1193,7 +1193,7 @@ API_DEF_VOID_AMO2(and, uint32, uint32_t)
 API_DEF_VOID_AMO2(and, uint64, uint64_t)
 
 /*
- *-----------------------------------------------------------------------
+ * ---------------------------------------------------------------------
  *
  * Deprecations as of 1.4.  3 different macros for different parameter
  * counts.  Provide variants for return types.  This needs to match
