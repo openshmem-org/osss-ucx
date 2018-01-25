@@ -16,18 +16,27 @@
  * internal helpers
  */
 
+/*
+ * return non-zero if option enabled, 0 if not
+ */
+
 inline static int
 option_enabled_test(char *str)
 {
-    int ret = 0;
-
-    if ((strncasecmp(str, "y", 1) == 0) ||
-        (strncasecmp(str, "on", 2) == 0) ||
-        (atoi(str) > 0)) {
-        ret = 1;
+    if (strncasecmp(str, "y", 1) == 0) {
+        return 1;
+        /* NOT REACHED */
+    }
+    if (strncasecmp(str, "on", 2) == 0) {
+        return 1;
+        /* NOT REACHED */
+    }
+    if (atoi(str) > 0) {
+        return 1;
+        /* NOT REACHED */
     }
 
-    return ret;
+    return 0;
 }
 
 inline static char *
