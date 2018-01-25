@@ -117,8 +117,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "Variable",
             val_width, "Value",
             "Description");
-    fprintf(stream, "%s%s\n\n",
-            "------------------------------------------------------------------------",
+    fprintf(stream, "%s------------------------------------------------------------------------\n",
             prefix);
     fprintf(stream, "%s\n",
             prefix);
