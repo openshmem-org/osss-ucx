@@ -36,9 +36,12 @@ MY_SOURCES             = \
 				ranks.c  \
                                 reductions.c \
                                 shmalloc.c \
-				shmem_mutex.c \
                                 version.c \
                                 waituntil.c
+
+if ENABLE_THREADS
+MY_SOURCES            += shmem_mutex.c
+endif # threads
 
 #
 # separate out the memory allocation routines

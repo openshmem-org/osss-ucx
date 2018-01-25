@@ -11,7 +11,7 @@
                               _type *dest, const _type *src,            \
                               size_t nelems, int pe)                    \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,                      \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,                      \
                                               dest, src,                \
                                               sizeof(_type) * nelems,   \
                                               pe));                     \
@@ -19,11 +19,11 @@
 
 #define SHMEM_CTX_SIZED_PUTGET(_op, _size)                              \
     void                                                                \
-    shmem_ctx_##_op####_size(shmem_ctx_t ctx,                           \
+    shmem_ctx_##_op##_size(shmem_ctx_t ctx,                             \
                              void *dest, const void *src,               \
                              size_t nelems, int pe)                     \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,                      \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,                      \
                                               dest, src,                \
                                               _size * nelems,           \
                                               pe));                     \
@@ -37,7 +37,7 @@
                          size_t nelems,                     \
                          int pe)                            \
     {                                                       \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,          \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,          \
                                               dest,         \
                                               src,          \
                                               nelems,       \
@@ -92,7 +92,7 @@
     {                                                                   \
         const size_t nb = sizeof(_type) * nelems;                       \
                                                                         \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,                \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,                \
                                                     dest, src,          \
                                                     nb,                 \
                                                     pe));               \
@@ -100,13 +100,13 @@
 
 #define SHMEM_CTX_SIZED_PUTGET_NBI(_op, _size)                          \
     void                                                                \
-    shmem_ctx_##_op####_size##_nbi(shmem_ctx_t ctx,                     \
+    shmem_ctx_##_op##_size##_nbi(shmem_ctx_t ctx,                       \
                                    void *dest, const void *src,         \
                                    size_t nelems, int pe)               \
     {                                                                   \
         const size_t nb = (_size) * nelems;                             \
                                                                         \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,                \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,                \
                                                     dest, src,          \
                                                     nb,                 \
                                                     pe));               \
@@ -120,7 +120,7 @@
                              size_t nelems,                 \
                              int pe)                        \
     {                                                       \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,    \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,    \
                                                     dest,   \
                                                     src,    \
                                                     nelems, \
@@ -132,7 +132,7 @@
     shmem_ctx_##_name##_p(shmem_ctx_t ctx,                              \
                           _type *addr, _type val, int pe)               \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_put(ctx,                        \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put(ctx,                        \
                                             addr, &val,                 \
                                             sizeof(val),                \
                                             pe));                       \
@@ -145,7 +145,7 @@
     {                                                                   \
         _type val;                                                      \
                                                                         \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_get(ctx,                        \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get(ctx,                        \
                                             &val, addr,                 \
                                             sizeof(val),                \
                                             pe));                       \

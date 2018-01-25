@@ -19,13 +19,13 @@
 void
 shmem_barrier(int start, int log2stride, int size, long *pSync)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_barrier(start, log2stride, size, pSync));
+    SHMEMT_MUTEX_PROTECT(shmemc_barrier(start, log2stride, size, pSync));
 }
 
 void
 shmem_barrier_all(void)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_barrier_all());
+    SHMEMT_MUTEX_PROTECT(shmemc_barrier_all());
 }
 
 
@@ -40,11 +40,11 @@ shmem_barrier_all(void)
 void
 shmem_sync(int start, int log2stride, int size, long *pSync)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_sync(start, log2stride, size, pSync));
+    SHMEMT_MUTEX_PROTECT(shmemc_sync(start, log2stride, size, pSync));
 }
 
 void
 shmem_sync_all(void)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_sync_all());
+    SHMEMT_MUTEX_PROTECT(shmemc_sync_all());
 }

@@ -31,7 +31,7 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 {
     int s;
 
-    SHMEML_MUTEX_PROTECT(s = shmemc_context_create(options,
+    SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(options,
                                                    (shmemc_context_h *) ctxp));
 
     return s;
@@ -44,7 +44,7 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 void
 shmem_ctx_destroy(shmem_ctx_t ctx)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_context_destroy((shmemc_context_h) ctx));
+    SHMEMT_MUTEX_PROTECT(shmemc_context_destroy((shmemc_context_h) ctx));
 }
 
 #ifdef ENABLE_EXPERIMENTAL

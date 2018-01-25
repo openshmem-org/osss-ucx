@@ -57,7 +57,7 @@
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEML_MUTEX_PROTECT(v = shmemc_ctx_swap##_size(ctx,            \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_swap##_size(ctx,            \
                                                         target, value,  \
                                                         pe));           \
         return v;                                                       \
@@ -122,7 +122,7 @@ SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEML_MUTEX_PROTECT(v = shmemc_ctx_cswap##_size(ctx,           \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_cswap##_size(ctx,           \
                                                          target, cond,  \
                                                          value, pe));   \
         return v;                                                       \
@@ -186,7 +186,7 @@ SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEML_MUTEX_PROTECT(v = shmemc_ctx_fadd##_size(ctx, target, value, pe)); \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_fadd##_size(ctx, target, value, pe)); \
         return v;                                                       \
     }
 
@@ -245,7 +245,7 @@ SHMEM_CTX_TYPE_FADD(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEML_MUTEX_PROTECT(v = shmemc_ctx_finc##_size(ctx, target, pe)); \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_finc##_size(ctx, target, pe)); \
         return v;                                                       \
     }
 
@@ -304,7 +304,7 @@ SHMEM_CTX_TYPE_FINC(ptrdiff, ptrdiff_t, 64)
     shmem_ctx_##_name##_atomic_add(shmem_ctx_t ctx,                     \
                                    _type *target, _type value, int pe)  \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_add##_size(ctx, target, value, pe)); \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_add##_size(ctx, target, value, pe)); \
     }
 
 SHMEM_CTX_TYPE_ADD(int, int, 32)
@@ -362,7 +362,7 @@ SHMEM_CTX_TYPE_ADD(ptrdiff, ptrdiff_t, 64)
     shmem_ctx_##_name##_atomic_inc(shmem_ctx_t ctx,                     \
                                    _type *target, int pe)               \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_inc##_size(ctx, target, pe));   \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_inc##_size(ctx, target, pe));   \
     }
 
 SHMEM_CTX_TYPE_INC(int, int, 32)
@@ -422,7 +422,7 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEML_MUTEX_PROTECT(v = shmemc_ctx_fetch##_size(ctx, target, pe)); \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_fetch##_size(ctx, target, pe)); \
         return v;                                                       \
     }
 
@@ -481,7 +481,7 @@ SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t, 64)
     shmem_ctx_##_name##_atomic_set(shmem_ctx_t ctx,                     \
                                    _type *target, _type value, int pe)  \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_set##_size(ctx, target, value, pe)); \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_set##_size(ctx, target, value, pe)); \
     }
 
 SHMEM_CTX_TYPE_SET(float, float, 32)
@@ -560,7 +560,7 @@ SHMEM_CTX_TYPE_SET(ptrdiff, ptrdiff_t, 64)
                                          _type *target,                 \
                                          _type value, int pe)           \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_ctx_##_opname##_size(ctx, target, value, pe)); \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_opname##_size(ctx, target, value, pe)); \
     }
 
 SHMEM_CTX_TYPE_BITWISE(xor, uint, unsigned int, 32)
@@ -647,7 +647,7 @@ SHMEM_CTX_TYPE_BITWISE(and, uint64, uint64_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEML_MUTEX_PROTECT(v = shmemc_ctx_fetch_##_opname##_size(ctx, \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_fetch_##_opname##_size(ctx, \
                                                                    target, \
                                                                    value, \
                                                                    pe)); \
