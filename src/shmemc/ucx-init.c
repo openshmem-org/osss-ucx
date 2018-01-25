@@ -191,6 +191,7 @@ reg_symmetric_heap(void)
     def_symm_heap->len  = attr.length;
 
     /* initialize the heap allocator */
+    /* TODO: up 1 level */
     shmema_init((void *) def_symm_heap->base, def_symm_heap->len);
 }
 
@@ -199,6 +200,7 @@ dereg_symmetric_heap(void)
 {
     ucs_status_t s;
 
+    /* TODO: up 1 level */
     shmema_finalize();
 
     s = ucp_mem_unmap(proc.comms.ctxt, def_symm_heap->racc.mh);
