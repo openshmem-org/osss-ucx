@@ -19,13 +19,13 @@
 void
 shmem_ctx_quiet(shmem_ctx_t ctx)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_ctx_quiet(ctx));
+    SHMEMT_MUTEX_PROTECT(shmemc_ctx_quiet(ctx));
 }
 
 void
 shmem_ctx_fence(shmem_ctx_t ctx)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_ctx_fence(ctx));
+    SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(ctx));
 }
 
 #ifdef ENABLE_PSHMEM
@@ -39,11 +39,11 @@ shmem_ctx_fence(shmem_ctx_t ctx)
 void
 shmem_quiet(void)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_ctx_quiet(SHMEM_CTX_DEFAULT));
+    SHMEMT_MUTEX_PROTECT(shmemc_ctx_quiet(SHMEM_CTX_DEFAULT));
 }
 
 void
 shmem_fence(void)
 {
-    SHMEML_MUTEX_PROTECT(shmemc_ctx_fence(SHMEM_CTX_DEFAULT));
+    SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(SHMEM_CTX_DEFAULT));
 }

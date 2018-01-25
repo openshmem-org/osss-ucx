@@ -50,7 +50,7 @@
                                  int cmp,                               \
                                  _type cmp_value)                       \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(                                           \
+        SHMEMT_MUTEX_PROTECT(                                           \
                              switch (cmp) {                             \
                              case SHMEM_CMP_EQ:                         \
                                  shmemc_wait_eq_until##_size((int##_size##_t *) ivar, \
@@ -139,7 +139,7 @@ SHMEM_TYPE_WAIT_UNTIL(ptrdiff, ptrdiff_t, 64)
     void                                                                \
     shmem_##_opname##_test(_type *ivar, int cmp, _type cmp_value)       \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(                                           \
+        SHMEMT_MUTEX_PROTECT(                                           \
                              switch (cmp) {                             \
                              case SHMEM_CMP_EQ:                         \
                                  shmemc_test_eq##_size((int##_size##_t *) ivar, \

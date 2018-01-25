@@ -43,9 +43,14 @@ parse_unit(char u, size_t *sp)
         usp += 1;
     }
 
-    *sp = foundit ? bytes : 0;
-
-    return foundit ? 0 : -1;
+    if (foundit) {
+        *sp = bytes;
+        return 0;
+    }
+    else {
+        *sp = 0;
+        return -1;
+    }
 }
 
 /**
@@ -70,7 +75,7 @@ shmemu_parse_size(char *size_str, size_t *bytes_p)
     *bytes_p = (size_t) ret;
 
     if (*units != '\0') {
-        /* something that looks like a unit left over */
+        /* something that could be a unit */
         size_t b;
 
         /* but we don't know what that unit is */
@@ -84,4 +89,35 @@ shmemu_parse_size(char *size_str, size_t *bytes_p)
     }
 
     return 0;
+}
+
+int
+shmemu_human_number(double bytes, char *buf, size_t buflen)
+{
+    char *walk = units_string;
+    size_t divvy = multiplier;
+    double b = bytes;
+
+    while (*walk) {
+        const size_t d = (size_t) bytes / divvy;
+
+        /* find when we've gone too far */
+        if (d == 0) {
+            --walk;
+            break;
+        }
+        ++walk;
+        divvy *= multiplier;
+        b /= multiplier;
+    }
+
+    snprintf(buf, buflen, "%.1f%c", b, toupper(*walk));
+
+    return 0;
+}
+
+char *
+shmemu_human_option(int v)
+{
+    return (v == 0) ? "no" : "yes";
 }

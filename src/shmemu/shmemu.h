@@ -38,6 +38,8 @@ double shmemu_timer(void);
 
 char *shmemu_gethostname(void);
 int shmemu_parse_size(char *size_str, size_t *bytes_p);
+int shmemu_human_number(double bytes, char *buf, size_t buflen);
+char *shmemu_human_option(int v);
 void *shmemu_round_down_address_to_pagesize(void *addr);
 
 /*

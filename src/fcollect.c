@@ -31,7 +31,7 @@
                           int PE_size,                                  \
                           long *pSync)                                  \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_fcollect##_bits(target, source,     \
+        SHMEMT_MUTEX_PROTECT(shmemc_fcollect##_bits(target, source,     \
                                                     nelems,             \
                                                     PE_start,           \
                                                     logPE_stride,       \

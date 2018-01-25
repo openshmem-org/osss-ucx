@@ -16,24 +16,27 @@
  * internal helpers
  */
 
+/*
+ * return non-zero if option enabled, 0 if not
+ */
+
 inline static int
 option_enabled_test(char *str)
 {
-    int ret = 0;
-
-    if ((strncasecmp(str, "y", 1) == 0) ||
-        (strncasecmp(str, "on", 2) == 0) ||
-        (atoi(str) > 0)) {
-        ret = 1;
+    if (strncasecmp(str, "y", 1) == 0) {
+        return 1;
+        /* NOT REACHED */
+    }
+    if (strncasecmp(str, "on", 2) == 0) {
+        return 1;
+        /* NOT REACHED */
+    }
+    if (atoi(str) > 0) {
+        return 1;
+        /* NOT REACHED */
     }
 
-    return ret;
-}
-
-inline static char *
-humanize(int v)
-{
-    return (v == 0) ? "no" : "yes";
+    return 0;
 }
 
 /*
@@ -103,7 +106,7 @@ read_environment(void)
 #undef CHECK_ENV
 
 static const int var_width = 22;
-static const int val_width = 12;
+static const int val_width = 10;
 
 void
 shmemc_print_env_vars(FILE *stream, const char *prefix)
@@ -117,8 +120,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "Variable",
             val_width, "Value",
             "Description");
-    fprintf(stream, "%s%s\n\n",
-            "------------------------------------------------------------------------",
+    fprintf(stream, "%s------------------------------------------------------------------------\n",
             prefix);
     fprintf(stream, "%s\n",
             prefix);
@@ -130,22 +132,27 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_VERSION",
-            val_width, humanize(proc.env.print_version),
+            val_width, shmemu_human_option(proc.env.print_version),
             "print library version at start-up");
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_INFO",
-            val_width, humanize(proc.env.print_info),
+            val_width, shmemu_human_option(proc.env.print_info),
             "print this information");
-    fprintf(stream, "%s%-*s %-*zu %s\n",
-            prefix,
-            var_width, "SHMEM_SYMMETRIC_SIZE",
-            val_width, proc.env.def_heap_size,
-            "set the size of the symmetric heap");
+    {
+        char buf[64];
+
+        (void) shmemu_human_number(proc.env.def_heap_size, buf, 64);
+        fprintf(stream, "%s%-*s %-*s %s\n",
+                prefix,
+                var_width, "SHMEM_SYMMETRIC_SIZE",
+                val_width, buf,
+                "set the size of the symmetric heap");
+    }
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_DEBUG",
-            val_width, humanize(proc.env.debug),
+            val_width, shmemu_human_option(proc.env.debug),
             "enable run debugging (if configured)");
 
     fprintf(stream, "%s\n",

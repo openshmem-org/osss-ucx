@@ -39,7 +39,7 @@ shmem_malloc(size_t s)
 {
     void *addr;
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_malloc(s));
+    SHMEMT_MUTEX_PROTECT(addr = shmema_malloc(s));
 
     shmemc_barrier_all();
 
@@ -51,7 +51,7 @@ shmem_calloc(size_t n, size_t s)
 {
     void *addr;
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_calloc(n, s));
+    SHMEMT_MUTEX_PROTECT(addr = shmema_calloc(n, s));
 
     shmemc_barrier_all();
 
@@ -63,7 +63,7 @@ shmem_free(void *p)
 {
     shmemc_barrier_all();
 
-    SHMEML_MUTEX_PROTECT(shmema_free(p));
+    SHMEMT_MUTEX_PROTECT(shmema_free(p));
 }
 
 /*
@@ -78,7 +78,7 @@ shmem_realloc(void *p, size_t s)
 
     shmemc_barrier_all();
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_realloc(p, s));
+    SHMEMT_MUTEX_PROTECT(addr = shmema_realloc(p, s));
 
     shmemc_barrier_all();
 
@@ -90,7 +90,7 @@ shmem_align(size_t a, size_t s)
 {
     void *addr;
 
-    SHMEML_MUTEX_PROTECT(addr = shmema_align(a, s));
+    SHMEMT_MUTEX_PROTECT(addr = shmema_align(a, s));
 
     shmemc_barrier_all();
 

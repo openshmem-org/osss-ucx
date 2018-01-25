@@ -30,7 +30,7 @@
                            int logPE_stride, int PE_size,               \
                            long *pSync)                                 \
     {                                                                   \
-        SHMEML_MUTEX_PROTECT(shmemc_broadcast##_name(target, source,    \
+        SHMEMT_MUTEX_PROTECT(shmemc_broadcast##_name(target, source,    \
                                                      nelems,            \
                                                      PE_root, PE_start, \
                                                      logPE_stride,      \
