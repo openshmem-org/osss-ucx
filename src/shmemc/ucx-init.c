@@ -22,20 +22,20 @@
 
 #define DUMP_DEBUG_INFO 0
 
-#define KB 1024L
-#define MB (KB * KB)
-#define GB (KB * MB)
-
 /*
  * debugging output stream
  */
 static FILE *say;
 
+/*
+ * UCX config
+ */
 inline static void
 make_init_params(ucp_params_t *pmp)
 {
     pmp->field_mask =
         UCP_PARAM_FIELD_FEATURES |
+        UCP_PARAM_FIELD_MT_WORKERS_SHARED |
         UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
 
     pmp->features =
@@ -43,7 +43,7 @@ make_init_params(ucp_params_t *pmp)
         UCP_FEATURE_WAKEUP |    /* for events */
         UCP_FEATURE_AMO32 |
         UCP_FEATURE_AMO64;
-
+    pmp->mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
     pmp->estimated_num_eps = proc.nranks;
 }
 
