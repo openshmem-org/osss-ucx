@@ -113,6 +113,7 @@ shmemu_human_number(double bytes, char *buf, size_t buflen)
         if (d == 0) {
             walk -= 1;
             break;
+            /* NOT REACHED */
         }
         walk += 1;
         divvy *= multiplier;
