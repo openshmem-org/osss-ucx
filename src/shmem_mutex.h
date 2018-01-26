@@ -20,7 +20,7 @@ extern pthread_mutex_t comms_mutex;
 inline static void
 shmemt_mutex_init(void)
 {
-    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+    if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
         pthread_mutex_init(&comms_mutex, NULL);
     }
 }
@@ -28,7 +28,7 @@ shmemt_mutex_init(void)
 inline static void
 shmemt_mutex_destroy(void)
 {
-    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+    if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
         pthread_mutex_destroy(&comms_mutex);
     }
 }
@@ -36,7 +36,7 @@ shmemt_mutex_destroy(void)
 inline static void
 shmemt_mutex_lock(void)
 {
-    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+    if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
         pthread_mutex_lock(&comms_mutex);
     }
 }
@@ -44,7 +44,7 @@ shmemt_mutex_lock(void)
 inline static void
 shmemt_mutex_unlock(void)
 {
-    if (proc.thread_level == SHMEM_THREAD_MULTIPLE) {
+    if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
         pthread_mutex_unlock(&comms_mutex);
     }
 }
