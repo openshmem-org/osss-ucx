@@ -10,7 +10,7 @@
  * the PE's initial state
  */
 thispe_info_t proc = {
-    .status = SHMEM_PE_UNKNOWN,
+    .status = SHMEMC_PE_UNKNOWN,
     .rank = -1,
-    .refcount = 0,
+    .refcount = 0
 };
