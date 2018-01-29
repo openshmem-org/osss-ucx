@@ -52,7 +52,7 @@ typedef struct mem_region {
  * OpenSHMEM context requires...
  */
 typedef struct shmemc_context {
-    ucp_worker_h wrkr;          /* for separate context progress */
+    ucp_worker_h w;             /* for separate context progress */
 
     unsigned long id;           /* internal tracking */
 
@@ -72,9 +72,8 @@ typedef struct shmemc_context {
  * this comms-layer needs to know...
  */
 typedef struct comms_info {
-    ucp_context_h ctxt;         /* local communication context */
-    ucp_config_t *cfg;          /* local config */
-    ucp_worker_h wrkr;          /* local worker */
+    ucp_context_h ucx_ctxt;     /* local communication context */
+    ucp_config_t *ucx_cfg;      /* local config */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
 
     worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */

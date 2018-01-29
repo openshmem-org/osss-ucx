@@ -12,5 +12,5 @@
 thispe_info_t proc = {
     .status = SHMEMC_PE_UNKNOWN,
     .rank = -1,
-    .refcount = 0
+    .refcount = 0,
 };

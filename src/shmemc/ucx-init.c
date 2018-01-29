@@ -51,7 +51,7 @@ make_init_params(ucp_params_t *pmp)
  * worker tables
  */
 inline static void
-allocate_workers(void)
+allocate_xworkers_table(void)
 {
     proc.comms.xchg_wrkr_info = (worker_info_t *)
         calloc(proc.nranks, sizeof(*(proc.comms.xchg_wrkr_info)));
@@ -59,7 +59,7 @@ allocate_workers(void)
 }
 
 inline static void
-deallocate_workers(void)
+deallocate_xworkers_table(void)
 {
     if (proc.comms.xchg_wrkr_info != NULL) {
         free(proc.comms.xchg_wrkr_info);
@@ -67,31 +67,52 @@ deallocate_workers(void)
 }
 
 /*
- * TODO note the below needs to be replaced with the default context
- * creation process.  Do we need to exchange more info for newly
- * created workers?  Sounds painful.  Maybe there's another way.
+ * endpoint tables
  */
+inline static void
+allocate_endpoints_table(void)
+{
+    proc.comms.eps = (ucp_ep_h *)
+        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
+    assert(proc.comms.eps != NULL);
+}
 
 inline static void
-make_local_worker(void)
+deallocate_endpoints_table(void)
 {
-    ucs_status_t s;
-    ucp_worker_params_t wkpm;
-    ucp_address_t *addr;
-    size_t len;
+    if (proc.comms.eps != NULL) {
+        free(proc.comms.eps);
+    }
+}
 
-    wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
-    wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
+inline static void
+allocate_contexts_table(void)
+{
+    /*
+     * no SHMEM contexts created yet
+     */
+    proc.comms.nctxts = 0;
+}
 
-    s = ucp_worker_create(proc.comms.ctxt, &wkpm, &proc.comms.wrkr);
-    assert(s == UCS_OK);
+inline static void
+deallocate_contexts_table(void)
+{
+    size_t c;
 
-    /* get address for remote access to worker */
-    s = ucp_worker_get_address(proc.comms.wrkr, &addr, &len);
-    assert(s == UCS_OK);
-
-    proc.comms.xchg_wrkr_info[proc.rank].addr = addr;
-    proc.comms.xchg_wrkr_info[proc.rank].len = len;
+    /*
+     * special release case for default context
+     */
+    ucp_worker_release_address(proc.comms.ctxts[0]->w,
+                               proc.comms.xchg_wrkr_info[proc.rank].addr);
+    /*
+     * clear up each SHMEM context
+     */
+    for (c = 0; c < proc.comms.nctxts; c += 1) {
+        if (proc.comms.ctxts[c] != NULL) {
+            ucp_worker_destroy(proc.comms.ctxts[c]->w);
+            free(proc.comms.ctxts[c]);
+        }
+    }
 }
 
 /*
@@ -141,9 +162,9 @@ dump(void)
             UCS_CONFIG_PRINT_CONFIG |
             UCS_CONFIG_PRINT_HEADER;
 
-        ucp_config_print(proc.comms.cfg, say, "My config", flags);
-        ucp_context_print_info(proc.comms.ctxt, say);
-        ucp_worker_print_info(proc.comms.wrkr, say);
+        ucp_config_print(proc.comms.ucx_cfg, say, "My config", flags);
+        ucp_context_print_info(proc.comms.ucx_ctxt, say);
+        // ucp_worker_print_info(proc.comms.wrkr, say);
         check_version();
         fprintf(say, "----------------------------------------------\n\n");
         fflush(say);
@@ -154,7 +175,7 @@ dump(void)
 #endif /* DUMP_DEBUG_INFO */
 
 inline static void
-reg_symmetric_heap(void)
+register_symmetric_heap(void)
 {
     ucs_status_t s;
     ucp_mem_map_params_t mp;
@@ -169,7 +190,7 @@ reg_symmetric_heap(void)
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &def_symm_heap->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &def_symm_heap->racc.mh);
     assert(s == UCS_OK);
 
     /*
@@ -196,19 +217,19 @@ reg_symmetric_heap(void)
 }
 
 inline static void
-dereg_symmetric_heap(void)
+deregister_symmetric_heap(void)
 {
     ucs_status_t s;
 
     /* TODO: up 1 level */
     shmema_finalize();
 
-    s = ucp_mem_unmap(proc.comms.ctxt, def_symm_heap->racc.mh);
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, def_symm_heap->racc.mh);
     assert(s == UCS_OK);
 }
 
 inline static void
-reg_globals(void)
+register_globals(void)
 {
     extern char data_start; /* from the executable */
     extern char end; /* from the executable */
@@ -232,42 +253,25 @@ reg_globals(void)
     globals->end  = globals->base + len;
     globals->len  = len;
 
-    s = ucp_mem_map(proc.comms.ctxt, &mp, &globals->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->racc.mh);
     assert(s == UCS_OK);
 }
 
 inline static void
-dereg_globals(void)
+deregister_globals(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ctxt, globals->racc.mh);
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->racc.mh);
     assert(s == UCS_OK);
-}
-
-/*
- * endpoint tables
- */
-inline static void
-allocate_endpoints(void)
-{
-    proc.comms.eps = (ucp_ep_h *)
-        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
-    assert(proc.comms.eps != NULL);
-}
-
-inline static void
-deallocate_endpoints(void)
-{
-    if (proc.comms.eps != NULL) {
-        free(proc.comms.eps);
-    }
 }
 
 inline static void
 blocking_ep_disconnect(ucp_ep_h ep)
 {
     ucs_status_ptr_t req;
+    shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;
+    ucp_worker_h wrkr = ch->w;
 
     if (ep == NULL) {
         return;
@@ -283,14 +287,14 @@ blocking_ep_disconnect(ucp_ep_h ep)
         return;
     }
     else if (UCS_PTR_IS_ERR(req)) {
-        ucp_request_cancel(proc.comms.wrkr, req);
+        ucp_request_cancel(wrkr, req);
         return;
     }
     else {
         ucs_status_t s;
 
         do {
-            (void) ucp_worker_progress(proc.comms.wrkr);
+            (void) ucp_worker_progress(wrkr);
 #ifdef HAVE_UCP_REQUEST_CHECK_STATUS
             s = ucp_request_check_status(req);
 #else
@@ -343,6 +347,7 @@ void
 shmemc_ucx_make_remote_endpoints(void)
 {
     ucs_status_t s;
+    shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;
     ucp_ep_params_t epm;
     int i;
 
@@ -352,7 +357,7 @@ shmemc_ucx_make_remote_endpoints(void)
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
-        s = ucp_ep_create(proc.comms.wrkr, &epm, &proc.comms.eps[pe]);
+        s = ucp_ep_create(ch->w, &epm, &proc.comms.eps[pe]);
 
         /*
          * this can fail if we have e.g. mlx4 and not mlx5 infiniband
@@ -375,12 +380,12 @@ shmemc_ucx_init(void)
     say = stderr;
 
     /* start initialization */
-    s = ucp_config_read(NULL, NULL, &proc.comms.cfg);
+    s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
     assert(s == UCS_OK);
 
     make_init_params(&pm);
 
-    s = ucp_init(&pm, proc.comms.cfg, &proc.comms.ctxt);
+    s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
     assert(s == UCS_OK);
 
     read_environment();
@@ -391,23 +396,27 @@ shmemc_ucx_init(void)
     globals = & proc.comms.regions[0].minfo[proc.rank];
     def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
 
-    reg_globals();
-    reg_symmetric_heap();
+    register_globals();
+    register_symmetric_heap();
 
     /*
-     * Create workers and space for EPs
+     * Create exchange workers and space for EPs
      */
-    allocate_workers();
-    allocate_endpoints();
-    /* create_default_context(); */
-    make_local_worker();
+    allocate_xworkers_table();
+    allocate_endpoints_table();
+
+    /*
+     * prep contexts, allocate first one (default)
+     */
+    allocate_contexts_table();
+    shmemc_create_default_context(&SHMEM_CTX_DEFAULT);
 
 #if DUMP_DEBUG_INFO
     dump();
 #endif /* DUMP_DEBUG_INFO */
 
     /* don't need config info any more */
-    ucp_config_release(proc.comms.cfg);
+    ucp_config_release(proc.comms.ucx_cfg);
 
     shmemc_globalexit_init();
 }
@@ -420,17 +429,13 @@ shmemc_ucx_finalize(void)
     if (! proc.env.xpmem_kludge) {
         disconnect_all_endpoints();
     }
-    deallocate_endpoints();
+    deallocate_endpoints_table();
 
-    if (proc.comms.wrkr) {
-        ucp_worker_release_address(proc.comms.wrkr,
-                                   proc.comms.xchg_wrkr_info[proc.rank].addr);
-        ucp_worker_destroy(proc.comms.wrkr);
-    }
-    deallocate_workers();
+    deallocate_contexts_table();
+    deallocate_xworkers_table();
 
-    dereg_globals();
-    dereg_symmetric_heap();
+    deregister_symmetric_heap();
+    deregister_globals();
 
-    ucp_cleanup(proc.comms.ctxt);
+    ucp_cleanup(proc.comms.ucx_ctxt);
 }

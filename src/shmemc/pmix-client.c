@@ -188,7 +188,7 @@ shmemc_pmix_publish_my_rkeys(void)
     for (r = 0; r < proc.comms.nregions; r += 1) {
         pmix_byte_object_t *bop = &pi.value.data.bo;
         const ucs_status_t s =
-            ucp_rkey_pack(proc.comms.ctxt,
+            ucp_rkey_pack(proc.comms.ucx_ctxt,
                           proc.comms.regions[r].minfo[proc.rank].racc.mh,
                           &packed_rkey, &rkey_len
                           );

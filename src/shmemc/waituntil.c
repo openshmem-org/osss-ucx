@@ -20,7 +20,9 @@
     shmemc_test_##_opname##_size(int##_size##_t *var,                   \
                                  int##_size##_t value)                  \
     {                                                                   \
-        ucp_worker_wait_mem(proc.comms.wrkr, var);                      \
+        shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
+                                                                        \
+        ucp_worker_wait_mem(ch->w, var);                                \
         return ( (*var) _op (value) ) ? 1 : 0;                          \
     }
 
@@ -53,8 +55,10 @@ COMMS_TEST_SIZE(64, ge, >=)
     shmemc_wait_##_opname##_until##_size(int##_size##_t *var,           \
                                          int##_size##_t value)          \
     {                                                                   \
+        shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
+                                                                        \
         while (1) {                                                     \
-            ucp_worker_wait_mem(proc.comms.wrkr, var);                  \
+            ucp_worker_wait_mem(ch->w, var);                            \
             if ( (*var) _op (value) ) {                                 \
                 return;                                                 \
                 /* NOT REACHED */                                       \
