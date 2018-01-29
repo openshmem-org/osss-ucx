@@ -56,6 +56,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     newone = (shmemc_context_h) malloc(sizeof(*newone));
     if (newone == NULL) {
         return 1;               /* fail if no memory free for new context */
+        /* NOT REACHED */
     }
 
     newone->serialized = options & SHMEM_CTX_SERIALIZED;
@@ -77,7 +78,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(newone->w));
     assert(s == UCS_OK);
 
-    *ctxp = newone;             /* user handle */
+    *ctxp = newone;             /* handle back to caller */
 
     register_context(newone);
 
@@ -118,15 +119,18 @@ shmemc_create_default_context(shmem_ctx_t *ctx_p)
     n = shmemc_context_create(0, &ctx);
     if (n != 0) {
         return 1;
+        /* NOT REACHED */
     }
-
-    *ctx_p = (shmem_ctx_t) ctx;
 
     /* get address for remote access to worker */
     s = ucp_worker_get_address(ctx->w, &addr, &len);
     if (s != UCS_OK) {
         return 1;
+        /* NOT REACHED */
     }
+
+    /* handle back to caller */
+    *ctx_p = (shmem_ctx_t) ctx;
 
     proc.comms.xchg_wrkr_info[proc.rank].addr = addr;
     proc.comms.xchg_wrkr_info[proc.rank].len = len;
