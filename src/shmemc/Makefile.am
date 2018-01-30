@@ -1,7 +1,5 @@
 # For license: see LICENSE file at top-level
 
-PMIX_CFLAGS               = @PMIX_CFLAGS@
-
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 				-I../../include -I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \
@@ -13,16 +11,24 @@ LIBSHMEMC_SOURCES         = \
 				fcollect.c \
 				globalexit.c \
 				locks.c \
-				pmix-client.c \
 				readenv.c \
 				shmemc-init.c \
 				state.c \
 				ucx-init.c \
 				waituntil.c
 
+if HAVE_PMI
+LIBSHMEMC_SOURCES         += pmi1-client.c
+EXTRA_CFLAGS                 = @PMI_CFLAGS@
+endif
+if HAVE_PMIX
+LIBSHMEMC_SOURCES         += pmix-client.c
+EXTRA_CFLAGS                 = @PMIX_CFLAGS@
+endif
+
 lib_LIBRARIES             = libshmemc-ucx.a
 libshmemc_ucx_a_SOURCES   = $(LIBSHMEMC_SOURCES)
-libshmemc_ucx_a_CFLAGS    = $(UCX_CFLAGS) $(PMIX_CFLAGS) $(OTHER_CPPFLAGS)
+libshmemc_ucx_a_CFLAGS    = $(UCX_CFLAGS) $(EXTRA_CFLAGS) $(OTHER_CPPFLAGS)
 
 # support C by default, plus something to run it with
 

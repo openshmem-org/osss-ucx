@@ -51,6 +51,7 @@ AC_FC_WRAPPERS
 # for building shared libraries
 LT_INIT
 
+m4_include([config/m4/pmi.m4])
 m4_include([config/m4/pmix.m4])
 m4_include([config/m4/ucx.m4])
 
