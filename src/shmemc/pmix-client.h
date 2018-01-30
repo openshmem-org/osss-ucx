@@ -1,7 +1,7 @@
 /* For license: see LICENSE file at top-level */
 
-#ifndef _SHMEMI_PMIX_H
-#define _SHMEMI_PMIX_H 1
+#ifndef _SHMEMC_PMIX_CLIENT_H
+#define _SHMEMC_PMIX_CLIENT_H 1
 
 void shmemc_pmix_client_init(void);
 void shmemc_pmix_client_finalize(void);
@@ -20,4 +20,4 @@ void shmemc_pmix_exchange_workers(void);
 void shmemc_pmix_publish_my_rkeys(void);
 void shmemc_pmix_exchange_all_rkeys(void);
 
-#endif /* ! _SHMEMI_PMIX_H */
+#endif /* ! _SHMEMC_PMIX_CLIENT_H */
