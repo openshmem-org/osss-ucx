@@ -5,15 +5,16 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemc-ucx.h"
-#include "pmix-client.h"
 #include "shmemu.h"
 #include "shmemc.h"
+
+#include "pmi-client.h"
 
 void
 shmemc_init(void)
 {
     /* find launch info */
-    shmemc_pmix_client_init();
+    shmemc_pmi_client_init();
 
     /* launch and connect my heap to network resources */
     shmemc_ucx_init();
@@ -21,23 +22,23 @@ shmemc_init(void)
     /* now heap registered... */
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    shmemc_pmix_publish_heap_info();
+    shmemc_pmi_publish_heap_info();
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
-    shmemc_pmix_publish_worker();
-    shmemc_pmix_barrier_all();
+    shmemc_pmi_publish_worker();
+    shmemc_pmi_barrier_all();
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    shmemc_pmix_exchange_heap_info();
+    shmemc_pmi_exchange_heap_info();
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
     /* exchange worker info and then create EPs */
-    shmemc_pmix_exchange_workers();
+    shmemc_pmi_exchange_workers();
     shmemc_ucx_make_remote_endpoints();
 
-    shmemc_pmix_publish_my_rkeys();
-    shmemc_pmix_barrier_all();
-    shmemc_pmix_exchange_all_rkeys();
+    shmemc_pmi_publish_my_rkeys();
+    shmemc_pmi_barrier_all();
+    shmemc_pmi_exchange_all_rkeys();
 
 #if 0
     shmemc_barrier_all();
@@ -49,8 +50,8 @@ shmemc_finalize(void)
 {
     shmemc_barrier_all();       /* finalize has implicit global barrier */
 
-    /* shmemc_pmix_barrier_all(); */
-    shmemc_pmix_client_finalize();
+    /* shmemc_pmi_barrier_all(); */
+    shmemc_pmi_client_finalize();
 
     shmemc_ucx_finalize();
 }
