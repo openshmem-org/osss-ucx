@@ -17,7 +17,7 @@ void shmemc_pmi_exchange_heap_info(void);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 void shmemc_pmi_publish_worker(void);
-void shmemc_pmi_echange_workers(void);
+void shmemc_pmi_exchange_workers(void);
 
 void shmemc_pmi_publish_my_rkeys(void);
 void shmemc_pmi_exchange_all_rkeys(void);
