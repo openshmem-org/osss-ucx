@@ -153,19 +153,8 @@ shmemc_pmi_client_init(void)
     assert(proc.nranks > 0);
     assert(proc.rank < proc.nranks);
 
-    /* what's on this node? */
-    ps = PMI_Get_clique_size(&proc.npeers);
-    assert(ps == PMI_SUCCESS);
-
-    /* how's the 'hood look? */
-    assert(proc.npeers >= 0);
-    assert(proc.npeers <= proc.nranks);
-
-    proc.peers = (int *) calloc(proc.npeers, sizeof(*proc.peers));
-    assert(proc.peers != NULL);
-
-    ps = PMI_Get_clique_ranks(proc.peers, proc.npeers);
-    assert(ps == PMI_SUCCESS);
+    proc.npeers = 0;
+    proc.peers = NULL;
 
     ps = PMI_KVS_Get_key_length_max(&kvs_max_len);
     assert(ps == PMI_SUCCESS);
