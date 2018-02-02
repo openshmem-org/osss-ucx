@@ -140,14 +140,16 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width, shmemu_human_option(proc.env.print_info),
             "print this information");
     {
-        char buf[64];
+#define BUFSIZE 16
+        char buf[BUFSIZE];
 
-        (void) shmemu_human_number(proc.env.def_heap_size, buf, 64);
+        (void) shmemu_human_number(proc.env.def_heap_size, buf, BUFSIZE);
         fprintf(stream, "%s%-*s %-*s %s\n",
                 prefix,
                 var_width, "SHMEM_SYMMETRIC_SIZE",
                 val_width, buf,
                 "set the size of the symmetric heap");
+#undef BUFSIZE
     }
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
