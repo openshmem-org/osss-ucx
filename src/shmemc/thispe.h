@@ -57,11 +57,11 @@ typedef struct shmemc_context {
     unsigned long id;           /* internal tracking */
 
     /*
-     * parsed options during creation
+     * parsed options during creation (defaults: no)
      */
-    long serialized;
-    long private;               /* default: no */
-    long nostore;
+    _Bool serialized;
+    _Bool private;
+    _Bool nostore;
 
     /*
      * possibly other things
@@ -87,7 +87,7 @@ typedef struct comms_info {
 
 typedef struct thread_desc {
     ucs_thread_mode_t ucx_tl;   /* UCX thread level */
-    int osh_tl;                 /* OpenSHMEM thread level */
+    int osh_tl;                 /* corresponding OpenSHMEM thread level */
     pthread_t invoking_thread;  /* thread that called shmem_init*() */
 } thread_desc_t;
 
@@ -102,16 +102,16 @@ typedef struct env_info {
     /*
      * required
      */
-    char print_version;         /* produce info output? */
-    char print_info;
+    _Bool print_version;        /* produce info output? */
+    _Bool print_info;
     size_t def_heap_size;       /* TODO: expand for multiple heaps */
-    char debug;                 /* are we doing debugging? */
+    _Bool debug;                /* are we doing debugging? */
 
     /*
      * this implementation
      */
     char *debug_file;        /* where does debugging output go? */
-    char xpmem_kludge;       /* protect against UCX bug temporarily */
+    _Bool xpmem_kludge;      /* protect against UCX bug temporarily */
 } env_info_t;
 
 typedef enum shmemc_status {

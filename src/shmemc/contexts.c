@@ -15,7 +15,7 @@
 #include <ucp/api/ucp.h>
 
 /*
- * insert new context into PE state
+ * insert and remove contexts in PE state
  */
 
 static const size_t context_block = 8;
@@ -38,7 +38,7 @@ register_context(shmemc_context_h ch)
 inline static void
 deregister_context(shmemc_context_h ch)
 {
-    /* freed at teardown */
+    /* TODO: freed at teardown, should better maintain a pool */
     proc.comms.ctxts[ch->id] = NULL;
 }
 
@@ -78,9 +78,9 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(newone->w));
     assert(s == UCS_OK);
 
-    *ctxp = newone;             /* handle back to caller */
-
     register_context(newone);
+
+    *ctxp = newone;             /* handle back to caller */
 
     return 0;
 }
@@ -93,8 +93,13 @@ void
 shmemc_context_destroy(shmemc_context_h ctx)
 {
     if (ctx != NULL) {
-        /* spec 1.4 requires implicit quiet on destroy */
-        shmemc_ctx_quiet(ctx);
+        /*
+         * spec 1.4 requires implicit quiet on destroy for storable
+         * contexts
+         */
+        if (! ctx->nostore) {
+            shmemc_ctx_quiet(ctx);
+        }
 
         ucp_worker_destroy(ctx->w);
 

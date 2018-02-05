@@ -20,7 +20,7 @@
  * return non-zero if option enabled, 0 if not
  */
 
-inline static int
+inline static _Bool
 option_enabled_test(char *str)
 {
     if (strncasecmp(str, "y", 1) == 0) {
