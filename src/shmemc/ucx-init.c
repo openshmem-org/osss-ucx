@@ -396,6 +396,7 @@ shmemc_ucx_init(void)
     globals = & proc.comms.regions[0].minfo[proc.rank];
     def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
 
+    /* TODO: generalize for multiple heaps */
     register_globals();
     register_symmetric_heap();
 
@@ -434,6 +435,7 @@ shmemc_ucx_finalize(void)
     deallocate_contexts_table();
     deallocate_xworkers_table();
 
+    /* TODO: generalize for multiple heaps */
     deregister_symmetric_heap();
     deregister_globals();
 
