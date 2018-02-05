@@ -65,15 +65,13 @@ int
 shmemu_parse_size(char *size_str, size_t *bytes_p)
 {
     char *units;                /* scaling factor if given */
-    double ret;                 /* return value */
+    double bytes;
 
-    ret = strtod(size_str, &units);
-    if (ret < 0.0) {
+    bytes = strtod(size_str, &units);
+    if (bytes < 0.0) {
         return -1;
         /* NOT REACHED */
     }
-
-    *bytes_p = (size_t) ret;
 
     if (*units != '\0') {
         /* something that could be a unit */
@@ -86,8 +84,10 @@ shmemu_parse_size(char *size_str, size_t *bytes_p)
         }
 
         /* scale for return */
-        *bytes_p *= b;
+        bytes *= b;
     }
+
+    *bytes_p = (size_t) bytes;
 
     return 0;
 }
