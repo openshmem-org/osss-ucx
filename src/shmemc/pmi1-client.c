@@ -77,7 +77,7 @@ shmemc_pmi_exchange_workers(void)
     int pe;
     char *key = alloc_string();
     char *val = alloc_string();
-    int len;
+    unsigned long len;
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
         const int i = (pe + proc.rank) % proc.nranks;
