@@ -270,6 +270,7 @@ blocking_ep_disconnect(ucp_ep_h ep)
 
     if (ep == NULL) {
         return;
+        /* NOT REACHED */
     }
 
 #ifdef HAVE_UCP_EP_CLOSE_NB
@@ -280,10 +281,12 @@ blocking_ep_disconnect(ucp_ep_h ep)
 
     if (req == UCS_OK) {
         return;
+        /* NOT REACHED */
     }
     else if (UCS_PTR_IS_ERR(req)) {
         ucp_request_cancel(wrkr, req);
         return;
+        /* NOT REACHED */
     }
     else {
         ucs_status_t s;
