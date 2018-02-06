@@ -3,6 +3,8 @@
 #ifndef _THISPE_H
 #define _THISPE_H 1
 
+#include "boolean.h"
+
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
 
@@ -59,9 +61,9 @@ typedef struct shmemc_context {
     /*
      * parsed options during creation (defaults: no)
      */
-    _Bool serialized;
-    _Bool private;
-    _Bool nostore;
+    bool serialized;
+    bool private;
+    bool nostore;
 
     /*
      * possibly other things
@@ -102,16 +104,16 @@ typedef struct env_info {
     /*
      * required
      */
-    _Bool print_version;        /* produce info output? */
-    _Bool print_info;
+    bool print_version;         /* produce info output? */
+    bool print_info;
     size_t def_heap_size;       /* TODO: expand for multiple heaps */
-    _Bool debug;                /* are we doing debugging? */
+    bool debug;                 /* are we doing debugging? */
 
     /*
      * this implementation
      */
     char *debug_file;        /* where does debugging output go? */
-    _Bool xpmem_kludge;      /* protect against UCX bug temporarily */
+    bool xpmem_kludge;       /* protect against UCX bug temporarily */
 } env_info_t;
 
 typedef enum shmemc_status {

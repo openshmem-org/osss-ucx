@@ -32,7 +32,9 @@ register_context(shmemc_context_h ch)
         assert(proc.comms.ctxts != NULL);
     }
 
-    proc.comms.ctxts[proc.comms.nctxts ++] = ch;
+    ch->id = proc.comms.nctxts;
+    proc.comms.ctxts[proc.comms.nctxts] = ch;
+    proc.comms.nctxts += 1;
 }
 
 inline static void
@@ -62,8 +64,6 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     newone->serialized = options & SHMEM_CTX_SERIALIZED;
     newone->private    = options & SHMEM_CTX_PRIVATE;
     newone->nostore    = options & SHMEM_CTX_NOSTORE;
-
-    newone->id         = proc.comms.nctxts;
 
     wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
     if (newone->serialized) {
