@@ -22,10 +22,58 @@
 
 #define DUMP_DEBUG_INFO 0
 
+#if DUMP_DEBUG_INFO
+inline static void
+check_version(void)
+{
+    unsigned int maj, min, rel;
+
+    ucp_get_version(&maj, &min, &rel);
+
+    fprintf(stderr, "Piecewise query:\n");
+    fprintf(stderr, "    UCX version \"%u.%u.%u\"\n", maj, min, rel);
+    fprintf(stderr, "String query\n");
+    fprintf(stderr, "    UCX version \"%s\"\n", ucp_get_version_string());
+    fprintf(stderr, "\n");
+}
+
 /*
- * debugging output stream
+ * debugging output
  */
-static FILE *say;
+inline static void
+dump_mapped_mem_info(const char *name, const mem_info_t *mp)
+{
+    ucs_status_t s;
+    ucp_mem_attr_t attr;
+
+    /* the attributes we want to inspect */
+    attr.field_mask =
+        UCP_MEM_ATTR_FIELD_ADDRESS |
+        UCP_MEM_ATTR_FIELD_LENGTH;
+
+    s = ucp_mem_query(mp->racc.mh, &attr);
+    assert(s == UCS_OK);
+}
+
+inline static void
+dump(void)
+{
+    if (proc.rank == 0) {
+        const ucs_config_print_flags_t flags =
+            UCS_CONFIG_PRINT_CONFIG |
+            UCS_CONFIG_PRINT_HEADER;
+
+        ucp_config_print(proc.comms.ucx_cfg, stderr, "My config", flags);
+        ucp_context_print_info(proc.comms.ucx_ctxt, stderr);
+        // ucp_worker_print_info(proc.comms.wrkr, stderr);
+        check_version();
+        fprintf(stderr, "----------------------------------------------\n\n");
+        fflush(stderr);
+    }
+    dump_mapped_mem_info("heap", def_symm_heap);
+    dump_mapped_mem_info("globals", globals);
+}
+#endif /* DUMP_DEBUG_INFO */
 
 /*
  * UCX config
@@ -120,59 +168,6 @@ deallocate_contexts_table(void)
  */
 static mem_info_t *globals;
 static mem_info_t *def_symm_heap;
-
-#if DUMP_DEBUG_INFO
-inline static void
-check_version(void)
-{
-    unsigned int maj, min, rel;
-
-    ucp_get_version(&maj, &min, &rel);
-
-    fprintf(say, "Piecewise query:\n");
-    fprintf(say, "    UCX version \"%u.%u.%u\"\n", maj, min, rel);
-    fprintf(say, "String query\n");
-    fprintf(say, "    UCX version \"%s\"\n", ucp_get_version_string());
-    fprintf(say, "\n");
-}
-
-/*
- * debugging output
- */
-inline static void
-dump_mapped_mem_info(const char *name, const mem_info_t *mp)
-{
-    ucs_status_t s;
-    ucp_mem_attr_t attr;
-
-    /* the attributes we want to inspect */
-    attr.field_mask =
-        UCP_MEM_ATTR_FIELD_ADDRESS |
-        UCP_MEM_ATTR_FIELD_LENGTH;
-
-    s = ucp_mem_query(mp->racc.mh, &attr);
-    assert(s == UCS_OK);
-}
-
-inline static void
-dump(void)
-{
-    if (proc.rank == 0) {
-        const ucs_config_print_flags_t flags =
-            UCS_CONFIG_PRINT_CONFIG |
-            UCS_CONFIG_PRINT_HEADER;
-
-        ucp_config_print(proc.comms.ucx_cfg, say, "My config", flags);
-        ucp_context_print_info(proc.comms.ucx_ctxt, say);
-        // ucp_worker_print_info(proc.comms.wrkr, say);
-        check_version();
-        fprintf(say, "----------------------------------------------\n\n");
-        fflush(say);
-    }
-    dump_mapped_mem_info("heap", def_symm_heap);
-    dump_mapped_mem_info("globals", globals);
-}
-#endif /* DUMP_DEBUG_INFO */
 
 inline static void
 register_symmetric_heap(void)
@@ -376,8 +371,6 @@ shmemc_ucx_init(void)
 {
     ucs_status_t s;
     ucp_params_t pm;
-
-    say = stderr;
 
     /* start initialization */
     s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
