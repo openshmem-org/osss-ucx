@@ -1555,19 +1555,19 @@ extern "C"
      * @return None.
      *
      */
-    SHMEM_DECL_VOID_AMO2(and, ulong, unsigned long)
+    SHMEM_DECL_VOID_AMO2(or, ulong, unsigned long)
     /* see \ref shmem_ulong_atomic_or() */
-    SHMEM_DECL_VOID_AMO2(and, uint, unsigned int)
+    SHMEM_DECL_VOID_AMO2(or, uint, unsigned int)
     /* see \ref shmem_ulong_atomic_or() */
-    SHMEM_DECL_VOID_AMO2(and, ulonglong, unsigned long long)
+    SHMEM_DECL_VOID_AMO2(or, ulonglong, unsigned long long)
     /* see \ref shmem_ulong_atomic_or() */
-    SHMEM_DECL_VOID_AMO2(and, int32, int32_t)
+    SHMEM_DECL_VOID_AMO2(or, int32, int32_t)
     /* see \ref shmem_ulong_atomic_or() */
-    SHMEM_DECL_VOID_AMO2(and, int64, int64_t)
+    SHMEM_DECL_VOID_AMO2(or, int64, int64_t)
     /* see \ref shmem_ulong_atomic_or() */
-    SHMEM_DECL_VOID_AMO2(and, uint32, uint32_t)
+    SHMEM_DECL_VOID_AMO2(or, uint32, uint32_t)
     /* see \ref shmem_ulong_atomic_or() */
-    SHMEM_DECL_VOID_AMO2(and, uint64, uint64_t)
+    SHMEM_DECL_VOID_AMO2(or, uint64, uint64_t)
 
     /**
      * @brief These routines perform an atomic "or"
