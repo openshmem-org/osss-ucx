@@ -1547,10 +1547,10 @@ extern "C"
      *
      * @b Effect:
      *
-     * The atomic exclusive-or routines perform an and-operation between
+     * The atomic or routines perform a bitwise or-operation between
      * value and the data at address dest on PE pe. The operation must
      * be completed without the possibility of another process updating
-     * dest between the time of the fetch and the update.
+     * dest at the same time.
      *
      * @return None.
      *
@@ -1600,10 +1600,10 @@ extern "C"
      *
      * @b Effect:
      *
-     * The atomic exclusive-or routines perform an and-operation between
+     * The atomic and routines perform a bitwise and-operation between
      * value and the data at address dest on PE pe. The operation must
      * be completed without the possibility of another process updating
-     * dest between the time of the fetch and the update.
+     * dest at the same time.
      *
      * @return Value stored previously in remote location.
      *
