@@ -21,23 +21,23 @@
  * return non-zero if option enabled, 0 if not
  */
 
-inline static _Bool
+inline static bool
 option_enabled_test(char *str)
 {
     if (strncasecmp(str, "y", 1) == 0) {
-        return 1;
+        return true;
         /* NOT REACHED */
     }
     if (strncasecmp(str, "on", 2) == 0) {
-        return 1;
+        return true;
         /* NOT REACHED */
     }
     if (atoi(str) > 0) {
-        return 1;
+        return true;
         /* NOT REACHED */
     }
 
-    return 0;
+    return false;
 }
 
 /*
