@@ -151,7 +151,12 @@ shmemc_env_init(void)
     }
     CHECK_ENV(e, BARRIER_ALGO);
     if (e != NULL) {
-        proc.env.barrier_algo = parse_algo(e);
+        shmemc_coll_t c = parse_algo(e);
+
+        if (c == SHMEMC_COLL_UNKNOWN) {
+            c = SHMEMC_COLL_LINEAR;
+        }
+        proc.env.barrier_algo = c;
     }
 }
 
