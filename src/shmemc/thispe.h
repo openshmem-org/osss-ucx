@@ -97,6 +97,31 @@ typedef struct thread_desc {
  * -- General --------------------------------------------------------
  */
 
+typedef enum shmemc_status {
+    SHMEMC_PE_SHUTDOWN = 0,
+    SHMEMC_PE_RUNNING,
+    SHMEMC_PE_FAILED,
+    SHMEMC_PE_UNKNOWN
+} shmemc_status_t;
+
+/*
+ * which collectives we're using.  might want to move this per-team at
+ * some point so we can optimize through locality-awareness
+ */
+typedef enum shmemc_coll {
+    SHMEMC_COLL_LINEAR = 0,
+    SHMEMC_COLL_TREE,
+    SHMEMC_COLL_DISSEM,
+    SHMEMC_COLL_UNKNOWN
+} shmemc_coll_t;
+
+typedef struct shmemc_coll_algo {
+    shmemc_coll_t barrier;
+    shmemc_coll_t broadcast;
+    shmemc_coll_t collect;
+    shmemc_coll_t alltoall;
+} shmemc_coll_algo_t;
+
 /*
  * implementations support some environment variables
  */
@@ -114,14 +139,8 @@ typedef struct env_info {
      */
     char *debug_file;        /* where does debugging output go? */
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
+    shmemc_coll_t barrier_algo;
 } env_info_t;
-
-typedef enum shmemc_status {
-    SHMEMC_PE_SHUTDOWN = 0,
-    SHMEMC_PE_RUNNING,
-    SHMEMC_PE_FAILED,
-    SHMEMC_PE_UNKNOWN
-} shmemc_status_t;
 
 /*
  * PEs can belong to teams
@@ -139,6 +158,7 @@ typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
     env_info_t env;             /* environment vars */
     thread_desc_t td;           /* threading model invoked */
+    shmemc_coll_algo_t ci;      /* collectives used */
     int rank;                   /* rank info */
     int nranks;                 /* how many ranks */
     shmemc_status_t status;     /* up, down, out to lunch etc */

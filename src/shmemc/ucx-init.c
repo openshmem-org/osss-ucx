@@ -384,7 +384,7 @@ shmemc_ucx_init(void)
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
     assert(s == UCS_OK);
 
-    read_environment();
+    shmemc_env_init();
 
     init_memory_regions();
 
@@ -434,6 +434,8 @@ shmemc_ucx_finalize(void)
     /* TODO: generalize for multiple heaps */
     deregister_symmetric_heap();
     deregister_globals();
+
+    shmemc_env_finalize();
 
     ucp_cleanup(proc.comms.ucx_ctxt);
 }
