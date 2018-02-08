@@ -51,8 +51,7 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
  * chosen implementation.  Later can be selected through e.g. env var
  */
 static void (*barrier_sync_helper)(int start, int log2stride,
-                                   int size, long *pSync) =
-    barrier_sync_helper_linear;
+                                   int size, long *pSync);
 
 /*
  * internal psyncs
@@ -63,6 +62,36 @@ long shmemc_all_sync = SHMEM_SYNC_VALUE;
 /*
  * API
  */
+
+void
+shmemc_barrier_init(void)
+{
+    /* TODO */
+
+#if 0
+    switch (proc.env.barrier_algo) {
+    case SHMEMC_COLL_LINEAR:
+        barrier_sync_helper = barrier_sync_helper_linear;
+        break;
+    case SHMEMC_COLL_TREE:
+        barrier_sync_helper = barrier_sync_helper_tree;
+        break;
+    case SHMEMC_COLL_DISSEM:
+        barrier_sync_helper = barrier_sync_helper_dissem;
+        break;
+    default:
+        break;
+    }
+#endif
+
+    barrier_sync_helper = barrier_sync_helper_linear;
+}
+
+void
+shmemc_barrier_finalize(void)
+{
+    /* nothing to do as of now */
+}
 
 void
 shmemc_barrier(int start, int log2stride, int size, long *pSync)

@@ -10,6 +10,7 @@
 #include "state.h"
 #include "globalexit.h"
 #include "readenv.h"
+#include "barrier.h"
 
 #include "allocator/memalloc.h"
 
@@ -386,6 +387,8 @@ shmemc_ucx_init(void)
 
     shmemc_env_init();
 
+    shmemc_barrier_init();
+
     init_memory_regions();
 
     /* local shortcuts TODO: hardwired index */
@@ -434,6 +437,8 @@ shmemc_ucx_finalize(void)
     /* TODO: generalize for multiple heaps */
     deregister_symmetric_heap();
     deregister_globals();
+
+    shmemc_barrier_finalize();
 
     shmemc_env_finalize();
 

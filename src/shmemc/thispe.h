@@ -115,12 +115,14 @@ typedef enum shmemc_coll {
     SHMEMC_COLL_UNKNOWN
 } shmemc_coll_t;
 
-typedef struct shmemc_coll_algo {
-    shmemc_coll_t barrier;
-    shmemc_coll_t broadcast;
-    shmemc_coll_t collect;
-    shmemc_coll_t alltoall;
-} shmemc_coll_algo_t;
+/*
+ * typedef struct shmemc_coll_algo {
+ *    shmemc_coll_t barrier;
+ *    shmemc_coll_t broadcast;
+ *    shmemc_coll_t collect;
+ *    shmemc_coll_t alltoall;
+ * } shmemc_coll_algo_t;
+ */
 
 /*
  * implementations support some environment variables
@@ -158,7 +160,6 @@ typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
     env_info_t env;             /* environment vars */
     thread_desc_t td;           /* threading model invoked */
-    shmemc_coll_algo_t ci;      /* collectives used */
     int rank;                   /* rank info */
     int nranks;                 /* how many ranks */
     shmemc_status_t status;     /* up, down, out to lunch etc */
