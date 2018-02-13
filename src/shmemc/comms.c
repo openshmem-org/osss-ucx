@@ -40,13 +40,14 @@ return proc.comms.ctxts[ch->id].eps[_pe];
 /*
  * where the heap lives
  */
-#define GET_BASE(_region, _pe)                      \
+#define GET_BASE(_region, _pe)                  \
     proc.comms.regions[_region].minfo[_pe].base
 
 /*
  * Return non-zero if PE is a valid rank, 0 otherwise
  */
-#define IS_VALID_PE_NUMBER(_pe) ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
+#define IS_VALID_PE_NUMBER(_pe)                 \
+    ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
 
 /*
  * -- helpers ----------------------------------------------------------------
@@ -129,14 +130,18 @@ translate_address(uint64_t local_addr, size_t region, int pe)
 void
 shmemc_ctx_fence(shmem_ctx_t ctx)
 {
-    const ucs_status_t s = ucp_worker_fence(proc.comms.wrkr);
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    const ucs_status_t s = ucp_worker_fence(ch->w);
+
     assert(s == UCS_OK);
 }
 
 void
 shmemc_ctx_quiet(shmem_ctx_t ctx)
 {
-    const ucs_status_t s = ucp_worker_flush(proc.comms.wrkr);
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    const ucs_status_t s = ucp_worker_flush(ch->w);
+
     assert(s == UCS_OK);
 }
 

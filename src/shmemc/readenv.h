@@ -3,6 +3,7 @@
 #ifndef _SHMEMC_READENV_H
 #define _SHMEMC_READENV_H 1
 
-void read_environment(void);
+void shmemc_env_init(void);
+void shmemc_env_finalize(void);
 
 #endif /* ! _SHMEMC_READENV_H */

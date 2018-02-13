@@ -6,6 +6,7 @@
 
 #include "state.h"
 #include "shmemu.h"
+#include "boolean.h"
 
 #include <stdio.h>
 #include <stdlib.h>             /* getenv */
@@ -20,23 +21,69 @@
  * return non-zero if option enabled, 0 if not
  */
 
-inline static int
+static bool
 option_enabled_test(char *str)
 {
-    if (strncasecmp(str, "y", 1) == 0) {
-        return 1;
+    if (str == NULL) {
+        return false;
+        /* NOT REACHED */
+    }
+    if (*str == 'y') {
+        return true;
         /* NOT REACHED */
     }
     if (strncasecmp(str, "on", 2) == 0) {
-        return 1;
+        return true;
         /* NOT REACHED */
     }
     if (atoi(str) > 0) {
-        return 1;
+        return true;
         /* NOT REACHED */
     }
 
-    return 0;
+    return false;
+}
+
+struct algo_desc {
+    char *name;
+    shmemc_coll_t algo;
+} algo_desc_table[] = {
+    { "linear",     SHMEMC_COLL_LINEAR    },
+    { "tree",       SHMEMC_COLL_TREE      },
+    { "dissem",     SHMEMC_COLL_DISSEM    },
+    { NULL,         SHMEMC_COLL_UNKNOWN   }
+};
+
+static shmemc_coll_t
+parse_algo(char *str)
+{
+    struct algo_desc *adp = algo_desc_table;
+
+    while (adp->name != NULL) {
+        if (strncmp(str, adp->name, strlen(adp->name)) == 0) {
+            return adp->algo;
+            /* NOT REACHED */
+        }
+        adp += 1;
+    }
+
+    return SHMEMC_COLL_UNKNOWN;
+}
+
+static char *
+unparse_algo(shmemc_coll_t algo)
+{
+    struct algo_desc *adp = algo_desc_table;
+
+    while (adp->name != NULL) {
+        if (algo == adp->algo) {
+            return adp->name;
+            /* NOT REACHED */
+        }
+        adp += 1;
+    }
+
+    return "unknown";
 }
 
 /*
@@ -52,7 +99,7 @@ option_enabled_test(char *str)
     } while (0)
 
 void
-read_environment(void)
+shmemc_env_init(void)
 {
     char *e;
 
@@ -60,10 +107,10 @@ read_environment(void)
      * defined in spec
      */
 
-    proc.env.print_version = 0;
-    proc.env.print_info = 0;
+    proc.env.print_version = false;
+    proc.env.print_info = false;
     proc.env.def_heap_size = 32 * SHMEMU_MB; /* arbitrary value */
-    proc.env.debug = 0;
+    proc.env.debug = false;
 
     CHECK_ENV(e, VERSION);
     if (e != NULL) {
@@ -91,7 +138,8 @@ read_environment(void)
      */
 
     proc.env.debug_file = NULL;
-    proc.env.xpmem_kludge = 0;
+    proc.env.xpmem_kludge = false;
+    proc.env.barrier_algo = SHMEMC_COLL_LINEAR;
 
     CHECK_ENV(e, DEBUG_FILE);
     if (e != NULL) {
@@ -101,9 +149,26 @@ read_environment(void)
     if (e != NULL) {
         proc.env.xpmem_kludge = option_enabled_test(e);
     }
+    CHECK_ENV(e, BARRIER_ALGO);
+    if (e != NULL) {
+        shmemc_coll_t c = parse_algo(e);
+
+        if (c == SHMEMC_COLL_UNKNOWN) {
+            c = SHMEMC_COLL_LINEAR;
+        }
+        proc.env.barrier_algo = c;
+    }
 }
 
 #undef CHECK_ENV
+
+void
+shmemc_env_finalize(void)
+{
+    if (proc.env.debug_file != NULL) {
+        free(proc.env.debug_file);
+    }
+}
 
 static const int var_width = 22;
 static const int val_width = 10;
@@ -140,14 +205,16 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width, shmemu_human_option(proc.env.print_info),
             "print this information");
     {
-        char buf[64];
+#define BUFSIZE 16
+        char buf[BUFSIZE];
 
-        (void) shmemu_human_number(proc.env.def_heap_size, buf, 64);
+        (void) shmemu_human_number(proc.env.def_heap_size, buf, BUFSIZE);
         fprintf(stream, "%s%-*s %-*s %s\n",
                 prefix,
                 var_width, "SHMEM_SYMMETRIC_SIZE",
                 val_width, buf,
                 "set the size of the symmetric heap");
+#undef BUFSIZE
     }
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
@@ -167,6 +234,16 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "SHMEM_DEBUG_FILE",
             val_width, proc.env.debug_file ? proc.env.debug_file : "none",
             "file to receive debugging information");
+    fprintf(stream, "%s%-*s %-*s %s\n",
+            prefix,
+            var_width, "SHMEM_XPMEM_KLUDGE",
+            val_width, shmemu_human_option(proc.env.xpmem_kludge),
+            "avoid XPMEM tear-down bug (temporary)");
+    fprintf(stream, "%s%-*s %-*s %s\n",
+            prefix,
+            var_width, "SHMEM_BARRIER_ALGO",
+            val_width, unparse_algo(proc.env.barrier_algo),
+            "algorithm to use for barrier");
 
     fprintf(stream, "%s\n",
             prefix);

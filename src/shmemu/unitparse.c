@@ -60,19 +60,18 @@ parse_unit(char u, size_t *sp)
  *
  * Return 0 if parsed, -1 if not
  */
+
 int
 shmemu_parse_size(char *size_str, size_t *bytes_p)
 {
     char *units;                /* scaling factor if given */
-    double ret;                 /* return value */
+    double bytes;
 
-    ret = strtod(size_str, &units);
-    if (ret < 0.0) {
+    bytes = strtod(size_str, &units);
+    if (bytes < 0.0) {
         return -1;
         /* NOT REACHED */
     }
-
-    *bytes_p = (size_t) ret;
 
     if (*units != '\0') {
         /* something that could be a unit */
@@ -85,11 +84,20 @@ shmemu_parse_size(char *size_str, size_t *bytes_p)
         }
 
         /* scale for return */
-        *bytes_p *= b;
+        bytes *= b;
     }
+
+    *bytes_p = (size_t) bytes;
 
     return 0;
 }
+
+/*
+ * do the reverse of parse_size: put a human-readble form of "bytes"
+ * in "buf"
+ *
+ * Return 0 if successful, -1 if not
+ */
 
 int
 shmemu_human_number(double bytes, char *buf, size_t buflen)
@@ -103,18 +111,24 @@ shmemu_human_number(double bytes, char *buf, size_t buflen)
 
         /* find when we've gone too far */
         if (d == 0) {
-            --walk;
+            walk -= 1;
             break;
+            /* NOT REACHED */
         }
-        ++walk;
+        walk += 1;
         divvy *= multiplier;
         b /= multiplier;
     }
 
+    /* ok if *walk is NUL */
     snprintf(buf, buflen, "%.1f%c", b, toupper(*walk));
 
     return 0;
 }
+
+/*
+ * human-readable option setting
+ */
 
 char *
 shmemu_human_option(int v)

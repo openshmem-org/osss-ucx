@@ -3,6 +3,8 @@
 #ifndef _THISPE_H
 #define _THISPE_H 1
 
+#include "boolean.h"
+
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
 
@@ -51,41 +53,75 @@ typedef struct mem_region {
  * NB difference between UCX context, and OpenSHMEM context.  Each
  * OpenSHMEM context requires...
  */
-struct shmemc_context {
-    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-
-    /*
-     * parsed options during creation
-     */
-    long serialized;
-    long private;               /* default: no */
-    long nostore;
+typedef struct shmemc_context {
+    ucp_worker_h w;             /* for separate context progress */
 
     unsigned long id;           /* internal tracking */
 
     /*
+     * parsed options during creation (defaults: no)
+     */
+    bool serialized;
+    bool private;
+    bool nostore;
+
+    /*
      * possibly other things
      */
-};
-typedef struct shmemc_context *shmemc_context_h;
+} *shmemc_context_h;
 
 /*
  * this comms-layer needs to know...
  */
 typedef struct comms_info {
-    ucp_context_h ctxt;         /* local communication context */
-    ucp_config_t *cfg;          /* local config */
-    ucp_worker_h wrkr;          /* local worker */
-    worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
+    ucp_context_h ucx_ctxt;     /* local communication context */
+    ucp_config_t *ucx_cfg;      /* local config */
     ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
-    shmemc_context_h *ctxts;    /* PE's contexts (replaces EPs above). */
-                                /* Created on demand */
+
+    worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
+
+    shmemc_context_h *ctxts;    /* PE's contexts */
+    size_t nctxts;              /* how many contexts */
+
     mem_region_t *regions;      /* exchanged symmetric regions */
-    size_t nregions;            /* number of symmetric regions per PE */
+    size_t nregions;            /* how many regions */
 } comms_info_t;
+
+typedef struct thread_desc {
+    ucs_thread_mode_t ucx_tl;   /* UCX thread level */
+    int osh_tl;                 /* corresponding OpenSHMEM thread level */
+    pthread_t invoking_thread;  /* thread that called shmem_init*() */
+} thread_desc_t;
 
 /*
  * -- General --------------------------------------------------------
+ */
+
+typedef enum shmemc_status {
+    SHMEMC_PE_SHUTDOWN = 0,
+    SHMEMC_PE_RUNNING,
+    SHMEMC_PE_FAILED,
+    SHMEMC_PE_UNKNOWN
+} shmemc_status_t;
+
+/*
+ * which collectives we're using.  might want to move this per-team at
+ * some point so we can optimize through locality-awareness
+ */
+typedef enum shmemc_coll {
+    SHMEMC_COLL_LINEAR = 0,
+    SHMEMC_COLL_TREE,
+    SHMEMC_COLL_DISSEM,
+    SHMEMC_COLL_UNKNOWN
+} shmemc_coll_t;
+
+/*
+ * typedef struct shmemc_coll_algo {
+ *    shmemc_coll_t barrier;
+ *    shmemc_coll_t broadcast;
+ *    shmemc_coll_t collect;
+ *    shmemc_coll_t alltoall;
+ * } shmemc_coll_algo_t;
  */
 
 /*
@@ -95,32 +131,27 @@ typedef struct env_info {
     /*
      * required
      */
-    int print_version;          /* produce info output? */
-    int print_info;
+    bool print_version;         /* produce info output? */
+    bool print_info;
     size_t def_heap_size;       /* TODO: expand for multiple heaps */
-    int debug;                  /* are we doing debugging? */
+    bool debug;                 /* are we doing debugging? */
 
     /*
      * this implementation
      */
-    char *debug_file;           /* where does debugging output go? */
-    int xpmem_kludge;           /* protect against UCX bug temporarily */
+    char *debug_file;        /* where does debugging output go? */
+    bool xpmem_kludge;       /* protect against UCX bug temporarily */
+    shmemc_coll_t barrier_algo;
 } env_info_t;
-
-typedef enum shmem_status {
-    SHMEM_PE_SHUTDOWN = 0,
-    SHMEM_PE_RUNNING,
-    SHMEM_PE_FAILED,
-    SHMEM_PE_UNKNOWN
-} shmem_status_t;
 
 /*
  * PEs can belong to teams
  */
-typedef struct shmem_team {
+typedef struct shmemc_team {
     unsigned long id;           /* team ID */
     int *members;               /* list of PEs in the team */
-} shmem_team_t;
+    size_t nmembers;
+} shmemc_team_t;
 
 /*
  * each PE has this state info
@@ -128,17 +159,15 @@ typedef struct shmem_team {
 typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
     env_info_t env;             /* environment vars */
-
-    int thread_level;           /* current thread support */
-    pthread_t invoking_thread;  /* thread that called shmem_init*() */
-
+    thread_desc_t td;           /* threading model invoked */
     int rank;                   /* rank info */
-    int nranks;
-    shmem_status_t status;      /* up, down, out to lunch etc */
+    int nranks;                 /* how many ranks */
+    shmemc_status_t status;     /* up, down, out to lunch etc */
     int refcount;               /* library initialization count */
-    int *peers;                 /* # PEs in a node group */
-    int npeers;
-    shmem_team_t *teams;        /* PE teams we belong to */
+    int *peers;                 /* peer PEs in a node group */
+    int npeers;                 /* how many peers */
+    shmemc_team_t *teams;       /* PE teams we belong to */
+    size_t nteams;              /* how many teams */
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */

@@ -34,6 +34,7 @@ AM_SILENT_RULES([yes])
 AC_PROG_CC_C99
 AC_PROG_CC_C_O
 AC_PROG_INSTALL
+AM_PROG_CC_C_O
 
 AC_PROG_CXX
 AC_PROG_CXX_C_O
@@ -51,6 +52,7 @@ AC_FC_WRAPPERS
 # for building shared libraries
 LT_INIT
 
+m4_include([config/m4/pmi.m4])
 m4_include([config/m4/pmix.m4])
 m4_include([config/m4/ucx.m4])
 

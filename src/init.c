@@ -42,17 +42,17 @@ finalize_helper(void)
                __func__,
                proc.refcount);
 
-        if (this != proc.invoking_thread) {
+        if (this != proc.td.invoking_thread) {
             logger(LOG_FINALIZE,
                    "mis-match: thread %lu initialized, but %lu finalized",
-                   proc.invoking_thread, this);
+                   proc.td.invoking_thread, this);
         }
 
         shmemu_finalize();
         shmemc_finalize();
 
         proc.refcount = 0;      /* finalized is finalized */
-        proc.status = SHMEM_PE_SHUTDOWN;
+        proc.status = SHMEMC_PE_SHUTDOWN;
     }
 }
 
@@ -75,7 +75,7 @@ init_thread_helper(int requested, int *provided)
             /* NOT REACHED */
         }
 
-        proc.status = SHMEM_PE_RUNNING;
+        proc.status = SHMEMC_PE_RUNNING;
 
         /* for now */
         switch(requested) {
@@ -97,12 +97,12 @@ init_thread_helper(int requested, int *provided)
         }
 
         /* save and return */
-        proc.thread_level = requested;
+        proc.td.osh_tl = requested;
         if (provided != NULL) {
             *provided = requested;
         }
 
-        proc.invoking_thread = pthread_self();
+        proc.td.invoking_thread = pthread_self();
 
         if (proc.rank == 0) {
             if (proc.env.print_version) {
@@ -119,7 +119,7 @@ init_thread_helper(int requested, int *provided)
            "leave \"%s\", refcount = %d, thread support = %d",
            __func__,
            proc.refcount,
-           proc.thread_level);
+           proc.td.osh_tl);
 
     /* just declare success */
     return 0;
@@ -164,7 +164,7 @@ shmem_finalize(void)
 void
 shmem_query_thread(int *provided)
 {
-    *provided = proc.thread_level;
+    *provided = proc.td.osh_tl;
 }
 
 /*

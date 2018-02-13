@@ -49,7 +49,7 @@ static const char *region_base_fmt = "%d:%d:mr:base";
 static const char *region_size_fmt = "%d:%d:mr:size";
 
 void
-shmemc_pmix_publish_heap_info(void)
+shmemc_pmi_publish_heap_info(void)
 {
     const unsigned int nfields = 2;
     pmix_info_t *ia;
@@ -77,7 +77,7 @@ shmemc_pmix_publish_heap_info(void)
 }
 
 void
-shmemc_pmix_exchange_heap_info(void)
+shmemc_pmi_exchange_heap_info(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch_base;
@@ -124,7 +124,7 @@ shmemc_pmix_exchange_heap_info(void)
 static const char *wrkr_exch_fmt = "%d:wrkr:addr";
 
 void
-shmemc_pmix_publish_worker(void)
+shmemc_pmi_publish_worker(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
@@ -143,7 +143,7 @@ shmemc_pmix_publish_worker(void)
 }
 
 void
-shmemc_pmix_exchange_workers(void)
+shmemc_pmi_exchange_workers(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
@@ -177,7 +177,7 @@ shmemc_pmix_exchange_workers(void)
 static const char *rkey_exch_fmt = "%d:rkey:%d";
 
 void
-shmemc_pmix_publish_my_rkeys(void)
+shmemc_pmi_publish_my_rkeys(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
@@ -188,7 +188,7 @@ shmemc_pmix_publish_my_rkeys(void)
     for (r = 0; r < proc.comms.nregions; r += 1) {
         pmix_byte_object_t *bop = &pi.value.data.bo;
         const ucs_status_t s =
-            ucp_rkey_pack(proc.comms.ctxt,
+            ucp_rkey_pack(proc.comms.ucx_ctxt,
                           proc.comms.regions[r].minfo[proc.rank].racc.mh,
                           &packed_rkey, &rkey_len
                           );
@@ -207,7 +207,7 @@ shmemc_pmix_publish_my_rkeys(void)
 }
 
 void
-shmemc_pmix_exchange_all_rkeys(void)
+shmemc_pmi_exchange_all_rkeys(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
@@ -253,13 +253,13 @@ shmemc_pmix_exchange_all_rkeys(void)
  * with SHMEM/UCX
  */
 void
-shmemc_pmix_barrier_all(void)
+shmemc_pmi_barrier_all(void)
 {
     PMIx_Fence(NULL, 0, NULL, 0);
 }
 
 void
-shmemc_pmix_client_init(void)
+shmemc_pmi_client_init(void)
 {
     pmix_proc_t my_proc;        /* about me */
     pmix_proc_t wc_proc;        /* wildcard lookups */
@@ -305,7 +305,7 @@ shmemc_pmix_client_init(void)
 }
 
 void
-shmemc_pmix_client_finalize(void)
+shmemc_pmi_client_finalize(void)
 {
     pmix_status_t ps;
     int pe;
@@ -332,7 +332,7 @@ shmemc_pmix_client_finalize(void)
 }
 
 void
-shmemc_pmix_client_abort(const char *msg, int status)
+shmemc_pmi_client_abort(const char *msg, int status)
 {
     pmix_status_t ps;
 

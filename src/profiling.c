@@ -16,7 +16,7 @@
 void
 shmem_pcontrol(int level)
 {
-    char *msg = NULL;
+    char *msg;
 
     switch (level) {
     case 0:

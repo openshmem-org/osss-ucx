@@ -326,6 +326,8 @@ SHMEMC_WAITUNTIL(64, ge)
 
 int shmemc_context_create(long options, shmemc_context_h *ctxp);
 void shmemc_context_destroy(shmemc_context_h ctx);
+/* used in up-level */
+int shmemc_create_default_context(shmem_ctx_t *ctxp);
 
 /*
  * -- barriers & syncs -------------------------------------------------------
