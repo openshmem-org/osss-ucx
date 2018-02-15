@@ -287,7 +287,7 @@ shmemc_pmi_client_init(void)
 
     /* is the world a sane size? */
     assert(proc.nranks > 0);
-    assert(proc.rank < proc.nranks);
+    assert(IS_VALID_PE_NUMBER(proc.rank));
 
     /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);

@@ -151,7 +151,7 @@ shmemc_pmi_client_init(void)
 
     /* is the world a sane size? */
     assert(proc.nranks > 0);
-    assert(proc.rank < proc.nranks);
+    assert(IS_VALID_PE_NUMBER(proc.rank));
 
     proc.npeers = 0;
     proc.peers = NULL;

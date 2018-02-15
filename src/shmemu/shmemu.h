@@ -3,6 +3,7 @@
 #ifndef _SHMEM_SHEMU_H
 #define _SHMEM_SHEMU_H 1
 
+#include "state.h"
 #include "shmem/defs.h"
 
 #ifdef HAVE_CONFIG_H
@@ -25,6 +26,12 @@
  *
  */
 #define TABLE_SIZE(_t) ( sizeof(_t) / sizeof((_t)[0]) )
+
+/*
+ * Return non-zero if PE is a valid rank, 0 otherwise
+ */
+#define IS_VALID_PE_NUMBER(_pe)                 \
+    ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
 
 void shmemu_init(void);
 void shmemu_finalize(void);
@@ -93,13 +100,35 @@ void shmemu_deprecate_finalize(void);
         }                                                               \
     } while (0)
 
-#else
+/*
+ * sanity checks
+ */
+# define CHECK_PE_ARG_RANGE(_pe, _argpos)                \
+    do {                                                 \
+        const int top_pe = proc.nranks - 1;              \
+        if ((_pe < 0) || (_pe > top_pe)) {               \
+            logger(LOG_FATAL,                            \
+                   "PE %d in argument #%d of %s() not"   \
+                   " within allocated range %d .. %d",   \
+                   _pe, _argpos, __func__,               \
+                   0, top_pe                             \
+                   );                                    \
+            /* NOT REACHED */                            \
+        }                                                \
+    } while (0)
+
+# define CHECK_INIT()
+
+#else  /* ! ENABLE_DEBUG */
 
 # define logger(...)
 # define deprecate(_fn)
 # define shmemu_deprecate_init()
 # define shmemu_deprecate_finalize()
 # define shmemu_assert(_name, _cond)
+
+# define CHECK_PE_ARG_RANGE(_pe, _argpos)
+# define CHECK_INIT()
 
 #endif /* ENABLE_DEBUG */
 
