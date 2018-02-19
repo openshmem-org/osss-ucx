@@ -3,6 +3,8 @@
 #ifndef _SHMEM_PUTGET_H
 #define _SHMEM_PUTGET_H 1
 
+#include "shmemu.h"
+
 #include "shmem_mutex.h"
 
 #define SHMEM_CTX_TYPED_PUTGET(_op, _name, _type)                       \
@@ -162,6 +164,7 @@
     shmem_##_name##_##_opname(_type *dest, const _type *src,            \
                               size_t nelems, int pe)                    \
     {                                                                   \
+        CHECK_PE_ARG_RANGE(pe, 4);                                      \
         shmem_ctx_##_name##_##_opname(SHMEM_CTX_DEFAULT,                \
                                       dest, src,                        \
                                       nelems, pe);                      \

@@ -7,7 +7,7 @@
 #include <unistd.h>
 
 /*
- * start the monitor thread
+ * start up the exit monitor
  */
 void
 shmemc_globalexit_init(void)
@@ -15,7 +15,7 @@ shmemc_globalexit_init(void)
 }
 
 /*
- * terminate the monitor thread
+ * shut down the exit monitor
  */
 void
 shmemc_globalexit_finalize(void)
