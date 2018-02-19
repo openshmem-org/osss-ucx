@@ -38,8 +38,7 @@ finalize_helper(void)
         const pthread_t this = pthread_self();
 
         logger(LOG_FINALIZE,
-               "enter \"%s\", refcount = %d",
-               __func__,
+               "refcount = %d",
                proc.refcount);
 
         if (this != proc.td.invoking_thread) {
@@ -116,8 +115,7 @@ init_thread_helper(int requested, int *provided)
     proc.refcount += 1;
 
     logger(LOG_INIT,
-           "leave \"%s\", refcount = %d, thread support = %d",
-           __func__,
+           "refcount = %d, thread support = %d",
            proc.refcount,
            proc.td.osh_tl);
 
