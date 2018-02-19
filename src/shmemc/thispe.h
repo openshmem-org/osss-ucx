@@ -115,6 +115,8 @@ typedef enum shmemc_coll {
     SHMEMC_COLL_UNKNOWN
 } shmemc_coll_t;
 
+#define SHMEMC_COLL_DEFAULT SHMEMC_COLL_TREE
+
 /*
  * typedef struct shmemc_coll_algo {
  *    shmemc_coll_t barrier;
