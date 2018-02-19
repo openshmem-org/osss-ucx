@@ -4,6 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
 #include "memfence.h"
@@ -47,6 +48,85 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
     }
 }
 
+/* -------------------------------------------------------------------- */
+
+/*
+ * Tree-based barrier
+ */
+
+/*
+ * tree radix
+ */
+static const int tree_degree = 2;
+
+inline static void
+barrier_sync_helper_tree(int start, int log2stride, int size, long *pSync)
+{
+    const int me = proc.rank;
+    const int stride = 1 << log2stride;
+    const int me_as = (me - start) / stride; /* Get my index in the active set */
+    /* Calculate parent's index in the active set */
+    const int parent_idx = me_as != 0 ? (me_as - 1) / tree_degree : -1;
+    /* Get information about children */
+    int children_begin, children_end;
+    long npokes;
+    int child;
+
+    npokes = shmemu_get_children_info(size, tree_degree, me_as,
+                                      &children_begin, &children_end);
+
+    /* Wait for pokes from the children */
+    if (npokes != 0) {
+        shmemc_wait_eq_until64(pSync, SHMEM_SYNC_VALUE + npokes);
+    }
+
+    if (parent_idx != -1) {
+        /* Poke the parent exists */
+        (void) shmemc_finc64(pSync, start + parent_idx * stride);
+
+        /* Wait for the poke from parent */
+        shmemc_wait_eq_until64(pSync, SHMEM_SYNC_VALUE + npokes + 1);
+    }
+
+    /* Clear pSync and poke the children */
+    *pSync = SHMEM_SYNC_VALUE;
+    for (child = children_begin; child != children_end; child++) {
+        shmemc_inc64(pSync, start + child * stride);
+    }
+}
+
+/* -------------------------------------------------------------------- */
+
+/*
+ * Dissemination barrier implementation
+ */
+
+inline static void
+barrier_sync_helper_dissemination(int start, int log2stride,
+                                  int size, long *pSync)
+{
+    const int me = proc.rank;
+    const int stride = 1 << log2stride;
+    const int me_as = (me - start) / stride; /* my index in active set */
+    int round, distance;
+
+    for (round = 0, distance = 1; distance < size; round++, distance <<= 1) {
+        const int target_as = (me_as + distance) % size;
+
+        /* Poke the target for the current round */
+        shmemc_inc64(&pSync[round], start + target_as * stride);
+
+        /* Wait until poked in this round */
+        shmemc_wait_ne_until64(&pSync[round], SHMEM_SYNC_VALUE);
+
+        /* Reset pSync element, fadd is used instead of add because we have to */
+        /* be sure that reset happens before next invocation of barrier */
+        (void) shmemc_fadd64(&pSync[round], -1, me);
+    }
+}
+
+/* -------------------------------------------------------------------- */
+
 /*
  * chosen implementation.  Later can be selected through e.g. env var
  */
@@ -66,9 +146,6 @@ long shmemc_all_sync = SHMEM_SYNC_VALUE;
 void
 shmemc_barrier_init(void)
 {
-    /* TODO */
-
-#if 0
     switch (proc.env.barrier_algo) {
     case SHMEMC_COLL_LINEAR:
         barrier_sync_helper = barrier_sync_helper_linear;
@@ -77,14 +154,12 @@ shmemc_barrier_init(void)
         barrier_sync_helper = barrier_sync_helper_tree;
         break;
     case SHMEMC_COLL_DISSEM:
-        barrier_sync_helper = barrier_sync_helper_dissem;
+        barrier_sync_helper = barrier_sync_helper_dissemination;
         break;
     default:
+        /* error */
         break;
     }
-#endif
-
-    barrier_sync_helper = barrier_sync_helper_linear;
 }
 
 void

@@ -44,12 +44,6 @@ return proc.comms.ctxts[ch->id].eps[_pe];
     proc.comms.regions[_region].minfo[_pe].base
 
 /*
- * Return non-zero if PE is a valid rank, 0 otherwise
- */
-#define IS_VALID_PE_NUMBER(_pe)                 \
-    ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
-
-/*
  * -- helpers ----------------------------------------------------------------
  */
 

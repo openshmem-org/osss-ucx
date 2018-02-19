@@ -333,6 +333,9 @@ int shmemc_create_default_context(shmem_ctx_t *ctxp);
  * -- barriers & syncs -------------------------------------------------------
  */
 
+void shmemc_barrier_init(void);
+void shmemc_barrier_finalize(void);
+
 #define SHMEMC_DECL_BARRIER_SYNC(_op)                                   \
     void shmemc_##_op(int start, int log_stride, int size, long *pSync); \
     void shmemc_##_op##_all(void);
@@ -343,6 +346,9 @@ SHMEMC_DECL_BARRIER_SYNC(barrier)
 /*
  * -- broadcasts -------------------------------------------------------------
  */
+
+void shmemc_broadcast_init(void);
+void shmemc_broadcast_finalize(void);
 
 #define SHMEMC_DECL_BROADCAST_SIZE(_size)                           \
     void shmemc_broadcast##_size(void *target, const void *source,  \

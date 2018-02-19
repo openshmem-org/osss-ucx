@@ -3,6 +3,7 @@
 #ifndef _SHMEM_SHEMU_H
 #define _SHMEM_SHEMU_H 1
 
+#include "state.h"
 #include "shmem/defs.h"
 
 #ifdef HAVE_CONFIG_H
@@ -26,6 +27,12 @@
  */
 #define TABLE_SIZE(_t) ( sizeof(_t) / sizeof((_t)[0]) )
 
+/*
+ * Return non-zero if PE is a valid rank, 0 otherwise
+ */
+#define IS_VALID_PE_NUMBER(_pe)                 \
+    ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
+
 void shmemu_init(void);
 void shmemu_finalize(void);
 
@@ -41,6 +48,12 @@ int shmemu_parse_size(char *size_str, size_t *bytes_p);
 int shmemu_human_number(double bytes, char *buf, size_t buflen);
 char *shmemu_human_option(int v);
 void *shmemu_round_down_address_to_pagesize(void *addr);
+
+shmemc_coll_t shmemu_parse_algo(char *str);
+char *shmemu_unparse_algo(shmemc_coll_t algo);
+int shmemu_get_children_info(int tree_size, int tree_degree, int node,
+                             int *children_begin, int *children_end);
+int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
 
 /*
  * message logging
@@ -93,13 +106,35 @@ void shmemu_deprecate_finalize(void);
         }                                                               \
     } while (0)
 
-#else
+/*
+ * sanity checks
+ */
+# define CHECK_PE_ARG_RANGE(_pe, _argpos)                \
+    do {                                                 \
+        const int top_pe = proc.nranks - 1;              \
+        if ((_pe < 0) || (_pe > top_pe)) {               \
+            logger(LOG_FATAL,                            \
+                   "PE %d in argument #%d of %s() not"   \
+                   " within allocated range %d .. %d",   \
+                   _pe, _argpos, __func__,               \
+                   0, top_pe                             \
+                   );                                    \
+            /* NOT REACHED */                            \
+        }                                                \
+    } while (0)
+
+# define CHECK_INIT()
+
+#else  /* ! ENABLE_DEBUG */
 
 # define logger(...)
 # define deprecate(_fn)
 # define shmemu_deprecate_init()
 # define shmemu_deprecate_finalize()
 # define shmemu_assert(_name, _cond)
+
+# define CHECK_PE_ARG_RANGE(_pe, _argpos)
+# define CHECK_INIT()
 
 #endif /* ENABLE_DEBUG */
 

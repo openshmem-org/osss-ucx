@@ -112,8 +112,12 @@ typedef enum shmemc_coll {
     SHMEMC_COLL_LINEAR = 0,
     SHMEMC_COLL_TREE,
     SHMEMC_COLL_DISSEM,
+    SHMEMC_COLL_BINOMIAL,
+    SHMEMC_COLL_BINOMIAL2,
     SHMEMC_COLL_UNKNOWN
 } shmemc_coll_t;
+
+#define SHMEMC_COLL_DEFAULT SHMEMC_COLL_TREE
 
 /*
  * typedef struct shmemc_coll_algo {
@@ -142,6 +146,7 @@ typedef struct env_info {
     char *debug_file;        /* where does debugging output go? */
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
     shmemc_coll_t barrier_algo;
+    shmemc_coll_t broadcast_algo;
 } env_info_t;
 
 /*

@@ -387,7 +387,11 @@ shmemc_ucx_init(void)
 
     shmemc_env_init();
 
+    /*
+     * collectives
+     */
     shmemc_barrier_init();
+    shmemc_broadcast_init();
 
     init_memory_regions();
 
@@ -438,6 +442,7 @@ shmemc_ucx_finalize(void)
     deregister_symmetric_heap();
     deregister_globals();
 
+    shmemc_broadcast_finalize();
     shmemc_barrier_finalize();
 
     shmemc_env_finalize();
