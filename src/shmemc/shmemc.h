@@ -347,6 +347,9 @@ SHMEMC_DECL_BARRIER_SYNC(barrier)
  * -- broadcasts -------------------------------------------------------------
  */
 
+void shmemc_broadcast_init(void);
+void shmemc_broadcast_finalize(void);
+
 #define SHMEMC_DECL_BROADCAST_SIZE(_size)                           \
     void shmemc_broadcast##_size(void *target, const void *source,  \
                                  size_t nelems,                     \

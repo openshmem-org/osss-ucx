@@ -49,8 +49,11 @@ int shmemu_human_number(double bytes, char *buf, size_t buflen);
 char *shmemu_human_option(int v);
 void *shmemu_round_down_address_to_pagesize(void *addr);
 
-shmemc_coll_t parse_algo(char *str);
-char *unparse_algo(shmemc_coll_t algo);
+shmemc_coll_t shmemu_parse_algo(char *str);
+char *shmemu_unparse_algo(shmemc_coll_t algo);
+int shmemu_get_children_info(int tree_size, int tree_degree, int node,
+                             int *children_begin, int *children_end);
+int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
 
 /*
  * message logging

@@ -4,6 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
 #include "memfence.h"
@@ -58,25 +59,6 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
  */
 static const int tree_degree = 2;
 
-inline static int
-get_children_info(int tree_size, int tree_degree, int node,
-                  int *children_begin, int *children_end) {
-    *children_begin = node * tree_degree + 1;
-
-    if (*children_begin >= tree_size) {
-        *children_begin = *children_end = -1;
-        return 0;
-    }
-
-    *children_end = *children_begin + tree_degree;
-
-    if (*children_end > tree_size) {
-        *children_end = tree_size;
-    }
-
-    return *children_end - *children_begin;
-}
-
 inline static void
 barrier_sync_helper_tree(int start, int log2stride, int size, long *pSync)
 {
@@ -88,9 +70,10 @@ barrier_sync_helper_tree(int start, int log2stride, int size, long *pSync)
     /* Get information about children */
     int children_begin, children_end;
     long npokes;
+    int child;
 
-    npokes = get_children_info(size, tree_degree, me_as,
-                               &children_begin, &children_end);
+    npokes = shmemu_get_children_info(size, tree_degree, me_as,
+                                      &children_begin, &children_end);
 
     /* Wait for pokes from the children */
     if (npokes != 0) {
@@ -107,7 +90,7 @@ barrier_sync_helper_tree(int start, int log2stride, int size, long *pSync)
 
     /* Clear pSync and poke the children */
     *pSync = SHMEM_SYNC_VALUE;
-    for (int child = children_begin; child != children_end; child++) {
+    for (child = children_begin; child != children_end; child++) {
         shmemc_inc64(pSync, start + child * stride);
     }
 }
