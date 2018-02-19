@@ -44,48 +44,6 @@ option_enabled_test(char *str)
     return false;
 }
 
-struct algo_desc {
-    char *name;
-    shmemc_coll_t algo;
-} algo_desc_table[] = {
-    { "linear",     SHMEMC_COLL_LINEAR    },
-    { "tree",       SHMEMC_COLL_TREE      },
-    { "dissem",     SHMEMC_COLL_DISSEM    },
-    { NULL,         SHMEMC_COLL_UNKNOWN   }
-};
-
-static shmemc_coll_t
-parse_algo(char *str)
-{
-    struct algo_desc *adp = algo_desc_table;
-
-    while (adp->name != NULL) {
-        if (strncmp(str, adp->name, strlen(adp->name)) == 0) {
-            return adp->algo;
-            /* NOT REACHED */
-        }
-        adp += 1;
-    }
-
-    return SHMEMC_COLL_UNKNOWN;
-}
-
-static char *
-unparse_algo(shmemc_coll_t algo)
-{
-    struct algo_desc *adp = algo_desc_table;
-
-    while (adp->name != NULL) {
-        if (algo == adp->algo) {
-            return adp->name;
-            /* NOT REACHED */
-        }
-        adp += 1;
-    }
-
-    return "unknown";
-}
-
 /*
  * read & save all our environment variables
  */
@@ -139,7 +97,7 @@ shmemc_env_init(void)
 
     proc.env.debug_file = NULL;
     proc.env.xpmem_kludge = false;
-    proc.env.barrier_algo = SHMEMC_COLL_LINEAR;
+    proc.env.barrier_algo = SHMEMC_COLL_DEFAULT;
 
     CHECK_ENV(e, DEBUG_FILE);
     if (e != NULL) {
@@ -154,7 +112,7 @@ shmemc_env_init(void)
         shmemc_coll_t c = parse_algo(e);
 
         if (c == SHMEMC_COLL_UNKNOWN) {
-            c = SHMEMC_COLL_LINEAR;
+            c = SHMEMC_COLL_DEFAULT;
         }
         proc.env.barrier_algo = c;
     }
