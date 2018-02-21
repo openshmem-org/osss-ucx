@@ -28,26 +28,40 @@ for a given variable, the "SHMEM_" one will be used.
 .LP
 If set, boolean flags are enabled with a non-zero numeric value, or "y",
 "yes"; disabled with zero numeric value, or "n", "no".
+.\"
 .RS 4
+.\"
 .LP
 Required by specification
 .RS 4
-.IP "SHMEM_VERSION (bool)"
+.IP "SHMEM_VERSION (bool: default false)"
 print library version at start-up
-.IP "SHMEM_INFO (bool)"
+.IP "SHMEM_INFO (bool: default false)"
 print information about supported environment variables
-.IP "SHMEM_SYMMETRIC_SIZE (number)"
-set the size of the symmetric heap.  Can use K,M,G,T units
-.IP "SHMEM_DEBUG (bool)"
+.IP "SHMEM_SYMMETRIC_SIZE (number: default 32M)"
+set the size of the symmetric heap.  Can use K,M,G,T units (2^10).
+.IP "SHMEM_DEBUG (bool: default false)"
 enable run debugging (if configured).
 .RE
 .LP
 This implementation also has
 .RS 4
-.IP "SHMEM_DEBUG_FILE (string)"
+.IP "SHMEM_DEBUG_FILE (string: default none)"
 file to receive debugging information.
 .RE
+.RS 4
+.IP "SHMEM_BARRIER_ALGO (string: default tree)"
+Algorithm name to use for barriers: currently one of "linear", "tree",
+"dissem" (dissemination).
 .RE
+.RS 4
+.IP "SHMEM_BROADCAST_ALGO (string: default tree)"
+Algorithm name to use for broadcasts: currently one of "linear",
+"tree", "dissem", "binomial", "binomial2".
+.RE
+.\"
+.RE
+.\"
 .SH EXAMPLES
 The command
 .LP
@@ -55,8 +69,14 @@ The command
 $ oshrun -np 4 ./sping.x -e 8192
 .RE
 .LP
-runs the Quadrics ping-pong example code on 4 processing elements, and
-passes the arguments "-e" and "8192" through to the OpenSHMEM program.
+runs the ping-pong code from
+.RS 4
+.LP
+\f(CRhttps://github.com/openshmem-org/openshmem-examples\fP
+.RE
+.LP
+on 4 processing elements, and passes the arguments "-e" and "8192"
+through to the OpenSHMEM program.
 .SH NOTES
 .LP
 The OpenSHMEM specification does not say anything normative about how
@@ -66,4 +86,6 @@ convenience.
 .SH SEE ALSO
 osh_intro(1).
 .SH OPENSHMEM
-http://www.openshmem.org/
+\f(CRhttp://www.openshmem.org/\fP
+.br
+\f(CRhttps://github.com/openshmem-org/openshmem-examples\fP
