@@ -90,3 +90,21 @@ AS_IF([test "x$enable_cxx" != "xno"],
 	[AC_SUBST([ENABLE_CXX], [0])]
 	)
 AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" != "xno"])
+
+#
+# Default symmetric heap size
+#
+
+dnl unless overridden by user
+shmem_default_heap_size="32M"
+
+AC_ARG_WITH([heap-size],
+	AS_HELP_STRING([--with-heap-size=VALUE],
+			[Make the default symmetric heap size VALUE @<:@default=$shmem_default_heap_size@:>@]))
+AS_IF([test "x$with_heap_size" != "x"],
+	[shmem_default_heap_size="$with_heap_size"])
+
+AC_DEFINE_UNQUOTED([SHMEM_DEFAULT_HEAP_SIZE], ["$shmem_default_heap_size"], [Default symmetric heao size])
+AC_SUBST([SHMEM_DEFAULT_HEAP_SIZE], ["$shmem_default_heap_size"])
+
+AM_CONDITIONAL([SHMEM_DEFAULT_HEAP_SIZE], [test "x$with_heapsize" != "x"])
