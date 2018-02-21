@@ -1,0 +1,31 @@
+# For license: see LICENSE file at top-level
+
+Prerequisites
+=============
+
+PMIx v1.2.x, or newer, release:
+
+    PMIx              : https://github.com/pmix/pmix/
+
+UCX, either a release or cloned:
+
+    UCX from github   : https://github.com/openucx/ucx/
+
+OpenMPI for PMIx-aware "mpiexec" launcher:
+
+    OpenMPI downloads : https://www.open-mpi.org/software/ompi/
+
+    N.B. For PMIx v1 series, use OpenMPI 2.1.2 or newer.
+         For PMIx v2 series, use OpenMPI 3.0.0 or newer.
+
+Sequence
+========
+
+1. In the top-level source directory, run ./autogen.sh
+
+2. You can build this package either in-source or out-of-source
+
+3. configure script can be told where PMIx and UCX live, and other
+   options
+
+4. make and make install
