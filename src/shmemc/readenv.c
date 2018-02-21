@@ -8,6 +8,8 @@
 #include "shmemu.h"
 #include "boolean.h"
 
+#include "heapsize.h"
+
 #include <stdio.h>
 #include <stdlib.h>             /* getenv */
 #include <string.h>
@@ -60,6 +62,7 @@ void
 shmemc_env_init(void)
 {
     char *e;
+    int r;
 
     /*
      * defined in spec
@@ -67,7 +70,7 @@ shmemc_env_init(void)
 
     proc.env.print_version = false;
     proc.env.print_info = false;
-    proc.env.def_heap_size = 32 * SHMEMU_MB; /* arbitrary value */
+    proc.env.def_heap_size = 0;
     proc.env.debug = false;
 
     CHECK_ENV(e, VERSION);
@@ -79,12 +82,10 @@ shmemc_env_init(void)
         proc.env.print_info = option_enabled_test(e);
     }
     CHECK_ENV(e, SYMMETRIC_SIZE);
-    if (e != NULL) {
-        const int r = shmemu_parse_size(e, &proc.env.def_heap_size);
-
-        if (r != 0) {
-            shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
-        }
+    r = shmemu_parse_size( (e != NULL) ? e : default_heap_size,
+                           &proc.env.def_heap_size);
+    if (r != 0) {
+        shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
     }
     CHECK_ENV(e, DEBUG);
     if (e != NULL) {
