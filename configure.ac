@@ -19,6 +19,9 @@ AC_SUBST([SHMEM_MINOR_VERSION], 4)
 AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
 AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
+dnl unless overridden by user
+AC_SUBST([SHMEM_DEFAULT_HEAP_SIZE], [32M])
+
 config_flags="$*"
 AC_DEFINE_UNQUOTED([CONFIG_FLAGS],["$config_flags"],[Flags passed to configure])
 
@@ -149,6 +152,7 @@ AC_CONFIG_FILES([src/Makefile
 		])
 
 AC_CONFIG_FILES([src/shmemc/Makefile
+		 src/shmemc/heapsize.h
 		 src/shmemc/oshcc src/shmemc/oshcxx src/shmemc/oshfort
 		 src/shmemc/oshrun
                ])

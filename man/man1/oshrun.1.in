@@ -38,7 +38,7 @@ Required by specification
 print library version at start-up
 .IP "SHMEM_INFO (bool: default false)"
 print information about supported environment variables
-.IP "SHMEM_SYMMETRIC_SIZE (number: default 32M)"
+.IP "SHMEM_SYMMETRIC_SIZE (number: default @SHMEM_DEFAULT_HEAP_SIZE@)"
 set the size of the symmetric heap.  Can use K,M,G,T units (2^10).
 .IP "SHMEM_DEBUG (bool: default false)"
 enable run debugging (if configured).
