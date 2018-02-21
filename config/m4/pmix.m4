@@ -39,16 +39,20 @@ AS_IF([test "x$pmix_happy" != "xno"], [
 	AC_SUBST(PMIX_CFLAGS)
 	AC_SUBST(PMIX_LIBS)
 	AC_DEFINE([HAVE_PMIX], [1], [PMIx support])
+	#
+	# so we have pmix, but is it v1 or >= v2 ?
+	#
 	save_CFLAGS="$CFLAGS"
 	CFLAGS="$PMIX_CFLAGS"
 	AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <pmix.h>]],
 		 	[[pmix_proc_t p; PMIx_Init(&p); PMIx_Finalize();]])
 		],
-		[AC_DEFINE([HAVE_PMIX_v1], [1], [PMIx v1 series])],
-		[AC_DEFINE([HAVE_PMIX_v2], [1], [PMIx v2 or newer])]
-	)
+		[pmix1=yes], [pmix1=no]
+		)
 	CFLAGS="$save_CFLAGS"
+	AS_IF([test "x$pmix1" = "xyes" ],
+		    [AC_DEFINE([HAVE_PMIX_NO_INIT_HINTS], [1], [PMIx v1 series])])
 	]
 )
 
