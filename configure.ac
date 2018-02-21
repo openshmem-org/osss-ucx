@@ -20,10 +20,13 @@ AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
 AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
 
 dnl unless overridden by user
-AC_SUBST([SHMEM_DEFAULT_HEAP_SIZE], [32M])
+shmem_default_heap_size="32M"
+
+AC_SUBST([SHMEM_DEFAULT_HEAP_SIZE], ["$shmem_default_heap_size"])
+AC_DEFINE_UNQUOTED([SHMEM_DEFAULT_HEAP_SIZE], ["$shmem_default_heap_size"], [Default size of symmetric heap])
 
 config_flags="$*"
-AC_DEFINE_UNQUOTED([CONFIG_FLAGS],["$config_flags"],[Flags passed to configure])
+AC_DEFINE_UNQUOTED([CONFIG_FLAGS], ["$config_flags"], [Flags passed to configure])
 
 AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
