@@ -15,7 +15,7 @@
 #include <sys/types.h>
 
 #include <pmix.h>
-#include <pmix/pmix_common.h>
+
 #include <ucp/api/ucp.h>
 
 /*
@@ -267,7 +267,14 @@ shmemc_pmi_client_init(void)
     pmix_value_t *vp = &v;      /* holds things we get from PMIx */
     pmix_status_t ps;
 
+#ifdef HAVE_PMIX_v1
     ps = PMIx_Init(&my_proc);
+#elif HAVE_PMIX_v2
+    ps = PMIx_Init(&my_proc, NULL, 0);
+#else
+# error "I don't know which PMIx major version you have"
+#endif  /* HAVE_PMIX_v<N> */
+
     assert(ps == PMIX_SUCCESS);
 
     /* we can get our own rank immediately */
@@ -310,7 +317,14 @@ shmemc_pmi_client_finalize(void)
     pmix_status_t ps;
     int pe;
 
+#ifdef HAVE_PMIX_v1
     ps = PMIx_Finalize();
+#elif HAVE_PMIX_v2
+    ps = PMIx_Finalize(NULL, 0);
+#else
+# error "I don't know which PMIx major version you have"
+#endif  /* HAVE_PMIX_v<N> */
+
     assert(ps == PMIX_SUCCESS);
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
