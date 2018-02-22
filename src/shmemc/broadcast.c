@@ -249,7 +249,7 @@ broadcast_helper_binomial2(void *target, const void *source, size_t nbytes,
 /* -------------------------------------------------------------------- */
 
 /*
- * chosen implementation.  Later can be selected through e.g. env var
+ * chosen implementation
  */
 static void (*broadcast_helper)(void *target, const void *source,
                                 size_t nelems,

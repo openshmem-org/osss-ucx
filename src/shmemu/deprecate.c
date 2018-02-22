@@ -6,38 +6,29 @@
 
 #include "shmemu.h"
 
-#include "uthash.h"
+#include "khash.h"
 
 #include <stdlib.h>
 #include <assert.h>
 
-struct depr {
-    char *name;
-    UT_hash_handle hh;
-};
+KHASH_SET_INIT_STR(deprecations)
 
-static struct depr *table = NULL;
+static khash_t(deprecations) *table;
 
 inline static int
 already_seen(const char *name)
 {
-    struct depr *lu = NULL;
+    const khint_t k = kh_get(deprecations, table, name);
 
-    HASH_FIND_STR(table, name, lu);
-
-    return (lu != NULL) ? 1 : 0;
+    return (k != kh_end(table));
 }
 
 inline static void
 record(const char *name)
 {
-    struct depr *dp = (struct depr *) malloc(sizeof(*dp));
+    int absent;
 
-    assert(dp != NULL);
-
-    dp->name = strdup(name);
-
-    HASH_ADD_STR(table, name, dp);
+    (void) kh_put(deprecations, table, name, &absent);
 }
 
 /*
@@ -58,17 +49,11 @@ shmemu_deprecate(const char *fn_name)
 void
 shmemu_deprecate_init(void)
 {
-    return;
+    table = kh_init(deprecations);
 }
 
 void
 shmemu_deprecate_finalize(void)
 {
-    struct depr *cur = NULL;
-    struct depr *tmp = NULL;
-
-    HASH_ITER(hh, table, cur, tmp) {
-        free(cur->name);   /* was strdup'ed above */
-        HASH_DEL(table, cur);
-    }
+    kh_destroy(deprecations, table);
 }

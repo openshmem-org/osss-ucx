@@ -64,7 +64,7 @@ barrier_sync_helper_tree(int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
-    const int me_as = (me - start) / stride; /* Get my index in the active set */
+    const int me_as = (me - start) / stride; /* my index in the active set */
     /* Calculate parent's index in the active set */
     const int parent_idx = me_as != 0 ? (me_as - 1) / tree_degree : -1;
     /* Get information about children */
@@ -119,8 +119,11 @@ barrier_sync_helper_dissemination(int start, int log2stride,
         /* Wait until poked in this round */
         shmemc_wait_ne_until64(&pSync[round], SHMEM_SYNC_VALUE);
 
-        /* Reset pSync element, fadd is used instead of add because we have to */
-        /* be sure that reset happens before next invocation of barrier */
+        /*
+         * Reset pSync element, fadd() is used instead of add()
+         * because we have to be sure that reset happens before next
+         * invocation of barrier
+         */
         (void) shmemc_fadd64(&pSync[round], -1, me);
     }
 }
@@ -128,7 +131,7 @@ barrier_sync_helper_dissemination(int start, int log2stride,
 /* -------------------------------------------------------------------- */
 
 /*
- * chosen implementation.  Later can be selected through e.g. env var
+ * chosen implementation
  */
 static void (*barrier_sync_helper)(int start, int log2stride,
                                    int size, long *pSync);
