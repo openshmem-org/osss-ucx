@@ -6,7 +6,7 @@
 
 #include "shmemu.h"
 
-#include "khash.h"
+#include "klib/khash.h"
 
 #include <stdlib.h>
 #include <assert.h>
