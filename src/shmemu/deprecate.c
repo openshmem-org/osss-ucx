@@ -8,9 +8,6 @@
 
 #include "klib/khash.h"
 
-#include <stdlib.h>
-#include <assert.h>
-
 KHASH_SET_INIT_STR(deprecations)
 
 static khash_t(deprecations) *table;
@@ -39,6 +36,7 @@ shmemu_deprecate(const char *fn_name)
 {
     if (already_seen(fn_name)) {
         return;
+        /* NOT REACHED */
     }
 
     record(fn_name);
