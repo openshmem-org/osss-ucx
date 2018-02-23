@@ -4,8 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "state.h"
-
 #include "shmemc.h"
 #include "shmemu.h"
 
@@ -19,13 +17,13 @@
 int
 shmem_my_pe(void)
 {
-    return proc.rank;
+    return shmemc_my_pe();
 }
 
 int
 shmem_n_pes(void)
 {
-    return proc.nranks;
+    return shmemc_n_pes();
 }
 
 #ifdef ENABLE_PSHMEM
@@ -39,12 +37,12 @@ int
 _my_pe(void)
 {
     deprecate(__func__);
-    return proc.rank;
+    return shmemc_my_pe();
 }
 
 int
 _num_pes(void)
 {
     deprecate(__func__);
-    return proc.nranks;
+    return shmemc_n_pes();
 }
