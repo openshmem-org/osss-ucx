@@ -3,15 +3,28 @@
 Prerequisites
 =============
 
-PMIx v1.2.x, or newer, release:
+PMIx
+====
+
+v1.2.x, or newer, release:
 
     PMIx              : https://github.com/pmix/pmix/
 
-UCX, either a release or cloned:
+UCX
+===
+
+Either a release or cloned:
 
     UCX from github   : https://github.com/openucx/ucx/
 
-OpenMPI for PMIx-aware "mpiexec" launcher:
+If you want to build threading support, UCX should be installed with
+
+    --enable-mt
+
+OpenMPI
+=======
+
+For PMIx-aware "mpiexec" launcher:
 
     OpenMPI downloads : https://www.open-mpi.org/software/ompi/
 
