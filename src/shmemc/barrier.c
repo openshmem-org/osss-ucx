@@ -139,8 +139,8 @@ static void (*barrier_sync_helper)(int start, int log2stride,
 /*
  * internal psyncs
  */
-long shmemc_all_barrier = SHMEM_SYNC_VALUE;
-long shmemc_all_sync = SHMEM_SYNC_VALUE;
+long *shmemc_barrier_all_psync;
+long *shmemc_sync_all_psync;
 
 /*
  * API
@@ -182,7 +182,7 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
 void
 shmemc_barrier_all(void)
 {
-    shmemc_barrier(0, 0, proc.nranks, &shmemc_all_barrier);
+    shmemc_barrier(0, 0, proc.nranks, shmemc_barrier_all_psync);
 }
 
 void
@@ -196,5 +196,5 @@ shmemc_sync(int start, int log2stride, int size, long *pSync)
 void
 shmemc_sync_all(void)
 {
-    shmemc_sync(0, 0, proc.nranks, &shmemc_all_sync);
+    shmemc_sync(0, 0, proc.nranks, shmemc_sync_all_psync);
 }

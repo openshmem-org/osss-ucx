@@ -10,6 +10,10 @@ if ENABLE_DEBUG
 LIBSHMEMU_SOURCES        += deprecate.c
 endif
 
+lib_LTLIBRARIES           = libshmemu.la
+libshmemu_la_SOURCES      = $(LIBSHMEMU_SOURCES)
+libshmemu_la_CFLAGS       = $(OTHER_CPPFLAGS)
+
 lib_LIBRARIES             = libshmemu.a
 libshmemu_a_SOURCES       = $(LIBSHMEMU_SOURCES)
 libshmemu_a_CFLAGS        = $(OTHER_CPPFLAGS)
