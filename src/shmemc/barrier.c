@@ -8,6 +8,7 @@
 #include "shmemc.h"
 #include "state.h"
 #include "memfence.h"
+#include "collalgo.h"
 
 #include "shmem/defs.h"
 
@@ -72,7 +73,7 @@ barrier_sync_helper_tree(int start, int log2stride, int size, long *pSync)
     long npokes;
     int child;
 
-    npokes = shmemu_get_children_info(size, tree_degree, me_as,
+    npokes = shmemc_get_children_info(size, tree_degree, me_as,
                                       &children_begin, &children_end);
 
     /* Wait for pokes from the children */

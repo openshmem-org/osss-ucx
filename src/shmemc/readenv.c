@@ -7,7 +7,7 @@
 #include "state.h"
 #include "shmemu.h"
 #include "boolean.h"
-
+#include "collalgo.h"
 #include "heapsize.h"
 
 #include <stdio.h>
@@ -111,7 +111,7 @@ shmemc_env_init(void)
     }
     CHECK_ENV(e, BARRIER_ALGO);
     if (e != NULL) {
-        shmemc_coll_t c = shmemu_parse_algo(e);
+        shmemc_coll_t c = shmemc_parse_algo(e);
 
         if (c == SHMEMC_COLL_UNKNOWN) {
             c = SHMEMC_COLL_DEFAULT;
@@ -120,7 +120,7 @@ shmemc_env_init(void)
     }
     CHECK_ENV(e, BROADCAST_ALGO);
     if (e != NULL) {
-        shmemc_coll_t c = shmemu_parse_algo(e);
+        shmemc_coll_t c = shmemc_parse_algo(e);
 
         if (c == SHMEMC_COLL_UNKNOWN) {
             c = SHMEMC_COLL_DEFAULT;
@@ -211,12 +211,12 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_BARRIER_ALGO",
-            val_width, shmemu_unparse_algo(proc.env.barrier_algo),
+            val_width, shmemc_unparse_algo(proc.env.barrier_algo),
             "algorithm to use for barrier");
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_BROADCAST_ALGO",
-            val_width, shmemu_unparse_algo(proc.env.broadcast_algo),
+            val_width, shmemc_unparse_algo(proc.env.broadcast_algo),
             "algorithm to use for broadcast");
 
     fprintf(stream, "%s\n",
