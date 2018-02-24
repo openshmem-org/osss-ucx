@@ -88,4 +88,5 @@ libshmem_a_LIBADD      = liballocator.a
 bin_PROGRAMS           = osh_info
 osh_info_SOURCES       = osh_info.c info.c
 osh_info_CPPFLAGS      = $(all_cppflags)
-osh_info_LDFLAGS       = $(shmemu_ldflags) $(shmemu_libs)
+# minimize execution-time deps
+osh_info_LDFLAGS       = $(shmemu_dir)/libshmemu.a

@@ -6,13 +6,13 @@
 
 
 #include "state.h"
-#include "shmemu.h"
+// #include "shmemu.h"
 #include "boolean.h"
 
 #include <string.h>
 
 int
-shmemu_get_children_info(int tree_size, int tree_degree, int node,
+shmemc_get_children_info(int tree_size, int tree_degree, int node,
                          int *children_begin, int *children_end)
 {
     *children_begin = node * tree_degree + 1;
@@ -33,7 +33,7 @@ shmemu_get_children_info(int tree_size, int tree_degree, int node,
 }
 
 int
-shmemu_get_children_info_binomial(int tree_size, int node, int *children)
+shmemc_get_children_info_binomial(int tree_size, int node, int *children)
 {
     int children_num = 0;
     int mask;                   /* Lowest bit */
@@ -71,7 +71,7 @@ static struct algo_desc {
 };
 
 shmemc_coll_t
-shmemu_parse_algo(char *str)
+shmemc_parse_algo(char *str)
 {
     struct algo_desc *adp = algo_desc_table;
 
@@ -87,7 +87,7 @@ shmemu_parse_algo(char *str)
 }
 
 char *
-shmemu_unparse_algo(shmemc_coll_t algo)
+shmemc_unparse_algo(shmemc_coll_t algo)
 {
     struct algo_desc *adp = algo_desc_table;
 

@@ -208,7 +208,6 @@ register_symmetric_heap(void)
     def_symm_heap->len  = attr.length;
 
     /* initialize the heap allocator */
-    /* TODO: up 1 level */
     shmema_init((void *) def_symm_heap->base, def_symm_heap->len);
 }
 
@@ -217,7 +216,6 @@ deregister_symmetric_heap(void)
 {
     ucs_status_t s;
 
-    /* TODO: up 1 level */
     shmema_finalize();
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, def_symm_heap->racc.mh);
@@ -370,6 +368,27 @@ shmemc_ucx_make_remote_endpoints(void)
     }
 }
 
+extern long *shmemc_barrier_all_psync;
+extern long *shmemc_sync_all_psync;
+
+#define ALLOC_INTERNAL_SYMM_VAR(_var)                                   \
+    do {                                                                \
+        int i;                                                          \
+        const size_t nbytes                                             \
+            = sizeof(*(_var)) * SHMEM_BARRIER_SYNC_SIZE;                \
+                                                                        \
+        (_var) = (long *) shmema_malloc(nbytes);                        \
+                                                                        \
+        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; i += 1) {              \
+            (_var)[i] = SHMEM_SYNC_VALUE;                               \
+        }                                                               \
+    } while (0)
+
+#define FREE_INTERNAL_SYMM_VAR(_var)                                    \
+    do {                                                                \
+        shmema_free(_var);                                              \
+    } while (0)
+
 void
 shmemc_ucx_init(void)
 {
@@ -387,9 +406,7 @@ shmemc_ucx_init(void)
 
     shmemc_env_init();
 
-    /*
-     * collectives
-     */
+    /* collectives are go */
     shmemc_barrier_init();
     shmemc_broadcast_init();
 
@@ -403,15 +420,15 @@ shmemc_ucx_init(void)
     register_globals();
     register_symmetric_heap();
 
-    /*
-     * Create exchange workers and space for EPs
-     */
+    /* pre-allocate internal sync variables */
+    ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
+    ALLOC_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
+
+    /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
     allocate_endpoints_table();
 
-    /*
-     * prep contexts, allocate first one (default)
-     */
+    /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
     shmemc_create_default_context(&SHMEM_CTX_DEFAULT);
 
@@ -437,6 +454,10 @@ shmemc_ucx_finalize(void)
 
     deallocate_contexts_table();
     deallocate_xworkers_table();
+
+    /* free up internal sync variables */
+    FREE_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
+    FREE_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
 
     /* TODO: generalize for multiple heaps */
     deregister_symmetric_heap();

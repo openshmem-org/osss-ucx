@@ -7,6 +7,7 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "state.h"
+#include "collalgo.h"
 
 #include <sys/types.h>
 
@@ -68,7 +69,7 @@ broadcast_helper_tree(void *target, const void *source, size_t nbytes,
 
     /* Get information about children */
     num_children =
-        shmemu_get_children_info(PE_size, broadcast_tree_degree, me_as,
+        shmemc_get_children_info(PE_size, broadcast_tree_degree, me_as,
                                  &children_begin, &children_end);
 
     /* Wait for the data from the parent */
@@ -139,7 +140,7 @@ broadcast_helper_binomial(void *target, const void *source, size_t nbytes,
 
     /* Get information about children */
     num_children =
-        shmemu_get_children_info_binomial(PE_size, me_as, children);
+        shmemc_get_children_info_binomial(PE_size, me_as, children);
 
     /* Wait for the data from the parent */
     if (me_as != 0) {
@@ -200,7 +201,7 @@ broadcast_helper_binomial2(void *target, const void *source, size_t nbytes,
 
     /* Get information about children */
     num_children =
-        shmemu_get_children_info_binomial(PE_size, me_as, children);
+        shmemc_get_children_info_binomial(PE_size, me_as, children);
 
     /* Wait for the data form the parent */
     if (me_as != 0) {
