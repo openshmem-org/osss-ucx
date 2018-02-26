@@ -19,8 +19,6 @@
 #include <ctype.h>
 #include <math.h>
 
-#define TRACE_MSG_BUF_SIZE 256
-
 static FILE *log_stream = NULL;
 static char *host = NULL;
 static int pe_width;
@@ -40,7 +38,7 @@ static shmemu_log_table_t table[] =
         LOG_LEVEL_EMIT(FINALIZE),
         LOG_LEVEL_EMIT(MEMORY),
         LOG_LEVEL_EMIT(HEAP),
-        LOG_LEVEL_EMIT(WORKER),
+        LOG_LEVEL_EMIT(CONTEXT),
         LOG_LEVEL_EMIT(INFO),
         LOG_LEVEL_EMIT(REDUCTION),
         LOG_LEVEL_EMIT(BARRIER),
@@ -127,6 +125,8 @@ shmemu_logger_finalize(void)
     }
 }
 
+#define TRACE_MSG_BUF_SIZE 256
+
 void
 shmemu_logger(shmemu_log_t level, const char *fmt, ...)
 {
@@ -153,7 +153,7 @@ shmemu_logger(shmemu_log_t level, const char *fmt, ...)
         vsnprintf(tmp1, TRACE_MSG_BUF_SIZE, fmt, ap);
         va_end(ap);
 
-        strncat(tmp2, tmp1, strlen(tmp2));
+        strncat(tmp2, tmp1, strlen(tmp1));
         strncat(tmp2, "\n", 1);
 
         fputs(tmp2, log_stream);

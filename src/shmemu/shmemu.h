@@ -14,14 +14,6 @@
 #include <stdarg.h>
 
 /*
- * units for asking for symmetric heap size
- */
-#define SHMEMU_KB 1024L
-#define SHMEMU_MB (SHMEMU_KB * SHMEMU_KB)
-#define SHMEMU_GB (SHMEMU_KB * SHMEMU_MB)
-#define SHMEMU_TB (SHMEMU_KB * SHMEMU_GB)
-
-/*
  * how many elements in array T?
  *
  */
@@ -63,20 +55,19 @@ void shmemu_logger_init(void);
 void shmemu_logger_finalize(void);
 
 typedef enum shmemu_log {
+    LOG_ALL         = ~0,
+    /* individuals */
     LOG_FATAL       = SHMEM_BIT_SET(0),
     LOG_INIT        = SHMEM_BIT_SET(1),
     LOG_FINALIZE    = SHMEM_BIT_SET(2),
     LOG_MEMORY      = SHMEM_BIT_SET(3),
     LOG_HEAP        = SHMEM_BIT_SET(4),
-    LOG_WORKER      = SHMEM_BIT_SET(5),
+    LOG_CONTEXT     = SHMEM_BIT_SET(5),
     LOG_INFO        = SHMEM_BIT_SET(6),
     LOG_REDUCTION   = SHMEM_BIT_SET(7),
     LOG_BARRIER     = SHMEM_BIT_SET(8),
     LOG_DEPRECATE   = SHMEM_BIT_SET(9),
     LOG_LOCK        = SHMEM_BIT_SET(10),
-    LOG_ALL         = (LOG_FATAL | LOG_INIT | LOG_FINALIZE |
-                       LOG_MEMORY | LOG_HEAP | LOG_WORKER | LOG_INFO |
-                       LOG_REDUCTION | LOG_BARRIER | LOG_DEPRECATE | LOG_LOCK),
     LOG_UNKNOWN     = -1
 } shmemu_log_t;
 

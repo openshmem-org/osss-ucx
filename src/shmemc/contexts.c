@@ -6,6 +6,7 @@
 
 #include "state.h"
 #include "shmemc.h"
+#include "shmemu.h"
 
 #include "shmem/defs.h"
 
@@ -86,20 +87,29 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
 }
 
 /*
- * zap existing context
+ * zap existing context.  Illegal to zap default context, so I will
+ * interpret that as "to be avoided" and continue
  */
 
 void
 shmemc_context_destroy(shmemc_context_h ctx)
 {
-    if (ctx != NULL) {
+    if (ctx == NULL) {
+        return;
+        /* NOT REACHED */
+    }
+    else if (ctx == SHMEM_CTX_DEFAULT) {
+        logger(LOG_CONTEXT,
+               "it is illegal to destroy the default context, ignoring...");
+        return;
+        /* NOT REACHED */
+    }
+    else {
         /*
          * spec 1.4 requires implicit quiet on destroy for storable
          * contexts
          */
-        if (! ctx->nostore) {
-            shmemc_ctx_quiet(ctx);
-        }
+        shmemc_ctx_quiet(ctx);
 
         ucp_worker_destroy(ctx->w);
 

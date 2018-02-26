@@ -125,18 +125,24 @@ void
 shmemc_ctx_fence(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
-    const ucs_status_t s = ucp_worker_fence(ch->w);
 
-    assert(s == UCS_OK);
+    if (! ch->nostore) {
+        const ucs_status_t s = ucp_worker_fence(ch->w);
+
+        assert(s == UCS_OK);
+    }
 }
 
 void
 shmemc_ctx_quiet(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
-    const ucs_status_t s = ucp_worker_flush(ch->w);
 
-    assert(s == UCS_OK);
+    if (! ch->nostore) {
+        const ucs_status_t s = ucp_worker_flush(ch->w);
+
+        assert(s == UCS_OK);
+    }
 }
 
 /*
