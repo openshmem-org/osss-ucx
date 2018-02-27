@@ -43,14 +43,18 @@ void shmemc_ctx_fence(shmem_ctx_t ctx);
 void shmemc_ctx_quiet(shmem_ctx_t ctx);
 
 void shmemc_ctx_put(shmem_ctx_t ctx,
-                    void *dest, const void *src, size_t nbytes, int pe);
+                    void *dest, const void *src,
+                    size_t nbytes, int pe);
 void shmemc_ctx_get(shmem_ctx_t ctx,
-                    void *dest, const void *src, size_t nbytes, int pe);
+                    void *dest, const void *src,
+                    size_t nbytes, int pe);
 
 void shmemc_ctx_put_nbi(shmem_ctx_t ctx,
-                        void *dest, const void *src, size_t nbytes, int pe);
+                        void *dest, const void *src,
+                        size_t nbytes, int pe);
 void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
-                        void *dest, const void *src, size_t nbytes, int pe);
+                        void *dest, const void *src,
+                        size_t nbytes, int pe);
 
 /*
  * -- AMOs -------------------------------------------------------------------
@@ -149,7 +153,8 @@ SHMEMC_CTX_DECL_BITWISE(xor, 64)
 
 #define SHMEMC_CTX_DECL_FETCH_BITWISE(_op, _size)                       \
     uint64_t shmemc_ctx_fetch_##_op##_size(shmem_ctx_t ctx,             \
-                                           void *target, uint64_t value, int pe);
+                                           void *target,                \
+                                           uint64_t value, int pe);
 
 SHMEMC_CTX_DECL_FETCH_BITWISE(and, 32)
 SHMEMC_CTX_DECL_FETCH_BITWISE(and, 64)
