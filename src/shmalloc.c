@@ -68,7 +68,7 @@ shmem_free(void *p)
 
 /*
  * realloc can cause memory to move around, so we protect it before
- * *and* after (spec 1.4rc5, p. 25)
+ * *and* after (spec 1.4, p. 25)
  */
 
 void *
