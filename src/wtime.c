@@ -19,6 +19,7 @@ shmemx_wtime(void)
 
     if (gettimeofday(&t, NULL) != 0) {
         return 0.0;
+        /* NOT REACHED */
     }
 
     return ((t.tv_sec * 1.0e6) + t.tv_usec) / 1.0e6;

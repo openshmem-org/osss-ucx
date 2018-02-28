@@ -90,6 +90,7 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
                                 lock_owner(lock));
         if (t.d.next == proc.rank) {
             return;
+            /* NOT REACHED */
         }
 
         shmemc_wait_ge_until16(&(node->d.next), 0);
@@ -113,7 +114,6 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
     if (t.blob == SHMEM_LOCK_RESET) {
         set_lock(node, lock);
         ret = 0;
-        /* NOT REACHED */
     }
     else {
         ret = 1;

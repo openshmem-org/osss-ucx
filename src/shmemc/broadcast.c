@@ -164,8 +164,8 @@ broadcast_helper_binomial(void *target, const void *source, size_t nbytes,
         int i;
 
         for (i = 0; i < num_children; i++) {
-            const int dst =
-                PE_start + (children[i] == PE_root ? 0 : children[i]) * stride;
+            const int dst = PE_start +
+                (children[i] == PE_root ? 0 : children[i]) * stride;
 
             shmemc_put(target, source, nbytes, dst);
             shmemc_fence();
@@ -225,8 +225,8 @@ broadcast_helper_binomial2(void *target, const void *source, size_t nbytes,
         int i;
 
         for (i = 0; i < num_children; i++) {
-            const int dst =
-                PE_start + (children[i] == PE_root ? 0 : children[i]) * stride;
+            const int dst = PE_start +
+                (children[i] == PE_root ? 0 : children[i]) * stride;
 
             shmemc_put(target, source, nbytes, dst);
         }
@@ -234,8 +234,8 @@ broadcast_helper_binomial2(void *target, const void *source, size_t nbytes,
         shmemc_fence();
 
         for (i = 0; i < num_children; i++) {
-            const int dst =
-                PE_start + (children[i] == PE_root ? 0 : children[i]) * stride;
+            const int dst = PE_start +
+                (children[i] == PE_root ? 0 : children[i]) * stride;
 
             shmemc_inc64(pSync, dst);
         }
