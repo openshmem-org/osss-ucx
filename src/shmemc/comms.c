@@ -89,6 +89,7 @@ translate_address(uint64_t local_addr, size_t region, int pe)
 #else
     if (region == 0) {
         return local_addr;
+        /* NOT REACHED */
     }
     else {
         const uint64_t my_offset = local_addr - GET_BASE(region, proc.rank);
@@ -126,7 +127,7 @@ shmemc_ctx_fence(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
 
-    if (! ch->nostore) {
+    if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_fence(ch->w);
 
         assert(s == UCS_OK);
@@ -138,7 +139,7 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
 
-    if (! ch->nostore) {
+    if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_flush(ch->w);
 
         assert(s == UCS_OK);
@@ -171,6 +172,9 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
         return usable_addr;
         /* NOT REACHED */
     }
+    /*
+     * fall through and ...
+     */
 #endif  /* HAVE_UCP_RKEY_PTR */
 
     return NULL;

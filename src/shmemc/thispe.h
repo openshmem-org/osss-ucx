@@ -53,6 +53,13 @@ typedef struct mem_region {
  * NB difference between UCX context, and OpenSHMEM context.  Each
  * OpenSHMEM context requires...
  */
+
+typedef struct shmemc_context_attr {
+    bool serialized;
+    bool private;
+    bool nostore;
+} shmemc_context_attr_t;
+
 typedef struct shmemc_context {
     ucp_worker_h w;             /* for separate context progress */
 
@@ -61,9 +68,7 @@ typedef struct shmemc_context {
     /*
      * parsed options during creation (defaults: no)
      */
-    bool serialized;
-    bool private;
-    bool nostore;
+    shmemc_context_attr_t attr;
 
     /*
      * possibly other things

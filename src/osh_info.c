@@ -27,7 +27,8 @@ output_help(void)
             "Usage: %s [options]\n\n",
             progname);
     fprintf(stderr,
-            "    [-V | --version]    only output OpenSHMEM version info\n");
+            "    [-V | --version]    only output OpenSHMEM"
+            " package version info\n");
     fprintf(stderr,
             "    [-h | --help]       show this help message\n");
     fprintf(stderr,
@@ -73,6 +74,7 @@ main(int argc, char *argv[])
     if (help) {
         output_help();
         return EXIT_FAILURE;
+        /* NOT REACHED */
     }
 
     if (just_version) {

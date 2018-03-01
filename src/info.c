@@ -6,6 +6,7 @@
 
 #include "version.h"
 #include "shmemu.h"
+#include "shmemc.h"
 #include "info.h"
 
 #include <stdio.h>
@@ -16,19 +17,19 @@
 
 static const int tag_width = 28;
 
+#define BUFMAX 64
+
 #define UNKNOWN        "unknown"
 #define INTERNAL_ERROR "not found [shouldn't happen]"
 
 inline static void
 output(const char *tag, const char *val)
 {
-    if (tag != NULL) {
-#define STRMAX 64
-        char buf[STRMAX];
+    char buf[BUFMAX];
 
-        snprintf(buf, STRMAX, "%s:", tag);
+    if (tag != NULL) {
+        snprintf(buf, BUFMAX, "%s:", tag);
         printf("# %-*s ", tag_width, buf);
-#undef STRMAX
     }
 
     if (val != NULL) {
@@ -40,15 +41,12 @@ static void
 output_spec_version(void)
 {
 #if defined(SHMEM_MAJOR_VERSION) && defined(SHMEM_MINOR_VERSION)
-
-#define BUFMAX 16
     char buf[BUFMAX];
 
     snprintf(buf, BUFMAX,
              "%d.%d",
              SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
     output("OpenSHMEM Specification", buf);
-#undef BUFMAX
 #endif /* spec. version check */
 }
 

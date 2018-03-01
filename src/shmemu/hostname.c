@@ -31,6 +31,7 @@ shmemu_gethostname(void)
         if (s == 0) {
             strncpy(hostname, MAXHOSTNAMELEN, u.nodename);
             return (char *) hostname;
+            /* NOT REACHED */
         }
 
         return NULL;
