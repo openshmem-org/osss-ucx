@@ -16,7 +16,9 @@
 
 /*
  * this overlays an opaque blob we can move around with AMOs, and the
- * signalling/PE parts
+ * signalling/PE parts.
+ *
+ * TODO "short" PE in this setup, should be "int"
  */
 
 typedef union shmem_lock {
@@ -24,7 +26,7 @@ typedef union shmem_lock {
         int16_t locked;
         int16_t next;
     } d;
-    int32_t blob;
+    int32_t blob;               /* for AMOs & owner transfer */
 } shmem_lock_t;
 
 enum shmem_lock_state {
