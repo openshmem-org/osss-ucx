@@ -25,9 +25,9 @@ static const int tag_width = 28;
 inline static void
 output(const char *tag, const char *val)
 {
-    char buf[BUFMAX];
-
     if (tag != NULL) {
+        char buf[BUFMAX];
+
         snprintf(buf, BUFMAX, "%s:", tag);
         printf("# %-*s ", tag_width, buf);
     }
