@@ -916,19 +916,19 @@ FORTRANIFY(shmem_test_lock)(long *lock)
     return shmem_test_lock(lock);
 }
 
-#if defined(ENABLE_PSHMEM)
+#ifdef ENABLE_PSHMEM
 
 /*
  * proposed profiling interface(note: no pshmem equiv)
  *
  */
 
-extern void shmem_pcontrol(int level);
+extern void shmemx_pcontrol(int level);
 
 void
-FORTRANIFY(shmem_pcontrol)(int *level)
+FORTRANIFY(shmemx_pcontrol)(int *level)
 {
-    shmem_pcontrol(*level);
+    shmemx_pcontrol(*level);
 }
 
 #endif /* ENABLE_PSHMEM */

@@ -5,6 +5,6 @@
 
 #include <shmem.h>
 
-/* no extensions, so nothing here */
+/* no extensions requested, so nothing here */
 
 #endif  /* ! _SHMEMX_H */

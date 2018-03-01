@@ -55,6 +55,7 @@ main(int argc, char *argv[])
 
         if (c == -1) {
             break;
+            /* NOT REACHED */
         }
 
         switch (c) {
