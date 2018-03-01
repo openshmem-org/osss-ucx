@@ -73,6 +73,7 @@ main(int argc, char *argv[])
     if (help) {
         output_help();
         return EXIT_FAILURE;
+        /* NOT REACHED */
     }
 
     if (just_version) {
