@@ -62,20 +62,22 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
         /* NOT REACHED */
     }
 
-    newone->serialized = options & SHMEM_CTX_SERIALIZED;
-    newone->private    = options & SHMEM_CTX_PRIVATE;
-    newone->nostore    = options & SHMEM_CTX_NOSTORE;
+    newone->attr.serialized = options & SHMEM_CTX_SERIALIZED;
+    newone->attr.private    = options & SHMEM_CTX_PRIVATE;
+    newone->attr.nostore    = options & SHMEM_CTX_NOSTORE;
 
     wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
-    if (newone->serialized) {
+
+    if (newone->attr.serialized) {
         wkpm.thread_mode = UCS_THREAD_MODE_SERIALIZED;
     }
-    else if (newone->private) {
+    else if (newone->attr.private) {
         wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
     }
     else {
         wkpm.thread_mode = UCS_THREAD_MODE_MULTI;
     }
+
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(newone->w));
     assert(s == UCS_OK);
 

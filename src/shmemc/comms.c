@@ -127,7 +127,7 @@ shmemc_ctx_fence(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
 
-    if (! ch->nostore) {
+    if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_fence(ch->w);
 
         assert(s == UCS_OK);
@@ -139,7 +139,7 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
 
-    if (! ch->nostore) {
+    if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_flush(ch->w);
 
         assert(s == UCS_OK);
