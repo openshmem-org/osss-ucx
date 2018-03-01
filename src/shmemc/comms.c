@@ -172,6 +172,9 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
         return usable_addr;
         /* NOT REACHED */
     }
+    /*
+     * fall through and ...
+     */
 #endif  /* HAVE_UCP_RKEY_PTR */
 
     return NULL;
