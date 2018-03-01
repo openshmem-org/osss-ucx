@@ -89,6 +89,7 @@ translate_address(uint64_t local_addr, size_t region, int pe)
 #else
     if (region == 0) {
         return local_addr;
+        /* NOT REACHED */
     }
     else {
         const uint64_t my_offset = local_addr - GET_BASE(region, proc.rank);
