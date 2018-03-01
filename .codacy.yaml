@@ -1,3 +1,4 @@
 ---
 exclude_paths:
   - src/allocator/dmalloc.*
+  - src/shmemu/klib/khash.h
