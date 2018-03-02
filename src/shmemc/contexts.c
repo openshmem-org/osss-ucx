@@ -15,14 +15,22 @@
 #include <ucp/api/ucp.h>
 
 /*
- * insert context into PE state
- *
- * Return 0 on success, 1 on failure
+ * how many more to allocate when we run out (magic number)
  */
 
 static const size_t context_block = 8;
 
+/*
+ * track most recent context
+ */
+
 static size_t top_ctxt = 0;
+
+/*
+ * insert context into PE state
+ *
+ * Return 0 on success, 1 on failure
+ */
 
 inline static int
 register_context(shmemc_context_h ch)
