@@ -11,7 +11,6 @@
 #include "shmem/defs.h"
 
 #include <stdlib.h>
-#include <assert.h>
 
 #include <ucp/api/ucp.h>
 
@@ -92,17 +91,24 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     }
 
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(newone->w));
-    assert(s == UCS_OK);
+    if (s != UCS_OK) {
+        goto bail;
+        /* NOT REACHED */
+    }
 
     if (register_context(newone) != 0) {
-        free(newone);
-        return 1;
+        goto bail;
         /* NOT REACHED */
     }
 
     *ctxp = newone;             /* handle back to caller */
 
     return 0;
+    /* NOT REACHED */
+
+ bail:
+    free(newone);
+    return 1;
 }
 
 /*
@@ -149,8 +155,9 @@ shmemc_create_default_context(shmem_ctx_t *ctx_p)
     ucs_status_t s;
     ucp_address_t *addr;
     size_t len;
+    const long default_options = 0L;
 
-    n = shmemc_context_create(0, &ctx);
+    n = shmemc_context_create(default_options, &ctx);
     if (n != 0) {
         return 1;
         /* NOT REACHED */
