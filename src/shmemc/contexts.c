@@ -11,32 +11,42 @@
 #include "shmem/defs.h"
 
 #include <stdlib.h>
-#include <assert.h>
 
 #include <ucp/api/ucp.h>
 
 /*
- * insert and remove contexts in PE state
+ * insert context into PE state
+ *
+ * Return 0 on success, 1 on failure
  */
 
 static const size_t context_block = 8;
 
 static size_t top_ctxt = 0;
 
-inline static void
+inline static int
 register_context(shmemc_context_h ch)
 {
     if (proc.comms.nctxts == top_ctxt) {
         top_ctxt += context_block;
         proc.comms.ctxts =
             (shmemc_context_h *) realloc(proc.comms.ctxts, top_ctxt);
-        assert(proc.comms.ctxts != NULL);
+        if (proc.comms.ctxts == NULL) {
+            return 1;
+            /* NOT REACHED */
+        }
     }
 
     ch->id = proc.comms.nctxts;
     proc.comms.ctxts[proc.comms.nctxts] = ch;
     proc.comms.nctxts += 1;
+
+    return 0;
 }
+
+/*
+ * remove context from PE state
+ */
 
 inline static void
 deregister_context(shmemc_context_h ch)
@@ -47,6 +57,8 @@ deregister_context(shmemc_context_h ch)
 
 /*
  * create new context
+ *
+ * Return 0 on success, 1 on failure
  */
 
 int
@@ -79,13 +91,24 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     }
 
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(newone->w));
-    assert(s == UCS_OK);
+    if (s != UCS_OK) {
+        goto bail;
+        /* NOT REACHED */
+    }
 
-    register_context(newone);
+    if (register_context(newone) != 0) {
+        goto bail;
+        /* NOT REACHED */
+    }
 
     *ctxp = newone;             /* handle back to caller */
 
     return 0;
+    /* NOT REACHED */
+
+ bail:
+    free(newone);
+    return 1;
 }
 
 /*
@@ -132,8 +155,9 @@ shmemc_create_default_context(shmem_ctx_t *ctx_p)
     ucs_status_t s;
     ucp_address_t *addr;
     size_t len;
+    const long default_options = 0L;
 
-    n = shmemc_context_create(0, &ctx);
+    n = shmemc_context_create(default_options, &ctx);
     if (n != 0) {
         return 1;
         /* NOT REACHED */
