@@ -24,7 +24,7 @@ static const size_t context_block = 8;
 
 static size_t top_ctxt = 0;
 
-static int
+inline static int
 register_context(shmemc_context_h ch)
 {
     if (proc.comms.nctxts == top_ctxt) {
@@ -48,7 +48,7 @@ register_context(shmemc_context_h ch)
  * remove context from PE state
  */
 
-static void
+inline static void
 deregister_context(shmemc_context_h ch)
 {
     /* TODO: freed at teardown, should better maintain a pool */
