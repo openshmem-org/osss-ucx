@@ -16,29 +16,40 @@
 #include <ucp/api/ucp.h>
 
 /*
- * insert and remove contexts in PE state
+ * insert context into PE state
+ *
+ * Return 0 on success, 1 on failure
  */
 
 static const size_t context_block = 8;
 
 static size_t top_ctxt = 0;
 
-inline static void
+static int
 register_context(shmemc_context_h ch)
 {
     if (proc.comms.nctxts == top_ctxt) {
         top_ctxt += context_block;
         proc.comms.ctxts =
             (shmemc_context_h *) realloc(proc.comms.ctxts, top_ctxt);
-        assert(proc.comms.ctxts != NULL);
+        if (proc.comms.ctxts == NULL) {
+            return 1;
+            /* NOT REACHED */
+        }
     }
 
     ch->id = proc.comms.nctxts;
     proc.comms.ctxts[proc.comms.nctxts] = ch;
     proc.comms.nctxts += 1;
+
+    return 0;
 }
 
-inline static void
+/*
+ * remove context from PE state
+ */
+
+static void
 deregister_context(shmemc_context_h ch)
 {
     /* TODO: freed at teardown, should better maintain a pool */
@@ -47,6 +58,8 @@ deregister_context(shmemc_context_h ch)
 
 /*
  * create new context
+ *
+ * Return 0 on success, 1 on failure
  */
 
 int
@@ -81,7 +94,11 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(newone->w));
     assert(s == UCS_OK);
 
-    register_context(newone);
+    if (register_context(newone) != 0) {
+        free(newone);
+        return 1;
+        /* NOT REACHED */
+    }
 
     *ctxp = newone;             /* handle back to caller */
 
