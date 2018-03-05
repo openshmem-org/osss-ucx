@@ -56,4 +56,17 @@ AS_IF([test "x$pmix_happy" != "xno"], [
 	]
 )
 
+AS_IF([test "x$pmix_happy" = "xyes"],
+      [hdr="$PMIX_DIR/include/pmix_version.h"
+       maj=`awk '$2 == "PMIX_VERSION_MAJOR" {print strtonum($3)}' $hdr`
+       min=`awk '$2 == "PMIX_VERSION_MINOR" {print strtonum($3)}' $hdr`
+
+       PMIX_VERSION=`printf "%lu.%lu" $maj $min`
+       AS_BOX(PMIx version is $PMIX_VERSION)
+
+       AC_DEFINE_UNQUOTED([PMIX_VERSION], ["$PMIX_VERSION"], [Version of PMIx])
+       AC_SUBST([PMIX_VERSION])
+      ]
+)
+
 AM_CONDITIONAL([HAVE_PMIX], [test "x$pmix_happy" != "xno"])

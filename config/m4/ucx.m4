@@ -50,10 +50,24 @@ AS_IF([test -d "$with_ucx"],
 	      AC_SUBST([UCX_DIR])
 	      AC_SUBST([UCX_LIBS])
 	      ucx_happy=yes
-	      AC_MSG_NOTICE([Selecting UCX as communications layer])
           ]
           )
       ]
       )
-      
+
+AS_IF([test "x$ucx_happy" = "xyes"],
+      [hdr="$UCX_DIR/include/ucp/api/ucp_version.h"
+       maj=`awk '$2 == "UCP_API_MAJOR" {print $3}' $hdr`
+       min=`awk '$2 == "UCP_API_MINOR" {print $3}' $hdr`
+
+       UCX_VERSION=`printf "%u.%u" $maj $min`
+       AS_BOX(UCX version is $UCX_VERSION)
+
+       AC_DEFINE_UNQUOTED([UCX_VERSION], ["$UCX_VERSION"], [Version of UCX])
+       AC_SUBST([UCX_VERSION])
+       
+       # AC_MSG_NOTICE([Selecting UCX as communications layer])
+      ]
+)
+
 AM_CONDITIONAL([HAVE_UCX], [test "x$ucx_happy" != xno])
