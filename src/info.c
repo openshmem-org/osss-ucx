@@ -204,7 +204,15 @@ output_comms(void)
            UCX_DIR
 #else
            INTERNAL_ERROR
-#endif /* HAVE_UCX */
+#endif /* HAVE_UCX install */
+           );
+
+    output("UCX Version",
+#ifdef HAVE_UCX
+           UCX_VERSION
+#else
+           INTERNAL_ERROR
+#endif /* HAVE_UCX version */
            );
 
     output("PMIx Install",
@@ -212,7 +220,14 @@ output_comms(void)
            PMIX_DIR
 #else
            INTERNAL_ERROR
-#endif /* HAVE_PMIX */
+#endif /* HAVE_PMIX install */
+           );
+    output("PMIx Version",
+#ifdef HAVE_PMIX
+           PMIX_VERSION
+#else
+           INTERNAL_ERROR
+#endif /* HAVE_PMIX version */
            );
 }
 
