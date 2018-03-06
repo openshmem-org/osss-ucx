@@ -8,12 +8,15 @@
 #include "shmemu.h"
 
 #include <unistd.h>
-#include <sched.h>
 #include <ucp/api/ucp.h>
 
 #if 0
 #define VOLATILIZE(_type, _var) (* ( volatile _type *) (_var))
 #endif
+
+/*
+ * return 1 if the memory location changed to "value", otherwise 0
+ */
 
 #define COMMS_TEST_SIZE(_size, _opname, _op)                            \
     int                                                                 \
@@ -59,11 +62,7 @@ COMMS_TEST_SIZE(64, ge, >=)
         shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
         ucp_worker_h w = ch->w;                                         \
                                                                         \
-        while (1) {                                                     \
-            if (shmemc_test_##_opname##_size(var, value)) {             \
-                return;                                                 \
-                /* NOT REACHED */                                       \
-            }                                                           \
+        while (shmemc_test_##_opname##_size(var, value) == 0) {         \
             ucp_worker_progress(w);                                     \
         }                                                               \
     }

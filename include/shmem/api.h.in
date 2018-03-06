@@ -1071,11 +1071,11 @@ extern "C"
      */
     void *shmem_align(size_t alignment, size_t size) _WUR;
 
-#define API_DECL_TEST_AND_WAIT_UNTIL(_opname, _name, _type)             \
+#define API_DECL_TEST_AND_WAIT_UNTIL(_opname, _rettype, _name, _type)   \
     /* see \ref shmem_##_name##_opname() */                             \
-    void shmem_##_name##_##_opname(_type *ivar,                         \
-                                   int cmp,                             \
-                                   _type cmp_value);
+    _rettype shmem_##_name##_##_opname(_type *ivar,                     \
+                                       int cmp,                         \
+                                       _type cmp_value);
 
     /**
      * @brief test for symmetric variable to change value
@@ -1099,28 +1099,28 @@ extern "C"
      * @return 1 if the comparison is true, 0 if not
      *
      */
-    API_DECL_TEST_AND_WAIT_UNTIL(test, longdouble, long double)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, schar, signed char)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, char, char)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, short, short)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, long, long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, longlong, long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, uchar, unsigned char)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, ushort, unsigned short)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, uint, unsigned int)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, ulong, unsigned long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, ulonglong, unsigned long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int8, int8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int16, int16_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int32, int32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int64, int64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, uint8, uint8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, uint16, uint16_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, uint32, uint32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, uint64, uint64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, size, size_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, ptrdiff, ptrdiff_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, longdouble, long double)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, schar, signed char)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, char, char)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, short, short)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int, int)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, long, long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, longlong, long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uchar, unsigned char)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ushort, unsigned short)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint, unsigned int)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulong, unsigned long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulonglong, unsigned long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int8, int8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int16, int16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int32, int32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int64, int64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint8, uint8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint16, uint16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint32, uint32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint64, uint64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, size, size_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ptrdiff, ptrdiff_t)
 
     /**
      * @brief wait for a symmetric variable to change value with
@@ -1145,28 +1145,29 @@ extern "C"
      * @return None.
      *
      */
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, longdouble, long double)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, schar, signed char)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, char, char)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, short, short)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int, int)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, long, long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, longlong, long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uchar, unsigned char)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ushort, unsigned short)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint, unsigned int)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ulong, unsigned long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ulonglong, unsigned long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int8, int8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int16, int16_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int32, int32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, int64, int64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint8, uint8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint16, uint16_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint32, uint32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, uint64, uint64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, size, size_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, ptrdiff, ptrdiff_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, longdouble, long double)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, schar, signed char)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, char, char)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, short, short)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int, int)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, long, long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, longlong, long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uchar, unsigned char)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ushort, unsigned short)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint, unsigned int)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ulong, unsigned long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ulonglong,
+                                 unsigned long long)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int8, int8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int16, int16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int32, int32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int64, int64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint8, uint8_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint16, uint16_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint32, uint32_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint64, uint64_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, size, size_t)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ptrdiff, ptrdiff_t)
 
 #undef API_DECL_TEST_AND_WAIT_UNTIL
 
