@@ -50,42 +50,43 @@
                                  int cmp,                               \
                                  _type cmp_value)                       \
     {                                                                   \
-        SHMEMT_MUTEX_PROTECT(                                           \
-                             switch (cmp) {                             \
-                             case SHMEM_CMP_EQ:                         \
-                                 shmemc_wait_eq_until##_size((int##_size##_t *) ivar, \
-                                                             cmp_value); \
-                                 break;                                 \
-                             case SHMEM_CMP_NE:                         \
-                                 shmemc_wait_ne_until##_size((int##_size##_t *) ivar, \
-                                                             cmp_value); \
-                                 break;                                 \
-                             case SHMEM_CMP_GT:                         \
-                                 shmemc_wait_gt_until##_size((int##_size##_t *) ivar, \
-                                                             cmp_value); \
-                                 break;                                 \
-                             case SHMEM_CMP_LE:                         \
-                                 shmemc_wait_le_until##_size((int##_size##_t *) ivar, \
-                                                             cmp_value); \
-                                 break;                                 \
-                             case SHMEM_CMP_LT:                         \
-                                 shmemc_wait_lt_until##_size((int##_size##_t *) ivar, \
-                                                             cmp_value); \
-                                 break;                                 \
-                             case SHMEM_CMP_GE:                         \
-                                 shmemc_wait_ge_until##_size((int##_size##_t *) ivar, \
-                                                             cmp_value); \
-                                 break;                                 \
-                             default:                                   \
-                                 logger(LOG_FATAL,                      \
-                                        "unknown operator (code %d) in \"%s\"", \
-                                        cmp,                            \
-                                        __func__                        \
-                                        );                              \
-                                 return;                                \
-                                 /* NOT REACHED */                      \
-                                 break;                                 \
-                             }                                          \
+        SHMEMT_MUTEX_PROTECT                                            \
+            (                                                           \
+             switch (cmp) {                                             \
+             case SHMEM_CMP_EQ:                                         \
+             shmemc_wait_eq_until##_size((int##_size##_t *) ivar,       \
+                                         cmp_value);                    \
+             break;                                                     \
+             case SHMEM_CMP_NE:                                         \
+             shmemc_wait_ne_until##_size((int##_size##_t *) ivar,       \
+                                         cmp_value);                    \
+             break;                                                     \
+             case SHMEM_CMP_GT:                                         \
+             shmemc_wait_gt_until##_size((int##_size##_t *) ivar,       \
+                                         cmp_value);                    \
+             break;                                                     \
+             case SHMEM_CMP_LE:                                         \
+             shmemc_wait_le_until##_size((int##_size##_t *) ivar,       \
+                                         cmp_value);                    \
+             break;                                                     \
+             case SHMEM_CMP_LT:                                         \
+             shmemc_wait_lt_until##_size((int##_size##_t *) ivar,       \
+                                         cmp_value);                    \
+             break;                                                     \
+             case SHMEM_CMP_GE:                                         \
+             shmemc_wait_ge_until##_size((int##_size##_t *) ivar,       \
+                                         cmp_value);                    \
+             break;                                                     \
+             default:                                                   \
+             logger(LOG_FATAL,                                          \
+                    "unknown operator (code %d) in \"%s\"",             \
+                    cmp,                                                \
+                    __func__                                            \
+                    );                                                  \
+             return;                                                    \
+             /* NOT REACHED */                                          \
+             break;                                                     \
+             }                                                          \
                                                                         ); \
     }
 
@@ -136,48 +137,48 @@ SHMEM_TYPE_WAIT_UNTIL(ptrdiff, ptrdiff_t, 64)
 #endif /* ENABLE_PSHMEM */
 
 #define SHMEM_TYPE_TEST(_opname, _type, _size)                          \
-    void                                                                \
+    int                                                                 \
     shmem_##_opname##_test(_type *ivar, int cmp, _type cmp_value)       \
     {                                                                   \
-        SHMEMT_MUTEX_PROTECT(                                           \
-                             switch (cmp) {                             \
-                             case SHMEM_CMP_EQ:                         \
-                                 shmemc_test_eq##_size((int##_size##_t *) ivar, \
-                                                       cmp_value);      \
-                                 break;                                 \
-                             case SHMEM_CMP_NE:                         \
-                                 shmemc_test_ne##_size((int##_size##_t *) ivar, \
-                                                       cmp_value);      \
-                                 break;                                 \
-                             case SHMEM_CMP_GT:                         \
-                                 shmemc_test_gt##_size((int##_size##_t *) ivar, \
-                                                       cmp_value);      \
-                                 break;                                 \
-                             case SHMEM_CMP_LE:                         \
-                                 shmemc_test_le##_size((int##_size##_t *) ivar, \
-                                                       cmp_value);      \
-                                 break;                                 \
-                             case SHMEM_CMP_LT:                         \
-                                 shmemc_test_lt##_size((int##_size##_t *) ivar, \
-                                                       cmp_value);      \
-                                 break;                                 \
-                             case SHMEM_CMP_GE:                         \
-                                 shmemc_test_ge##_size((int##_size##_t *) ivar, \
-                                                       cmp_value);      \
-                                 break;                                 \
-                             default:                                   \
-                                 logger(LOG_FATAL,                      \
-                                        "unknown operator (code %d) in \"%s\"", \
-                                        cmp,                            \
-                                        __func__                        \
-                                        );                              \
-                                 return;                                \
-                                 /* NOT REACHED */                      \
-                                 break;                                 \
-                             }                                          \
+        SHMEMT_MUTEX_PROTECT                                            \
+            (                                                           \
+             switch (cmp) {                                             \
+             case SHMEM_CMP_EQ:                                         \
+             return shmemc_test_eq##_size((int##_size##_t *) ivar,      \
+                                          cmp_value);                   \
+             break;                                                     \
+             case SHMEM_CMP_NE:                                         \
+             return shmemc_test_ne##_size((int##_size##_t *) ivar,      \
+                                          cmp_value);                   \
+             break;                                                     \
+             case SHMEM_CMP_GT:                                         \
+             return shmemc_test_gt##_size((int##_size##_t *) ivar,      \
+                                          cmp_value);                   \
+             break;                                                     \
+             case SHMEM_CMP_LE:                                         \
+             return shmemc_test_le##_size((int##_size##_t *) ivar,      \
+                                          cmp_value);                   \
+             break;                                                     \
+             case SHMEM_CMP_LT:                                         \
+             return shmemc_test_lt##_size((int##_size##_t *) ivar,      \
+                                          cmp_value);                   \
+             break;                                                     \
+             case SHMEM_CMP_GE:                                         \
+             return shmemc_test_ge##_size((int##_size##_t *) ivar,      \
+                                          cmp_value);                   \
+             break;                                                     \
+             default:                                                   \
+             logger(LOG_FATAL,                                          \
+                    "unknown operator (code %d) in \"%s\"",             \
+                    cmp,                                                \
+                    __func__                                            \
+                    );                                                  \
+             return -1;                                                 \
+             /* NOT REACHED */                                          \
+             break;                                                     \
+             }                                                          \
                                                                         ); \
     }
-
 
 SHMEM_TYPE_TEST(short, short, 16)
 SHMEM_TYPE_TEST(int, int, 32)
@@ -194,11 +195,11 @@ SHMEM_TYPE_TEST(uint64, uint64_t, 64)
 SHMEM_TYPE_TEST(size, size_t, 64)
 SHMEM_TYPE_TEST(ptrdiff, ptrdiff_t, 64)
 
-/**
- * deprecated @ 1.4
- *
- * wait is just wait_until with inequality/change test
- */
+        /**
+         * deprecated @ 1.4
+         *
+         * wait is just wait_until with inequality/change test
+         */
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_short_wait = pshmem_short_wait
@@ -231,15 +232,14 @@ SHMEM_TYPE_TEST(ptrdiff, ptrdiff_t, 64)
 #define shmem_ptrdiff_wait pshmem_ptrdiff_wait
 #endif /* ENABLE_PSHMEM */
 
-#define SHMEM_TYPE_WAIT(_name, _type, _size)                            \
-    void                                                                \
-    shmem_##_name##_wait(_type *ivar, _type cmp_value)                  \
-    {                                                                   \
-        deprecate(__func__);                                            \
-        shmemc_wait_ne_until##_size((int##_size##_t *) ivar,            \
-                                    cmp_value);                         \
-    }
-
+#define SHMEM_TYPE_WAIT(_name, _type, _size)                        \
+        void                                                        \
+            shmem_##_name##_wait(_type *ivar, _type cmp_value)      \
+        {                                                           \
+            deprecate(__func__);                                    \
+            shmemc_wait_ne_until##_size((int##_size##_t *) ivar,    \
+                                        cmp_value);                 \
+        }
 
 SHMEM_TYPE_WAIT(short, short, 16)
 SHMEM_TYPE_WAIT(int, int, 32)
