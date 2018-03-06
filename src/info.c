@@ -147,7 +147,7 @@ output_features(void)
 #endif /* ENABLE_CXX */
            );
 
-    output("Fortran API",
+    output("Fortran API and compiler",
 #ifdef ENABLE_FORTRAN
            "on"
 #else
