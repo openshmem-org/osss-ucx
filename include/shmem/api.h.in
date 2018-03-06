@@ -1084,7 +1084,7 @@ extern "C"
      *
      * @subsection c C/C++
      @code
-     void shmem_long_test(long *ivar, int cmp, long cmp_value);
+     int shmem_long_test(long *ivar, int cmp, long cmp_value);
      @endcode
      *
      * @subsection f Fortran
