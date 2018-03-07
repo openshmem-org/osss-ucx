@@ -57,6 +57,9 @@
     {                                                                   \
         _type v;                                                        \
                                                                         \
+        SHMEMU_CHECK_INIT();                                            \
+        SHMEMU_CHECK_SYMMETRIC(target, 2);                              \
+                                                                        \
         SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_swap##_size(ctx,            \
                                                         target, value,  \
                                                         pe));           \

@@ -134,12 +134,16 @@ init_thread_helper(int requested, int *provided)
 int
 shmem_init_thread(int requested, int *provided)
 {
+    SHMEMU_CHECK_INIT();
+
     return init_thread_helper(requested, provided);
 }
 
 void
 shmem_init(void)
 {
+    SHMEMU_CHECK_INIT();
+
     (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
 }
 
@@ -150,6 +154,8 @@ shmem_init(void)
 void
 shmem_finalize(void)
 {
+    SHMEMU_CHECK_INIT();
+
     finalize_helper();
 }
 
@@ -162,6 +168,8 @@ shmem_finalize(void)
 void
 shmem_query_thread(int *provided)
 {
+    SHMEMU_CHECK_INIT();
+
     *provided = proc.td.osh_tl;
 }
 

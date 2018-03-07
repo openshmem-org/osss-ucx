@@ -4,6 +4,7 @@
 #define _SHMEM_SHEMU_H 1
 
 #include "state.h"
+#include "shmemc.h"
 #include "shmem/defs.h"
 
 #ifdef HAVE_CONFIG_H
@@ -100,13 +101,14 @@ void shmemu_deprecate_finalize(void);
 /*
  * sanity checks
  */
-# define CHECK_PE_ARG_RANGE(_pe, _argpos)                \
+# define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)         \
     do {                                                 \
         const int top_pe = proc.nranks - 1;              \
+                                                         \
         if ((_pe < 0) || (_pe > top_pe)) {               \
             logger(LOG_FATAL,                            \
-                   "PE %d in argument #%d of %s() not"   \
-                   " within allocated range %d .. %d",   \
+                   "PE %d: argument #%d of %s() not"     \
+                   " within allocated range %d...%d",    \
                    _pe, _argpos, __func__,               \
                    0, top_pe                             \
                    );                                    \
@@ -114,7 +116,28 @@ void shmemu_deprecate_finalize(void);
         }                                                \
     } while (0)
 
-# define CHECK_INIT()
+# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                         \
+    do {                                                                \
+        if (! shmemc_addr_accessible(_addr, proc.rank)) {               \
+            logger(LOG_FATAL,                                           \
+                   "Address %p in argument %d of %s() is not symmetric", \
+                   _addr, _argpos, __func__                             \
+                   );                                                   \
+            /* NOT REACHED */                                           \
+        }                                                               \
+    } while (0)
+
+# define SHMEMU_CHECK_INIT()                                            \
+    do {                                                                \
+        if (proc.status != SHMEMC_PE_RUNNING) {                         \
+            logger(LOG_FATAL,                                           \
+                   "In \"%s\", attempt to use OpenSHMEM library"        \
+                   " before initialization",                            \
+                   __func__                                             \
+                   );                                                   \
+            /* NOT REACHED */                                           \
+        }                                                               \
+    } while (0)
 
 #else  /* ! ENABLE_DEBUG */
 
@@ -124,8 +147,9 @@ void shmemu_deprecate_finalize(void);
 # define shmemu_deprecate_finalize()
 # define shmemu_assert(_name, _cond)
 
-# define CHECK_PE_ARG_RANGE(_pe, _argpos)
-# define CHECK_INIT()
+# define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
+# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
+# define SHMEMU_CHECK_INIT()
 
 #endif /* ENABLE_DEBUG */
 

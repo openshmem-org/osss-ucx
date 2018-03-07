@@ -6,6 +6,7 @@
 
 #include "shmem_mutex.h"
 
+#include "shmemu.h"
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
@@ -19,12 +20,17 @@
 void
 shmem_barrier(int start, int log2stride, int size, long *pSync)
 {
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_SYMMETRIC(pSync, 4);
+
     SHMEMT_MUTEX_PROTECT(shmemc_barrier(start, log2stride, size, pSync));
 }
 
 void
 shmem_barrier_all(void)
 {
+    SHMEMU_CHECK_INIT();
+
     SHMEMT_MUTEX_PROTECT(shmemc_barrier_all());
 }
 
@@ -40,11 +46,16 @@ shmem_barrier_all(void)
 void
 shmem_sync(int start, int log2stride, int size, long *pSync)
 {
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_SYMMETRIC(pSync, 4);
+
     SHMEMT_MUTEX_PROTECT(shmemc_sync(start, log2stride, size, pSync));
 }
 
 void
 shmem_sync_all(void)
 {
+    SHMEMU_CHECK_INIT();
+
     SHMEMT_MUTEX_PROTECT(shmemc_sync_all());
 }

@@ -26,6 +26,9 @@
         shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
         ucp_worker_h w = ch->w;                                         \
                                                                         \
+        SHMEMU_CHECK_INIT();                                            \
+        SHMEMU_CHECK_SYMMETRIC(var, 1);                                 \
+                                                                        \
         ucp_worker_wait_mem(w, var);                                    \
         return ( (*var) _op (value) ) ? 1 : 0;                          \
     }
@@ -61,6 +64,9 @@ COMMS_TEST_SIZE(64, ge, >=)
     {                                                                   \
         shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
         ucp_worker_h w = ch->w;                                         \
+                                                                        \
+        SHMEMU_CHECK_INIT();                                            \
+        SHMEMU_CHECK_SYMMETRIC(var, 1);                                 \
                                                                         \
         while (shmemc_test_##_opname##_size(var, value) == 0) {         \
             ucp_worker_progress(w);                                     \

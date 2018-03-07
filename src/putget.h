@@ -159,76 +159,146 @@
  * operating on implicit default context
  */
 
-#define API_DECL_TYPED_PUTGET(_opname, _name, _type)                    \
+#define API_DECL_TYPED_PUT(_name, _type)                                \
     void                                                                \
-    shmem_##_name##_##_opname(_type *dest, const _type *src,            \
-                              size_t nelems, int pe)                    \
+    shmem_##_name##_put(_type *dest, const _type *src,                  \
+                        size_t nelems, int pe)                          \
     {                                                                   \
-        CHECK_PE_ARG_RANGE(pe, 4);                                      \
-        shmem_ctx_##_name##_##_opname(SHMEM_CTX_DEFAULT,                \
-                                      dest, src,                        \
-                                      nelems, pe);                      \
+        shmem_ctx_##_name##_put(SHMEM_CTX_DEFAULT,                      \
+                                dest, src,                              \
+                                nelems, pe);                            \
     }                                                                   \
     void                                                                \
-    shmem_##_name##_##_opname##_nbi(_type *dest,                        \
-                                    const _type *src,                   \
-                                    size_t nelems, int pe)              \
-    {                                                                   \
-        shmem_ctx_##_name##_##_opname##_nbi(SHMEM_CTX_DEFAULT,          \
-                                         dest, src,                     \
-                                         nelems, pe);                   \
-    }                                                                   \
-    void                                                                \
-    shmem_##_name##_i##_opname(_type *dest,                             \
-                               const _type *src,                        \
-                               ptrdiff_t tst, ptrdiff_t sst,            \
-                               size_t nelems, int pe)                   \
-    {                                                                   \
-        shmem_ctx_##_name##_i##_opname(SHMEM_CTX_DEFAULT,               \
-                                       dest, src,                       \
-                                       tst, sst,                        \
-                                       sizeof(_type) * nelems, pe);     \
-    }
-
-#define API_DECL_SIZED_PUTGET(_opname, _size)                           \
-    void                                                                \
-    shmem_##_opname##_size(void *dest, const void *src,                 \
-                           size_t nelems, int pe)                       \
-    {                                                                   \
-        shmem_ctx_##_opname##_size(SHMEM_CTX_DEFAULT,                   \
-                                   dest, src, nelems, pe);              \
-    }                                                                   \
-    void                                                                \
-    shmem_##_opname##_size##_nbi(void *dest, const void *src,           \
-                                 size_t nelems, int pe)                 \
-    {                                                                   \
-        shmem_ctx_##_opname##_size##_nbi(SHMEM_CTX_DEFAULT,             \
-                                         dest, src, nelems, pe);        \
-    }                                                                   \
-    void                                                                \
-    shmem_i##_opname##_size(void *dest, const void *src,                \
-                            ptrdiff_t tst, ptrdiff_t sst,               \
+    shmem_##_name##_put_nbi(_type *dest,                                \
+                            const _type *src,                           \
                             size_t nelems, int pe)                      \
     {                                                                   \
-        shmem_ctx_i##_opname##_size(SHMEM_CTX_DEFAULT,                  \
-                                    dest, src, tst, sst,                \
+        shmem_ctx_##_name##_put_nbi(SHMEM_CTX_DEFAULT,                  \
+                                    dest, src,                          \
                                     nelems, pe);                        \
-    }
-
-#define API_DECL_PUTGET_MEM(_opname)                                    \
-    void                                                                \
-    shmem_##_opname##mem(void *dest, const void *src,                   \
-                         size_t nelems, int pe)                         \
-    {                                                                   \
-        shmem_ctx_##_opname##mem(SHMEM_CTX_DEFAULT,                     \
-                                 dest, src, nelems, pe);                \
     }                                                                   \
     void                                                                \
-    shmem_##_opname##mem_nbi(void *dest, const void *src,               \
-                             size_t nelems, int pe)                     \
+    shmem_##_name##_iput(_type *dest,                                   \
+                         const _type *src,                              \
+                         ptrdiff_t tst, ptrdiff_t sst,                  \
+                         size_t nelems, int pe)                         \
     {                                                                   \
-        shmem_ctx_##_opname##mem_nbi(SHMEM_CTX_DEFAULT,                 \
-                                     dest, src, nelems, pe);            \
+        shmem_ctx_##_name##_iput(SHMEM_CTX_DEFAULT,                     \
+                                 dest, src,                             \
+                                 tst, sst,                              \
+                                 sizeof(_type) * nelems, pe);           \
+    }
+
+#define API_DECL_TYPED_GET(_name, _type)                            \
+    void                                                            \
+    shmem_##_name##_get(_type *dest, const _type *src,              \
+                        size_t nelems, int pe)                      \
+    {                                                               \
+        shmem_ctx_##_name##_get(SHMEM_CTX_DEFAULT,                  \
+                                dest, src,                          \
+                                nelems, pe);                        \
+    }                                                               \
+    void                                                            \
+    shmem_##_name##_get##_nbi(_type *dest,                          \
+                              const _type *src,                     \
+                              size_t nelems, int pe)                \
+    {                                                               \
+        shmem_ctx_##_name##_get##_nbi(SHMEM_CTX_DEFAULT,            \
+                                      dest, src,                    \
+                                      nelems, pe);                  \
+    }                                                               \
+    void                                                            \
+    shmem_##_name##_iget(_type *dest,                               \
+                         const _type *src,                          \
+                         ptrdiff_t tst, ptrdiff_t sst,              \
+                         size_t nelems, int pe)                     \
+    {                                                               \
+        shmem_ctx_##_name##_iget(SHMEM_CTX_DEFAULT,                 \
+                                 dest, src,                         \
+                                 tst, sst,                          \
+                                 sizeof(_type) * nelems, pe);       \
+        }
+
+#define API_DECL_SIZED_PUT(_size)                           \
+    void                                                    \
+    shmem_put##_size(void *dest, const void *src,           \
+                     size_t nelems, int pe)                 \
+    {                                                       \
+        shmem_ctx_put##_size(SHMEM_CTX_DEFAULT,             \
+                             dest, src, nelems, pe);        \
+    }                                                       \
+    void                                                    \
+    shmem_put##_size##_nbi(void *dest, const void *src,     \
+                           size_t nelems, int pe)           \
+    {                                                       \
+        shmem_ctx_put##_size##_nbi(SHMEM_CTX_DEFAULT,       \
+                                   dest, src, nelems, pe);  \
+    }                                                       \
+    void                                                    \
+    shmem_iput##_size(void *dest, const void *src,          \
+                      ptrdiff_t tst, ptrdiff_t sst,         \
+                      size_t nelems, int pe)                \
+    {                                                       \
+        shmem_ctx_iput##_size(SHMEM_CTX_DEFAULT,            \
+                              dest, src, tst, sst,          \
+                              nelems, pe);                  \
+    }
+
+#define API_DECL_SIZED_GET(_size)                           \
+    void                                                    \
+    shmem_get##_size(void *dest, const void *src,           \
+                     size_t nelems, int pe)                 \
+    {                                                       \
+        shmem_ctx_get##_size(SHMEM_CTX_DEFAULT,             \
+                             dest, src, nelems, pe);        \
+    }                                                       \
+    void                                                    \
+    shmem_get##_size##_nbi(void *dest, const void *src,     \
+                           size_t nelems, int pe)           \
+    {                                                       \
+        shmem_ctx_get##_size##_nbi(SHMEM_CTX_DEFAULT,       \
+                                   dest, src, nelems, pe);  \
+    }                                                       \
+    void                                                    \
+    shmem_iget##_size(void *dest, const void *src,          \
+                      ptrdiff_t tst, ptrdiff_t sst,         \
+                      size_t nelems, int pe)                \
+    {                                                       \
+        shmem_ctx_iget##_size(SHMEM_CTX_DEFAULT,            \
+                              dest, src, tst, sst,          \
+                              nelems, pe);                  \
+    }
+
+#define API_DECL_PUTMEM()                                       \
+    void                                                        \
+    shmem_putmem(void *dest, const void *src,                   \
+                 size_t nelems, int pe)                         \
+    {                                                           \
+        shmem_ctx_putmem(SHMEM_CTX_DEFAULT,                     \
+                         dest, src, nelems, pe);                \
+    }                                                           \
+    void                                                        \
+    shmem_putmem_nbi(void *dest, const void *src,               \
+                     size_t nelems, int pe)                     \
+    {                                                           \
+        shmem_ctx_putmem_nbi(SHMEM_CTX_DEFAULT,         \
+                             dest, src, nelems, pe);    \
+    }
+
+#define API_DECL_GETMEM()                                       \
+    void                                                        \
+    shmem_getmem(void *dest, const void *src,                   \
+                 size_t nelems, int pe)                         \
+    {                                                           \
+        shmem_ctx_getmem(SHMEM_CTX_DEFAULT,                     \
+                         dest, src, nelems, pe);                \
+    }                                                           \
+    void                                                        \
+    shmem_getmem_nbi(void *dest, const void *src,               \
+                     size_t nelems, int pe)                     \
+    {                                                           \
+        shmem_ctx_getmem_nbi(SHMEM_CTX_DEFAULT,                 \
+                             dest, src, nelems, pe);            \
     }
 
 #define API_DECL_TYPED_P(_name, _type)                  \

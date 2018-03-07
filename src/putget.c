@@ -537,30 +537,30 @@ SHMEM_CTX_PUTGET_MEM_NBI(put)
 #define shmem_uint64_put_nbi pshmem_uint64_put_nbi
 #endif /* ENABLE_PSHMEM */
 
-API_DECL_TYPED_PUTGET(put, float, float)
-API_DECL_TYPED_PUTGET(put, double, double)
-API_DECL_TYPED_PUTGET(put, longdouble, long double)
-API_DECL_TYPED_PUTGET(put, schar, signed char)
-API_DECL_TYPED_PUTGET(put, char, char)
-API_DECL_TYPED_PUTGET(put, short, short)
-API_DECL_TYPED_PUTGET(put, int, int)
-API_DECL_TYPED_PUTGET(put, long, long)
-API_DECL_TYPED_PUTGET(put, longlong, long long)
-API_DECL_TYPED_PUTGET(put, uchar, unsigned char)
-API_DECL_TYPED_PUTGET(put, ushort, unsigned short)
-API_DECL_TYPED_PUTGET(put, uint, unsigned int)
-API_DECL_TYPED_PUTGET(put, ulong, unsigned long)
-API_DECL_TYPED_PUTGET(put, ulonglong, unsigned long long)
-API_DECL_TYPED_PUTGET(put, int8, int8_t)
-API_DECL_TYPED_PUTGET(put, int16, int16_t)
-API_DECL_TYPED_PUTGET(put, int32, int32_t)
-API_DECL_TYPED_PUTGET(put, int64, int64_t)
-API_DECL_TYPED_PUTGET(put, uint8, uint8_t)
-API_DECL_TYPED_PUTGET(put, uint16, uint16_t)
-API_DECL_TYPED_PUTGET(put, uint32, uint32_t)
-API_DECL_TYPED_PUTGET(put, uint64, uint64_t)
-API_DECL_TYPED_PUTGET(put, size, size_t)
-API_DECL_TYPED_PUTGET(put, ptrdiff, ptrdiff_t)
+API_DECL_TYPED_PUT(float, float)
+API_DECL_TYPED_PUT(double, double)
+API_DECL_TYPED_PUT(longdouble, long double)
+API_DECL_TYPED_PUT(schar, signed char)
+API_DECL_TYPED_PUT(char, char)
+API_DECL_TYPED_PUT(short, short)
+API_DECL_TYPED_PUT(int, int)
+API_DECL_TYPED_PUT(long, long)
+API_DECL_TYPED_PUT(longlong, long long)
+API_DECL_TYPED_PUT(uchar, unsigned char)
+API_DECL_TYPED_PUT(ushort, unsigned short)
+API_DECL_TYPED_PUT(uint, unsigned int)
+API_DECL_TYPED_PUT(ulong, unsigned long)
+API_DECL_TYPED_PUT(ulonglong, unsigned long long)
+API_DECL_TYPED_PUT(int8, int8_t)
+API_DECL_TYPED_PUT(int16, int16_t)
+API_DECL_TYPED_PUT(int32, int32_t)
+API_DECL_TYPED_PUT(int64, int64_t)
+API_DECL_TYPED_PUT(uint8, uint8_t)
+API_DECL_TYPED_PUT(uint16, uint16_t)
+API_DECL_TYPED_PUT(uint32, uint32_t)
+API_DECL_TYPED_PUT(uint64, uint64_t)
+API_DECL_TYPED_PUT(size, size_t)
+API_DECL_TYPED_PUT(ptrdiff, ptrdiff_t)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_put8 = pshmem_put8
@@ -597,11 +597,11 @@ API_DECL_TYPED_PUTGET(put, ptrdiff, ptrdiff_t)
 #define shmem_put128_nbi pshmem_put128_nbi
 #endif /* ENABLE_PSHMEM */
 
-API_DECL_SIZED_PUTGET(put, 8)
-API_DECL_SIZED_PUTGET(put, 16)
-API_DECL_SIZED_PUTGET(put, 32)
-API_DECL_SIZED_PUTGET(put, 64)
-API_DECL_SIZED_PUTGET(put, 128)
+API_DECL_SIZED_PUT(8)
+API_DECL_SIZED_PUT(16)
+API_DECL_SIZED_PUT(32)
+API_DECL_SIZED_PUT(64)
+API_DECL_SIZED_PUT(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_putmem = pshmem_putmem
@@ -610,7 +610,7 @@ API_DECL_SIZED_PUTGET(put, 128)
 #define shmem_putmem_nbi pshmem_putmem_nbi
 #endif /* ENABLE_PSHMEM */
 
-API_DECL_PUTGET_MEM(put)
+API_DECL_PUTMEM()
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_float_p = pshmem_float_p
@@ -737,7 +737,6 @@ API_DECL_TYPED_P(ptrdiff, ptrdiff_t)
 #define shmem_ctx_uint32_get pshmem_ctx_uint32_get
 #pragma weak shmem_ctx_uint64_get = pshmem_ctx_uint64_get
 #define shmem_ctx_uint64_get pshmem_ctx_uint64_get
-
 /* for Fortran */
 #pragma weak shmem_ctx_complexf_get = pshmem_ctx_complexf_get
 #define shmem_ctx_complexf_get pshmem_ctx_complexf_get
@@ -1216,30 +1215,30 @@ SHMEM_CTX_PUTGET_MEM_NBI(get)
 #define shmem_uint64_get_nbi pshmem_uint64_get_nbi
 #endif /* ENABLE_PSHMEM */
 
-API_DECL_TYPED_PUTGET(get, float, float)
-API_DECL_TYPED_PUTGET(get, double, double)
-API_DECL_TYPED_PUTGET(get, longdouble, long double)
-API_DECL_TYPED_PUTGET(get, schar, signed char)
-API_DECL_TYPED_PUTGET(get, char, char)
-API_DECL_TYPED_PUTGET(get, short, short)
-API_DECL_TYPED_PUTGET(get, int, int)
-API_DECL_TYPED_PUTGET(get, long, long)
-API_DECL_TYPED_PUTGET(get, longlong, long long)
-API_DECL_TYPED_PUTGET(get, uchar, unsigned char)
-API_DECL_TYPED_PUTGET(get, ushort, unsigned short)
-API_DECL_TYPED_PUTGET(get, uint, unsigned int)
-API_DECL_TYPED_PUTGET(get, ulong, unsigned long)
-API_DECL_TYPED_PUTGET(get, ulonglong, unsigned long long)
-API_DECL_TYPED_PUTGET(get, int8, int8_t)
-API_DECL_TYPED_PUTGET(get, int16, int16_t)
-API_DECL_TYPED_PUTGET(get, int32, int32_t)
-API_DECL_TYPED_PUTGET(get, int64, int64_t)
-API_DECL_TYPED_PUTGET(get, uint8, uint8_t)
-API_DECL_TYPED_PUTGET(get, uint16, uint16_t)
-API_DECL_TYPED_PUTGET(get, uint32, uint32_t)
-API_DECL_TYPED_PUTGET(get, uint64, uint64_t)
-API_DECL_TYPED_PUTGET(get, size, size_t)
-API_DECL_TYPED_PUTGET(get, ptrdiff, ptrdiff_t)
+API_DECL_TYPED_GET(float, float)
+API_DECL_TYPED_GET(double, double)
+API_DECL_TYPED_GET(longdouble, long double)
+API_DECL_TYPED_GET(schar, signed char)
+API_DECL_TYPED_GET(char, char)
+API_DECL_TYPED_GET(short, short)
+API_DECL_TYPED_GET(int, int)
+API_DECL_TYPED_GET(long, long)
+API_DECL_TYPED_GET(longlong, long long)
+API_DECL_TYPED_GET(uchar, unsigned char)
+API_DECL_TYPED_GET(ushort, unsigned short)
+API_DECL_TYPED_GET(uint, unsigned int)
+API_DECL_TYPED_GET(ulong, unsigned long)
+API_DECL_TYPED_GET(ulonglong, unsigned long long)
+API_DECL_TYPED_GET(int8, int8_t)
+API_DECL_TYPED_GET(int16, int16_t)
+API_DECL_TYPED_GET(int32, int32_t)
+API_DECL_TYPED_GET(int64, int64_t)
+API_DECL_TYPED_GET(uint8, uint8_t)
+API_DECL_TYPED_GET(uint16, uint16_t)
+API_DECL_TYPED_GET(uint32, uint32_t)
+API_DECL_TYPED_GET(uint64, uint64_t)
+API_DECL_TYPED_GET(size, size_t)
+API_DECL_TYPED_GET(ptrdiff, ptrdiff_t)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_get8 = pshmem_get8
@@ -1276,11 +1275,11 @@ API_DECL_TYPED_PUTGET(get, ptrdiff, ptrdiff_t)
 #define shmem_get128_nbi pshmem_get128_nbi
 #endif /* ENABLE_PSHMEM */
 
-API_DECL_SIZED_PUTGET(get, 8)
-API_DECL_SIZED_PUTGET(get, 16)
-API_DECL_SIZED_PUTGET(get, 32)
-API_DECL_SIZED_PUTGET(get, 64)
-API_DECL_SIZED_PUTGET(get, 128)
+API_DECL_SIZED_GET(8)
+API_DECL_SIZED_GET(16)
+API_DECL_SIZED_GET(32)
+API_DECL_SIZED_GET(64)
+API_DECL_SIZED_GET(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_getmem = pshmem_getmem
@@ -1289,7 +1288,7 @@ API_DECL_SIZED_PUTGET(get, 128)
 #define shmem_getmem_nbi pshmem_getmem_nbi
 #endif /* ENABLE_PSHMEM */
 
-API_DECL_PUTGET_MEM(get)
+API_DECL_GETMEM()
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_float_g = pshmem_float_g
