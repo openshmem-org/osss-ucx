@@ -6,7 +6,6 @@
 
 #include "version.h"
 #include "shmemu.h"
-#include "shmemc.h"
 #include "info.h"
 
 #include <stdio.h>
