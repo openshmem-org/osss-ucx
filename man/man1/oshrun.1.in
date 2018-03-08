@@ -26,8 +26,9 @@ older SHMEM implementations had variables prefixed with "SMA_": these
 are still supported in OpenSHMEM, but are deprecated.  If both are set
 for a given variable, the "SHMEM_" one will be used.
 .LP
-If set, boolean flags are enabled with a non-zero numeric value, or "y",
-"yes"; disabled with zero numeric value, or "n", "no".
+If set, boolean flags are enabled with a non-zero numeric value, or
+"y", "yes", or "on"; disabled with zero numeric value, or "n", "no",
+or "off".
 .\"
 .RS 4
 .\"
