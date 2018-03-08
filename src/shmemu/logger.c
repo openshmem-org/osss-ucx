@@ -154,8 +154,13 @@ shmemu_logger(shmemu_log_t level, const char *fmt, ...)
         vsnprintf(tmp1, TRACE_MSG_BUF_SIZE, fmt, ap);
         va_end(ap);
 
+#ifdef HAVE_STRLCAT
+        strlcat(tmp2, tmp1, strlen(tmp1));
+        strlcat(tmp2, "\n", 1);
+#else
         strncat(tmp2, tmp1, strlen(tmp1));
         strncat(tmp2, "\n", 1);
+#endif /* HAVE_STRLCAT */
 
         fputs(tmp2, log_stream);
         /* make sure this all goes out in 1 burst */
