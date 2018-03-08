@@ -6,6 +6,7 @@
 
 #include "state.h"
 #include "shmemu.h"
+#include "shmemc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -161,7 +162,7 @@ shmemu_logger(shmemu_log_t level, const char *fmt, ...)
         fflush(log_stream);
 
         if (level == LOG_FATAL) {
-            exit(1);
+            shmemc_global_exit(1);
         }
     }
 }

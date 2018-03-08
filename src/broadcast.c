@@ -6,6 +6,7 @@
 
 #include "shmem_mutex.h"
 
+#include "shmemu.h"
 #include "shmemc.h"
 
 #include <sys/types.h>
@@ -30,6 +31,12 @@
                            int logPE_stride, int PE_size,               \
                            long *pSync)                                 \
     {                                                                   \
+        SHMEMU_CHECK_INIT();                                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(PE_root, 4);                          \
+        SHMEMU_CHECK_SYMMETRIC(target, 1);                              \
+        SHMEMU_CHECK_SYMMETRIC(source, 2);                              \
+        SHMEMU_CHECK_SYMMETRIC(pSync, 8);                               \
+                                                                        \
         SHMEMT_MUTEX_PROTECT(shmemc_broadcast##_name(target, source,    \
                                                      nelems,            \
                                                      PE_root, PE_start, \

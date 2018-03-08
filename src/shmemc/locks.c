@@ -141,6 +141,7 @@ shmemc_clear_lock(long *lock)
 {
     shmem_lock_t *lp = (shmem_lock_t *) lock;
 
+    /* flush before release */
     shmemc_quiet();
 
     clear_lock(&(lp[1]), &(lp[0]));

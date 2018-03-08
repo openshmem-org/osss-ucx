@@ -37,10 +37,6 @@ finalize_helper(void)
     if (proc.refcount > 0) {
         const pthread_t this = pthread_self();
 
-        logger(LOG_FINALIZE,
-               "refcount = %d",
-               proc.refcount);
-
         if (this != proc.td.invoking_thread) {
             logger(LOG_FINALIZE,
                    "mis-match: thread %lu initialized, but %lu finalized",
@@ -114,11 +110,6 @@ init_thread_helper(int requested, int *provided)
     }
     proc.refcount += 1;
 
-    logger(LOG_INIT,
-           "refcount = %d, thread support = %d",
-           proc.refcount,
-           proc.td.osh_tl);
-
     /* just declare success */
     return 0;
 }
@@ -150,6 +141,8 @@ shmem_init(void)
 void
 shmem_finalize(void)
 {
+    SHMEMU_CHECK_INIT();
+
     finalize_helper();
 }
 
@@ -162,6 +155,8 @@ shmem_finalize(void)
 void
 shmem_query_thread(int *provided)
 {
+    SHMEMU_CHECK_INIT();
+
     *provided = proc.td.osh_tl;
 }
 
