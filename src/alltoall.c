@@ -5,6 +5,8 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "state.h"
+#include "shmemu.h"
+
 #include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
@@ -33,6 +35,12 @@
         const int step = 1 << logPE_stride;                             \
         int pe, i;                                                      \
                                                                         \
+        SHMEMU_CHECK_INIT();                                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(PE_start, 6);                         \
+        SHMEMU_CHECK_SYMMETRIC(target, 1);                              \
+        SHMEMU_CHECK_SYMMETRIC(source, 2);                              \
+        SHMEMU_CHECK_SYMMETRIC(pSync, 7);                               \
+                                                                        \
         for (i = 0, pe = PE_start; i < PE_size; i += 1, pe += step) {   \
             const int tidx = _size * nelems * dst * i;                  \
             const int sidx = _size * nelems * sst * proc.rank;          \
@@ -50,12 +58,18 @@ SHMEM_ALLTOALLS_TYPE(64, 8)
     void                                                                \
     shmem_alltoall##_name(void *target, const void *source,             \
                           size_t nelems,                                \
-                           int PE_start,                                \
-                           int logPE_stride, int PE_size,               \
-                           long *pSync)                                 \
+                          int PE_start,                                 \
+                          int logPE_stride, int PE_size,                \
+                          long *pSync)                                  \
     {                                                                   \
         const int step = 1 << logPE_stride;                             \
         int pe, i;                                                      \
+                                                                        \
+        SHMEMU_CHECK_INIT();                                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(PE_start, 6);                         \
+        SHMEMU_CHECK_SYMMETRIC(target, 1);                              \
+        SHMEMU_CHECK_SYMMETRIC(source, 2);                              \
+        SHMEMU_CHECK_SYMMETRIC(pSync, 7);                               \
                                                                         \
         for (i = 0, pe = PE_start; i < PE_size; i += 1, pe += step) {   \
             const int tidx = _size * nelems * i;                        \

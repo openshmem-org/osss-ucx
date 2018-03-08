@@ -61,33 +61,33 @@
 #define shmem_ctx_complexd_put pshmem_ctx_complexd_put
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_TYPED_PUTGET(put, float, float)
-SHMEM_CTX_TYPED_PUTGET(put, double, double)
-SHMEM_CTX_TYPED_PUTGET(put, longdouble, long double)
-SHMEM_CTX_TYPED_PUTGET(put, char, char)
-SHMEM_CTX_TYPED_PUTGET(put, schar, signed char)
-SHMEM_CTX_TYPED_PUTGET(put, short, short)
-SHMEM_CTX_TYPED_PUTGET(put, int, int)
-SHMEM_CTX_TYPED_PUTGET(put, long, long)
-SHMEM_CTX_TYPED_PUTGET(put, longlong, long long)
-SHMEM_CTX_TYPED_PUTGET(put, uchar, unsigned char)
-SHMEM_CTX_TYPED_PUTGET(put, ushort, unsigned short)
-SHMEM_CTX_TYPED_PUTGET(put, uint, unsigned int)
-SHMEM_CTX_TYPED_PUTGET(put, ulong, unsigned long)
-SHMEM_CTX_TYPED_PUTGET(put, ulonglong, unsigned long long)
-SHMEM_CTX_TYPED_PUTGET(put, int8, int8_t)
-SHMEM_CTX_TYPED_PUTGET(put, int16, int16_t)
-SHMEM_CTX_TYPED_PUTGET(put, int32, int32_t)
-SHMEM_CTX_TYPED_PUTGET(put, int64, int64_t)
-SHMEM_CTX_TYPED_PUTGET(put, uint8, uint8_t)
-SHMEM_CTX_TYPED_PUTGET(put, uint16, uint16_t)
-SHMEM_CTX_TYPED_PUTGET(put, uint32, uint32_t)
-SHMEM_CTX_TYPED_PUTGET(put, uint64, uint64_t)
-SHMEM_CTX_TYPED_PUTGET(put, size, size_t)
-SHMEM_CTX_TYPED_PUTGET(put, ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_PUT(float, float)
+SHMEM_CTX_TYPED_PUT(double, double)
+SHMEM_CTX_TYPED_PUT(longdouble, long double)
+SHMEM_CTX_TYPED_PUT(char, char)
+SHMEM_CTX_TYPED_PUT(schar, signed char)
+SHMEM_CTX_TYPED_PUT(short, short)
+SHMEM_CTX_TYPED_PUT(int, int)
+SHMEM_CTX_TYPED_PUT(long, long)
+SHMEM_CTX_TYPED_PUT(longlong, long long)
+SHMEM_CTX_TYPED_PUT(uchar, unsigned char)
+SHMEM_CTX_TYPED_PUT(ushort, unsigned short)
+SHMEM_CTX_TYPED_PUT(uint, unsigned int)
+SHMEM_CTX_TYPED_PUT(ulong, unsigned long)
+SHMEM_CTX_TYPED_PUT(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_PUT(int8, int8_t)
+SHMEM_CTX_TYPED_PUT(int16, int16_t)
+SHMEM_CTX_TYPED_PUT(int32, int32_t)
+SHMEM_CTX_TYPED_PUT(int64, int64_t)
+SHMEM_CTX_TYPED_PUT(uint8, uint8_t)
+SHMEM_CTX_TYPED_PUT(uint16, uint16_t)
+SHMEM_CTX_TYPED_PUT(uint32, uint32_t)
+SHMEM_CTX_TYPED_PUT(uint64, uint64_t)
+SHMEM_CTX_TYPED_PUT(size, size_t)
+SHMEM_CTX_TYPED_PUT(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_CTX_TYPED_PUTGET(put, complexf, COMPLEXIFY(float))
-SHMEM_CTX_TYPED_PUTGET(put, complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_PUT(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_PUT(complexd, COMPLEXIFY(double))
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_put8 = pshmem_ctx_put8
@@ -102,18 +102,18 @@ SHMEM_CTX_TYPED_PUTGET(put, complexd, COMPLEXIFY(double))
 #define shmem_ctx_put128 pshmem_ctx_put128
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_SIZED_PUTGET(put, 8)
-SHMEM_CTX_SIZED_PUTGET(put, 16)
-SHMEM_CTX_SIZED_PUTGET(put, 32)
-SHMEM_CTX_SIZED_PUTGET(put, 64)
-SHMEM_CTX_SIZED_PUTGET(put, 128)
+SHMEM_CTX_SIZED_PUT(8)
+SHMEM_CTX_SIZED_PUT(16)
+SHMEM_CTX_SIZED_PUT(32)
+SHMEM_CTX_SIZED_PUT(64)
+SHMEM_CTX_SIZED_PUT(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_putmem = pshmem_ctx_putmem
 #define shmem_ctx_putmem pshmem_ctx_putmem
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_PUTGET_MEM(put)
+SHMEM_CTX_PUTMEM()
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_float_p = pshmem_ctx_float_p
@@ -247,33 +247,33 @@ SHMEM_CTX_TYPED_P(complexd, COMPLEXIFY(double))
 #define shmem_ctx_uint64_iput pshmem_ctx_uint64_iput
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_TYPED_IPUTGET(put, float, float)
-SHMEM_CTX_TYPED_IPUTGET(put, double, double)
-SHMEM_CTX_TYPED_IPUTGET(put, longdouble, long double)
-SHMEM_CTX_TYPED_IPUTGET(put, char, char)
-SHMEM_CTX_TYPED_IPUTGET(put, schar, signed char)
-SHMEM_CTX_TYPED_IPUTGET(put, short, short)
-SHMEM_CTX_TYPED_IPUTGET(put, int, int)
-SHMEM_CTX_TYPED_IPUTGET(put, long, long)
-SHMEM_CTX_TYPED_IPUTGET(put, longlong, long long)
-SHMEM_CTX_TYPED_IPUTGET(put, uchar, unsigned char)
-SHMEM_CTX_TYPED_IPUTGET(put, ushort, unsigned short)
-SHMEM_CTX_TYPED_IPUTGET(put, uint, unsigned int)
-SHMEM_CTX_TYPED_IPUTGET(put, ulong, unsigned long)
-SHMEM_CTX_TYPED_IPUTGET(put, ulonglong, unsigned long long)
-SHMEM_CTX_TYPED_IPUTGET(put, int8, int8_t)
-SHMEM_CTX_TYPED_IPUTGET(put, int16, int16_t)
-SHMEM_CTX_TYPED_IPUTGET(put, int32, int32_t)
-SHMEM_CTX_TYPED_IPUTGET(put, int64, int64_t)
-SHMEM_CTX_TYPED_IPUTGET(put, uint8, uint8_t)
-SHMEM_CTX_TYPED_IPUTGET(put, uint16, uint16_t)
-SHMEM_CTX_TYPED_IPUTGET(put, uint32, uint32_t)
-SHMEM_CTX_TYPED_IPUTGET(put, uint64, uint64_t)
-SHMEM_CTX_TYPED_IPUTGET(put, size, size_t)
-SHMEM_CTX_TYPED_IPUTGET(put, ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_IPUT(float, float)
+SHMEM_CTX_TYPED_IPUT(double, double)
+SHMEM_CTX_TYPED_IPUT(longdouble, long double)
+SHMEM_CTX_TYPED_IPUT(char, char)
+SHMEM_CTX_TYPED_IPUT(schar, signed char)
+SHMEM_CTX_TYPED_IPUT(short, short)
+SHMEM_CTX_TYPED_IPUT(int, int)
+SHMEM_CTX_TYPED_IPUT(long, long)
+SHMEM_CTX_TYPED_IPUT(longlong, long long)
+SHMEM_CTX_TYPED_IPUT(uchar, unsigned char)
+SHMEM_CTX_TYPED_IPUT(ushort, unsigned short)
+SHMEM_CTX_TYPED_IPUT(uint, unsigned int)
+SHMEM_CTX_TYPED_IPUT(ulong, unsigned long)
+SHMEM_CTX_TYPED_IPUT(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_IPUT(int8, int8_t)
+SHMEM_CTX_TYPED_IPUT(int16, int16_t)
+SHMEM_CTX_TYPED_IPUT(int32, int32_t)
+SHMEM_CTX_TYPED_IPUT(int64, int64_t)
+SHMEM_CTX_TYPED_IPUT(uint8, uint8_t)
+SHMEM_CTX_TYPED_IPUT(uint16, uint16_t)
+SHMEM_CTX_TYPED_IPUT(uint32, uint32_t)
+SHMEM_CTX_TYPED_IPUT(uint64, uint64_t)
+SHMEM_CTX_TYPED_IPUT(size, size_t)
+SHMEM_CTX_TYPED_IPUT(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_CTX_TYPED_IPUTGET(put, complexf, COMPLEXIFY(float))
-SHMEM_CTX_TYPED_IPUTGET(put, complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_IPUT(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_IPUT(complexd, COMPLEXIFY(double))
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_iput8 = pshmem_ctx_iput8
@@ -288,11 +288,11 @@ SHMEM_CTX_TYPED_IPUTGET(put, complexd, COMPLEXIFY(double))
 #define shmem_ctx_iput128 pshmem_ctx_iput128
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_SIZED_IPUTGET(put, 8)
-SHMEM_CTX_SIZED_IPUTGET(put, 16)
-SHMEM_CTX_SIZED_IPUTGET(put, 32)
-SHMEM_CTX_SIZED_IPUTGET(put, 64)
-SHMEM_CTX_SIZED_IPUTGET(put, 128)
+SHMEM_CTX_SIZED_IPUT(8)
+SHMEM_CTX_SIZED_IPUT(16)
+SHMEM_CTX_SIZED_IPUT(32)
+SHMEM_CTX_SIZED_IPUT(64)
+SHMEM_CTX_SIZED_IPUT(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_float_put_nbi = pshmem_ctx_float_put_nbi
@@ -346,33 +346,33 @@ SHMEM_CTX_SIZED_IPUTGET(put, 128)
 #define shmem_ctx_complexd_put_nbi pshmem_ctx_complexd_put_nbi
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_TYPED_PUTGET_NBI(put, float, float)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, double, double)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, longdouble, long double)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, char, char)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, schar, signed char)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, short, short)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, int, int)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, long, long)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, longlong, long long)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, uchar, unsigned char)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, ushort, unsigned short)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, uint, unsigned int)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, ulong, unsigned long)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, ulonglong, unsigned long long)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, int8, int8_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, int16, int16_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, int32, int32_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, int64, int64_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, uint8, uint8_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, uint16, uint16_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, uint32, uint32_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, uint64, uint64_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, size, size_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(put, ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_PUT_NBI(float, float)
+SHMEM_CTX_TYPED_PUT_NBI(double, double)
+SHMEM_CTX_TYPED_PUT_NBI(longdouble, long double)
+SHMEM_CTX_TYPED_PUT_NBI(char, char)
+SHMEM_CTX_TYPED_PUT_NBI(schar, signed char)
+SHMEM_CTX_TYPED_PUT_NBI(short, short)
+SHMEM_CTX_TYPED_PUT_NBI(int, int)
+SHMEM_CTX_TYPED_PUT_NBI(long, long)
+SHMEM_CTX_TYPED_PUT_NBI(longlong, long long)
+SHMEM_CTX_TYPED_PUT_NBI(uchar, unsigned char)
+SHMEM_CTX_TYPED_PUT_NBI(ushort, unsigned short)
+SHMEM_CTX_TYPED_PUT_NBI(uint, unsigned int)
+SHMEM_CTX_TYPED_PUT_NBI(ulong, unsigned long)
+SHMEM_CTX_TYPED_PUT_NBI(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_PUT_NBI(int8, int8_t)
+SHMEM_CTX_TYPED_PUT_NBI(int16, int16_t)
+SHMEM_CTX_TYPED_PUT_NBI(int32, int32_t)
+SHMEM_CTX_TYPED_PUT_NBI(int64, int64_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint8, uint8_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint16, uint16_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint32, uint32_t)
+SHMEM_CTX_TYPED_PUT_NBI(uint64, uint64_t)
+SHMEM_CTX_TYPED_PUT_NBI(size, size_t)
+SHMEM_CTX_TYPED_PUT_NBI(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_CTX_TYPED_PUTGET_NBI(put, complexf, COMPLEXIFY(float))
-SHMEM_CTX_TYPED_PUTGET_NBI(put, complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_PUT_NBI(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_PUT_NBI(complexd, COMPLEXIFY(double))
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_put8_nbi = pshmem_ctx_put8_nbi
@@ -387,18 +387,18 @@ SHMEM_CTX_TYPED_PUTGET_NBI(put, complexd, COMPLEXIFY(double))
 #define shmem_ctx_put128_nbi pshmem_ctx_put128_nbi
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_SIZED_PUTGET_NBI(put, 8)
-SHMEM_CTX_SIZED_PUTGET_NBI(put, 16)
-SHMEM_CTX_SIZED_PUTGET_NBI(put, 32)
-SHMEM_CTX_SIZED_PUTGET_NBI(put, 64)
-SHMEM_CTX_SIZED_PUTGET_NBI(put, 128)
+SHMEM_CTX_SIZED_PUT_NBI(8)
+SHMEM_CTX_SIZED_PUT_NBI(16)
+SHMEM_CTX_SIZED_PUT_NBI(32)
+SHMEM_CTX_SIZED_PUT_NBI(64)
+SHMEM_CTX_SIZED_PUT_NBI(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_putmem_nbi = pshmem_ctx_putmem_nbi
 #define shmem_ctx_putmem_nbi pshmem_ctx_putmem_nbi
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_PUTGET_MEM_NBI(put)
+SHMEM_CTX_PUTMEM_NBI()
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_float_put = pshmem_float_put
@@ -744,33 +744,33 @@ API_DECL_TYPED_P(ptrdiff, ptrdiff_t)
 #define shmem_ctx_complexd_get pshmem_ctx_complexd_get
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_TYPED_PUTGET(get, float, float)
-SHMEM_CTX_TYPED_PUTGET(get, double, double)
-SHMEM_CTX_TYPED_PUTGET(get, longdouble, long double)
-SHMEM_CTX_TYPED_PUTGET(get, char, char)
-SHMEM_CTX_TYPED_PUTGET(get, schar, signed char)
-SHMEM_CTX_TYPED_PUTGET(get, short, short)
-SHMEM_CTX_TYPED_PUTGET(get, int, int)
-SHMEM_CTX_TYPED_PUTGET(get, long, long)
-SHMEM_CTX_TYPED_PUTGET(get, longlong, long long)
-SHMEM_CTX_TYPED_PUTGET(get, uchar, unsigned char)
-SHMEM_CTX_TYPED_PUTGET(get, ushort, unsigned short)
-SHMEM_CTX_TYPED_PUTGET(get, uint, unsigned int)
-SHMEM_CTX_TYPED_PUTGET(get, ulong, unsigned long)
-SHMEM_CTX_TYPED_PUTGET(get, ulonglong, unsigned long long)
-SHMEM_CTX_TYPED_PUTGET(get, int8, int8_t)
-SHMEM_CTX_TYPED_PUTGET(get, int16, int16_t)
-SHMEM_CTX_TYPED_PUTGET(get, int32, int32_t)
-SHMEM_CTX_TYPED_PUTGET(get, int64, int64_t)
-SHMEM_CTX_TYPED_PUTGET(get, uint8, uint8_t)
-SHMEM_CTX_TYPED_PUTGET(get, uint16, uint16_t)
-SHMEM_CTX_TYPED_PUTGET(get, uint32, uint32_t)
-SHMEM_CTX_TYPED_PUTGET(get, uint64, uint64_t)
-SHMEM_CTX_TYPED_PUTGET(get, size, size_t)
-SHMEM_CTX_TYPED_PUTGET(get, ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_GET(float, float)
+SHMEM_CTX_TYPED_GET(double, double)
+SHMEM_CTX_TYPED_GET(longdouble, long double)
+SHMEM_CTX_TYPED_GET(char, char)
+SHMEM_CTX_TYPED_GET(schar, signed char)
+SHMEM_CTX_TYPED_GET(short, short)
+SHMEM_CTX_TYPED_GET(int, int)
+SHMEM_CTX_TYPED_GET(long, long)
+SHMEM_CTX_TYPED_GET(longlong, long long)
+SHMEM_CTX_TYPED_GET(uchar, unsigned char)
+SHMEM_CTX_TYPED_GET(ushort, unsigned short)
+SHMEM_CTX_TYPED_GET(uint, unsigned int)
+SHMEM_CTX_TYPED_GET(ulong, unsigned long)
+SHMEM_CTX_TYPED_GET(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_GET(int8, int8_t)
+SHMEM_CTX_TYPED_GET(int16, int16_t)
+SHMEM_CTX_TYPED_GET(int32, int32_t)
+SHMEM_CTX_TYPED_GET(int64, int64_t)
+SHMEM_CTX_TYPED_GET(uint8, uint8_t)
+SHMEM_CTX_TYPED_GET(uint16, uint16_t)
+SHMEM_CTX_TYPED_GET(uint32, uint32_t)
+SHMEM_CTX_TYPED_GET(uint64, uint64_t)
+SHMEM_CTX_TYPED_GET(size, size_t)
+SHMEM_CTX_TYPED_GET(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_CTX_TYPED_PUTGET(get, complexf, COMPLEXIFY(float))
-SHMEM_CTX_TYPED_PUTGET(get, complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_GET(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_GET(complexd, COMPLEXIFY(double))
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_get8 = pshmem_ctx_get8
@@ -785,18 +785,18 @@ SHMEM_CTX_TYPED_PUTGET(get, complexd, COMPLEXIFY(double))
 #define shmem_ctx_get128 pshmem_ctx_get128
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_SIZED_PUTGET(get, 8)
-SHMEM_CTX_SIZED_PUTGET(get, 16)
-SHMEM_CTX_SIZED_PUTGET(get, 32)
-SHMEM_CTX_SIZED_PUTGET(get, 64)
-SHMEM_CTX_SIZED_PUTGET(get, 128)
+SHMEM_CTX_SIZED_GET(8)
+SHMEM_CTX_SIZED_GET(16)
+SHMEM_CTX_SIZED_GET(32)
+SHMEM_CTX_SIZED_GET(64)
+SHMEM_CTX_SIZED_GET(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_getmem = pshmem_ctx_getmem
 #define shmem_ctx_getmem pshmem_ctx_getmem
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_PUTGET_MEM(get)
+SHMEM_CTX_GETMEM()
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_float_g = pshmem_ctx_float_g
@@ -925,33 +925,33 @@ SHMEM_CTX_TYPED_G(complexd, COMPLEXIFY(double))
 #define shmem_ctx_uint64_iget pshmem_ctx_uint64_iget
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_TYPED_IPUTGET(get, float, float)
-SHMEM_CTX_TYPED_IPUTGET(get, double, double)
-SHMEM_CTX_TYPED_IPUTGET(get, longdouble, long double)
-SHMEM_CTX_TYPED_IPUTGET(get, char, char)
-SHMEM_CTX_TYPED_IPUTGET(get, schar, signed char)
-SHMEM_CTX_TYPED_IPUTGET(get, short, short)
-SHMEM_CTX_TYPED_IPUTGET(get, int, int)
-SHMEM_CTX_TYPED_IPUTGET(get, long, long)
-SHMEM_CTX_TYPED_IPUTGET(get, longlong, long long)
-SHMEM_CTX_TYPED_IPUTGET(get, uchar, unsigned char)
-SHMEM_CTX_TYPED_IPUTGET(get, ushort, unsigned short)
-SHMEM_CTX_TYPED_IPUTGET(get, uint, unsigned int)
-SHMEM_CTX_TYPED_IPUTGET(get, ulong, unsigned long)
-SHMEM_CTX_TYPED_IPUTGET(get, ulonglong, unsigned long long)
-SHMEM_CTX_TYPED_IPUTGET(get, int8, int8_t)
-SHMEM_CTX_TYPED_IPUTGET(get, int16, int16_t)
-SHMEM_CTX_TYPED_IPUTGET(get, int32, int32_t)
-SHMEM_CTX_TYPED_IPUTGET(get, int64, int64_t)
-SHMEM_CTX_TYPED_IPUTGET(get, uint8, uint8_t)
-SHMEM_CTX_TYPED_IPUTGET(get, uint16, uint16_t)
-SHMEM_CTX_TYPED_IPUTGET(get, uint32, uint32_t)
-SHMEM_CTX_TYPED_IPUTGET(get, uint64, uint64_t)
-SHMEM_CTX_TYPED_IPUTGET(get, size, size_t)
-SHMEM_CTX_TYPED_IPUTGET(get, ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_IGET(float, float)
+SHMEM_CTX_TYPED_IGET(double, double)
+SHMEM_CTX_TYPED_IGET(longdouble, long double)
+SHMEM_CTX_TYPED_IGET(char, char)
+SHMEM_CTX_TYPED_IGET(schar, signed char)
+SHMEM_CTX_TYPED_IGET(short, short)
+SHMEM_CTX_TYPED_IGET(int, int)
+SHMEM_CTX_TYPED_IGET(long, long)
+SHMEM_CTX_TYPED_IGET(longlong, long long)
+SHMEM_CTX_TYPED_IGET(uchar, unsigned char)
+SHMEM_CTX_TYPED_IGET(ushort, unsigned short)
+SHMEM_CTX_TYPED_IGET(uint, unsigned int)
+SHMEM_CTX_TYPED_IGET(ulong, unsigned long)
+SHMEM_CTX_TYPED_IGET(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_IGET(int8, int8_t)
+SHMEM_CTX_TYPED_IGET(int16, int16_t)
+SHMEM_CTX_TYPED_IGET(int32, int32_t)
+SHMEM_CTX_TYPED_IGET(int64, int64_t)
+SHMEM_CTX_TYPED_IGET(uint8, uint8_t)
+SHMEM_CTX_TYPED_IGET(uint16, uint16_t)
+SHMEM_CTX_TYPED_IGET(uint32, uint32_t)
+SHMEM_CTX_TYPED_IGET(uint64, uint64_t)
+SHMEM_CTX_TYPED_IGET(size, size_t)
+SHMEM_CTX_TYPED_IGET(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_CTX_TYPED_IPUTGET(get, complexf, COMPLEXIFY(float))
-SHMEM_CTX_TYPED_IPUTGET(get, complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_IGET(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_IGET(complexd, COMPLEXIFY(double))
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_iget8 = pshmem_ctx_iget8
@@ -966,11 +966,11 @@ SHMEM_CTX_TYPED_IPUTGET(get, complexd, COMPLEXIFY(double))
 #define shmem_ctx_iget128 pshmem_ctx_iget128
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_SIZED_IPUTGET(get, 8)
-SHMEM_CTX_SIZED_IPUTGET(get, 16)
-SHMEM_CTX_SIZED_IPUTGET(get, 32)
-SHMEM_CTX_SIZED_IPUTGET(get, 64)
-SHMEM_CTX_SIZED_IPUTGET(get, 128)
+SHMEM_CTX_SIZED_IGET(8)
+SHMEM_CTX_SIZED_IGET(16)
+SHMEM_CTX_SIZED_IGET(32)
+SHMEM_CTX_SIZED_IGET(64)
+SHMEM_CTX_SIZED_IGET(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_float_get_nbi = pshmem_ctx_float_get_nbi
@@ -1024,33 +1024,33 @@ SHMEM_CTX_SIZED_IPUTGET(get, 128)
 #define shmem_ctx_complexd_get_nbi pshmem_ctx_complexd_get_nbi
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_TYPED_PUTGET_NBI(get, float, float)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, double, double)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, longdouble, long double)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, char, char)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, schar, signed char)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, short, short)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, int, int)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, long, long)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, longlong, long long)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, uchar, unsigned char)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, ushort, unsigned short)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, uint, unsigned int)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, ulong, unsigned long)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, ulonglong, unsigned long long)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, int8, int8_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, int16, int16_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, int32, int32_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, int64, int64_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, uint8, uint8_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, uint16, uint16_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, uint32, uint32_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, uint64, uint64_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, size, size_t)
-SHMEM_CTX_TYPED_PUTGET_NBI(get, ptrdiff, ptrdiff_t)
+SHMEM_CTX_TYPED_GET_NBI(float, float)
+SHMEM_CTX_TYPED_GET_NBI(double, double)
+SHMEM_CTX_TYPED_GET_NBI(longdouble, long double)
+SHMEM_CTX_TYPED_GET_NBI(char, char)
+SHMEM_CTX_TYPED_GET_NBI(schar, signed char)
+SHMEM_CTX_TYPED_GET_NBI(short, short)
+SHMEM_CTX_TYPED_GET_NBI(int, int)
+SHMEM_CTX_TYPED_GET_NBI(long, long)
+SHMEM_CTX_TYPED_GET_NBI(longlong, long long)
+SHMEM_CTX_TYPED_GET_NBI(uchar, unsigned char)
+SHMEM_CTX_TYPED_GET_NBI(ushort, unsigned short)
+SHMEM_CTX_TYPED_GET_NBI(uint, unsigned int)
+SHMEM_CTX_TYPED_GET_NBI(ulong, unsigned long)
+SHMEM_CTX_TYPED_GET_NBI(ulonglong, unsigned long long)
+SHMEM_CTX_TYPED_GET_NBI(int8, int8_t)
+SHMEM_CTX_TYPED_GET_NBI(int16, int16_t)
+SHMEM_CTX_TYPED_GET_NBI(int32, int32_t)
+SHMEM_CTX_TYPED_GET_NBI(int64, int64_t)
+SHMEM_CTX_TYPED_GET_NBI(uint8, uint8_t)
+SHMEM_CTX_TYPED_GET_NBI(uint16, uint16_t)
+SHMEM_CTX_TYPED_GET_NBI(uint32, uint32_t)
+SHMEM_CTX_TYPED_GET_NBI(uint64, uint64_t)
+SHMEM_CTX_TYPED_GET_NBI(size, size_t)
+SHMEM_CTX_TYPED_GET_NBI(ptrdiff, ptrdiff_t)
 /* for Fortran */
-SHMEM_CTX_TYPED_PUTGET_NBI(get, complexf, COMPLEXIFY(float))
-SHMEM_CTX_TYPED_PUTGET_NBI(get, complexd, COMPLEXIFY(double))
+SHMEM_CTX_TYPED_GET_NBI(complexf, COMPLEXIFY(float))
+SHMEM_CTX_TYPED_GET_NBI(complexd, COMPLEXIFY(double))
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_get8_nbi = pshmem_ctx_get8_nbi
@@ -1065,18 +1065,18 @@ SHMEM_CTX_TYPED_PUTGET_NBI(get, complexd, COMPLEXIFY(double))
 #define shmem_ctx_get128_nbi pshmem_ctx_get128_nbi
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_SIZED_PUTGET_NBI(get, 8)
-SHMEM_CTX_SIZED_PUTGET_NBI(get, 16)
-SHMEM_CTX_SIZED_PUTGET_NBI(get, 32)
-SHMEM_CTX_SIZED_PUTGET_NBI(get, 64)
-SHMEM_CTX_SIZED_PUTGET_NBI(get, 128)
+SHMEM_CTX_SIZED_GET_NBI(8)
+SHMEM_CTX_SIZED_GET_NBI(16)
+SHMEM_CTX_SIZED_GET_NBI(32)
+SHMEM_CTX_SIZED_GET_NBI(64)
+SHMEM_CTX_SIZED_GET_NBI(128)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_getmem_nbi = pshmem_ctx_getmem_nbi
 #define shmem_ctx_getmem_nbi pshmem_ctx_getmem_nbi
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_CTX_PUTGET_MEM_NBI(get)
+SHMEM_CTX_GETMEM_NBI()
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_float_get = pshmem_float_get

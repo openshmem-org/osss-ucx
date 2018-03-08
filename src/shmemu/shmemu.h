@@ -101,40 +101,43 @@ void shmemu_deprecate_finalize(void);
 /*
  * sanity checks
  */
-# define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)         \
-    do {                                                 \
-        const int top_pe = proc.nranks - 1;              \
-                                                         \
-        if ((_pe < 0) || (_pe > top_pe)) {               \
-            logger(LOG_FATAL,                            \
-                   "PE %d: argument #%d of %s() not"     \
-                   " within allocated range %d...%d",    \
-                   _pe, _argpos, __func__,               \
-                   0, top_pe                             \
-                   );                                    \
-            /* NOT REACHED */                            \
-        }                                                \
+# define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)                \
+    do {                                                        \
+        const int top_pe = proc.nranks - 1;                     \
+                                                                \
+        if ((_pe < 0) || (_pe > top_pe)) {                      \
+            logger(LOG_FATAL,                                   \
+                   "In %s(), PE argument #%d is %d: "           \
+                   "outside allocated range [%d, %d]",          \
+                   __func__,                                    \
+                   _argpos,                                     \
+                   _pe,                                         \
+                   0, top_pe                                    \
+                   );                                           \
+            /* NOT REACHED */                                   \
+        }                                                       \
     } while (0)
 
-# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                         \
-    do {                                                                \
-        if (! shmemc_addr_accessible(_addr, proc.rank)) {               \
-            logger(LOG_FATAL,                                           \
-                   "Address %p in argument %d of %s() is not symmetric", \
-                   _addr, _argpos, __func__                             \
-                   );                                                   \
-            /* NOT REACHED */                                           \
-        }                                                               \
+# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                 \
+    do {                                                        \
+        if (! shmemc_addr_accessible(_addr, proc.rank)) {       \
+            logger(LOG_FATAL,                                   \
+                   "In %s(), address %p in argument %d "        \
+                   "is not symmetric",                          \
+                   __func__,                                    \
+                   _addr, _argpos                               \
+                   );                                           \
+            /* NOT REACHED */                                   \
+        }                                                       \
     } while (0)
 
 # define SHMEMU_CHECK_INIT()                                            \
     do {                                                                \
-        if (proc.status != SHMEMC_PE_RUNNING) {                         \
-            logger(LOG_FATAL,                                           \
-                   "In \"%s\", attempt to use OpenSHMEM library"        \
-                   " before initialization",                            \
-                   __func__                                             \
-                   );                                                   \
+        if (proc.refcount < 1) {                                        \
+            shmemu_fatal("In %s(), attempt to use OpenSHMEM library"    \
+                         " before initialization",                      \
+                         __func__                                       \
+                         );                                             \
             /* NOT REACHED */                                           \
         }                                                               \
     } while (0)

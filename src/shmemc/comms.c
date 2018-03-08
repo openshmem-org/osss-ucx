@@ -131,8 +131,6 @@ shmemc_ctx_fence(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
 
-    SHMEMU_CHECK_INIT();
-
     if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_fence(ch->w);
 
@@ -144,8 +142,6 @@ void
 shmemc_ctx_quiet(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    SHMEMU_CHECK_INIT();
 
     if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_flush(ch->w);
@@ -166,10 +162,6 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
 void *
 shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_PE_ARG_RANGE(pe, 3);
-    SHMEMU_CHECK_SYMMETRIC(addr, 2);
-
     /* check to see if UCX is new enough */
 #ifdef HAVE_UCP_RKEY_PTR
     uint64_t r_addr;            /* address on other PE */
@@ -198,10 +190,6 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 int
 shmemc_addr_accessible(const void *addr, int pe)
 {
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_PE_ARG_RANGE(pe, 2);
-    SHMEMU_CHECK_SYMMETRIC(addr, 1);
-
     return lookup_region((uint64_t) addr, pe) >= 0;
 }
 
@@ -211,9 +199,6 @@ shmemc_addr_accessible(const void *addr, int pe)
 int
 shmemc_pe_accessible(int pe)
 {
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_PE_ARG_RANGE(pe, 1);
-
     return IS_VALID_PE_NUMBER(pe);
 }
 
@@ -231,10 +216,6 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);
-    SHMEMU_CHECK_SYMMETRIC(dest, 2);
-
     get_remote_key_and_addr((uint64_t) dest, pe, &rkey, &rdest);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -251,10 +232,6 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
-
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);
-    SHMEMU_CHECK_SYMMETRIC(src, 3);
 
     get_remote_key_and_addr((uint64_t) src, pe, &rkey, &r_src);
     ep = lookup_ucp_ep(ctx, pe);
@@ -282,10 +259,6 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);
-    SHMEMU_CHECK_SYMMETRIC(dest, 2);
-
     get_remote_key_and_addr((uint64_t) dest, pe, &rkey, &rdest);
     ep = lookup_ucp_ep(ctx, pe);
 
@@ -302,10 +275,6 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
-
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);
-    SHMEMU_CHECK_SYMMETRIC(src, 3);
 
     get_remote_key_and_addr((uint64_t) src, pe, &rkey, &r_src);
     ep = lookup_ucp_ep(ctx, pe);
@@ -508,10 +477,6 @@ HELPER_FETCH_BITWISE_OP(^, xor, 64)
     shmemc_ctx_add##_size(shmem_ctx_t ctx,                              \
                           void *t, uint64_t v, int pe)                  \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         helper_atomic_add##_size(ctx, (uint64_t) t, v, pe);             \
     }
 
@@ -527,10 +492,6 @@ SHMEMC_CTX_ADD(64)
     shmemc_ctx_inc##_size(shmem_ctx_t ctx,                              \
                           void *t, int pe)                              \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         helper_atomic_add##_size(ctx, (uint64_t) t, 1, pe);             \
     }
 
@@ -546,10 +507,6 @@ SHMEMC_CTX_INC(64)
     shmemc_ctx_fadd##_size(shmem_ctx_t ctx,                             \
                            void *t, uint64_t v, int pe)                 \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         return helper_atomic_fetch_add##_size(ctx, (uint64_t) t, v, pe); \
     }
 
@@ -565,10 +522,6 @@ SHMEMC_CTX_FADD(64)
     shmemc_ctx_finc##_size(shmem_ctx_t ctx,                             \
                            void *t, int pe)                             \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         return helper_atomic_fetch_add##_size(ctx, (uint64_t) t, 1, pe); \
     }
 
@@ -584,10 +537,6 @@ SHMEMC_CTX_FINC(64)
     shmemc_ctx_swap##_size(shmem_ctx_t ctx,                             \
                            void *t, uint64_t v, int pe)                 \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         return helper_atomic_swap##_size(ctx, (uint64_t) t, v, pe);     \
     }
 
@@ -599,10 +548,6 @@ SHMEMC_CTX_SWAP(64)
     shmemc_ctx_cswap##_size(shmem_ctx_t ctx,                            \
                             void *t, uint64_t c, uint64_t v, int pe)    \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         return helper_atomic_cswap##_size(ctx, (uint64_t) t, c, v, pe); \
     }
 
@@ -622,10 +567,6 @@ SHMEMC_CTX_CSWAP(64)
     shmemc_ctx_fetch##_size(shmem_ctx_t ctx,                            \
                             void *t, int pe)                            \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 3);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         return helper_atomic_fetch_add##_size(ctx, (uint64_t) t, 0, pe); \
     }
 
@@ -640,10 +581,6 @@ SHMEMC_CTX_FETCH(64)
     shmemc_ctx_set##_size(shmem_ctx_t ctx,                              \
                           void *t, uint64_t v, int pe)                  \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         (void) helper_atomic_swap##_size(ctx, (uint64_t) t, v, pe);     \
     }
 
@@ -659,10 +596,6 @@ SHMEMC_CTX_SET(64)
     shmemc_ctx_fetch_##_op##_size(shmem_ctx_t ctx,                      \
                                   void *t, uint64_t v, int pe)          \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         return helper_atomic_fetch_##_op##_size(ctx, (uint64_t) t,      \
                                                 v, pe);                 \
     }
@@ -685,10 +618,6 @@ SHMEMC_CTX_FETCH_BITWISE(xor, 64)
     shmemc_ctx_##_op##_size(shmem_ctx_t ctx,                            \
                             void *t, uint64_t v, int pe)                \
     {                                                                   \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                               \
-        SHMEMU_CHECK_SYMMETRIC(t, 2);                                   \
-                                                                        \
         (void) helper_atomic_fetch_##_op##_size(ctx, (uint64_t) t,      \
                                                 v, pe);                 \
     }

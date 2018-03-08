@@ -133,9 +133,6 @@ shmemc_set_lock(long *lock)
 {
     shmem_lock_t *lp = (shmem_lock_t *) lock;
 
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_SYMMETRIC(lock, 1);
-
     set_lock(&(lp[1]), &(lp[0]));
 }
 
@@ -143,9 +140,6 @@ void
 shmemc_clear_lock(long *lock)
 {
     shmem_lock_t *lp = (shmem_lock_t *) lock;
-
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_SYMMETRIC(lock, 1);
 
     /* flush before release */
     shmemc_quiet();
@@ -157,9 +151,6 @@ int
 shmemc_test_lock(long *lock)
 {
     shmem_lock_t *lp = (shmem_lock_t *) lock;
-
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_SYMMETRIC(lock, 1);
 
     return test_lock(&(lp[1]), &(lp[0]));
 }

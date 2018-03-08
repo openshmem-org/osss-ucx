@@ -307,11 +307,6 @@ shmemc_broadcast_finalize(void)
     {                                                                   \
         const int sized_nelems = nelems * _size;                        \
                                                                         \
-        SHMEMU_CHECK_INIT();                                            \
-        SHMEMU_CHECK_SYMMETRIC(target, 1);                              \
-        SHMEMU_CHECK_SYMMETRIC(source, 2);                              \
-        SHMEMU_CHECK_SYMMETRIC(pSync, 8);                               \
-                                                                        \
         broadcast_helper(target, source,                                \
                          sized_nelems,                                  \
                          PE_root, PE_start,                             \

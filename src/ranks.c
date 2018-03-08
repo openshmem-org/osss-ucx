@@ -17,12 +17,16 @@
 int
 shmem_my_pe(void)
 {
+    SHMEMU_CHECK_INIT();
+
     return shmemc_my_pe();
 }
 
 int
 shmem_n_pes(void)
 {
+    SHMEMU_CHECK_INIT();
+
     return shmemc_n_pes();
 }
 

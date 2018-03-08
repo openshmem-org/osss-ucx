@@ -7,223 +7,446 @@
 
 #include "shmem_mutex.h"
 
-#define SHMEM_CTX_TYPED_PUTGET(_op, _name, _type)                       \
-    void                                                                \
-    shmem_ctx_##_name##_##_op(shmem_ctx_t ctx,                          \
-                              _type *dest, const _type *src,            \
-                              size_t nelems, int pe)                    \
-    {                                                                   \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,                      \
-                                              dest, src,                \
-                                              sizeof(_type) * nelems,   \
-                                              pe));                     \
+#define SHMEM_CTX_TYPED_PUT(_name, _type)                           \
+    void                                                            \
+    shmem_ctx_##_name##_put(shmem_ctx_t ctx,                        \
+                            _type *dest, const _type *src,          \
+                            size_t nelems, int pe)                  \
+    {                                                               \
+        SHMEMU_CHECK_INIT();                                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                           \
+        SHMEMU_CHECK_SYMMETRIC(dest, 2);                            \
+                                                                    \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put(ctx,                    \
+                                            dest, src,              \
+                                            sizeof(_type) * nelems, \
+                                            pe));                   \
     }
 
-#define SHMEM_CTX_SIZED_PUTGET(_op, _size)                              \
-    void                                                                \
-    shmem_ctx_##_op##_size(shmem_ctx_t ctx,                             \
-                             void *dest, const void *src,               \
-                             size_t nelems, int pe)                     \
-    {                                                                   \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,                      \
-                                              dest, src,                \
-                                              _size * nelems,           \
-                                              pe));                     \
+#define SHMEM_CTX_TYPED_GET(_name, _type)                           \
+    void                                                            \
+    shmem_ctx_##_name##_get(shmem_ctx_t ctx,                        \
+                            _type *dest, const _type *src,          \
+                            size_t nelems, int pe)                  \
+    {                                                               \
+        SHMEMU_CHECK_INIT();                                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                           \
+        SHMEMU_CHECK_SYMMETRIC(src, 3);                             \
+                                                                    \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get(ctx,                    \
+                                            dest, src,              \
+                                            sizeof(_type) * nelems, \
+                                            pe));                   \
     }
 
-#define SHMEM_CTX_PUTGET_MEM(_op)                           \
+#define SHMEM_CTX_SIZED_PUT(_size)                          \
     void                                                    \
-    shmem_ctx_##_op##mem(shmem_ctx_t ctx,                   \
-                         void *dest,                        \
-                         const void *src,                   \
-                         size_t nelems,                     \
-                         int pe)                            \
+    shmem_ctx_put##_size(shmem_ctx_t ctx,                   \
+                         void *dest, const void *src,       \
+                         size_t nelems, int pe)             \
     {                                                       \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op(ctx,          \
-                                              dest,         \
-                                              src,          \
-                                              nelems,       \
-                                              pe));         \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                   \
+        SHMEMU_CHECK_SYMMETRIC(dest, 2);                    \
+                                                            \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put(ctx,            \
+                                            dest, src,      \
+                                            _size * nelems, \
+                                            pe));           \
     }
 
-#define SHMEM_CTX_TYPED_IPUTGET(_op, _name, _type)                      \
-    void                                                                \
-    shmem_ctx_##_name##_i##_op(shmem_ctx_t ctx,                         \
-                               _type *target, const _type *source,      \
-                               ptrdiff_t tst, ptrdiff_t sst,            \
-                               size_t nelems, int pe)                   \
-    {                                                                   \
-        size_t ti = 0, si = 0;                                          \
-        size_t i;                                                       \
-                                                                        \
-        for (i = 0; i < nelems; i += 1) {                               \
-            shmem_ctx_##_name##_##_op(ctx,                              \
-                                      &(target[ti]),                    \
-                                      &(source[si]),                    \
-                                      1, pe);                           \
-            ti += tst;                                                  \
-            si += sst;                                                  \
-        }                                                               \
-    }
-
-#define SHMEM_CTX_SIZED_IPUTGET(_op, _size)                             \
-    void                                                                \
-    shmem_ctx_i##_op##_size(shmem_ctx_t ctx,                            \
-                            void *target, const void *source,           \
-                            ptrdiff_t tst, ptrdiff_t sst,               \
-                            size_t nelems, int pe)                      \
-    {                                                                   \
-        size_t ti = 0, si = 0;                                          \
-        size_t i;                                                       \
-                                                                        \
-        for (i = 0; i < nelems; i += 1) {                               \
-            shmem_ctx_##_op##_size(ctx,                                 \
-                                   (void *) &((char *) target)[ti],     \
-                                   (void *) &((char *) source)[si],     \
-                                   1, pe);                              \
-            ti += tst;                                                  \
-            si += sst;                                                  \
-        }                                                               \
-    }
-
-#define SHMEM_CTX_TYPED_PUTGET_NBI(_op, _name, _type)                   \
-    void                                                                \
-    shmem_ctx_##_name##_##_op##_nbi(shmem_ctx_t ctx,                    \
-                                    _type *dest, const _type *src,      \
-                                    size_t nelems, int pe)              \
-    {                                                                   \
-        const size_t nb = sizeof(_type) * nelems;                       \
-                                                                        \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,                \
-                                                    dest, src,          \
-                                                    nb,                 \
-                                                    pe));               \
-    }
-
-#define SHMEM_CTX_SIZED_PUTGET_NBI(_op, _size)                          \
-    void                                                                \
-    shmem_ctx_##_op##_size##_nbi(shmem_ctx_t ctx,                       \
-                                   void *dest, const void *src,         \
-                                   size_t nelems, int pe)               \
-    {                                                                   \
-        const size_t nb = (_size) * nelems;                             \
-                                                                        \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,                \
-                                                    dest, src,          \
-                                                    nb,                 \
-                                                    pe));               \
-    }
-
-#define SHMEM_CTX_PUTGET_MEM_NBI(_op)                       \
+#define SHMEM_CTX_SIZED_GET(_size)                          \
     void                                                    \
-    shmem_ctx_##_op##mem_nbi(shmem_ctx_t ctx,               \
-                             void *dest,                    \
-                             const void *src,               \
-                             size_t nelems,                 \
-                             int pe)                        \
+    shmem_ctx_get##_size(shmem_ctx_t ctx,                   \
+                         void *dest, const void *src,       \
+                         size_t nelems, int pe)             \
     {                                                       \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_op##_nbi(ctx,    \
-                                                    dest,   \
-                                                    src,    \
-                                                    nelems, \
-                                                    pe));   \
-}
-
-#define SHMEM_CTX_TYPED_P(_name, _type)                                 \
-    void                                                                \
-    shmem_ctx_##_name##_p(shmem_ctx_t ctx,                              \
-                          _type *addr, _type val, int pe)               \
-    {                                                                   \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put(ctx,                        \
-                                            addr, &val,                 \
-                                            sizeof(val),                \
-                                            pe));                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                   \
+        SHMEMU_CHECK_SYMMETRIC(src, 3);                     \
+                                                            \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get(ctx,            \
+                                            dest, src,      \
+                                            _size * nelems, \
+                                            pe));           \
     }
 
-#define SHMEM_CTX_TYPED_G(_name, _type)                                 \
-    _type                                                               \
-    shmem_ctx_##_name##_g(shmem_ctx_t ctx,                              \
-                          const _type *addr, int pe)                    \
-    {                                                                   \
-        _type val;                                                      \
-                                                                        \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get(ctx,                        \
-                                            &val, addr,                 \
-                                            sizeof(val),                \
-                                            pe));                       \
-                                                                        \
-        return val;                                                     \
+#define SHMEM_CTX_PUTMEM()                          \
+    void                                            \
+    shmem_ctx_putmem(shmem_ctx_t ctx,               \
+                     void *dest,                    \
+                     const void *src,               \
+                     size_t nelems,                 \
+                     int pe)                        \
+    {                                               \
+        SHMEMU_CHECK_INIT();                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);           \
+        SHMEMU_CHECK_SYMMETRIC(dest, 2);            \
+                                                    \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put(ctx,    \
+                                            dest,   \
+                                            src,    \
+                                            nelems, \
+                                            pe));   \
+    }
+
+#define SHMEM_CTX_GETMEM()                          \
+    void                                            \
+    shmem_ctx_getmem(shmem_ctx_t ctx,               \
+                     void *dest,                    \
+                     const void *src,               \
+                     size_t nelems,                 \
+                     int pe)                        \
+    {                                               \
+        SHMEMU_CHECK_INIT();                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);           \
+        SHMEMU_CHECK_SYMMETRIC(src, 3);             \
+                                                    \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get(ctx,    \
+                                            dest,   \
+                                            src,    \
+                                            nelems, \
+                                            pe));   \
+    }
+
+#define SHMEM_CTX_TYPED_IPUT(_name, _type)                          \
+    void                                                            \
+    shmem_ctx_##_name##_iput(shmem_ctx_t ctx,                       \
+                             _type *target, const _type *source,    \
+                             ptrdiff_t tst, ptrdiff_t sst,          \
+                             size_t nelems, int pe)                 \
+    {                                                               \
+        size_t ti = 0, si = 0;                                      \
+        size_t i;                                                   \
+                                                                    \
+        SHMEMU_CHECK_INIT();                                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 7);                           \
+        SHMEMU_CHECK_SYMMETRIC(target, 2);                          \
+                                                                    \
+        for (i = 0; i < nelems; i += 1) {                           \
+            shmem_ctx_##_name##_put(ctx,                            \
+                                    &(target[ti]),                  \
+                                    &(source[si]),                  \
+                                    1, pe);                         \
+            ti += tst;                                              \
+            si += sst;                                              \
+        }                                                           \
+    }
+
+#define SHMEM_CTX_TYPED_IGET(_name, _type)                          \
+    void                                                            \
+    shmem_ctx_##_name##_iget(shmem_ctx_t ctx,                       \
+                             _type *target, const _type *source,    \
+                             ptrdiff_t tst, ptrdiff_t sst,          \
+                             size_t nelems, int pe)                 \
+    {                                                               \
+        size_t ti = 0, si = 0;                                      \
+        size_t i;                                                   \
+                                                                    \
+        SHMEMU_CHECK_INIT();                                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 7);                           \
+        SHMEMU_CHECK_SYMMETRIC(source, 3);                          \
+                                                                    \
+                                                                    \
+        for (i = 0; i < nelems; i += 1) {                           \
+            shmem_ctx_##_name##_get(ctx,                            \
+                                    &(target[ti]),                  \
+                                    &(source[si]),                  \
+                                    1, pe);                         \
+            ti += tst;                                              \
+            si += sst;                                              \
+        }                                                           \
+    }
+
+#define SHMEM_CTX_SIZED_IPUT(_size)                                 \
+    void                                                            \
+    shmem_ctx_iput##_size(shmem_ctx_t ctx,                          \
+                          void *target, const void *source,         \
+                          ptrdiff_t tst, ptrdiff_t sst,             \
+                          size_t nelems, int pe)                    \
+    {                                                               \
+        size_t ti = 0, si = 0;                                      \
+        size_t i;                                                   \
+                                                                    \
+        SHMEMU_CHECK_INIT();                                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 7);                           \
+        SHMEMU_CHECK_SYMMETRIC(target, 2);                          \
+                                                                    \
+        for (i = 0; i < nelems; i += 1) {                           \
+            shmem_ctx_put##_size(ctx,                               \
+                                 (void *) &((char *) target)[ti],   \
+                                 (void *) &((char *) source)[si],   \
+                                 1, pe);                            \
+            ti += tst;                                              \
+            si += sst;                                              \
+        }                                                           \
+    }
+
+#define SHMEM_CTX_SIZED_IGET(_size)                                 \
+    void                                                            \
+    shmem_ctx_iget##_size(shmem_ctx_t ctx,                          \
+                          void *target, const void *source,         \
+                          ptrdiff_t tst, ptrdiff_t sst,             \
+                          size_t nelems, int pe)                    \
+    {                                                               \
+        size_t ti = 0, si = 0;                                      \
+        size_t i;                                                   \
+                                                                    \
+        SHMEMU_CHECK_INIT();                                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 7);                           \
+        SHMEMU_CHECK_SYMMETRIC(source, 3);                          \
+                                                                    \
+        for (i = 0; i < nelems; i += 1) {                           \
+            shmem_ctx_get##_size(ctx,                               \
+                                 (void *) &((char *) target)[ti],   \
+                                 (void *) &((char *) source)[si],   \
+                                 1, pe);                            \
+            ti += tst;                                              \
+            si += sst;                                              \
+        }                                                           \
+    }
+
+#define SHMEM_CTX_TYPED_PUT_NBI(_name, _type)                   \
+    void                                                        \
+    shmem_ctx_##_name##_put_nbi(shmem_ctx_t ctx,                \
+                                _type *dest, const _type *src,  \
+                                size_t nelems, int pe)          \
+    {                                                           \
+        const size_t nb = sizeof(_type) * nelems;               \
+                                                                \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                       \
+        SHMEMU_CHECK_SYMMETRIC(dest, 2);                        \
+                                                                \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put_nbi(ctx,            \
+                                                dest, src,      \
+                                                nb,             \
+                                                pe));           \
+    }
+
+#define SHMEM_CTX_TYPED_GET_NBI(_name, _type)                   \
+    void                                                        \
+    shmem_ctx_##_name##_get_nbi(shmem_ctx_t ctx,                \
+                                _type *dest, const _type *src,  \
+                                size_t nelems, int pe)          \
+    {                                                           \
+        const size_t nb = sizeof(_type) * nelems;               \
+                                                                \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                       \
+        SHMEMU_CHECK_SYMMETRIC(src, 3);                         \
+                                                                \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get_nbi(ctx,            \
+                                                dest, src,      \
+                                                nb,             \
+                                                pe));           \
+    }
+
+#define SHMEM_CTX_SIZED_PUT_NBI(_size)                      \
+    void                                                    \
+    shmem_ctx_put##_size##_nbi(shmem_ctx_t ctx,             \
+                               void *dest, const void *src, \
+                               size_t nelems, int pe)       \
+    {                                                       \
+        const size_t nb = (_size) * nelems;                 \
+                                                            \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                   \
+        SHMEMU_CHECK_SYMMETRIC(dest, 2);                    \
+                                                            \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put_nbi(ctx,        \
+                                                dest, src,  \
+                                                nb,         \
+                                                pe));       \
+    }
+
+#define SHMEM_CTX_SIZED_GET_NBI(_size)                      \
+    void                                                    \
+    shmem_ctx_get##_size##_nbi(shmem_ctx_t ctx,             \
+                               void *dest, const void *src, \
+                               size_t nelems, int pe)       \
+    {                                                       \
+        const size_t nb = (_size) * nelems;                 \
+                                                            \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);                   \
+        SHMEMU_CHECK_SYMMETRIC(src, 3);                     \
+                                                            \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get_nbi(ctx,        \
+                                                dest, src,  \
+                                                nb,         \
+                                                pe));       \
+    }
+
+#define SHMEM_CTX_PUTMEM_NBI()                          \
+    void                                                \
+    shmem_ctx_putmem_nbi(shmem_ctx_t ctx,               \
+                         void *dest,                    \
+                         const void *src,               \
+                         size_t nelems,                 \
+                         int pe)                        \
+    {                                                   \
+        SHMEMU_CHECK_INIT();                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);               \
+        SHMEMU_CHECK_SYMMETRIC(dest, 2);                \
+                                                        \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put_nbi(ctx,    \
+                                                dest,   \
+                                                src,    \
+                                                nelems, \
+                                                pe));   \
+    }
+
+#define SHMEM_CTX_GETMEM_NBI(_op)                       \
+    void                                                \
+    shmem_ctx_getmem_nbi(shmem_ctx_t ctx,               \
+                         void *dest,                    \
+                         const void *src,               \
+                         size_t nelems,                 \
+                         int pe)                        \
+    {                                                   \
+        SHMEMU_CHECK_INIT();                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 5);               \
+        SHMEMU_CHECK_SYMMETRIC(src, 3);                 \
+                                                        \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get_nbi(ctx,    \
+                                                dest,   \
+                                                src,    \
+                                                nelems, \
+                                                pe));   \
+    }
+
+#define SHMEM_CTX_TYPED_P(_name, _type)                     \
+    void                                                    \
+    shmem_ctx_##_name##_p(shmem_ctx_t ctx,                  \
+                          _type *addr, _type val, int pe)   \
+    {                                                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                   \
+        SHMEMU_CHECK_SYMMETRIC(addr, 2);                    \
+                                                            \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_put(ctx,            \
+                                            addr, &val,     \
+                                            sizeof(val),    \
+                                            pe));           \
+    }
+
+#define SHMEM_CTX_TYPED_G(_name, _type)                     \
+    _type                                                   \
+    shmem_ctx_##_name##_g(shmem_ctx_t ctx,                  \
+                          const _type *addr, int pe)        \
+    {                                                       \
+        _type val;                                          \
+                                                            \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 3);                   \
+        SHMEMU_CHECK_SYMMETRIC(addr, 2);                    \
+                                                            \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_get(ctx,            \
+                                            &val, addr,     \
+                                            sizeof(val),    \
+                                            pe));           \
+                                                            \
+        return val;                                         \
     }
 
 /*
  * operating on implicit default context
  */
 
-#define API_DECL_TYPED_PUT(_name, _type)                                \
-    void                                                                \
-    shmem_##_name##_put(_type *dest, const _type *src,                  \
-                        size_t nelems, int pe)                          \
-    {                                                                   \
-        shmem_ctx_##_name##_put(SHMEM_CTX_DEFAULT,                      \
-                                dest, src,                              \
-                                nelems, pe);                            \
-    }                                                                   \
-    void                                                                \
-    shmem_##_name##_put_nbi(_type *dest,                                \
-                            const _type *src,                           \
-                            size_t nelems, int pe)                      \
-    {                                                                   \
-        shmem_ctx_##_name##_put_nbi(SHMEM_CTX_DEFAULT,                  \
-                                    dest, src,                          \
-                                    nelems, pe);                        \
-    }                                                                   \
-    void                                                                \
-    shmem_##_name##_iput(_type *dest,                                   \
-                         const _type *src,                              \
-                         ptrdiff_t tst, ptrdiff_t sst,                  \
-                         size_t nelems, int pe)                         \
-    {                                                                   \
-        shmem_ctx_##_name##_iput(SHMEM_CTX_DEFAULT,                     \
-                                 dest, src,                             \
-                                 tst, sst,                              \
-                                 sizeof(_type) * nelems, pe);           \
+#define API_DECL_TYPED_PUT(_name, _type)                        \
+    void                                                        \
+    shmem_##_name##_put(_type *dest, const _type *src,          \
+                        size_t nelems, int pe)                  \
+    {                                                           \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                       \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                        \
+                                                                \
+        shmem_ctx_##_name##_put(SHMEM_CTX_DEFAULT,              \
+                                dest, src,                      \
+                                nelems, pe);                    \
+    }                                                           \
+    void                                                        \
+    shmem_##_name##_put_nbi(_type *dest,                        \
+                            const _type *src,                   \
+                            size_t nelems, int pe)              \
+    {                                                           \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                       \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                        \
+                                                                \
+        shmem_ctx_##_name##_put_nbi(SHMEM_CTX_DEFAULT,          \
+                                    dest, src,                  \
+                                    nelems, pe);                \
+    }                                                           \
+    void                                                        \
+    shmem_##_name##_iput(_type *dest,                           \
+                         const _type *src,                      \
+                         ptrdiff_t tst, ptrdiff_t sst,          \
+                         size_t nelems, int pe)                 \
+    {                                                           \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 6);                       \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                        \
+                                                                \
+        shmem_ctx_##_name##_iput(SHMEM_CTX_DEFAULT,             \
+                                 dest, src,                     \
+                                 tst, sst,                      \
+                                 sizeof(_type) * nelems, pe);   \
     }
 
-#define API_DECL_TYPED_GET(_name, _type)                            \
-    void                                                            \
-    shmem_##_name##_get(_type *dest, const _type *src,              \
-                        size_t nelems, int pe)                      \
-    {                                                               \
-        shmem_ctx_##_name##_get(SHMEM_CTX_DEFAULT,                  \
-                                dest, src,                          \
-                                nelems, pe);                        \
-    }                                                               \
-    void                                                            \
-    shmem_##_name##_get##_nbi(_type *dest,                          \
-                              const _type *src,                     \
-                              size_t nelems, int pe)                \
-    {                                                               \
-        shmem_ctx_##_name##_get##_nbi(SHMEM_CTX_DEFAULT,            \
-                                      dest, src,                    \
-                                      nelems, pe);                  \
-    }                                                               \
-    void                                                            \
-    shmem_##_name##_iget(_type *dest,                               \
-                         const _type *src,                          \
-                         ptrdiff_t tst, ptrdiff_t sst,              \
-                         size_t nelems, int pe)                     \
-    {                                                               \
-        shmem_ctx_##_name##_iget(SHMEM_CTX_DEFAULT,                 \
-                                 dest, src,                         \
-                                 tst, sst,                          \
-                                 sizeof(_type) * nelems, pe);       \
-        }
+#define API_DECL_TYPED_GET(_name, _type)                        \
+    void                                                        \
+    shmem_##_name##_get(_type *dest, const _type *src,          \
+                        size_t nelems, int pe)                  \
+    {                                                           \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                       \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                         \
+                                                                \
+        shmem_ctx_##_name##_get(SHMEM_CTX_DEFAULT,              \
+                                dest, src,                      \
+                                nelems, pe);                    \
+    }                                                           \
+    void                                                        \
+    shmem_##_name##_get##_nbi(_type *dest,                      \
+                              const _type *src,                 \
+                              size_t nelems, int pe)            \
+    {                                                           \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                       \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                         \
+                                                                \
+        shmem_ctx_##_name##_get##_nbi(SHMEM_CTX_DEFAULT,        \
+                                      dest, src,                \
+                                      nelems, pe);              \
+    }                                                           \
+    void                                                        \
+    shmem_##_name##_iget(_type *dest,                           \
+                         const _type *src,                      \
+                         ptrdiff_t tst, ptrdiff_t sst,          \
+                         size_t nelems, int pe)                 \
+    {                                                           \
+        SHMEMU_CHECK_INIT();                                    \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 6);                       \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                         \
+                                                                \
+        shmem_ctx_##_name##_iget(SHMEM_CTX_DEFAULT,             \
+                                 dest, src,                     \
+                                 tst, sst,                      \
+                                 sizeof(_type) * nelems, pe);   \
+    }
 
 #define API_DECL_SIZED_PUT(_size)                           \
     void                                                    \
     shmem_put##_size(void *dest, const void *src,           \
                      size_t nelems, int pe)                 \
     {                                                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                   \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                    \
+                                                            \
         shmem_ctx_put##_size(SHMEM_CTX_DEFAULT,             \
                              dest, src, nelems, pe);        \
     }                                                       \
@@ -231,6 +454,10 @@
     shmem_put##_size##_nbi(void *dest, const void *src,     \
                            size_t nelems, int pe)           \
     {                                                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                   \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                    \
+                                                            \
         shmem_ctx_put##_size##_nbi(SHMEM_CTX_DEFAULT,       \
                                    dest, src, nelems, pe);  \
     }                                                       \
@@ -239,6 +466,10 @@
                       ptrdiff_t tst, ptrdiff_t sst,         \
                       size_t nelems, int pe)                \
     {                                                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 6);                   \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                    \
+                                                            \
         shmem_ctx_iput##_size(SHMEM_CTX_DEFAULT,            \
                               dest, src, tst, sst,          \
                               nelems, pe);                  \
@@ -249,6 +480,10 @@
     shmem_get##_size(void *dest, const void *src,           \
                      size_t nelems, int pe)                 \
     {                                                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                   \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                     \
+                                                            \
         shmem_ctx_get##_size(SHMEM_CTX_DEFAULT,             \
                              dest, src, nelems, pe);        \
     }                                                       \
@@ -256,6 +491,10 @@
     shmem_get##_size##_nbi(void *dest, const void *src,     \
                            size_t nelems, int pe)           \
     {                                                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);                   \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                     \
+                                                            \
         shmem_ctx_get##_size##_nbi(SHMEM_CTX_DEFAULT,       \
                                    dest, src, nelems, pe);  \
     }                                                       \
@@ -264,47 +503,71 @@
                       ptrdiff_t tst, ptrdiff_t sst,         \
                       size_t nelems, int pe)                \
     {                                                       \
+        SHMEMU_CHECK_INIT();                                \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 6);                   \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                     \
+                                                            \
         shmem_ctx_iget##_size(SHMEM_CTX_DEFAULT,            \
                               dest, src, tst, sst,          \
                               nelems, pe);                  \
     }
 
-#define API_DECL_PUTMEM()                                       \
-    void                                                        \
-    shmem_putmem(void *dest, const void *src,                   \
-                 size_t nelems, int pe)                         \
-    {                                                           \
-        shmem_ctx_putmem(SHMEM_CTX_DEFAULT,                     \
-                         dest, src, nelems, pe);                \
-    }                                                           \
-    void                                                        \
-    shmem_putmem_nbi(void *dest, const void *src,               \
-                     size_t nelems, int pe)                     \
-    {                                                           \
+#define API_DECL_PUTMEM()                               \
+    void                                                \
+    shmem_putmem(void *dest, const void *src,           \
+                 size_t nelems, int pe)                 \
+    {                                                   \
+        SHMEMU_CHECK_INIT();                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);               \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                \
+                                                        \
+        shmem_ctx_putmem(SHMEM_CTX_DEFAULT,             \
+                         dest, src, nelems, pe);        \
+    }                                                   \
+    void                                                \
+    shmem_putmem_nbi(void *dest, const void *src,       \
+                     size_t nelems, int pe)             \
+    {                                                   \
+        SHMEMU_CHECK_INIT();                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);               \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                \
+                                                        \
         shmem_ctx_putmem_nbi(SHMEM_CTX_DEFAULT,         \
                              dest, src, nelems, pe);    \
     }
 
-#define API_DECL_GETMEM()                                       \
-    void                                                        \
-    shmem_getmem(void *dest, const void *src,                   \
-                 size_t nelems, int pe)                         \
-    {                                                           \
-        shmem_ctx_getmem(SHMEM_CTX_DEFAULT,                     \
-                         dest, src, nelems, pe);                \
-    }                                                           \
-    void                                                        \
-    shmem_getmem_nbi(void *dest, const void *src,               \
-                     size_t nelems, int pe)                     \
-    {                                                           \
-        shmem_ctx_getmem_nbi(SHMEM_CTX_DEFAULT,                 \
-                             dest, src, nelems, pe);            \
+#define API_DECL_GETMEM()                               \
+    void                                                \
+    shmem_getmem(void *dest, const void *src,           \
+                 size_t nelems, int pe)                 \
+    {                                                   \
+        SHMEMU_CHECK_INIT();                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);               \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                 \
+                                                        \
+        shmem_ctx_getmem(SHMEM_CTX_DEFAULT,             \
+                         dest, src, nelems, pe);        \
+    }                                                   \
+    void                                                \
+    shmem_getmem_nbi(void *dest, const void *src,       \
+                     size_t nelems, int pe)             \
+    {                                                   \
+        SHMEMU_CHECK_INIT();                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 4);               \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);                 \
+                                                        \
+        shmem_ctx_getmem_nbi(SHMEM_CTX_DEFAULT,         \
+                             dest, src, nelems, pe);    \
     }
 
 #define API_DECL_TYPED_P(_name, _type)                  \
     void                                                \
     shmem_##_name##_p(_type *dest, _type src, int pe)   \
     {                                                   \
+        SHMEMU_CHECK_INIT();                            \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 3);               \
+        SHMEMU_CHECK_SYMMETRIC(dest, 1);                \
+                                                        \
         shmem_ctx_##_name##_put(SHMEM_CTX_DEFAULT,      \
                                 dest, &src, 1, pe);     \
     }
@@ -314,6 +577,10 @@
     shmem_##_name##_g(const _type *src, int pe)     \
     {                                               \
         _type val;                                  \
+                                                    \
+        SHMEMU_CHECK_INIT();                        \
+        SHMEMU_CHECK_PE_ARG_RANGE(pe, 2);           \
+        SHMEMU_CHECK_SYMMETRIC(src, 2);             \
                                                     \
         shmem_ctx_##_name##_get(SHMEM_CTX_DEFAULT,  \
                                 &val, src, 1, pe);  \

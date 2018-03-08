@@ -175,9 +175,6 @@ shmemc_barrier_finalize(void)
 void
 shmemc_barrier(int start, int log2stride, int size, long *pSync)
 {
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_SYMMETRIC(pSync, 4);
-
     shmemc_quiet();
 
     barrier_sync_helper(start, log2stride, size, pSync);
@@ -186,17 +183,12 @@ shmemc_barrier(int start, int log2stride, int size, long *pSync)
 void
 shmemc_barrier_all(void)
 {
-    SHMEMU_CHECK_INIT();
-
     shmemc_barrier(0, 0, proc.nranks, shmemc_barrier_all_psync);
 }
 
 void
 shmemc_sync(int start, int log2stride, int size, long *pSync)
 {
-    SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_SYMMETRIC(pSync, 4);
-
     LOAD_STORE_FENCE();
 
     barrier_sync_helper(start, log2stride, size, pSync);
@@ -205,7 +197,5 @@ shmemc_sync(int start, int log2stride, int size, long *pSync)
 void
 shmemc_sync_all(void)
 {
-    SHMEMU_CHECK_INIT();
-
     shmemc_sync(0, 0, proc.nranks, shmemc_sync_all_psync);
 }
