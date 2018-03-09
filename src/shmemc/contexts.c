@@ -41,11 +41,7 @@ register_context(shmemc_context_h ch)
 {
     size_t next;
 
-    if (can_reclaim) {
-        next = reclaim;
-        can_reclaim = false;
-    }
-    else {
+    if (! can_reclaim) {
         next = proc.comms.nctxts;
 
         /* if out of space, grab some more */
@@ -64,6 +60,10 @@ register_context(shmemc_context_h ch)
 
         /* and for next one */
         proc.comms.nctxts += 1;
+    }
+    else {
+        next = reclaim;
+        can_reclaim = false;
     }
 
     /* record this new context */
