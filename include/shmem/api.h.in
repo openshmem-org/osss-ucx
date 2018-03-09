@@ -2515,6 +2515,42 @@ extern "C"
              unsigned long long *: shmem_ulonglong_put              \
              )(arg1, arg2, __VA_ARGS__)
 
+    /* see \ref shmem_long_put_nbi() */
+#define shmem_put_nbi(arg1, arg2, ...)                                  \
+    _Generic((arg1),                                                    \
+             shmem_ctx_t:                                               \
+             _Generic((arg2),                                           \
+                      float *: shmem_ctx_float_put_nbi,                 \
+                      double *: shmem_ctx_double_put_nbi,               \
+                      long double *: shmem_ctx_longdouble_put_nbi,      \
+                      signed char *: shmem_ctx_schar_put_nbi,           \
+                      char *: shmem_ctx_char_put_nbi,                   \
+                      short *: shmem_ctx_short_put_nbi,                 \
+                      int *: shmem_ctx_int_put_nbi,                     \
+                      long *: shmem_ctx_long_put_nbi,                   \
+                      long long *: shmem_ctx_longlong_put_nbi,          \
+                      unsigned char *: shmem_ctx_uchar_put_nbi,         \
+                      unsigned short *: shmem_ctx_ushort_put_nbi,       \
+                      unsigned int *: shmem_ctx_uint_put_nbi,           \
+                      unsigned long *: shmem_ctx_ulong_put_nbi,         \
+                      unsigned long long *: shmem_ctx_ulonglong_put_nbi \
+                      ),                                                \
+             float *: shmem_float_put_nbi,                              \
+             double *: shmem_double_put_nbi,                            \
+             long double *: shmem_longdouble_put_nbi,                   \
+             signed char *: shmem_schar_put_nbi,                        \
+             char *: shmem_char_put_nbi,                                \
+             short *: shmem_short_put_nbi,                              \
+             int *: shmem_int_put_nbi,                                  \
+             long *: shmem_long_put_nbi,                                \
+             long long *: shmem_longlong_put_nbi,                       \
+             unsigned char *: shmem_uchar_put_nbi,                      \
+             unsigned short *: shmem_ushort_put_nbi,                    \
+             unsigned int *: shmem_uint_put_nbi,                        \
+             unsigned long *: shmem_ulong_put_nbi,                      \
+             unsigned long long *: shmem_ulonglong_put_nbi              \
+             )(arg1, arg2, __VA_ARGS__)
+
     /* see \ref shmem_long_get() */
 #define shmem_get(arg1, arg2, ...)                                  \
     _Generic((arg1),                                                \
@@ -2549,6 +2585,42 @@ extern "C"
              unsigned int *: shmem_uint_get,                        \
              unsigned long *: shmem_ulong_get,                      \
              unsigned long long *: shmem_ulonglong_get              \
+             )(arg1, arg2, __VA_ARGS__)
+
+    /* see \ref shmem_long_get_nbi() */
+#define shmem_get_nbi(arg1, arg2, ...)                                  \
+    _Generic((arg1),                                                    \
+             shmem_ctx_t:                                               \
+             _Generic((arg2),                                           \
+                      float *: shmem_ctx_float_get_nbi,                 \
+                      double *: shmem_ctx_double_get_nbi,               \
+                      long double *: shmem_ctx_longdouble_get_nbi,      \
+                      signed char *: shmem_ctx_schar_get_nbi,           \
+                      char *: shmem_ctx_char_get_nbi,                   \
+                      short *: shmem_ctx_short_get_nbi,                 \
+                      int *: shmem_ctx_int_get_nbi,                     \
+                      long *: shmem_ctx_long_get_nbi,                   \
+                      long long *: shmem_ctx_longlong_get_nbi,          \
+                      unsigned char *: shmem_ctx_uchar_get_nbi,         \
+                      unsigned short *: shmem_ctx_ushort_get_nbi,       \
+                      unsigned int *: shmem_ctx_uint_get_nbi,           \
+                      unsigned long *: shmem_ctx_ulong_get_nbi,         \
+                      unsigned long long *: shmem_ctx_ulonglong_get_nbi \
+                      ),                                                \
+             float *: shmem_float_get_nbi,                              \
+             double *: shmem_double_get_nbi,                            \
+             long double *: shmem_longdouble_get_nbi,                   \
+             signed char *: shmem_schar_get_nbi,                        \
+             char *: shmem_char_get_nbi,                                \
+             short *: shmem_short_get_nbi,                              \
+             int *: shmem_int_get_nbi,                                  \
+             long *: shmem_long_get_nbi,                                \
+             long long *: shmem_longlong_get_nbi,                       \
+             unsigned char *: shmem_uchar_get_nbi,                      \
+             unsigned short *: shmem_ushort_get_nbi,                    \
+             unsigned int *: shmem_uint_get_nbi,                        \
+             unsigned long *: shmem_ulong_get_nbi,                      \
+             unsigned long long *: shmem_ulonglong_get_nbi              \
              )(arg1, arg2, __VA_ARGS__)
 
     /* see \ref shmem_long_p() */

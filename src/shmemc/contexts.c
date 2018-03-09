@@ -47,7 +47,9 @@ register_context(shmemc_context_h ch)
 
     ch->id = proc.comms.nctxts;
     proc.comms.ctxts[proc.comms.nctxts] = ch;
+
     proc.comms.nctxts += 1;
+    top_ctxt += 1;
 
     return 0;
 }
