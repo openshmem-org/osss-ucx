@@ -18,13 +18,9 @@
  * how many more to allocate when we run out (magic number)
  */
 
-static const size_t context_block = 8;
+#define SPILL_BLOCK 16
 
-/*
- * track most recent context
- */
-
-static size_t top_ctxt = 0;
+static size_t spill_ctxt = 0;
 
 /*
  * insert context into PE state
@@ -35,21 +31,24 @@ static size_t top_ctxt = 0;
 inline static int
 register_context(shmemc_context_h ch)
 {
-    if (proc.comms.nctxts == top_ctxt) {
-        top_ctxt += context_block;
-        proc.comms.ctxts =
-            (shmemc_context_h *) realloc(proc.comms.ctxts, top_ctxt);
+    /* if out of space, grab some more */
+    if (proc.comms.nctxts == spill_ctxt) {
+        spill_ctxt += SPILL_BLOCK;
+        proc.comms.ctxts = (shmemc_context_h *)
+            realloc(proc.comms.ctxts,
+                    spill_ctxt * sizeof(*(proc.comms.ctxts)));
         if (proc.comms.ctxts == NULL) {
             return 1;
             /* NOT REACHED */
         }
     }
 
+    /* record this new context */
     ch->id = proc.comms.nctxts;
     proc.comms.ctxts[proc.comms.nctxts] = ch;
 
+    /* and for next one */
     proc.comms.nctxts += 1;
-    top_ctxt += 1;
 
     return 0;
 }
