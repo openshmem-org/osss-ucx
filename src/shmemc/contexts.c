@@ -7,6 +7,7 @@
 #include "state.h"
 #include "shmemc.h"
 #include "shmemu.h"
+#include "boolean.h"
 
 #include "shmem/defs.h"
 
@@ -18,9 +19,16 @@
  * how many more to allocate when we run out (magic number)
  */
 
-#define SPILL_BLOCK 16
+static const size_t SPILL_BLOCK = 16;
 
 static size_t spill_ctxt = 0;
+
+/*
+ * poor man's free-list
+ */
+
+static bool can_reclaim = false;
+static size_t reclaim;
 
 /*
  * insert context into PE state
@@ -31,24 +39,36 @@ static size_t spill_ctxt = 0;
 inline static int
 register_context(shmemc_context_h ch)
 {
-    /* if out of space, grab some more */
-    if (proc.comms.nctxts == spill_ctxt) {
-        spill_ctxt += SPILL_BLOCK;
-        proc.comms.ctxts = (shmemc_context_h *)
-            realloc(proc.comms.ctxts,
-                    spill_ctxt * sizeof(*(proc.comms.ctxts)));
-        if (proc.comms.ctxts == NULL) {
-            return 1;
-            /* NOT REACHED */
+    size_t next;
+
+    if (can_reclaim) {
+        next = reclaim;
+        can_reclaim = false;
+    }
+    else {
+        next = proc.comms.nctxts;
+
+        /* if out of space, grab some more */
+        if (next == spill_ctxt) {
+            spill_ctxt += SPILL_BLOCK;
+
+            proc.comms.ctxts = (shmemc_context_h *)
+                realloc(proc.comms.ctxts,
+                        spill_ctxt * sizeof(*(proc.comms.ctxts)));
+
+            if (proc.comms.ctxts == NULL) {
+                return 1;
+                /* NOT REACHED */
+            }
         }
+
+        /* and for next one */
+        proc.comms.nctxts += 1;
     }
 
     /* record this new context */
-    ch->id = proc.comms.nctxts;
-    proc.comms.ctxts[proc.comms.nctxts] = ch;
-
-    /* and for next one */
-    proc.comms.nctxts += 1;
+    ch->id = next;
+    proc.comms.ctxts[next] = ch;
 
     return 0;
 }
@@ -60,8 +80,10 @@ register_context(shmemc_context_h ch)
 inline static void
 deregister_context(shmemc_context_h ch)
 {
-    /* TODO: freed at teardown, should better maintain a pool */
     proc.comms.ctxts[ch->id] = NULL;
+    /* this one is re-usable */
+    can_reclaim = true;
+    reclaim = ch->id;
 }
 
 /*
