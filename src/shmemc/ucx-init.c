@@ -141,6 +141,7 @@ allocate_contexts_table(void)
      * no SHMEM contexts created yet
      */
     proc.comms.nctxts = 0;
+    proc.comms.ctxts = NULL;
 }
 
 inline static void
