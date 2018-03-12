@@ -13,6 +13,7 @@
 
 #include <sys/types.h>
 #include <stdarg.h>
+#include <pthread.h>
 
 /*
  * how many elements in array T?
@@ -142,6 +143,22 @@ void shmemu_deprecate_finalize(void);
         }                                                               \
     } while (0)
 
+# define SHMEMU_CHECK_SAME_THREAD(_ctx)                                 \
+    do {                                                                \
+        if ((_ctx)->attr.private) {                                     \
+            const pthread_t me = pthread_self();                        \
+                                                                        \
+            if (proc.td.invoking_thread == me) {                        \
+                shmemu_fatal("In %s(), invoking thread %d"              \
+                             " not owner thread %d in private context", \
+                             __func__,                                  \
+                             proc.td.invoking_thread, me                \
+                             );                                         \
+                /* NOT REACHED */                                       \
+            }                                                           \
+        }                                                               \
+    } while (0)
+
 #else  /* ! ENABLE_DEBUG */
 
 # define logger(...)
@@ -153,6 +170,7 @@ void shmemu_deprecate_finalize(void);
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
 # define SHMEMU_CHECK_INIT()
+# define SHMEMU_CHECK_SAME_THREAD(_ctx)
 
 #endif /* ENABLE_DEBUG */
 
