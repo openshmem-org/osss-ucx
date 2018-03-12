@@ -4,6 +4,7 @@
 #define _THISPE_H 1
 
 #include "boolean.h"
+#include "threading.h"
 
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
@@ -65,7 +66,7 @@ typedef struct shmemc_context {
 
     unsigned long id;           /* internal tracking */
 
-    pthread_t creator_thread;   /* thread ID that created me */
+    shmemc_thread_t creator_thread; /* thread ID that created me */
 
     /*
      * parsed options during creation (defaults: no)
@@ -97,7 +98,7 @@ typedef struct comms_info {
 typedef struct thread_desc {
     ucs_thread_mode_t ucx_tl;   /* UCX thread level */
     int osh_tl;                 /* corresponding OpenSHMEM thread level */
-    pthread_t invoking_thread;  /* thread that called shmem_init*() */
+    shmemc_thread_t invoking_thread; /* thread that called shmem_init*() */
 } thread_desc_t;
 
 /*

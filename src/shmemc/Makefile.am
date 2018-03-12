@@ -15,6 +15,7 @@ LIBSHMEMC_SOURCES         = \
 				readenv.c \
 				shmemc-init.c \
 				state.c \
+				threading.c \
 				ucx-init.c \
 				waituntil.c
 

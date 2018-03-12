@@ -6,6 +6,7 @@
 #include "state.h"
 #include "shmemc.h"
 #include "shmem/defs.h"
+#include "threading.h"
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -13,7 +14,6 @@
 
 #include <sys/types.h>
 #include <stdarg.h>
-#include <pthread.h>
 
 /*
  * how many elements in array T?
@@ -146,8 +146,8 @@ void shmemu_deprecate_finalize(void);
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)                                 \
     do {                                                                \
         if ((_ctx)->attr.private) {                                     \
-            const pthread_t me = pthread_self();                        \
-            const pthread_t cr = (_ctx)->creator_thread;                \
+            const shmemc_thread_t me = shmemc_thread_id();              \
+            const shmemc_thread_t cr = (_ctx)->creator_thread;          \
                                                                         \
             if (cr != me) {                                             \
                 shmemu_fatal("In %s(), invoking thread %d"              \
