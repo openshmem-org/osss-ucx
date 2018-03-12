@@ -7,6 +7,7 @@
 #include "shmem_mutex.h"
 
 #include "thispe.h"
+#include "shmemu.h"
 #include "shmemc.h"
 #include "shmem/defs.h"
 
@@ -29,10 +30,12 @@ shmem_ctx_t SHMEM_CTX_DEFAULT = NULL;
 int
 shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 {
+    shmemc_context_h *chp = (shmemc_context_h *) ctxp;
     int s;
 
-    SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(options,
-                                                   (shmemc_context_h *) ctxp));
+    SHMEMU_CHECK_INIT();
+
+    SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(options, chp));
 
     return s;
 }
@@ -44,7 +47,12 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 void
 shmem_ctx_destroy(shmem_ctx_t ctx)
 {
-    SHMEMT_MUTEX_PROTECT(shmemc_context_destroy((shmemc_context_h) ctx));
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_SAME_THREAD(ch);
+
+    SHMEMT_MUTEX_PROTECT(shmemc_context_destroy(ch));
 }
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -56,11 +64,13 @@ shmem_ctx_destroy(shmem_ctx_t ctx)
 void
 shmemx_ctx_start_session(shmem_ctx_t ctx)
 {
+    SHMEMU_CHECK_INIT();
 }
 
 void
 shmemx_ctx_end_session(shmem_ctx_t ctx)
 {
+    SHMEMU_CHECK_INIT();
 }
 
 #endif  /* ENABLE_EXPERIMENTAL */
