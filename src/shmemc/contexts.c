@@ -8,6 +8,7 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "boolean.h"
+#include "threading.h"
 
 #include "shmem/defs.h"
 
@@ -132,7 +133,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
         /* NOT REACHED */
     }
 
-    newone->creator_thread = pthread_self();
+    newone->creator_thread = shmemc_thread_id();
 
     *ctxp = newone;             /* handle back to caller */
 

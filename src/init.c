@@ -8,12 +8,12 @@
 #include "shmemc.h"
 #include "state.h"
 #include "info.h"
+#include "threading.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include <pthread.h>
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_init_thread = pshmem_init_thread
@@ -35,7 +35,7 @@ finalize_helper(void)
 {
     /* do nothing if multiple finalizes */
     if (proc.refcount > 0) {
-        const pthread_t this = pthread_self();
+        const shmemc_thread_t this = shmemc_thread_id();
 
         if (this != proc.td.invoking_thread) {
             logger(LOG_FINALIZE,
@@ -97,7 +97,7 @@ init_thread_helper(int requested, int *provided)
             *provided = requested;
         }
 
-        proc.td.invoking_thread = pthread_self();
+        proc.td.invoking_thread = shmemc_thread_id();
 
         if (proc.rank == 0) {
             if (proc.env.print_version) {
