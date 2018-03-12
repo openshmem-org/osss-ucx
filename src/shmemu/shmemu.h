@@ -147,12 +147,13 @@ void shmemu_deprecate_finalize(void);
     do {                                                                \
         if ((_ctx)->attr.private) {                                     \
             const pthread_t me = pthread_self();                        \
+            const pthread_t cr = (_ctx)->creator_thread;                \
                                                                         \
-            if (proc.td.invoking_thread == me) {                        \
+            if (cr != me) {                                             \
                 shmemu_fatal("In %s(), invoking thread %d"              \
                              " not owner thread %d in private context", \
                              __func__,                                  \
-                             proc.td.invoking_thread, me                \
+                             me, cr                                     \
                              );                                         \
                 /* NOT REACHED */                                       \
             }                                                           \

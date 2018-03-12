@@ -132,6 +132,8 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
         /* NOT REACHED */
     }
 
+    newone->creator_thread = pthread_self();
+
     *ctxp = newone;             /* handle back to caller */
 
     return 0;

@@ -65,6 +65,8 @@ typedef struct shmemc_context {
 
     unsigned long id;           /* internal tracking */
 
+    pthread_t creator_thread;   /* thread ID that created me */
+
     /*
      * parsed options during creation (defaults: no)
      */
