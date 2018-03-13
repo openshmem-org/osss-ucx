@@ -93,9 +93,7 @@ init_thread_helper(int requested, int *provided)
 
         /* save and return */
         proc.td.osh_tl = requested;
-        if (provided != NULL) {
-            *provided = requested;
-        }
+        *provided = requested;
 
         proc.td.invoking_thread = shmemc_thread_id();
 
@@ -131,7 +129,9 @@ shmem_init_thread(int requested, int *provided)
 void
 shmem_init(void)
 {
-    (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
+    int prov_unused;
+
+    (void) init_thread_helper(SHMEM_THREAD_SINGLE, &prov_unused);
 }
 
 /*
