@@ -99,7 +99,7 @@ output_build_env(void)
 {
     char *host;
 
-    output("Build date",
+    output("Configure date",
 #ifdef CONFIG_BUILD_DATE
            CONFIG_BUILD_DATE
 #else
@@ -107,7 +107,7 @@ output_build_env(void)
 #endif /* CONFIG_BUILD_DATE */
            );
 
-    output("Build host",
+    output("Configure host",
 #ifdef CONFIG_BUILD_HOST
            CONFIG_BUILD_HOST
 #else
