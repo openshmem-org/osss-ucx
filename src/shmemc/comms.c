@@ -64,11 +64,16 @@ in_region(uint64_t addr, size_t region, int pe)
 inline static long
 lookup_region(uint64_t addr, int pe)
 {
-    size_t r;
+    long r;
 
-    for (r = 0; r < proc.comms.nregions; r += 1) {
-        if (in_region(addr, r, pe)) {
-            return (long) r;
+    /*
+     * Let's search down from top heap to globals (#0) under
+     * assumption most data in heaps and newest one is most likely
+     * (may need to revisit)
+     */
+    for (r = proc.comms.nregions - 1; r >= 0; r -= 1) {
+        if (in_region(addr, (size_t) r, pe)) {
+            return r;
             /* NOT REACHED */
         }
     }

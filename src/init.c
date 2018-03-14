@@ -93,15 +93,13 @@ init_thread_helper(int requested, int *provided)
 
         /* save and return */
         proc.td.osh_tl = requested;
-        if (provided != NULL) {
-            *provided = requested;
-        }
+        *provided = requested;
 
         proc.td.invoking_thread = shmemc_thread_id();
 
         if (proc.rank == 0) {
             if (proc.env.print_version) {
-                osh_info.package_version(0);
+                info_output_package_version(stdout, 0);
             }
             if (proc.env.print_info) {
                 shmemc_print_env_vars(stdout, "# ");
@@ -131,7 +129,9 @@ shmem_init_thread(int requested, int *provided)
 void
 shmem_init(void)
 {
-    (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
+    int prov_unused;
+
+    (void) init_thread_helper(SHMEM_THREAD_SINGLE, &prov_unused);
 }
 
 /*

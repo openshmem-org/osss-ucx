@@ -3,17 +3,15 @@
 #ifndef _SHMEM_OSH_INFO_H
 #define _SHMEM_OSH_INFO_H 1
 
-typedef struct shmem_oshinfo {
-    void (*spec_version)(void);
-    void (*package_name)(void);
-    void (*package_contact)(void);
-    void (*package_version)(int);
-    void (*buildenv)(void);
-    void (*features)(void);
-    void (*comms)(void);
-    void (*help)(void);
-} shmem_oshinfo_t;
+#include <stdio.h>
 
-extern shmem_oshinfo_t osh_info;
+void info_output_spec_version(FILE *strm);
+void info_output_package_name(FILE *strm);
+void info_output_package_contact(FILE *strm);
+void info_output_package_version(FILE *strm, int terse);
+void info_output_build_env(FILE *strm);
+void info_output_features(FILE *strm);
+void info_output_comms(FILE *strm);
+void info_output_help(FILE *strm);
 
 #endif /* ! _SHMEM_OSH_INFO_H */

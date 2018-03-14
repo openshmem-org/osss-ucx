@@ -45,6 +45,7 @@ static struct option opts[] = {
 int
 main(int argc, char *argv[])
 {
+    FILE *out = stdout;
     int just_version = 0;
     int help = 0;
 
@@ -79,16 +80,16 @@ main(int argc, char *argv[])
     }
 
     if (just_version) {
-        osh_info.package_version(just_version);
+        info_output_package_version(out, just_version);
     }
     else {
-        osh_info.package_name();
-        osh_info.package_version(just_version);
-        osh_info.package_contact();
-        osh_info.spec_version();
-        osh_info.buildenv();
-        osh_info.features();
-        osh_info.comms();
+        info_output_package_name(out);
+        info_output_package_version(out, just_version);
+        info_output_package_contact(out);
+        info_output_spec_version(out);
+        info_output_build_env(out);
+        info_output_features(out);
+        info_output_comms(out);
     }
 
     return EXIT_SUCCESS;
