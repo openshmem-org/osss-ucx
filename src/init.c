@@ -99,7 +99,7 @@ init_thread_helper(int requested, int *provided)
 
         if (proc.rank == 0) {
             if (proc.env.print_version) {
-                osh_info.package_version(0);
+                info_output_package_version(stdout, 0);
             }
             if (proc.env.print_info) {
                 shmemc_print_env_vars(stdout, "# ");
