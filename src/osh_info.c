@@ -4,7 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "version.h"
 #include "shmemu.h"
 #include "info.h"
 
