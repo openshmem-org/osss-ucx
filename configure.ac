@@ -3,30 +3,44 @@
 
 # For license: see LICENSE file at top-level
 
-m4_define([PKG_MAJOR], 1)
-m4_define([PKG_MINOR], 0)
+m4_define([pkg_name],       [OSSS/SBU Reference Implementation])
+m4_define([pkg_major],      [1])
+m4_define([pkg_minor],      [0])
+m4_define([pkg_version],    [pkg_major.pkg_minor])
+m4_define([pkg_bugreport],  [anthony.curtis@stonybrook.edu])
+m4_define([pkg_url],        [https://bitbucket.org/sbuopenshmem/osss-ucx.git])
 
-m4_define([PKG_VERSION], [PKG_MAJOR.PKG_MINOR])
+m4_define([spec_major_version],     [1])
+m4_define([spec_minor_version],     [4])
+m4_define([spec_max_name_len],      [64])
+dnl quoted to make C string literal
+m4_define([spec_vendor_string],     ["pkg_name"])
 
 AC_PREREQ([2.69])
-AC_INIT([OSSS/SBU Reference Implementation],
-	[PKG_VERSION],
-	[anthony.curtis@stonybrook.edu],
-	[],
-	[https://bitbucket.org/sbuopenshmem/osss-ucx.git])
-AC_SUBST([SHMEM_MAJOR_VERSION], 1)
-AC_SUBST([SHMEM_MINOR_VERSION], 4)
-AC_SUBST([SHMEM_MAX_NAME_LEN],  64)
-AC_SUBST([SHMEM_VENDOR_STRING], ['AC_PACKAGE_NAME'])
-
-dnl unless overridden by user
-shmem_default_heap_size="32M"
-
-AC_SUBST([SHMEM_DEFAULT_HEAP_SIZE], ["$shmem_default_heap_size"])
-AC_DEFINE_UNQUOTED([SHMEM_DEFAULT_HEAP_SIZE], ["$shmem_default_heap_size"], [Default size of symmetric heap])
+AC_INIT([pkg_name], [pkg_version], [pkg_bugreport], [],	[pkg_url])
 
 config_flags="$*"
-AC_DEFINE_UNQUOTED([CONFIG_FLAGS], ["$config_flags"], [Flags passed to configure])
+AC_DEFINE_UNQUOTED([CONFIG_FLAGS],
+			["$config_flags"],
+			[Flags passed to configure])
+	
+AC_SUBST([SHMEM_MAJOR_VERSION], [spec_major_version])
+AC_SUBST([SHMEM_MINOR_VERSION], [spec_minor_version])
+AC_SUBST([SHMEM_MAX_NAME_LEN],  [spec_max_name_len])
+AC_SUBST([SHMEM_VENDOR_STRING], [spec_vendor_string])
+
+AC_DEFINE_UNQUOTED([SHMEM_MAJOR_VERSION],
+			[spec_major_version],
+			[Major version of package])
+AC_DEFINE_UNQUOTED([SHMEM_MINOR_VERSION],
+			[spec_minor_version],
+			[Minor version of package])
+AC_DEFINE_UNQUOTED([SHMEM_MAX_NAME_LEN],
+			[spec_max_name_len],
+			[Maximum length of vendor string])
+AC_DEFINE_UNQUOTED([SHMEM_VENDOR_STRING],
+			[spec_vendor_string],
+			[Vendor-supplied package name])
 
 AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
@@ -112,9 +126,28 @@ AC_SUBST([PTHREAD_CC])
 AC_SUBST([PTHREAD_CFLAGS])
 AC_SUBST([PTHREAD_LIBS])
 
+#
+# Stub for doxygen
+#
+
 m4_include([config/m4/ax_prog_doxygen.m4])
 
 DX_INIT_DOXYGEN([openshmem])
+
+#
+# figure out the heap size
+#
+
+if test "x$shmem_heap_size" = "x"
+then
+    shmem_heap_size=32M
+fi
+
+AC_SUBST([SHMEM_DEFAULT_HEAP_SIZE], [$shmem_heap_size])
+dnl C string
+AC_DEFINE_UNQUOTED([SHMEM_DEFAULT_HEAP_SIZE],
+			["$shmem_heap_size"],
+			[Default size of symmetric heap])
 
 #
 # all the output files
@@ -151,7 +184,6 @@ AC_CONFIG_FILES([pkgconfig/Makefile
 		])
 
 AC_CONFIG_FILES([src/Makefile
-		 src/version.h
 		])
 
 AC_CONFIG_FILES([src/shmemc/Makefile

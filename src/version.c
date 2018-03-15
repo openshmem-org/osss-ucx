@@ -6,8 +6,6 @@
 
 #include <string.h>
 
-#include "version.h"
-
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_info_get_version = pshmem_info_get_version
 #define shmem_info_get_version pshmem_info_get_version
