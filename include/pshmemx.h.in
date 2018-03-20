@@ -110,6 +110,9 @@ extern "C"
      * non-blocking fence and quiet checks
      *
      */
+    int shmemx_ctx_fence_test(shmem_ctx_t ctx);
+    int shmemx_ctx_quiet_test(shmem_ctx_t ctx);
+
     int pshmemx_fence_test(void);
     int pshmemx_quiet_test(void);
 

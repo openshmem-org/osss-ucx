@@ -42,6 +42,13 @@ void shmemc_print_env_vars(FILE *stream, const char *prefix);
 void shmemc_ctx_fence(shmem_ctx_t ctx);
 void shmemc_ctx_quiet(shmem_ctx_t ctx);
 
+#ifdef ENABLE_EXPERIMENTAL
+
+int shmemc_ctx_fence_test(shmem_ctx_t ctx);
+int shmemc_ctx_quiet_test(shmem_ctx_t ctx);
+
+#endif  /* ENABLE_EXPERIMENTAL */
+
 void shmemc_ctx_put(shmem_ctx_t ctx,
                     void *dest, const void *src,
                     size_t nbytes, int pe);
