@@ -81,11 +81,48 @@ extern "C"
      *
      * @substitute c C/C++
      * @code
+     int shmemx_ctx_fence_test(shmem_ctx_t ctx)
+     * @endcode
+     *
+     * @return Returns non-zero if all communication operations issued
+     * prior to this call have satisfied the fence semantic for the
+     * given context, 0 otherwise.
+     *
+     */
+    int shmemx_ctx_fence_test(shmem_ctx_t ctx);
+
+    /**
+     * @brief check whether all communication operations issued prior to
+     * this call have satisfied the quiet semantic.
+     *
+     * @section Synopsis:
+     *
+     * @substitute c C/C++
+     * @code
+     int shmemx_ctx_quiet_test(shmem_ctx_t ctx)
+     * @endcode
+     *
+     * @return Returns non-zero if all communication operations issued
+     * prior to this call have satisfied the quiet semantic for the
+     * given context, 0 otherwise.
+     *
+     */
+    int shmemx_ctx_quiet_test(shmem_ctx_t ctx);
+
+    /**
+     * @brief check whether all communication operations issued prior to
+     * this call have satisfied the fence semantic.
+     *
+     * @section Synopsis:
+     *
+     * @substitute c C/C++
+     * @code
      int shmemx_fence_test(void)
      * @endcode
      *
      * @return Returns non-zero if all communication operations issued
-     * prior to this call have satisfied the fence semantic, 0 otherwise.
+     * prior to this call have satisfied the fence semantic for the
+     * default context, 0 otherwise.
      *
      */
     int shmemx_fence_test(void);
@@ -102,7 +139,8 @@ extern "C"
      * @endcode
      *
      * @return Returns non-zero if all communication operations issued
-     * prior to this call have satisfied the quiet semantic, 0 otherwise.
+     * prior to this call have satisfied the quiet semantic for the
+     * default context, 0 otherwise.
      *
      */
     int shmemx_quiet_test(void);

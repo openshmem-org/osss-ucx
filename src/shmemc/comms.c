@@ -156,6 +156,28 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
 }
 
 /*
+ * This should be correct, but not optimal.  Gets us going.
+ */
+
+#ifdef ENABLE_EXPERIMENTAL
+
+int
+shmemc_ctx_fence_test(shmem_ctx_t ctx)
+{
+    shmemc_ctx_fence(ctx);
+    return 1;
+}
+
+int
+shmemc_ctx_quiet_test(shmem_ctx_t ctx)
+{
+    shmemc_ctx_quiet(ctx);
+    return 1;
+}
+
+#endif  /* ENABLE_EXPERIMENTAL */
+
+/*
  * -- accessible memory pointers -----------------------------------------
  */
 
