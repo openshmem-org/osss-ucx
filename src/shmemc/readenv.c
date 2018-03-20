@@ -190,7 +190,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
                 prefix,
                 var_width, "SHMEM_SYMMETRIC_SIZE",
                 val_width, buf,
-                "set the size of the symmetric heap");
+                "requested size of the symmetric heap");
 #undef BUFSIZE
     }
     fprintf(stream, "%s%-*s %-*s %s\n",
