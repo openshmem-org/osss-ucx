@@ -193,6 +193,9 @@ AC_CONFIG_FILES([pkgconfig/Makefile
 AC_CONFIG_FILES([src/Makefile
 		])
 
+AC_CONFIG_FILES([src/osh_info/Makefile
+		])
+
 AC_CONFIG_FILES([src/shmemc/Makefile
 		 src/shmemc/oshcc src/shmemc/oshcxx src/shmemc/oshfort
 		 src/shmemc/oshrun
