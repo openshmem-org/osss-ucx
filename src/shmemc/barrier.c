@@ -21,19 +21,18 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
 {
     const int me = proc.rank;
     const int stride = 1 << log2stride;
+    const long npokes = SHMEM_SYNC_VALUE + size - 1;
 
     if (start == me) {
-        const int npokes = size - 1;
-        long poke = *pSync + 1;
-        int pe;
+        long poke = ~SHMEM_SYNC_VALUE;
+        int pe = start + stride;
         int i;
 
-        /* wait for the rest of the AS to poke me */
-        shmemc_wait_eq_until64(pSync, npokes + SHMEM_SYNC_VALUE);
-        *pSync = SHMEM_SYNC_VALUE;
+        /* wait for the rest of the AS to poke me & then reset */
+        shmemc_wait_eq_until64(pSync, npokes);
+        shmemc_set64(pSync, SHMEM_SYNC_VALUE, me);
 
         /* send acks out */
-        pe = start + stride;
         for (i = 1; i < size; i += 1) {
             shmemc_put(pSync, &poke, sizeof(poke), pe);
             pe += stride;
@@ -43,9 +42,9 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
         /* poke root */
         shmemc_inc64(pSync, start);
 
-        /* get ack */
+        /* get ack & reset */
         shmemc_wait_ne_until64(pSync, SHMEM_SYNC_VALUE);
-        *pSync = SHMEM_SYNC_VALUE;
+        shmemc_set64(pSync, SHMEM_SYNC_VALUE, me);
     }
 }
 
