@@ -23,9 +23,8 @@
                                  int##_size##_t value)                  \
     {                                                                   \
         shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
-        ucp_worker_h w = ch->w;                                         \
                                                                         \
-        ucp_worker_wait_mem(w, var);                                    \
+        ucp_worker_wait_mem(ch->w, var);                                \
         return ( (*var) _op (value) ) ? 1 : 0;                          \
     }
 
@@ -59,10 +58,9 @@ COMMS_TEST_SIZE(64, ge, >=)
                                          int##_size##_t value)          \
     {                                                                   \
         shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
-        ucp_worker_h w = ch->w;                                         \
                                                                         \
         do {                                                            \
-            ucp_worker_progress(w);                                     \
+            ucp_worker_progress(ch->w);                                 \
         } while (shmemc_test_##_opname##_size(var, value) == 0);        \
     }
 
