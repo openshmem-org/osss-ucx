@@ -88,11 +88,13 @@ make_init_params(ucp_params_t *pmp)
         UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
 
     pmp->features =
-        UCP_FEATURE_RMA |
-        UCP_FEATURE_WAKEUP |    /* for events */
-        UCP_FEATURE_AMO32 |
-        UCP_FEATURE_AMO64;
+        UCP_FEATURE_RMA |       /* put/get */
+        UCP_FEATURE_AMO32 |     /* 32-bit atomics */
+        UCP_FEATURE_AMO64 |     /* 64-bit atomics */
+        UCP_FEATURE_WAKEUP;     /* events */
+
     pmp->mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
+
     pmp->estimated_num_eps = proc.nranks;
 }
 
