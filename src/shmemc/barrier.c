@@ -30,7 +30,7 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
 
         /* wait for the rest of the AS to poke me & then reset */
         shmemc_wait_eq_until64(pSync, npokes);
-        shmemc_set64(pSync, SHMEM_SYNC_VALUE, me);
+        *pSync = SHMEM_SYNC_VALUE;
 
         /* send acks out */
         for (i = 1; i < size; i += 1) {
@@ -44,8 +44,10 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
 
         /* get ack & reset */
         shmemc_wait_ne_until64(pSync, SHMEM_SYNC_VALUE);
-        shmemc_set64(pSync, SHMEM_SYNC_VALUE, me);
+        *pSync = SHMEM_SYNC_VALUE;
     }
+
+
 }
 
 /* -------------------------------------------------------------------- */
