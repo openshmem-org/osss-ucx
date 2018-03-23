@@ -66,7 +66,7 @@ dump(void)
 
         ucp_config_print(proc.comms.ucx_cfg, stderr, "My config", flags);
         ucp_context_print_info(proc.comms.ucx_ctxt, stderr);
-        // ucp_worker_print_info(proc.comms.wrkr, stderr);
+        /* ucp_worker_print_info(proc.comms.wrkr, stderr); */
         check_version();
         fprintf(stderr, "----------------------------------------------\n\n");
         fflush(stderr);
