@@ -181,6 +181,137 @@ void shmemc_clear_lock(long *lock);
 int  shmemc_test_lock(long *lock);
 
 /*
+ * routine per-type and test to avoid branching
+ */
+
+#define SHMEMC_CTX_TEST(_size, _opname)                         \
+    int shmemc_ctx_test_##_opname##_size(shmem_ctx_t ctx,       \
+                                         int##_size##_t *var,   \
+                                         int##_size##_t value);
+
+SHMEMC_CTX_TEST(16, eq)
+SHMEMC_CTX_TEST(32, eq)
+SHMEMC_CTX_TEST(64, eq)
+
+SHMEMC_CTX_TEST(16, ne)
+SHMEMC_CTX_TEST(32, ne)
+SHMEMC_CTX_TEST(64, ne)
+
+SHMEMC_CTX_TEST(16, gt)
+SHMEMC_CTX_TEST(32, gt)
+SHMEMC_CTX_TEST(64, gt)
+
+SHMEMC_CTX_TEST(16, le)
+SHMEMC_CTX_TEST(32, le)
+SHMEMC_CTX_TEST(64, le)
+
+SHMEMC_CTX_TEST(16, lt)
+SHMEMC_CTX_TEST(32, lt)
+SHMEMC_CTX_TEST(64, lt)
+
+SHMEMC_CTX_TEST(16, ge)
+SHMEMC_CTX_TEST(32, ge)
+SHMEMC_CTX_TEST(64, ge)
+
+#define SHMEMC_CTX_WAIT_UNTIL(_size, _opname)                           \
+    void shmemc_ctx_wait_##_opname##_until##_size(shmem_ctx_t ctx,      \
+                                                  int##_size##_t *var,  \
+                                                  int##_size##_t value);
+
+SHMEMC_CTX_WAIT_UNTIL(16, eq)
+SHMEMC_CTX_WAIT_UNTIL(32, eq)
+SHMEMC_CTX_WAIT_UNTIL(64, eq)
+
+SHMEMC_CTX_WAIT_UNTIL(16, ne)
+SHMEMC_CTX_WAIT_UNTIL(32, ne)
+SHMEMC_CTX_WAIT_UNTIL(64, ne)
+
+SHMEMC_CTX_WAIT_UNTIL(16, gt)
+SHMEMC_CTX_WAIT_UNTIL(32, gt)
+SHMEMC_CTX_WAIT_UNTIL(64, gt)
+
+SHMEMC_CTX_WAIT_UNTIL(16, le)
+SHMEMC_CTX_WAIT_UNTIL(32, le)
+SHMEMC_CTX_WAIT_UNTIL(64, le)
+
+SHMEMC_CTX_WAIT_UNTIL(16, lt)
+SHMEMC_CTX_WAIT_UNTIL(32, lt)
+SHMEMC_CTX_WAIT_UNTIL(64, lt)
+
+SHMEMC_CTX_WAIT_UNTIL(16, ge)
+SHMEMC_CTX_WAIT_UNTIL(32, ge)
+SHMEMC_CTX_WAIT_UNTIL(64, ge)
+
+/*
+ * -- Context management -----------------------------------------------------
+ */
+
+int shmemc_context_create(long options, shmemc_context_h *ctxp);
+void shmemc_context_destroy(shmemc_context_h ctx);
+/* used in up-level */
+int shmemc_create_default_context(shmem_ctx_t *ctxp);
+
+/*
+ * -- barriers & syncs -------------------------------------------------------
+ */
+
+void shmemc_barrier_init(void);
+void shmemc_barrier_finalize(void);
+
+#define SHMEMC_DECL_BARRIER_SYNC(_op)                                   \
+    void shmemc_##_op(int start, int log_stride, int size, long *pSync); \
+    void shmemc_##_op##_all(void);
+
+SHMEMC_DECL_BARRIER_SYNC(sync)
+SHMEMC_DECL_BARRIER_SYNC(barrier)
+
+/*
+ * -- broadcasts -------------------------------------------------------------
+ */
+
+void shmemc_broadcast_init(void);
+void shmemc_broadcast_finalize(void);
+
+#define SHMEMC_DECL_BROADCAST_SIZE(_size)                           \
+    void shmemc_broadcast##_size(void *target, const void *source,  \
+                                 size_t nelems,                     \
+                                 int PE_root, int PE_start,         \
+                                 int logPE_stride, int PE_size,     \
+                                 long *pSync);
+
+SHMEMC_DECL_BROADCAST_SIZE(32)
+SHMEMC_DECL_BROADCAST_SIZE(64)
+
+/*
+ * -- collects ---------------------------------------------------------------
+ */
+
+#define SHMEMC_DECL_FCOLLECT_SIZE(_size)                             \
+    void shmemc_fcollect##_size(void *target, const void *source,    \
+                                size_t nelems,                       \
+                                int PE_start,                        \
+                                int logPE_stride, int PE_size,       \
+                                long *pSync);
+
+SHMEMC_DECL_FCOLLECT_SIZE(32)
+SHMEMC_DECL_FCOLLECT_SIZE(64)
+
+#define SHMEMC_DECL_COLLECT_SIZE(_size)                             \
+    void shmemc_collect##_size(void *target, const void *source,    \
+                               size_t nelems,                       \
+                               int PE_start,                        \
+                               int logPE_stride, int PE_size,       \
+                               long *pSync);
+
+SHMEMC_DECL_COLLECT_SIZE(32)
+SHMEMC_DECL_COLLECT_SIZE(64)
+
+/*
+ * TODO: reductions should get moved here in case comms-layer has
+ * hardware assist or similar
+ */
+
+/*
  * -- Routines that now operate on default context ---------------------------
  */
 
@@ -272,133 +403,88 @@ int  shmemc_test_lock(long *lock);
 #define shmemc_fetch_xor64(...)                             \
     shmemc_ctx_fetch_xor64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-/*
- * routine per-type and test to avoid branching
- */
+#define shmemc_test_eq16(...)                         \
+    shmemc_ctx_test_eq16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_eq32(...)                         \
+    shmemc_ctx_test_eq32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_eq64(...)                         \
+    shmemc_ctx_test_eq64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define SHMEMC_TEST(_size, _opname)                         \
-    int shmemc_test_##_opname##_size(int##_size##_t *var,   \
-                                     int##_size##_t value);
+#define shmemc_test_ne16(...)                         \
+    shmemc_ctx_test_ne16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_ne32(...)                         \
+    shmemc_ctx_test_ne32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_ne64(...)                         \
+    shmemc_ctx_test_ne64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_TEST(16, eq)
-SHMEMC_TEST(32, eq)
-SHMEMC_TEST(64, eq)
+#define shmemc_test_gt16(...)                         \
+    shmemc_ctx_test_gt16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_gt32(...)                         \
+    shmemc_ctx_test_gt32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_gt64(...)                         \
+    shmemc_ctx_test_gt64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_TEST(16, ne)
-SHMEMC_TEST(32, ne)
-SHMEMC_TEST(64, ne)
+#define shmemc_test_le16(...)                         \
+    shmemc_ctx_test_le16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_le32(...)                         \
+    shmemc_ctx_test_le32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_le64(...)                         \
+    shmemc_ctx_test_le64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_TEST(16, gt)
-SHMEMC_TEST(32, gt)
-SHMEMC_TEST(64, gt)
+#define shmemc_test_lt16(...)                         \
+    shmemc_ctx_test_lt16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_lt32(...)                         \
+    shmemc_ctx_test_lt32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_lt64(...)                         \
+    shmemc_ctx_test_lt64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_TEST(16, le)
-SHMEMC_TEST(32, le)
-SHMEMC_TEST(64, le)
+#define shmemc_test_ge16(...)                         \
+    shmemc_ctx_test_ge16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_ge32(...)                         \
+    shmemc_ctx_test_ge32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_test_ge64(...)                         \
+    shmemc_ctx_test_ge64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_TEST(16, lt)
-SHMEMC_TEST(32, lt)
-SHMEMC_TEST(64, lt)
+#define shmemc_wait_eq_until16(...)                         \
+    shmemc_ctx_wait_eq_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_eq_until32(...)                         \
+    shmemc_ctx_wait_eq_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_eq_until64(...)                         \
+    shmemc_ctx_wait_eq_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_TEST(16, ge)
-SHMEMC_TEST(32, ge)
-SHMEMC_TEST(64, ge)
+#define shmemc_wait_ne_until16(...)                         \
+    shmemc_ctx_wait_ne_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_ne_until32(...)                         \
+    shmemc_ctx_wait_ne_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_ne_until64(...)                         \
+    shmemc_ctx_wait_ne_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define SHMEMC_WAITUNTIL(_size, _opname)                                \
-    void shmemc_wait_##_opname##_until##_size(int##_size##_t *var,      \
-                                              int##_size##_t value);
+#define shmemc_wait_gt_until16(...)                         \
+    shmemc_ctx_wait_gt_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_gt_until32(...)                         \
+    shmemc_ctx_wait_gt_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_gt_until64(...)                         \
+    shmemc_ctx_wait_gt_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_WAITUNTIL(16, eq)
-SHMEMC_WAITUNTIL(32, eq)
-SHMEMC_WAITUNTIL(64, eq)
+#define shmemc_wait_le_until16(...)                         \
+    shmemc_ctx_wait_le_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_le_until32(...)                         \
+    shmemc_ctx_wait_le_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_le_until64(...)                         \
+    shmemc_ctx_wait_le_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_WAITUNTIL(16, ne)
-SHMEMC_WAITUNTIL(32, ne)
-SHMEMC_WAITUNTIL(64, ne)
+#define shmemc_wait_lt_until16(...)                         \
+    shmemc_ctx_wait_lt_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_lt_until32(...)                         \
+    shmemc_ctx_wait_lt_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_lt_until64(...)                         \
+    shmemc_ctx_wait_lt_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-SHMEMC_WAITUNTIL(16, gt)
-SHMEMC_WAITUNTIL(32, gt)
-SHMEMC_WAITUNTIL(64, gt)
-
-SHMEMC_WAITUNTIL(16, le)
-SHMEMC_WAITUNTIL(32, le)
-SHMEMC_WAITUNTIL(64, le)
-
-SHMEMC_WAITUNTIL(16, lt)
-SHMEMC_WAITUNTIL(32, lt)
-SHMEMC_WAITUNTIL(64, lt)
-
-SHMEMC_WAITUNTIL(16, ge)
-SHMEMC_WAITUNTIL(32, ge)
-SHMEMC_WAITUNTIL(64, ge)
-
-/*
- * -- Contexts ---------------------------------------------------------------
- */
-
-int shmemc_context_create(long options, shmemc_context_h *ctxp);
-void shmemc_context_destroy(shmemc_context_h ctx);
-/* used in up-level */
-int shmemc_create_default_context(shmem_ctx_t *ctxp);
-
-/*
- * -- barriers & syncs -------------------------------------------------------
- */
-
-void shmemc_barrier_init(void);
-void shmemc_barrier_finalize(void);
-
-#define SHMEMC_DECL_BARRIER_SYNC(_op)                                   \
-    void shmemc_##_op(int start, int log_stride, int size, long *pSync); \
-    void shmemc_##_op##_all(void);
-
-SHMEMC_DECL_BARRIER_SYNC(sync)
-SHMEMC_DECL_BARRIER_SYNC(barrier)
-
-/*
- * -- broadcasts -------------------------------------------------------------
- */
-
-void shmemc_broadcast_init(void);
-void shmemc_broadcast_finalize(void);
-
-#define SHMEMC_DECL_BROADCAST_SIZE(_size)                           \
-    void shmemc_broadcast##_size(void *target, const void *source,  \
-                                 size_t nelems,                     \
-                                 int PE_root, int PE_start,         \
-                                 int logPE_stride, int PE_size,     \
-                                 long *pSync);
-
-SHMEMC_DECL_BROADCAST_SIZE(32)
-SHMEMC_DECL_BROADCAST_SIZE(64)
-
-/*
- * -- collects ---------------------------------------------------------------
- */
-
-#define SHMEMC_DECL_FCOLLECT_SIZE(_size)                             \
-    void shmemc_fcollect##_size(void *target, const void *source,    \
-                                size_t nelems,                       \
-                                int PE_start,                        \
-                                int logPE_stride, int PE_size,       \
-                                long *pSync);
-
-SHMEMC_DECL_FCOLLECT_SIZE(32)
-SHMEMC_DECL_FCOLLECT_SIZE(64)
-
-#define SHMEMC_DECL_COLLECT_SIZE(_size)                             \
-    void shmemc_collect##_size(void *target, const void *source,    \
-                               size_t nelems,                       \
-                               int PE_start,                        \
-                               int logPE_stride, int PE_size,       \
-                               long *pSync);
-
-SHMEMC_DECL_COLLECT_SIZE(32)
-SHMEMC_DECL_COLLECT_SIZE(64)
-
-/*
- * TODO: reductions should get moved here in case comms-layer has
- * hardware assist or similar
- */
+#define shmemc_wait_ge_until16(...)                         \
+    shmemc_ctx_wait_ge_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_ge_until32(...)                         \
+    shmemc_ctx_wait_ge_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_ge_until64(...)                         \
+    shmemc_ctx_wait_ge_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #endif /* ! _SHMEMC_H */
