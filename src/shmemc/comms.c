@@ -23,7 +23,7 @@
  * shortcut to look up the UCP endpoint of a context
  */
 inline static ucp_ep_h
-lookup_ucp_ep(shmem_ctx_t ctx /* unused */, int pe)
+lookup_ucp_ep(shmemc_context_h ch /* unused */, int pe)
 {
     return proc.comms.eps[pe];
 }
@@ -136,18 +136,16 @@ noop_callback(void *request, ucs_status_t status)
 }
 
 /*
- * make a blocking version of non-blocking UCP op
+ * wait for some non-blocking request to complete on a worker
+ *
+ *
+ * TODO: possible consolidation with EP disconnect code
+ *
  */
 
 inline static ucs_status_t
-blocking_ep_op(void * (*op)(),
-               ucp_ep_h ep,
-               ucp_worker_h w)
+wait_for_request(void *req, ucp_worker_h w)
 {
-    void *req;
-
-    req = op(ep, 0, noop_callback);
-
     if (req == NULL) {          /* completed */
         return UCS_OK;
     }
@@ -158,8 +156,12 @@ blocking_ep_op(void * (*op)(),
         ucs_status_t s;
 
         do {
-            ucp_worker_progress(w);
+            (void) ucp_worker_progress(w);
+#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
             s = ucp_request_check_status(req);
+#else
+            s = ucp_request_test(req, NULL);
+#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
         } while (s == UCS_INPROGRESS);
 
         ucp_request_free(req);
@@ -168,32 +170,69 @@ blocking_ep_op(void * (*op)(),
 }
 
 /*
- * post-and-wait AMO to target address "t" on PE "pe" with value "v"
+ * postor-fetch--and-wait AMO to target address "t" on PE "pe" with
+ * value "v"
  */
 
 inline static ucs_status_t
 helper_atomic_post_op(ucp_atomic_post_op_t uapo,
-                      shmem_ctx_t ctx,
+                      shmemc_context_h ch,
                       uint64_t t,
                       uint64_t v,    /* encapsulate 32/64-bit value */
                       size_t vs,     /* actual size of value */
                       int pe)
 {
-    shmemc_context_h ch = (shmemc_context_h) ctx;
     uint64_t r_t;
     ucp_rkey_h rkey;
     ucp_ep_h ep;
     ucs_status_t s;
 
     get_remote_key_and_addr(t, pe, &rkey, &r_t);
-    ep = lookup_ucp_ep(ctx, pe);
+    ep = lookup_ucp_ep(ch, pe);
 
     s = ucp_atomic_post(ep, uapo, v, vs, r_t, rkey);
+    /*
+     * if all seems ok, wait for completion; otherwise return
+     * potential error code
+     */
     if (s == UCS_OK) {
-        s = blocking_ep_op(ucp_ep_flush_nb, ep, ch->w);
-    }
+        void *req = ucp_ep_flush_nb(ep, 0, noop_callback);
 
-    return s;
+        return wait_for_request(req, ch->w);
+    }
+    else {
+        return s;
+    }
+}
+
+inline static ucs_status_t
+helper_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
+                       shmemc_context_h ch,
+                       uint64_t t,
+                       uint64_t v,    /* encapsulate 32/64-bit value */
+                       size_t vs,     /* actual size of value */
+                       int pe,
+                       uint64_t *result)
+{
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    ucs_status_ptr_t sp;
+
+    get_remote_key_and_addr(t, pe, &rkey, &r_t);
+    ep = lookup_ucp_ep(ch, pe);
+
+    sp = ucp_atomic_fetch_nb(ep, uafo, v, result, vs, r_t, rkey,
+                             noop_callback);
+    if (sp == UCS_OK) {
+        return UCS_OK;          /* completed */
+    }
+    else if (UCS_PTR_IS_ERR(sp)) { /* error */
+        return UCS_PTR_STATUS(sp);
+    }
+    else {                      /* wait */
+        return wait_for_request(sp, ch->w);
+    }
 }
 
 /* TODO: repeated patterns here, maybe some kind of template? */
@@ -204,23 +243,22 @@ helper_atomic_post_op(ucp_atomic_post_op_t uapo,
 
 #define HELPER_FADD(_size)                                          \
     inline static uint##_size##_t                                   \
-    helper_atomic_fetch_add##_size(shmem_ctx_t ctx,                 \
+    helper_atomic_fetch_add##_size(shmemc_context_h ch,             \
                                    uint64_t t, uint##_size##_t v,   \
                                    int pe)                          \
     {                                                               \
-        uint64_t r_t;                                               \
-        ucp_rkey_h rkey;                                            \
-        uint##_size##_t ret;                                        \
-        ucp_ep_h ep;                                                \
+        uint64_t ret = 0;                                           \
         ucs_status_t s;                                             \
                                                                     \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                \
-        ep = lookup_ucp_ep(ctx, pe);                                \
-                                                                    \
-        s = ucp_atomic_fadd##_size(ep, v, r_t, rkey, &ret);         \
+        s = helper_atomic_fetch_op(UCP_ATOMIC_FETCH_OP_FADD,        \
+                                   ch,                              \
+                                   t,                               \
+                                   v, sizeof(v),                    \
+                                   pe,                              \
+                                   &ret);                           \
         assert(s == UCS_OK);                                        \
                                                                     \
-        return ret;                                                 \
+        return (uint##_size##_t) ret;                               \
     }
 
 HELPER_FADD(32)
@@ -228,14 +266,14 @@ HELPER_FADD(64)
 
 #define HELPER_ADD(_size)                                   \
     inline static void                                      \
-    helper_atomic_add##_size(shmem_ctx_t ctx,               \
+    helper_atomic_add##_size(shmemc_context_h ch,           \
                              uint64_t t, uint##_size##_t v, \
                              int pe)                        \
     {                                                       \
         ucs_status_t s;                                     \
                                                             \
         s = helper_atomic_post_op(UCP_ATOMIC_POST_OP_ADD,   \
-                                  ctx,                      \
+                                  ch,                       \
                                   t,                        \
                                   v, sizeof(v),             \
                                   pe);                      \
@@ -251,10 +289,10 @@ HELPER_ADD(64)
 
 #define HELPER_FINC(_size)                                      \
     inline static uint##_size##_t                               \
-    helper_atomic_fetch_inc##_size(shmem_ctx_t ctx,             \
+    helper_atomic_fetch_inc##_size(shmemc_context_h ch,         \
                                    uint64_t t, int pe)          \
     {                                                           \
-        return helper_atomic_fetch_add##_size(ctx, t, 1, pe);   \
+        return helper_atomic_fetch_add##_size(ch, t, 1, pe);    \
     }
 
 HELPER_FINC(32)
@@ -262,10 +300,10 @@ HELPER_FINC(64)
 
 #define HELPER_INC(_size)                                   \
     inline static void                                      \
-    helper_atomic_inc##_size(shmem_ctx_t ctx,               \
+    helper_atomic_inc##_size(shmemc_context_h ch,           \
                              uint64_t t, int pe)            \
     {                                                       \
-        (void) helper_atomic_fetch_inc##_size(ctx, t, pe);  \
+        (void) helper_atomic_fetch_inc##_size(ch, t, pe);   \
     }
 
 HELPER_INC(32)
@@ -277,7 +315,7 @@ HELPER_INC(64)
 
 #define HELPER_SWAP(_size)                                      \
     inline static uint##_size##_t                               \
-    helper_atomic_swap##_size(shmem_ctx_t ctx,                  \
+    helper_atomic_swap##_size(shmemc_context_h ch,              \
                               uint64_t t, uint##_size##_t v,    \
                               int pe)                           \
     {                                                           \
@@ -288,7 +326,7 @@ HELPER_INC(64)
         ucs_status_t s;                                         \
                                                                 \
         get_remote_key_and_addr(t, pe, &rkey, &r_t);            \
-        ep = lookup_ucp_ep(ctx, pe);                            \
+        ep = lookup_ucp_ep(ch, pe);                             \
                                                                 \
         s = ucp_atomic_swap##_size(ep, v, r_t, rkey, &ret);     \
         assert(s == UCS_OK);                                    \
@@ -301,7 +339,7 @@ HELPER_SWAP(64)
 
 #define HELPER_CSWAP(_size)                                             \
     inline static uint##_size##_t                                       \
-    helper_atomic_cswap##_size(shmem_ctx_t ctx,                         \
+    helper_atomic_cswap##_size(shmemc_context_h ch,                     \
                                uint64_t t,                              \
                                uint##_size##_t c, uint##_size##_t v,    \
                                int pe)                                  \
@@ -313,7 +351,7 @@ HELPER_SWAP(64)
         ucs_status_t s;                                                 \
                                                                         \
         get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
-        ep = lookup_ucp_ep(ctx, pe);                                    \
+        ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
         s = ucp_atomic_cswap##_size(ep, c, v, r_t, rkey, &ret);         \
         assert(s == UCS_OK);                                            \
@@ -370,7 +408,7 @@ NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
 
 #define HELPER_FETCH_BITWISE_OP(_op, _opname, _size)                \
     inline static uint##_size##_t                                   \
-    helper_atomic_fetch_##_opname##_size(shmem_ctx_t ctx,           \
+    helper_atomic_fetch_##_opname##_size(shmemc_context_h ch,       \
                                          uint64_t t,                \
                                          uint##_size##_t v,         \
                                          int pe)                    \
@@ -382,7 +420,7 @@ NOTUCP_ATOMIC_BITWISE_OP(^, xor, 64)
         ucs_status_t s;                                             \
                                                                     \
         get_remote_key_and_addr(t, pe, &rkey, &r_t);                \
-        ep = lookup_ucp_ep(ctx, pe);                                \
+        ep = lookup_ucp_ep(ch, pe);                                 \
                                                                     \
         s = ucp_atomic_##_opname##_size(ep, v, r_t, rkey, &ret);    \
         assert(s == UCS_OK);                                        \
@@ -423,7 +461,7 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
 {
     shmemc_context_h ch = (shmemc_context_h) ctx;
 
-    if (1 /* ! ch->attr.nostore */) {
+    if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_flush(ch->w);
 
         assert(s == UCS_OK);
