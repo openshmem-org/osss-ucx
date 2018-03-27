@@ -127,11 +127,11 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
  */
 
 /*
- * a callback that does nothing
+ * a dummy callback that does nothing
  */
 
 static void
-noop_cb(void *request, ucs_status_t status)
+noop_callback(void *request, ucs_status_t status)
 {
 }
 
@@ -139,14 +139,14 @@ noop_cb(void *request, ucs_status_t status)
  * make a blocking version of non-blocking UCP op
  */
 
-static ucs_status_t
+inline static ucs_status_t
 blocking_ep_op(void * (*op)(),
                ucp_ep_h ep,
                ucp_worker_h w)
 {
     void *req;
 
-    req = op(ep, 0, noop_cb);
+    req = op(ep, 0, noop_callback);
 
     if (req == NULL) {          /* completed */
         return UCS_OK;
@@ -165,6 +165,35 @@ blocking_ep_op(void * (*op)(),
         ucp_request_free(req);
         return s;
     }
+}
+
+/*
+ * post-and-wait AMO to target address "t" on PE "pe" with value "v"
+ */
+
+inline static ucs_status_t
+helper_atomic_post_op(ucp_atomic_post_op_t uapo,
+                      shmem_ctx_t ctx,
+                      uint64_t t,
+                      uint64_t v,    /* encapsulate 32/64-bit value */
+                      size_t vs,     /* actual size of value */
+                      int pe)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    uint64_t r_t;
+    ucp_rkey_h rkey;
+    ucp_ep_h ep;
+    ucs_status_t s;
+
+    get_remote_key_and_addr(t, pe, &rkey, &r_t);
+    ep = lookup_ucp_ep(ctx, pe);
+
+    s = ucp_atomic_post(ep, uapo, v, vs, r_t, rkey);
+    if (s == UCS_OK) {
+        s = blocking_ep_op(ucp_ep_flush_nb, ep, ch->w);
+    }
+
+    return s;
 }
 
 /* TODO: repeated patterns here, maybe some kind of template? */
@@ -203,21 +232,13 @@ HELPER_FADD(64)
                              uint64_t t, uint##_size##_t v, \
                              int pe)                        \
     {                                                       \
-        shmemc_context_h ch = (shmemc_context_h) ctx;       \
-        uint64_t r_t;                                       \
-        ucp_rkey_h rkey;                                    \
-        ucp_ep_h ep;                                        \
         ucs_status_t s;                                     \
                                                             \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);        \
-        ep = lookup_ucp_ep(ctx, pe);                        \
-                                                            \
-        s = ucp_atomic_post(ep,                             \
-                            UCP_ATOMIC_POST_OP_ADD,         \
-                            v, sizeof(v),                   \
-                            r_t, rkey);                     \
-        assert(s == UCS_OK);                                \
-        s = blocking_ep_op(ucp_ep_flush_nb, ep, ch->w);     \
+        s = helper_atomic_post_op(UCP_ATOMIC_POST_OP_ADD,   \
+                                  ctx,                      \
+                                  t,                        \
+                                  v, sizeof(v),             \
+                                  pe);                      \
         assert(s == UCS_OK);                                \
     }
 
