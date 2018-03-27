@@ -30,12 +30,11 @@ shmem_ctx_t SHMEM_CTX_DEFAULT = NULL;
 int
 shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 {
-    shmemc_context_h *chp = (shmemc_context_h *) ctxp;
     int s;
 
     SHMEMU_CHECK_INIT();
 
-    SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(options, chp));
+    SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(options, ctxp));
 
     return s;
 }
@@ -47,12 +46,10 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 void
 shmem_ctx_destroy(shmem_ctx_t ctx)
 {
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
     SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_SAME_THREAD(ch);
+    SHMEMU_CHECK_SAME_THREAD(ctx);
 
-    SHMEMT_MUTEX_PROTECT(shmemc_context_destroy(ch));
+    SHMEMT_MUTEX_PROTECT(shmemc_context_destroy(ctx));
 }
 
 #ifdef ENABLE_EXPERIMENTAL

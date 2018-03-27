@@ -7,7 +7,8 @@
 #include "state.h"
 #include "shmemu.h"
 
-#include <unistd.h>
+#include "shmem/defs.h"
+
 #include <ucp/api/ucp.h>
 
 #if 0
@@ -18,75 +19,75 @@
  * return 1 if the memory location changed to "value", otherwise 0
  */
 
-#define COMMS_TEST_SIZE(_size, _opname, _op)                            \
+#define COMMS_CTX_TEST_SIZE(_size, _opname, _op)                        \
     int                                                                 \
-    shmemc_test_##_opname##_size(int##_size##_t *var,                   \
-                                 int##_size##_t value)                  \
+    shmemc_ctx_test_##_opname##_size(shmem_ctx_t ctx,                   \
+                                     int##_size##_t *var,               \
+                                     int##_size##_t value)              \
     {                                                                   \
-        shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
-        ucp_worker_h w = ch->w;                                         \
+        shmemc_context_h ch = (shmemc_context_h) ctx;                   \
                                                                         \
-        ucp_worker_wait_mem(w, var);                                    \
+        ucp_worker_wait_mem(ch->w, var);                                \
         return ( (*var) _op (value) ) ? 1 : 0;                          \
     }
 
-COMMS_TEST_SIZE(16, eq, ==)
-COMMS_TEST_SIZE(32, eq, ==)
-COMMS_TEST_SIZE(64, eq, ==)
+COMMS_CTX_TEST_SIZE(16, eq, ==)
+COMMS_CTX_TEST_SIZE(32, eq, ==)
+COMMS_CTX_TEST_SIZE(64, eq, ==)
 
-COMMS_TEST_SIZE(16, ne, !=)
-COMMS_TEST_SIZE(32, ne, !=)
-COMMS_TEST_SIZE(64, ne, !=)
+COMMS_CTX_TEST_SIZE(16, ne, !=)
+COMMS_CTX_TEST_SIZE(32, ne, !=)
+COMMS_CTX_TEST_SIZE(64, ne, !=)
 
-COMMS_TEST_SIZE(16, gt, >)
-COMMS_TEST_SIZE(32, gt, >)
-COMMS_TEST_SIZE(64, gt, >)
+COMMS_CTX_TEST_SIZE(16, gt, >)
+COMMS_CTX_TEST_SIZE(32, gt, >)
+COMMS_CTX_TEST_SIZE(64, gt, >)
 
-COMMS_TEST_SIZE(16, le, <=)
-COMMS_TEST_SIZE(32, le, <=)
-COMMS_TEST_SIZE(64, le, <=)
+COMMS_CTX_TEST_SIZE(16, le, <=)
+COMMS_CTX_TEST_SIZE(32, le, <=)
+COMMS_CTX_TEST_SIZE(64, le, <=)
 
-COMMS_TEST_SIZE(16, lt, <)
-COMMS_TEST_SIZE(32, lt, <)
-COMMS_TEST_SIZE(64, lt, <)
+COMMS_CTX_TEST_SIZE(16, lt, <)
+COMMS_CTX_TEST_SIZE(32, lt, <)
+COMMS_CTX_TEST_SIZE(64, lt, <)
 
-COMMS_TEST_SIZE(16, ge, >=)
-COMMS_TEST_SIZE(32, ge, >=)
-COMMS_TEST_SIZE(64, ge, >=)
+COMMS_CTX_TEST_SIZE(16, ge, >=)
+COMMS_CTX_TEST_SIZE(32, ge, >=)
+COMMS_CTX_TEST_SIZE(64, ge, >=)
 
-#define COMMS_WAIT_SIZE(_size, _opname, _op)                            \
+#define COMMS_CTX_WAIT_SIZE(_size, _opname, _op)                        \
     void                                                                \
-    shmemc_wait_##_opname##_until##_size(int##_size##_t *var,           \
-                                         int##_size##_t value)          \
+    shmemc_ctx_wait_##_opname##_until##_size(shmem_ctx_t ctx,           \
+                                             int##_size##_t *var,       \
+                                             int##_size##_t value)      \
     {                                                                   \
-        shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;     \
-        ucp_worker_h w = ch->w;                                         \
+        do {                                                            \
+            shmemc_context_h ch = (shmemc_context_h) ctx;               \
                                                                         \
-        while (shmemc_test_##_opname##_size(var, value) == 0) {         \
-            ucp_worker_progress(w);                                     \
-        }                                                               \
+            ucp_worker_progress(ch->w);                                 \
+        } while (shmemc_ctx_test_##_opname##_size(ctx, var, value) == 0); \
     }
 
-COMMS_WAIT_SIZE(16, eq, ==)
-COMMS_WAIT_SIZE(32, eq, ==)
-COMMS_WAIT_SIZE(64, eq, ==)
+COMMS_CTX_WAIT_SIZE(16, eq, ==)
+COMMS_CTX_WAIT_SIZE(32, eq, ==)
+COMMS_CTX_WAIT_SIZE(64, eq, ==)
 
-COMMS_WAIT_SIZE(16, ne, !=)
-COMMS_WAIT_SIZE(32, ne, !=)
-COMMS_WAIT_SIZE(64, ne, !=)
+COMMS_CTX_WAIT_SIZE(16, ne, !=)
+COMMS_CTX_WAIT_SIZE(32, ne, !=)
+COMMS_CTX_WAIT_SIZE(64, ne, !=)
 
-COMMS_WAIT_SIZE(16, gt, >)
-COMMS_WAIT_SIZE(32, gt, >)
-COMMS_WAIT_SIZE(64, gt, >)
+COMMS_CTX_WAIT_SIZE(16, gt, >)
+COMMS_CTX_WAIT_SIZE(32, gt, >)
+COMMS_CTX_WAIT_SIZE(64, gt, >)
 
-COMMS_WAIT_SIZE(16, le, <=)
-COMMS_WAIT_SIZE(32, le, <=)
-COMMS_WAIT_SIZE(64, le, <=)
+COMMS_CTX_WAIT_SIZE(16, le, <=)
+COMMS_CTX_WAIT_SIZE(32, le, <=)
+COMMS_CTX_WAIT_SIZE(64, le, <=)
 
-COMMS_WAIT_SIZE(16, lt, <)
-COMMS_WAIT_SIZE(32, lt, <)
-COMMS_WAIT_SIZE(64, lt, <)
+COMMS_CTX_WAIT_SIZE(16, lt, <)
+COMMS_CTX_WAIT_SIZE(32, lt, <)
+COMMS_CTX_WAIT_SIZE(64, lt, <)
 
-COMMS_WAIT_SIZE(16, ge, >=)
-COMMS_WAIT_SIZE(32, ge, >=)
-COMMS_WAIT_SIZE(64, ge, >=)
+COMMS_CTX_WAIT_SIZE(16, ge, >=)
+COMMS_CTX_WAIT_SIZE(32, ge, >=)
+COMMS_CTX_WAIT_SIZE(64, ge, >=)

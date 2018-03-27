@@ -10,7 +10,7 @@ shmemu_cppflags        = -I$(top_srcdir)/src/$(shmemu_dir)
 shmemu_ldflags         = -L$(shmemu_dir)
 shmemu_libs            = -lshmemu
 
-SUBDIRS                = $(shmemc_dir) $(shmemu_dir)
+SUBDIRS                = $(shmemc_dir) $(shmemu_dir) osh_info
 
 MY_INCLUDE             = -I../include
 
@@ -27,7 +27,7 @@ MY_SOURCES             = \
 				contexts.c \
                                 fcollect.c \
                                 globalexit.c \
-                                info.c \
+				info.c \
                                 init.c \
                                 lock.c \
                                 ptr.c \
@@ -84,11 +84,3 @@ lib_LIBRARIES          = libshmem.a
 libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
 libshmem_a_CPPFLAGS    = $(all_cppflags)
 libshmem_a_LIBADD      = liballocator.a
-
-bin_PROGRAMS           = osh_info
-osh_info_SOURCES       = osh_info.c info.c
-osh_info_CPPFLAGS      = $(all_cppflags)
-osh_info_CFLAGS        =
-# minimize execution-time deps
-osh_info_LDFLAGS       = $(shmemu_dir)/libshmemu.a \
-				$(shmemc_dir)/libshmemc-ucx.a

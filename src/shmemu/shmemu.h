@@ -123,7 +123,7 @@ void shmemu_deprecate_finalize(void);
     do {                                                        \
         if (! shmemc_addr_accessible(_addr, proc.rank)) {       \
             logger(LOG_FATAL,                                   \
-                   "In %s(), address %p in argument %d "        \
+                   "In %s(), address %p in argument #%d "       \
                    "is not symmetric",                          \
                    __func__,                                    \
                    _addr, _argpos                               \
@@ -145,15 +145,19 @@ void shmemu_deprecate_finalize(void);
 
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)                                 \
     do {                                                                \
-        if ((_ctx)->attr.private) {                                     \
+        shmemc_context_h ch = (shmemc_context_h) (_ctx);                \
+                                                                        \
+        if (ch->attr.private) {                                         \
             const shmemc_thread_t me = shmemc_thread_id();              \
-            const shmemc_thread_t cr = (_ctx)->creator_thread;          \
+            const shmemc_thread_t cr = ch->creator_thread;              \
                                                                         \
             if (cr != me) {                                             \
-                shmemu_fatal("In %s(), invoking thread %d"              \
-                             " not owner thread %d in private context", \
+                shmemu_fatal("In %s(), invoking thread #%d"             \
+                             " not owner thread #%d"                    \
+                             "in private context #%lu",                 \
                              __func__,                                  \
-                             me, cr                                     \
+                             me, cr,                                    \
+                             ch->id                                     \
                              );                                         \
                 /* NOT REACHED */                                       \
             }                                                           \

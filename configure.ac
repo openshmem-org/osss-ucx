@@ -13,8 +13,13 @@ m4_define([pkg_url],        [https://bitbucket.org/sbuopenshmem/osss-ucx.git])
 m4_define([spec_major_version],     [1])
 m4_define([spec_minor_version],     [4])
 m4_define([spec_max_name_len],      [64])
-dnl quoted to make C string literal
+# quoted to make C string literal
 m4_define([spec_vendor_string],     ["pkg_name"])
+
+# unless overridden by user
+m4_define([shmem_default_heap_size], ["32M"])
+
+shmem_heap_size=""
 
 AC_PREREQ([2.69])
 AC_INIT([pkg_name], [pkg_version], [pkg_bugreport], [],	[pkg_url])
@@ -45,7 +50,7 @@ AC_DEFINE_UNQUOTED([SHMEM_VENDOR_STRING],
 AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])
-dnl AC_CONFIG_MACRO_DIR([m4])
+# AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([subdir-objects])
 
 AM_SILENT_RULES([yes])
@@ -138,16 +143,18 @@ DX_INIT_DOXYGEN([openshmem])
 # figure out the heap size
 #
 
-if test "x$shmem_heap_size" = "x"
-then
-    shmem_heap_size=32M
-fi
+AS_IF([test -z "$shmem_heap_size"],
+      [shmem_heap_size=m4_expand([shmem_default_heap_size])]
+      )
 
+# for the oshrun man page
 AC_SUBST([SHMEM_DEFAULT_HEAP_SIZE], [$shmem_heap_size])
-dnl C string
+# C string
 AC_DEFINE_UNQUOTED([SHMEM_DEFAULT_HEAP_SIZE],
 			["$shmem_heap_size"],
 			[Default size of symmetric heap])
+
+AC_MSG_NOTICE([Default symmetric heap size will be $shmem_heap_size])
 
 #
 # all the output files
@@ -186,8 +193,10 @@ AC_CONFIG_FILES([pkgconfig/Makefile
 AC_CONFIG_FILES([src/Makefile
 		])
 
+AC_CONFIG_FILES([src/osh_info/Makefile
+		])
+
 AC_CONFIG_FILES([src/shmemc/Makefile
-		 src/shmemc/heapsize.h
 		 src/shmemc/oshcc src/shmemc/oshcxx src/shmemc/oshfort
 		 src/shmemc/oshrun
                ])

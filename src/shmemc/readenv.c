@@ -8,7 +8,6 @@
 #include "shmemu.h"
 #include "boolean.h"
 #include "collalgo.h"
-#include "heapsize.h"
 
 #include <stdio.h>
 #include <stdlib.h>             /* getenv */
@@ -82,7 +81,7 @@ shmemc_env_init(void)
         proc.env.print_info = option_enabled_test(e);
     }
     CHECK_ENV(e, SYMMETRIC_SIZE);
-    r = shmemu_parse_size( (e != NULL) ? e : default_heap_size,
+    r = shmemu_parse_size( (e != NULL) ? e : SHMEM_DEFAULT_HEAP_SIZE,
                            &proc.env.def_heap_size);
     if (r != 0) {
         shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
@@ -141,28 +140,37 @@ shmemc_env_finalize(void)
 
 static const int var_width = 22;
 static const int val_width = 10;
+static const int hr_width  = 74;
+
+inline static void
+hr(FILE *stream, const char *prefix)
+{
+    int i;
+
+    fprintf(stream, "%s", prefix);
+    for (i = 0; i < hr_width; i += 1) {
+        fprintf(stream, "-");
+    }
+    fprintf(stream, "\n");
+}
 
 void
 shmemc_print_env_vars(FILE *stream, const char *prefix)
 {
     fprintf(stream, "%sEnvironment Variable Information\n",
             prefix);
-    fprintf(stream, "%s\n",
-            prefix);
+    fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "Variable",
             val_width, "Value",
             "Description");
-    fprintf(stream, "%s------------------------------------------------------------------------\n",
-            prefix);
-    fprintf(stream, "%s\n",
-            prefix);
+    hr(stream, prefix);
+    fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%s\n",
             prefix,
             "From specification:");
-    fprintf(stream, "%s\n",
-            prefix);
+    fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_VERSION",
@@ -182,7 +190,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
                 prefix,
                 var_width, "SHMEM_SYMMETRIC_SIZE",
                 val_width, buf,
-                "set the size of the symmetric heap");
+                "requested size of the symmetric heap");
 #undef BUFSIZE
     }
     fprintf(stream, "%s%-*s %-*s %s\n",
@@ -191,13 +199,11 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width, shmemu_human_option(proc.env.debug),
             "enable run debugging (if configured)");
 
-    fprintf(stream, "%s\n",
-            prefix);
+    fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%s\n",
             prefix,
             "Specific to this implementation:");
-    fprintf(stream, "%s\n",
-            prefix);
+    fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_DEBUG_FILE",
@@ -219,8 +225,9 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width, shmemc_unparse_algo(proc.env.broadcast_algo),
             "algorithm to use for broadcast");
 
-    fprintf(stream, "%s\n",
-            prefix);
+    fprintf(stream, "%s\n", prefix);
+    hr(stream, prefix);
+    fprintf(stream, "%s\n", prefix);
     fprintf(stream, "\n");
 
     fflush(stream);

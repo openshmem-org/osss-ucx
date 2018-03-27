@@ -4,9 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemu.h"
-#include "info.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -96,7 +93,8 @@ info_output_package_version(FILE *strm, int terse)
 void
 info_output_build_env(FILE *strm)
 {
-    char *host;
+    int s;
+    char host[BUFMAX];
 
     output(strm, "Configure date",
 #ifdef CONFIG_BUILD_DATE
@@ -114,8 +112,8 @@ info_output_build_env(FILE *strm)
 #endif /* CONFIG_BUILD_HOST */
            );
 
-    host = shmemu_gethostname();
-    output(strm, "Execution host", (host != NULL) ? host : UNKNOWN);
+    s = gethostname(host, BUFMAX);
+    output(strm, "Execution host", (s == 0) ? host : UNKNOWN);
 }
 
 void

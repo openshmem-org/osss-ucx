@@ -94,7 +94,7 @@ deregister_context(shmemc_context_h ch)
  */
 
 int
-shmemc_context_create(long options, shmemc_context_h *ctxp)
+shmemc_context_create(long options, shmem_ctx_t *ctxp)
 {
     ucs_status_t s;
     shmemc_context_h newone;
@@ -135,7 +135,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
 
     newone->creator_thread = shmemc_thread_id();
 
-    *ctxp = newone;             /* handle back to caller */
+    *ctxp = (shmem_ctx_t *) newone; /* handle back to caller */
 
     return 0;
     /* NOT REACHED */
@@ -151,7 +151,7 @@ shmemc_context_create(long options, shmemc_context_h *ctxp)
  */
 
 void
-shmemc_context_destroy(shmemc_context_h ctx)
+shmemc_context_destroy(shmem_ctx_t ctx)
 {
     if (ctx == NULL) {
         return;
@@ -164,15 +164,17 @@ shmemc_context_destroy(shmemc_context_h ctx)
         /* NOT REACHED */
     }
     else {
+        shmemc_context_h ch = (shmemc_context_h) ctx;
+
         /*
          * spec 1.4 requires implicit quiet on destroy for storable
          * contexts
          */
-        shmemc_ctx_quiet(ctx);
+        shmemc_ctx_quiet(ch);
 
-        ucp_worker_destroy(ctx->w);
+        ucp_worker_destroy(ch->w);
 
-        deregister_context(ctx);
+        deregister_context(ch);
     }
 }
 
@@ -182,30 +184,33 @@ shmemc_context_destroy(shmemc_context_h ctx)
  */
 
 int
-shmemc_create_default_context(shmem_ctx_t *ctx_p)
+shmemc_create_default_context(shmem_ctx_t *ctxp)
 {
-    shmemc_context_h ctx;
+    shmem_ctx_t ctx_def;
+    shmemc_context_h ch;
     int n;
     ucs_status_t s;
     ucp_address_t *addr;
     size_t len;
     const long default_options = 0L;
 
-    n = shmemc_context_create(default_options, &ctx);
+    n = shmemc_context_create(default_options, &ctx_def);
     if (n != 0) {
         return 1;
         /* NOT REACHED */
     }
 
+    ch = (shmemc_context_h) ctx_def;
+
     /* get address for remote access to worker */
-    s = ucp_worker_get_address(ctx->w, &addr, &len);
+    s = ucp_worker_get_address(ch->w, &addr, &len);
     if (s != UCS_OK) {
         return 1;
         /* NOT REACHED */
     }
 
     /* handle back to caller */
-    *ctx_p = (shmem_ctx_t) ctx;
+    *ctxp = ctx_def;
 
     proc.comms.xchg_wrkr_info[proc.rank].addr = addr;
     proc.comms.xchg_wrkr_info[proc.rank].len = len;

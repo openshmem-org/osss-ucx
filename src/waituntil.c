@@ -39,7 +39,7 @@
 #define shmem_size_wait_until pshmem_size_wait_until
 #pragma weak shmem_ptrdiff_wait_until = pshmem_ptrdiff_wait_until
 #define shmem_ptrdiff_wait_until pshmem_ptrdiff_wait_until
-#endif /* ENABLE_PSHMEM */
+#endif  /* ENABLE_PSHMEM */
 
 /**
  * wait_until with operator dispatchers, type-parameterized.
@@ -54,28 +54,34 @@
             (                                                           \
              switch (cmp) {                                             \
              case SHMEM_CMP_EQ:                                         \
-             shmemc_wait_eq_until##_size((int##_size##_t *) ivar,       \
-                                         cmp_value);                    \
+             shmemc_ctx_wait_eq_until##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
              break;                                                     \
              case SHMEM_CMP_NE:                                         \
-             shmemc_wait_ne_until##_size((int##_size##_t *) ivar,       \
-                                         cmp_value);                    \
+             shmemc_ctx_wait_ne_until##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
              break;                                                     \
              case SHMEM_CMP_GT:                                         \
-             shmemc_wait_gt_until##_size((int##_size##_t *) ivar,       \
-                                         cmp_value);                    \
+             shmemc_ctx_wait_gt_until##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
              break;                                                     \
              case SHMEM_CMP_LE:                                         \
-             shmemc_wait_le_until##_size((int##_size##_t *) ivar,       \
-                                         cmp_value);                    \
+             shmemc_ctx_wait_le_until##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
              break;                                                     \
              case SHMEM_CMP_LT:                                         \
-             shmemc_wait_lt_until##_size((int##_size##_t *) ivar,       \
-                                         cmp_value);                    \
+             shmemc_ctx_wait_lt_until##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
              break;                                                     \
              case SHMEM_CMP_GE:                                         \
-             shmemc_wait_ge_until##_size((int##_size##_t *) ivar,       \
-                                         cmp_value);                    \
+             shmemc_ctx_wait_ge_until##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
              break;                                                     \
              default:                                                   \
              logger(LOG_FATAL,                                          \
@@ -134,7 +140,7 @@ SHMEM_TYPE_WAIT_UNTIL(ptrdiff, ptrdiff_t, 64)
 #define shmem_size_test pshmem_size_test
 #pragma weak shmem_ptrdiff_test = pshmem_ptrdiff_test
 #define shmem_ptrdiff_test pshmem_ptrdiff_test
-#endif /* ENABLE_PSHMEM */
+#endif  /* ENABLE_PSHMEM */
 
 #define SHMEM_TYPE_TEST(_opname, _type, _size)                          \
     int                                                                 \
@@ -144,28 +150,34 @@ SHMEM_TYPE_WAIT_UNTIL(ptrdiff, ptrdiff_t, 64)
             (                                                           \
              switch (cmp) {                                             \
              case SHMEM_CMP_EQ:                                         \
-             return shmemc_test_eq##_size((int##_size##_t *) ivar,      \
-                                          cmp_value);                   \
+             return shmemc_ctx_test_eq##_size(SHMEM_CTX_DEFAULT,        \
+                                              (int##_size##_t *) ivar,  \
+                                              cmp_value);               \
              break;                                                     \
              case SHMEM_CMP_NE:                                         \
-             return shmemc_test_ne##_size((int##_size##_t *) ivar,      \
-                                          cmp_value);                   \
+             return shmemc_ctx_test_ne##_size(SHMEM_CTX_DEFAULT,        \
+                                              (int##_size##_t *) ivar,  \
+                                              cmp_value);               \
              break;                                                     \
              case SHMEM_CMP_GT:                                         \
-             return shmemc_test_gt##_size((int##_size##_t *) ivar,      \
-                                          cmp_value);                   \
+             return shmemc_ctx_test_gt##_size(SHMEM_CTX_DEFAULT,        \
+                                              (int##_size##_t *) ivar,  \
+                                              cmp_value);               \
              break;                                                     \
              case SHMEM_CMP_LE:                                         \
-             return shmemc_test_le##_size((int##_size##_t *) ivar,      \
-                                          cmp_value);                   \
+             return shmemc_ctx_test_le##_size(SHMEM_CTX_DEFAULT,        \
+                                              (int##_size##_t *) ivar,  \
+                                              cmp_value);               \
              break;                                                     \
              case SHMEM_CMP_LT:                                         \
-             return shmemc_test_lt##_size((int##_size##_t *) ivar,      \
-                                          cmp_value);                   \
+             return shmemc_ctx_test_lt##_size(SHMEM_CTX_DEFAULT,        \
+                                              (int##_size##_t *) ivar,  \
+                                              cmp_value);               \
              break;                                                     \
              case SHMEM_CMP_GE:                                         \
-             return shmemc_test_ge##_size((int##_size##_t *) ivar,      \
-                                          cmp_value);                   \
+             return shmemc_ctx_test_ge##_size(SHMEM_CTX_DEFAULT,        \
+                                              (int##_size##_t *) ivar,  \
+                                              cmp_value);               \
              break;                                                     \
              default:                                                   \
              logger(LOG_FATAL,                                          \
@@ -195,11 +207,11 @@ SHMEM_TYPE_TEST(uint64, uint64_t, 64)
 SHMEM_TYPE_TEST(size, size_t, 64)
 SHMEM_TYPE_TEST(ptrdiff, ptrdiff_t, 64)
 
-        /**
-         * deprecated @ 1.4
-         *
-         * wait is just wait_until with inequality/change test
-         */
+/**
+ * deprecated @ 1.4
+ *
+ * wait is just wait_until with inequality/change test
+ */
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_short_wait = pshmem_short_wait
@@ -230,16 +242,17 @@ SHMEM_TYPE_TEST(ptrdiff, ptrdiff_t, 64)
 #define shmem_size_wait pshmem_size_wait
 #pragma weak shmem_ptrdiff_wait = pshmem_ptrdiff_wait
 #define shmem_ptrdiff_wait pshmem_ptrdiff_wait
-#endif /* ENABLE_PSHMEM */
+#endif  /* ENABLE_PSHMEM */
 
 #define SHMEM_TYPE_WAIT(_name, _type, _size)                        \
-        void                                                        \
-            shmem_##_name##_wait(_type *ivar, _type cmp_value)      \
-        {                                                           \
-            deprecate(__func__);                                    \
-            shmemc_wait_ne_until##_size((int##_size##_t *) ivar,    \
+    void                                                            \
+    shmem_##_name##_wait(_type *ivar, _type cmp_value)              \
+    {                                                               \
+        deprecate(__func__);                                        \
+        shmemc_ctx_wait_ne_until##_size(SHMEM_CTX_DEFAULT,          \
+                                        (int##_size##_t *) ivar,    \
                                         cmp_value);                 \
-        }
+    }
 
 SHMEM_TYPE_WAIT(short, short, 16)
 SHMEM_TYPE_WAIT(int, int, 32)
