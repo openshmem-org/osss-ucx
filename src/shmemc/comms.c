@@ -133,6 +133,8 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
 static void
 noop_callback(void *request, ucs_status_t status)
 {
+    logger(LOG_INFO,
+           "AMO didn't complete immediately, using callback");
 }
 
 /*
