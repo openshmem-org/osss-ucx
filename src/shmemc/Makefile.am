@@ -48,6 +48,10 @@ install-exec-hook:
 	cd $(bindir); \
 	cp -p oshcxx oshc++
 
+uninstall-local:
+	cd $(bindir); \
+	$(RM) oshc++
+
 endif # c++
 
 if ENABLE_FORTRAN

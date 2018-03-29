@@ -10,6 +10,10 @@ install-data-hook:
 	cd $(man1dir); \
 	cp -p oshcxx.1 oshc++.1
 
+uninstall-local:
+	cd $(man1dir); \
+	$(RM) oshc++.1
+
 endif
 
 if ENABLE_FORTRAN
