@@ -44,7 +44,9 @@ if ENABLE_CXX
 
 MY_WRAPPERS              += oshcxx
 
-install-exec-hook:
+# create alternate name for wrapper
+
+install-exec-hook:	uninstall-local
 	cd $(bindir); \
 	$(LN_S) oshcxx oshc++
 
