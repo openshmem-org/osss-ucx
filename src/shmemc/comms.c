@@ -187,36 +187,11 @@ helper_atomic_post_op(ucp_atomic_post_op_t uapo,
     uint64_t r_t;
     ucp_rkey_h rkey;
     ucp_ep_h ep;
-    ucs_status_t s;
 
     get_remote_key_and_addr(t, pe, &rkey, &r_t);
     ep = lookup_ucp_ep(ch, pe);
 
-    s = ucp_atomic_post(ep, uapo, v, vs, r_t, rkey);
-
-    return s;
-
-    /*
-     * CHECK:
-     *
-     * non-fetching AMOs do not guarantee completion, so we don't need
-     * to handle the return here?
-     */
-
-#if 0
-    /*
-     * if all seems ok, wait for completion; otherwise return
-     * potential error code
-     */
-    if (s == UCS_OK) {
-        void *req = ucp_ep_flush_nb(ep, 0, noop_callback);
-
-        return wait_for_request(req, ch->w);
-    }
-    else {
-        return s;
-    }
-#endif
+    return ucp_atomic_post(ep, uapo, v, vs, r_t, rkey);
 }
 
 inline static ucs_status_t
