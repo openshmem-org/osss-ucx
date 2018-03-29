@@ -1,6 +1,17 @@
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
+prog="`basename $0`"
+
+# trap empty command-line
+if [ $# -eq 0 ]
+then
+    cat <<EOF
+Usage: $prog [compiler flags] <input files...>
+EOF
+    exit 1
+fi
+
 compiler="${OSH_CXX-g++}"
 
 prefix=@prefix@
