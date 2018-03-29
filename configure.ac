@@ -160,48 +160,32 @@ AC_MSG_NOTICE([Default symmetric heap size will be $shmem_heap_size])
 # all the output files
 #
 
-AC_CONFIG_FILES([Makefile])
-
-AC_CONFIG_FILES([man/man1/Makefile
-		 man/man1/oshcc.1 man/man1/oshcxx.1 man/man1/oshfort.1
-		 man/man1/oshrun.1 man/man1/osh_info.1 man/man1/osh_intro.1
-		])
-
-AC_CONFIG_FILES([man/Makefile
-		])
-
-AC_CONFIG_FILES([include/Makefile
-		 include/shmem/defs.h
-		 include/shmem/depr.h
-		 include/shmem/cache.h
-		 include/shmem/api.h
-		 include/shmem.h
-		 include/pshmem.h include/pshmemx.h
-		 include/shmemx.h include/null-shmemx.h
-		])
-
-AC_CONFIG_FILES([include/shmemx.fh include/null-shmemx.fh
-		 include/shmem/defs.fh
-		 include/shmem.fh include/pshmem.fh
-		 include/pshmemx.fh
-		])
-
-AC_CONFIG_FILES([pkgconfig/Makefile
-		 pkgconfig/osss-ucx.pc
-		])
-
-AC_CONFIG_FILES([src/Makefile
-		])
-
-AC_CONFIG_FILES([src/osh_info/Makefile
-		])
-
-AC_CONFIG_FILES([src/shmemc/Makefile
-		 src/shmemc/oshcc src/shmemc/oshcxx src/shmemc/oshfort
-		 src/shmemc/oshrun
-               ])
-
-AC_CONFIG_FILES([src/shmemu/Makefile
+AC_CONFIG_FILES([
+		Makefile
+		man/Makefile
+		man/man1/Makefile
+		man/man1/oshcc.1 man/man1/oshcxx.1 man/man1/oshfort.1
+		man/man1/oshrun.1 man/man1/osh_info.1 man/man1/osh_intro.1
+		include/Makefile
+		include/shmem/defs.h
+		include/shmem/depr.h
+		include/shmem/cache.h
+		include/shmem/api.h
+		include/shmem.h
+		include/pshmem.h include/pshmemx.h
+		include/shmemx.h include/null-shmemx.h
+		include/shmemx.fh include/null-shmemx.fh
+		include/shmem/defs.fh
+		include/shmem.fh include/pshmem.fh
+		include/pshmemx.fh
+		pkgconfig/Makefile
+		pkgconfig/osss-ucx.pc
+		src/Makefile
+		src/osh_info/Makefile
+		src/shmemc/Makefile
+		src/shmemc/oshcc src/shmemc/oshcxx src/shmemc/oshfort
+		src/shmemc/oshrun
+		src/shmemu/Makefile
                ])
 
 AC_OUTPUT
