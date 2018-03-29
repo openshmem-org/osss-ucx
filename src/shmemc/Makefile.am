@@ -46,7 +46,7 @@ MY_WRAPPERS              += oshcxx
 
 install-exec-hook:
 	cd $(bindir); \
-	cp -p oshcxx oshc++
+	$(LN_S) oshcxx oshc++
 
 uninstall-local:
 	cd $(bindir); \

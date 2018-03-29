@@ -55,6 +55,8 @@ AM_INIT_AUTOMAKE([subdir-objects])
 
 AM_SILENT_RULES([yes])
 
+AC_PROG_LN_S
+
 # C/C++
 AC_PROG_CC_C99
 AC_PROG_CC_C_O
