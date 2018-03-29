@@ -193,6 +193,17 @@ helper_atomic_post_op(ucp_atomic_post_op_t uapo,
     ep = lookup_ucp_ep(ch, pe);
 
     s = ucp_atomic_post(ep, uapo, v, vs, r_t, rkey);
+
+    return s;
+
+    /*
+     * CHECK:
+     *
+     * non-fetching AMOs do not guarantee completion, so we don't need
+     * to handle the return here?
+     */
+
+#if 0
     /*
      * if all seems ok, wait for completion; otherwise return
      * potential error code
@@ -205,6 +216,7 @@ helper_atomic_post_op(ucp_atomic_post_op_t uapo,
     else {
         return s;
     }
+#endif
 }
 
 inline static ucs_status_t
