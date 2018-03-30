@@ -126,6 +126,22 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
  *  -- helpers for atomics -----------------------------------------------
  */
 
+void
+shmemc_progress(void)
+{
+    shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;
+
+    (void) ucp_worker_progress(ch->w);
+}
+
+void
+shmemc_ctx_progress(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    (void) ucp_worker_progress(ch->w);
+}
+
 /*
  * a dummy callback that does nothing
  */
@@ -140,13 +156,11 @@ noop_callback(void *request, ucs_status_t status)
 /*
  * wait for some non-blocking request to complete on a worker
  *
- *
  * TODO: possible consolidation with EP disconnect code
- *
  */
 
 inline static ucs_status_t
-wait_for_request(void *req, ucp_worker_h w)
+check_wait_for_request(shmemc_context_h ch, void *req)
 {
     if (req == NULL) {          /* completed */
         return UCS_OK;
@@ -158,21 +172,21 @@ wait_for_request(void *req, ucp_worker_h w)
         ucs_status_t s;
 
         do {
-            (void) ucp_worker_progress(w);
+            shmemc_progress();
+
 #ifdef HAVE_UCP_REQUEST_CHECK_STATUS
             s = ucp_request_check_status(req);
 #else
             s = ucp_request_test(req, NULL);
 #endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
         } while (s == UCS_INPROGRESS);
-
         ucp_request_free(req);
         return s;
     }
 }
 
 /*
- * postor-fetch--and-wait AMO to target address "t" on PE "pe" with
+ * post-or-fetch-and-wait AMO to target address "t" on PE "pe" with
  * value "v"
  */
 
@@ -213,15 +227,8 @@ helper_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
 
     sp = ucp_atomic_fetch_nb(ep, uafo, v, result, vs, r_t, rkey,
                              noop_callback);
-    if (sp == UCS_OK) {
-        return UCS_OK;          /* completed */
-    }
-    else if (UCS_PTR_IS_ERR(sp)) { /* error */
-        return UCS_PTR_STATUS(sp);
-    }
-    else {                      /* wait */
-        return wait_for_request(sp, ch->w);
-    }
+
+    return check_wait_for_request(ch, sp);
 }
 
 /* TODO: repeated patterns here, maybe some kind of template? */
@@ -287,12 +294,12 @@ HELPER_ADD(64)
 HELPER_FINC(32)
 HELPER_FINC(64)
 
-#define HELPER_INC(_size)                                   \
-    inline static void                                      \
-    helper_atomic_inc##_size(shmemc_context_h ch,           \
-                             uint64_t t, int pe)            \
-    {                                                       \
-        (void) helper_atomic_fetch_inc##_size(ch, t, pe);   \
+#define HELPER_INC(_size)                                       \
+    inline static void                                          \
+    helper_atomic_inc##_size(shmemc_context_h ch,               \
+                             uint64_t t, int pe)                \
+    {                                                           \
+        helper_atomic_add##_size(ch, t, 1, pe);                 \
     }
 
 HELPER_INC(32)

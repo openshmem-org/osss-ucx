@@ -62,9 +62,7 @@ COMMS_CTX_TEST_SIZE(64, ge, >=)
                                              int##_size##_t value)      \
     {                                                                   \
         do {                                                            \
-            shmemc_context_h ch = (shmemc_context_h) ctx;               \
-                                                                        \
-            ucp_worker_progress(ch->w);                                 \
+            shmemc_progress();                                          \
         } while (shmemc_ctx_test_##_opname##_size(ctx, var, value) == 0); \
     }
 
