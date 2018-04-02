@@ -69,6 +69,11 @@ endif # experimental
 # retain tree
 nobase_include_HEADERS  = $(SHMEM_HDRS)
 
+# these are installed regardless of whether SHMEMX_ enabled
+
 install-data-hook:
 	cp -p $(SHMEMX_HEADER) $(includedir)/shmemx.h
 	cp -p $(SHMEMX_HEADER_F) $(includedir)/shmemx.fh
+
+uninstall-local:
+	$(RM) $(includedir)/shmemx.h $(includedir)/shmemx.fh

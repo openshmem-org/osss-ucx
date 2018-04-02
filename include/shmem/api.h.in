@@ -1265,6 +1265,7 @@ extern "C"
     API_CTX_DECL_SWAP(int, int)
     API_CTX_DECL_SWAP(long, long)
     API_CTX_DECL_SWAP(longlong, long long)
+    API_CTX_DECL_SWAP(uchar, unsigned char)
     API_CTX_DECL_SWAP(uint, unsigned int)
     API_CTX_DECL_SWAP(ulong, unsigned long)
     API_CTX_DECL_SWAP(ulonglong, unsigned long long)
@@ -2475,51 +2476,69 @@ extern "C"
 #if SHMEM_HAS_C11
 
     /**
-     * Possibly-contexts-based generics
+     * Contexts-based generics
      *
      */
 
+    /*
+     * get numbered args out of parameter list
+     * (thanks to SOS)
+     */
+#define GET_ARG1_HELPER(_arg1, ...) _arg1
+
+#define GET_ARG1(...) GET_ARG1_HELPER(__VA_ARGS__, _extra)
+#define GET_ARG2(_arg1, ...) GET_ARG1_HELPER(__VA_ARGS__, _extra)
+
+#define TYPE_EVAL_PTR(_arg) &*(_arg)
+#define TYPE_EVAL_PTR_OR_SCALAR(_arg) (_arg)+0
+
+    /* This stops the not-a-context case turning into an error when
+     *  the value type doesn't match anything
+     */
+    inline static void shmem_atomic_ignore(void) { }
+
     /* see \ref shmem_long_put() */
-#define shmem_put(arg1, arg2, ...)                                  \
-    _Generic((arg1),                                                \
-             shmem_ctx_t:                                           \
-             _Generic((arg2),                                       \
-                      float *: shmem_ctx_float_put,                 \
-                      double *: shmem_ctx_double_put,               \
-                      long double *: shmem_ctx_longdouble_put,      \
-                      signed char *: shmem_ctx_schar_put,           \
-                      char *: shmem_ctx_char_put,                   \
-                      short *: shmem_ctx_short_put,                 \
-                      int *: shmem_ctx_int_put,                     \
-                      long *: shmem_ctx_long_put,                   \
-                      long long *: shmem_ctx_longlong_put,          \
-                      unsigned char *: shmem_ctx_uchar_put,         \
-                      unsigned short *: shmem_ctx_ushort_put,       \
-                      unsigned int *: shmem_ctx_uint_put,           \
-                      unsigned long *: shmem_ctx_ulong_put,         \
-                      unsigned long long *: shmem_ctx_ulonglong_put \
-                      ),                                            \
-             float *: shmem_float_put,                              \
-             double *: shmem_double_put,                            \
-             long double *: shmem_longdouble_put,                   \
-             signed char *: shmem_schar_put,                        \
-             char *: shmem_char_put,                                \
-             short *: shmem_short_put,                              \
-             int *: shmem_int_put,                                  \
-             long *: shmem_long_put,                                \
-             long long *: shmem_longlong_put,                       \
-             unsigned char *: shmem_uchar_put,                      \
-             unsigned short *: shmem_ushort_put,                    \
-             unsigned int *: shmem_uint_put,                        \
-             unsigned long *: shmem_ulong_put,                      \
-             unsigned long long *: shmem_ulonglong_put              \
-             )(arg1, arg2, __VA_ARGS__)
+#define shmem_put(...)                                                  \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
+             shmem_ctx_t:                                               \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
+                      float *: shmem_ctx_float_put,                     \
+                      double *: shmem_ctx_double_put,                   \
+                      long double *: shmem_ctx_longdouble_put,          \
+                      signed char *: shmem_ctx_schar_put,               \
+                      char *: shmem_ctx_char_put,                       \
+                      short *: shmem_ctx_short_put,                     \
+                      int *: shmem_ctx_int_put,                         \
+                      long *: shmem_ctx_long_put,                       \
+                      long long *: shmem_ctx_longlong_put,              \
+                      unsigned char *: shmem_ctx_uchar_put,             \
+                      unsigned short *: shmem_ctx_ushort_put,           \
+                      unsigned int *: shmem_ctx_uint_put,               \
+                      unsigned long *: shmem_ctx_ulong_put,             \
+                      unsigned long long *: shmem_ctx_ulonglong_put,    \
+                      default: shmem_atomic_ignore                      \
+                      ),                                                \
+             float *: shmem_float_put,                                  \
+             double *: shmem_double_put,                                \
+             long double *: shmem_longdouble_put,                       \
+             signed char *: shmem_schar_put,                            \
+             char *: shmem_char_put,                                    \
+             short *: shmem_short_put,                                  \
+             int *: shmem_int_put,                                      \
+             long *: shmem_long_put,                                    \
+             long long *: shmem_longlong_put,                           \
+             unsigned char *: shmem_uchar_put,                          \
+             unsigned short *: shmem_ushort_put,                        \
+             unsigned int *: shmem_uint_put,                            \
+             unsigned long *: shmem_ulong_put,                          \
+             unsigned long long *: shmem_ulonglong_put                  \
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_put_nbi() */
-#define shmem_put_nbi(arg1, arg2, ...)                                  \
-    _Generic((arg1),                                                    \
+#define shmem_put_nbi(...)                                              \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       float *: shmem_ctx_float_put_nbi,                 \
                       double *: shmem_ctx_double_put_nbi,               \
                       long double *: shmem_ctx_longdouble_put_nbi,      \
@@ -2533,7 +2552,8 @@ extern "C"
                       unsigned short *: shmem_ctx_ushort_put_nbi,       \
                       unsigned int *: shmem_ctx_uint_put_nbi,           \
                       unsigned long *: shmem_ctx_ulong_put_nbi,         \
-                      unsigned long long *: shmem_ctx_ulonglong_put_nbi \
+                      unsigned long long *: shmem_ctx_ulonglong_put_nbi, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              float *: shmem_float_put_nbi,                              \
              double *: shmem_double_put_nbi,                            \
@@ -2549,49 +2569,50 @@ extern "C"
              unsigned int *: shmem_uint_put_nbi,                        \
              unsigned long *: shmem_ulong_put_nbi,                      \
              unsigned long long *: shmem_ulonglong_put_nbi              \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_get() */
-#define shmem_get(arg1, arg2, ...)                                  \
-    _Generic((arg1),                                                \
-             shmem_ctx_t:                                           \
-             _Generic((arg2),                                       \
-                      float *: shmem_ctx_float_get,                 \
-                      double *: shmem_ctx_double_get,               \
-                      long double *: shmem_ctx_longdouble_get,      \
-                      signed char *: shmem_ctx_schar_get,           \
-                      char *: shmem_ctx_char_get,                   \
-                      short *: shmem_ctx_short_get,                 \
-                      int *: shmem_ctx_int_get,                     \
-                      long *: shmem_ctx_long_get,                   \
-                      long long *: shmem_ctx_longlong_get,          \
-                      unsigned char *: shmem_ctx_uchar_get,         \
-                      unsigned short *: shmem_ctx_ushort_get,       \
-                      unsigned int *: shmem_ctx_uint_get,           \
-                      unsigned long *: shmem_ctx_ulong_get,         \
-                      unsigned long long *: shmem_ctx_ulonglong_get \
-                      ),                                            \
-             float *: shmem_float_get,                              \
-             double *: shmem_double_get,                            \
-             long double *: shmem_longdouble_get,                   \
-             signed char *: shmem_schar_get,                        \
-             char *: shmem_char_get,                                \
-             short *: shmem_short_get,                              \
-             int *: shmem_int_get,                                  \
-             long *: shmem_long_get,                                \
-             long long *: shmem_longlong_get,                       \
-             unsigned char *: shmem_uchar_get,                      \
-             unsigned short *: shmem_ushort_get,                    \
-             unsigned int *: shmem_uint_get,                        \
-             unsigned long *: shmem_ulong_get,                      \
-             unsigned long long *: shmem_ulonglong_get              \
-             )(arg1, arg2, __VA_ARGS__)
+#define shmem_get(...)                                                  \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
+             shmem_ctx_t:                                               \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
+                      float *: shmem_ctx_float_get,                     \
+                      double *: shmem_ctx_double_get,                   \
+                      long double *: shmem_ctx_longdouble_get,          \
+                      signed char *: shmem_ctx_schar_get,               \
+                      char *: shmem_ctx_char_get,                       \
+                      short *: shmem_ctx_short_get,                     \
+                      int *: shmem_ctx_int_get,                         \
+                      long *: shmem_ctx_long_get,                       \
+                      long long *: shmem_ctx_longlong_get,              \
+                      unsigned char *: shmem_ctx_uchar_get,             \
+                      unsigned short *: shmem_ctx_ushort_get,           \
+                      unsigned int *: shmem_ctx_uint_get,               \
+                      unsigned long *: shmem_ctx_ulong_get,             \
+                      unsigned long long *: shmem_ctx_ulonglong_get,    \
+                      default: shmem_atomic_ignore                      \
+                      ),                                                \
+             float *: shmem_float_get,                                  \
+             double *: shmem_double_get,                                \
+             long double *: shmem_longdouble_get,                       \
+             signed char *: shmem_schar_get,                            \
+             char *: shmem_char_get,                                    \
+             short *: shmem_short_get,                                  \
+             int *: shmem_int_get,                                      \
+             long *: shmem_long_get,                                    \
+             long long *: shmem_longlong_get,                           \
+             unsigned char *: shmem_uchar_get,                          \
+             unsigned short *: shmem_ushort_get,                        \
+             unsigned int *: shmem_uint_get,                            \
+             unsigned long *: shmem_ulong_get,                          \
+             unsigned long long *: shmem_ulonglong_get                  \
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_get_nbi() */
-#define shmem_get_nbi(arg1, arg2, ...)                                  \
-    _Generic((arg1),                                                    \
+#define shmem_get_nbi(...)                                              \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       float *: shmem_ctx_float_get_nbi,                 \
                       double *: shmem_ctx_double_get_nbi,               \
                       long double *: shmem_ctx_longdouble_get_nbi,      \
@@ -2605,7 +2626,8 @@ extern "C"
                       unsigned short *: shmem_ctx_ushort_get_nbi,       \
                       unsigned int *: shmem_ctx_uint_get_nbi,           \
                       unsigned long *: shmem_ctx_ulong_get_nbi,         \
-                      unsigned long long *: shmem_ctx_ulonglong_get_nbi \
+                      unsigned long long *: shmem_ctx_ulonglong_get_nbi, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              float *: shmem_float_get_nbi,                              \
              double *: shmem_double_get_nbi,                            \
@@ -2621,85 +2643,87 @@ extern "C"
              unsigned int *: shmem_uint_get_nbi,                        \
              unsigned long *: shmem_ulong_get_nbi,                      \
              unsigned long long *: shmem_ulonglong_get_nbi              \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_p() */
-#define shmem_p(arg1, arg2, ...)                                    \
-    _Generic((arg1),                                                \
-             shmem_ctx_t:                                           \
-             _Generic((arg2),                                       \
-                      float *: shmem_ctx_float_p,                   \
-                      double *: shmem_ctx_double_p,                 \
-                      long double *: shmem_ctx_longdouble_p,        \
-                      signed char *: shmem_ctx_schar_p,             \
-                      char *: shmem_ctx_char_p,                     \
-                      short *: shmem_ctx_short_p,                   \
-                      int *: shmem_ctx_int_p,                       \
-                      long *: shmem_ctx_long_p,                     \
-                      long long *: shmem_ctx_longlong_p,            \
-                      unsigned char *: shmem_ctx_uchar_p,           \
-                      unsigned short *: shmem_ctx_ushort_p,         \
-                      unsigned int *: shmem_ctx_uint_p,             \
-                      unsigned long *: shmem_ctx_ulong_p,           \
-                      unsigned long long *: shmem_ctx_ulonglong_p   \
-                      ),                                            \
-             float *: shmem_float_p,                                \
-             double *: shmem_double_p,                              \
-             long double *: shmem_longdouble_p,                     \
-             signed char *: shmem_schar_p,                          \
-             char *: shmem_char_p,                                  \
-             short *: shmem_short_p,                                \
-             int *: shmem_int_p,                                    \
-             long *: shmem_long_p,                                  \
-             long long *: shmem_longlong_p,                         \
-             unsigned char *: shmem_uchar_p,                        \
-             unsigned short *: shmem_ushort_p,                      \
-             unsigned int *: shmem_uint_p,                          \
-             unsigned long *: shmem_ulong_p,                        \
-             unsigned long long *: shmem_ulonglong_p                \
-             )(arg1, arg2, __VA_ARGS__)
+#define shmem_p(...)                                                    \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
+             shmem_ctx_t:                                               \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
+                      float *: shmem_ctx_float_p,                       \
+                      double *: shmem_ctx_double_p,                     \
+                      long double *: shmem_ctx_longdouble_p,            \
+                      signed char *: shmem_ctx_schar_p,                 \
+                      char *: shmem_ctx_char_p,                         \
+                      short *: shmem_ctx_short_p,                       \
+                      int *: shmem_ctx_int_p,                           \
+                      long *: shmem_ctx_long_p,                         \
+                      long long *: shmem_ctx_longlong_p,                \
+                      unsigned char *: shmem_ctx_uchar_p,               \
+                      unsigned short *: shmem_ctx_ushort_p,             \
+                      unsigned int *: shmem_ctx_uint_p,                 \
+                      unsigned long *: shmem_ctx_ulong_p,               \
+                      unsigned long long *: shmem_ctx_ulonglong_p,      \
+                      default: shmem_atomic_ignore                      \
+                      ),                                                \
+             float *: shmem_float_p,                                    \
+             double *: shmem_double_p,                                  \
+             long double *: shmem_longdouble_p,                         \
+             signed char *: shmem_schar_p,                              \
+             char *: shmem_char_p,                                      \
+             short *: shmem_short_p,                                    \
+             int *: shmem_int_p,                                        \
+             long *: shmem_long_p,                                      \
+             long long *: shmem_longlong_p,                             \
+             unsigned char *: shmem_uchar_p,                            \
+             unsigned short *: shmem_ushort_p,                          \
+             unsigned int *: shmem_uint_p,                              \
+             unsigned long *: shmem_ulong_p,                            \
+             unsigned long long *: shmem_ulonglong_p                    \
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_g() */
-#define shmem_g(arg1, arg2, ...)                                    \
-    _Generic((arg1),                                                \
-             shmem_ctx_t:                                           \
-             _Generic((arg2),                                       \
-                      float *: shmem_ctx_float_g,                   \
-                      double *: shmem_ctx_double_g,                 \
-                      long double *: shmem_ctx_longdouble_g,        \
-                      signed char *: shmem_ctx_schar_g,             \
-                      char *: shmem_ctx_char_g,                     \
-                      short *: shmem_ctx_short_g,                   \
-                      int *: shmem_ctx_int_g,                       \
-                      long *: shmem_ctx_long_g,                     \
-                      long long *: shmem_ctx_longlong_g,            \
-                      unsigned char *: shmem_ctx_uchar_g,           \
-                      unsigned short *: shmem_ctx_ushort_g,         \
-                      unsigned int *: shmem_ctx_uint_g,             \
-                      unsigned long *: shmem_ctx_ulong_g,           \
-                      unsigned long long *: shmem_ctx_ulonglong_g   \
-                      ),                                            \
-             float *: shmem_float_g,                                \
-             double *: shmem_double_g,                              \
-             long double *: shmem_longdouble_g,                     \
-             signed char *: shmem_schar_g,                          \
-             char *: shmem_char_g,                                  \
-             short *: shmem_short_g,                                \
-             int *: shmem_int_g,                                    \
-             long *: shmem_long_g,                                  \
-             long long *: shmem_longlong_g,                         \
-             unsigned char *: shmem_uchar_g,                        \
-             unsigned short *: shmem_ushort_g,                      \
-             unsigned int *: shmem_uint_g,                          \
-             unsigned long *: shmem_ulong_g,                        \
-             unsigned long long *: shmem_ulonglong_g                \
-             )(arg1, arg2, __VA_ARGS__)
+#define shmem_g(...)                                                    \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
+             shmem_ctx_t:                                               \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
+                      float *: shmem_ctx_float_g,                       \
+                      double *: shmem_ctx_double_g,                     \
+                      long double *: shmem_ctx_longdouble_g,            \
+                      signed char *: shmem_ctx_schar_g,                 \
+                      char *: shmem_ctx_char_g,                         \
+                      short *: shmem_ctx_short_g,                       \
+                      int *: shmem_ctx_int_g,                           \
+                      long *: shmem_ctx_long_g,                         \
+                      long long *: shmem_ctx_longlong_g,                \
+                      unsigned char *: shmem_ctx_uchar_g,               \
+                      unsigned short *: shmem_ctx_ushort_g,             \
+                      unsigned int *: shmem_ctx_uint_g,                 \
+                      unsigned long *: shmem_ctx_ulong_g,               \
+                      unsigned long long *: shmem_ctx_ulonglong_g,      \
+                      default: shmem_atomic_ignore                      \
+                      ),                                                \
+             float *: shmem_float_g,                                    \
+             double *: shmem_double_g,                                  \
+             long double *: shmem_longdouble_g,                         \
+             signed char *: shmem_schar_g,                              \
+             char *: shmem_char_g,                                      \
+             short *: shmem_short_g,                                    \
+             int *: shmem_int_g,                                        \
+             long *: shmem_long_g,                                      \
+             long long *: shmem_longlong_g,                             \
+             unsigned char *: shmem_uchar_g,                            \
+             unsigned short *: shmem_ushort_g,                          \
+             unsigned int *: shmem_uint_g,                              \
+             unsigned long *: shmem_ulong_g,                            \
+             unsigned long long *: shmem_ulonglong_g                    \
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_iput() */
-#define shmem_iput(arg1, arg2, ...)                                     \
-    _Generic((arg1),                                                    \
+#define shmem_iput(...)                                                 \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       float *: shmem_ctx_float_iput,                    \
                       double *: shmem_ctx_double_iput,                  \
                       long double *: shmem_ctx_longdouble_iput,         \
@@ -2713,7 +2737,8 @@ extern "C"
                       unsigned short *: shmem_ctx_ushort_iput,          \
                       unsigned int *: shmem_ctx_uint_iput,              \
                       unsigned long *: shmem_ctx_ulong_iput,            \
-                      unsigned long long *: shmem_ctx_ulonglong_iput    \
+                      unsigned long long *: shmem_ctx_ulonglong_iput,   \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              float *: shmem_float_iput,                                 \
              double *: shmem_double_iput,                               \
@@ -2729,14 +2754,14 @@ extern "C"
              unsigned int *: shmem_uint_iput,                           \
              unsigned long *: shmem_ulong_iput,                         \
              unsigned long long *: shmem_ulonglong_iput                 \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
 
     /* see \ref shmem_long_iget() */
-#define shmem_iget(arg1, arg2, ...)                                     \
-    _Generic((arg1),                                                    \
+#define shmem_iget(...)                                                 \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       float *: shmem_ctx_float_iget,                    \
                       double *: shmem_ctx_double_iget,                  \
                       long double *: shmem_ctx_longdouble_iget,         \
@@ -2750,7 +2775,8 @@ extern "C"
                       unsigned short *: shmem_ctx_ushort_iget,          \
                       unsigned int *: shmem_ctx_uint_iget,              \
                       unsigned long *: shmem_ctx_ulong_iget,            \
-                      unsigned long long *: shmem_ctx_ulonglong_iget    \
+                      unsigned long long *: shmem_ctx_ulonglong_iget,   \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              float *: shmem_float_iget,                                 \
              double *: shmem_double_iget,                               \
@@ -2766,13 +2792,13 @@ extern "C"
              unsigned int *: shmem_uint_iget,                           \
              unsigned long *: shmem_ulong_iget,                         \
              unsigned long long *: shmem_ulonglong_iget                 \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_swap() */
-#define shmem_atomic_swap(arg1, arg2, ...)                              \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_swap(...)                                          \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       float *: shmem_ctx_float_atomic_swap,             \
                       double *: shmem_ctx_double_atomic_swap,           \
                       int *: shmem_ctx_int_atomic_swap,                 \
@@ -2780,32 +2806,32 @@ extern "C"
                       long long *: shmem_ctx_longlong_atomic_swap,      \
                       unsigned int *: shmem_ctx_uint_atomic_swap,       \
                       unsigned long *: shmem_ctx_ulong_atomic_swap,     \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_swap \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_swap, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              float *: shmem_float_atomic_swap,                          \
              double *: shmem_double_atomic_swap,                        \
              int *: shmem_int_atomic_swap,                              \
              long *: shmem_long_atomic_swap,                            \
              long long *: shmem_longlong_atomic_swap,                   \
-             unsigned char *: shmem_uchar_atomic_swap,                  \
-             unsigned short *: shmem_ushort_atomic_swap,                \
              unsigned int *: shmem_uint_atomic_swap,                    \
              unsigned long *: shmem_ulong_atomic_swap,                  \
              unsigned long long *: shmem_ulonglong_atomic_swap          \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_compare_swap() */
-#define shmem_atomic_compare_swap(arg1, arg2, ...)                      \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_compare_swap(...)                                  \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       int *: shmem_ctx_int_atomic_compare_swap,         \
                       long *: shmem_ctx_long_atomic_compare_swap,       \
                       long long *: shmem_ctx_longlong_atomic_compare_swap, \
                       unsigned int *: shmem_ctx_uint_atomic_compare_swap, \
                       unsigned long *: shmem_ctx_ulong_atomic_compare_swap, \
                       unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_compare_swap           \
+                      shmem_ctx_ulonglong_atomic_compare_swap,          \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              int *: shmem_int_atomic_compare_swap,                      \
              long *: shmem_long_atomic_compare_swap,                    \
@@ -2813,20 +2839,21 @@ extern "C"
              unsigned int *: shmem_uint_atomic_compare_swap,            \
              unsigned long *: shmem_ulong_atomic_compare_swap,          \
              unsigned long long *: shmem_ulonglong_atomic_compare_swap  \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_fetch_add() */
-#define shmem_atomic_fetch_add(arg1, arg2, ...)                         \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_fetch_add(...)                                     \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       int *: shmem_ctx_int_atomic_fetch_add,            \
                       long *: shmem_ctx_long_atomic_fetch_add,          \
                       long long *: shmem_ctx_longlong_atomic_fetch_add, \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_add,  \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_add, \
                       unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_add              \
+                      shmem_ctx_ulonglong_atomic_fetch_add,             \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              int *: shmem_int_atomic_fetch_add,                         \
              long *: shmem_long_atomic_fetch_add,                       \
@@ -2834,20 +2861,21 @@ extern "C"
              unsigned int *: shmem_uint_atomic_fetch_add,               \
              unsigned long *: shmem_ulong_atomic_fetch_add,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_add     \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_fetch_inc() */
-#define shmem_atomic_fetch_inc(arg1, arg2, ...)                         \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_fetch_inc(...)                                     \
+    _Generic(TYPE_EVAL_PTR(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__))),       \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       int *: shmem_ctx_int_atomic_fetch_inc,            \
                       long *: shmem_ctx_long_atomic_fetch_inc,          \
                       long long *: shmem_ctx_longlong_atomic_fetch_inc, \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_inc,  \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_inc, \
                       unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_inc              \
+                      shmem_ctx_ulonglong_atomic_fetch_inc,             \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              int *: shmem_int_atomic_fetch_inc,                         \
              long *: shmem_long_atomic_fetch_inc,                       \
@@ -2855,64 +2883,68 @@ extern "C"
              unsigned int *: shmem_uint_atomic_fetch_inc,               \
              unsigned long *: shmem_ulong_atomic_fetch_inc,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_inc     \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_fetch_and() */
-#define shmem_atomic_fetch_and(arg1, arg2, ...)                         \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_fetch_and(...)                                     \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_and,  \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_and, \
                       unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_and              \
+                      shmem_ctx_ulonglong_atomic_fetch_and,             \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              unsigned int *: shmem_uint_atomic_fetch_and,               \
              unsigned long *: shmem_ulong_atomic_fetch_and,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_and     \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_fetch_or() */
-#define shmem_atomic_fetch_or(arg1, arg2, ...)                          \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_fetch_or(...)                                      \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_or,   \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_or, \
                       unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_or               \
+                      shmem_ctx_ulonglong_atomic_fetch_or,              \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              unsigned int *: shmem_uint_atomic_fetch_or,                \
              unsigned long *: shmem_ulong_atomic_fetch_or,              \
              unsigned long long *: shmem_ulonglong_atomic_fetch_or      \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_fetch_xor() */
-#define shmem_atomic_fetch_xor(arg1, arg2, ...)                         \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_fetch_xor(...)                                     \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_xor,  \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_xor, \
                       unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_xor              \
+                      shmem_ctx_ulonglong_atomic_fetch_xor,             \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              unsigned int *: shmem_uint_atomic_fetch_xor,               \
              unsigned long *: shmem_ulong_atomic_fetch_xor,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_xor     \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_add() */
-#define shmem_atomic_add(arg1, arg2, ...)                               \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_add(...)                                           \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       int *: shmem_ctx_int_atomic_add,                  \
                       long *: shmem_ctx_long_atomic_add,                \
                       long long *: shmem_ctx_longlong_atomic_add,       \
                       unsigned int *: shmem_ctx_uint_atomic_add,        \
                       unsigned long *: shmem_ctx_ulong_atomic_add,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_add \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_add, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              int *: shmem_int_atomic_add,                               \
              long *: shmem_long_atomic_add,                             \
@@ -2920,19 +2952,20 @@ extern "C"
              unsigned int *: shmem_uint_atomic_add,                     \
              unsigned long *: shmem_ulong_atomic_add,                   \
              unsigned long long *: shmem_ulonglong_atomic_add           \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_inc() */
-#define shmem_atomic_inc(arg1, arg2, ...)                               \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_inc(...)                                           \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       int *: shmem_ctx_int_atomic_inc,                  \
                       long *: shmem_ctx_long_atomic_inc,                \
                       long long *: shmem_ctx_longlong_atomic_inc,       \
                       unsigned int *: shmem_ctx_uint_atomic_inc,        \
                       unsigned long *: shmem_ctx_ulong_atomic_inc,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_inc \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_inc, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              int *: shmem_int_atomic_inc,                               \
              long *: shmem_long_atomic_inc,                             \
@@ -2940,56 +2973,59 @@ extern "C"
              unsigned int *: shmem_uint_atomic_inc,                     \
              unsigned long *: shmem_ulong_atomic_inc,                   \
              unsigned long long *: shmem_ulonglong_atomic_inc           \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_and() */
-#define shmem_atomic_and(arg1, arg2, ...)                               \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_and(...)                                           \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       unsigned int *: shmem_ctx_uint_atomic_and,        \
                       unsigned long *: shmem_ctx_ulong_atomic_and,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_and \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_and, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              unsigned int *: shmem_uint_atomic_and,                     \
              unsigned long *: shmem_ulong_atomic_and,                   \
              unsigned long long *: shmem_ulonglong_atomic_and           \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_or() */
-#define shmem_atomic_or(arg1, arg2, ...)                                \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_or(...)                                            \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       unsigned int *: shmem_ctx_uint_atomic_or,         \
                       unsigned long *: shmem_ctx_ulong_atomic_or,       \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_or \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_or, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              unsigned int *: shmem_uint_atomic_or,                      \
              unsigned long *: shmem_ulong_atomic_or,                    \
              unsigned long long *: shmem_ulonglong_atomic_or            \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_atomic_xor() */
-#define shmem_atomic_xor(arg1, arg2, ...)                               \
-    _Generic((arg1),                                                    \
+#define shmem_atomic_xor(...)                                           \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       unsigned int *: shmem_ctx_uint_atomic_xor,        \
                       unsigned long *: shmem_ctx_ulong_atomic_xor,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_xor \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_xor, \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              unsigned int *: shmem_uint_atomic_xor,                     \
              unsigned long *: shmem_ulong_atomic_xor,                   \
              unsigned long long *: shmem_ulonglong_atomic_xor           \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
 
     /* see \ref shmem_long_fetch() */
-#define shmem_fetch(arg1, arg2, ...)                                    \
-    _Generic((arg1),                                                    \
+#define shmem_fetch(...)                                                \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
              shmem_ctx_t:                                               \
-             _Generic((arg2),                                           \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
                       float *: shmem_ctx_float_fetch,                   \
                       double *: shmem_ctx_double_fetch,                 \
                       int *: shmem_ctx_int_fetch,                       \
@@ -2997,7 +3033,8 @@ extern "C"
                       long long *: shmem_ctx_longlong_fetch,            \
                       unsigned int *: shmem_ctx_uint_fetch,             \
                       unsigned long *: shmem_ctx_ulong_fetch,           \
-                      unsigned long long *: shmem_ctx_ulonglong_fetch   \
+                      unsigned long long *: shmem_ctx_ulonglong_fetch,  \
+                      default: shmem_atomic_ignore                      \
                       ),                                                \
              float *: shmem_float_fetch,                                \
              double *: shmem_double_fetch,                              \
@@ -3007,37 +3044,38 @@ extern "C"
              unsigned int *: shmem_uint_fetch,                          \
              unsigned long *: shmem_ulong_fetch,                        \
              unsigned long long *: shmem_ulonglong_fetch                \
-             )(arg1, arg2, __VA_ARGS__)
+             )(__VA_ARGS__)
 
     /* see \ref shmem_long_set() */
-#define shmem_set(arg1, arg2, ...)                                  \
-    _Generic((arg1),                                                \
-             shmem_ctx_t:                                           \
-             _Generic((arg2),                                       \
-                      float *: shmem_ctx_float_set,                 \
-                      double *: shmem_ctx_double_set,               \
-                      int *: shmem_ctx_int_set,                     \
-                      long *: shmem_ctx_long_set,                   \
-                      long long *: shmem_ctx_longlong_set,          \
-                      unsigned int *: shmem_ctx_uint_set,           \
-                      unsigned long *: shmem_ctx_ulong_set,         \
-                      unsigned long long *: shmem_ctx_ulonglong_set \
-                      ),                                            \
-             float *: shmem_float_set,                              \
-             double *: shmem_double_set,                            \
-             int *: shmem_int_set,                                  \
-             long *: shmem_long_set,                                \
-             long long *: shmem_longlong_set,                       \
-             unsigned int *: shmem_uint_set,                        \
-             unsigned long *: shmem_ulong_set,                      \
-             unsigned long long *: shmem_ulonglong_set              \
-             )(arg1, arg2, __VA_ARGS__)
+#define shmem_set(...)                                                  \
+    _Generic(TYPE_EVAL_PTR(GET_ARG1(__VA_ARGS__)),                      \
+             shmem_ctx_t:                                               \
+             _Generic(TYPE_EVAL_PTR_OR_SCALAR(GET_ARG2(__VA_ARGS__)),   \
+                      float *: shmem_ctx_float_set,                     \
+                      double *: shmem_ctx_double_set,                   \
+                      int *: shmem_ctx_int_set,                         \
+                      long *: shmem_ctx_long_set,                       \
+                      long long *: shmem_ctx_longlong_set,              \
+                      unsigned int *: shmem_ctx_uint_set,               \
+                      unsigned long *: shmem_ctx_ulong_set,             \
+                      unsigned long long *: shmem_ctx_ulonglong_set,    \
+                      default: shmem_atomic_ignore                      \
+                      ),                                                \
+             float *: shmem_float_set,                                  \
+             double *: shmem_double_set,                                \
+             int *: shmem_int_set,                                      \
+             long *: shmem_long_set,                                    \
+             long long *: shmem_longlong_set,                           \
+             unsigned int *: shmem_uint_set,                            \
+             unsigned long *: shmem_ulong_set,                          \
+             unsigned long long *: shmem_ulonglong_set                  \
+             )(__VA_ARGS__)
 
-    /* waits and test have no context-based counterparts */
+/* waits and test have no context-based counterparts */
 
-    /* see \ref shmem_long_wait() */
+/* see \ref shmem_long_wait() */
 #define shmem_wait(ivar, cmp_value)                     \
-    _Generic((ivar),                                    \
+    _Generic(ivar,                                      \
              short *: shmem_short_wait,                 \
              int *: shmem_int_wait,                     \
              long *: shmem_long_wait,                   \
@@ -3047,9 +3085,9 @@ extern "C"
              unsigned long long *: shmem_ulonglong_wait \
              )(ivar, cmp_value)
 
-    /* see \ref shmem_long_wait_until() */
+             /* see \ref shmem_long_wait_until() */
 #define shmem_wait_until(ivar, cmp, cmp_value)                  \
-    _Generic((ivar),                                            \
+    _Generic(ivar,                                              \
              short *: shmem_short_wait_until,                   \
              int *: shmem_int_wait_until,                       \
              long *: shmem_long_wait_until,                     \
@@ -3059,9 +3097,9 @@ extern "C"
              unsigned long long *: shmem_ulonglong_wait_until   \
              )(ivar, cmp, cmp_value)
 
-    /* see \ref shmem_long_test() */
+/* see \ref shmem_long_test() */
 #define shmem_test(ivar, cmp, cmp_value)                \
-    _Generic((ivar),                                    \
+    _Generic(ivar,                                      \
              short *: shmem_short_test,                 \
              int *: shmem_int_test,                     \
              long *: shmem_long_test,                   \

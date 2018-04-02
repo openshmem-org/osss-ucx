@@ -34,7 +34,7 @@ parse_peers(char *peerstr)
 
     next = strtok(peerstr, sep);
     while (next != NULL) {
-        proc.peers[i] = atoi(next);
+        proc.peers[i] = (int) strtol(next, NULL, 10);
         i += 1;
         next = strtok(NULL, sep);
     }

@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>             /* getenv */
+#include <ctype.h>
 #include <string.h>
 #include <strings.h>
 
@@ -29,20 +30,11 @@ option_enabled_test(char *str)
         return false;
         /* NOT REACHED */
     }
-    if (*str == 'y') {
-        return true;
-        /* NOT REACHED */
-    }
-    if (strncasecmp(str, "on", 2) == 0) {
-        return true;
-        /* NOT REACHED */
-    }
-    if (atoi(str) > 0) {
-        return true;
-        /* NOT REACHED */
-    }
 
-    return false;
+    return
+        (tolower(*str) == 'y') ||
+        (strncasecmp(str, "on", 2) == 0) ||
+        (strtol(str, NULL, 10) > 0L);
 }
 
 /*

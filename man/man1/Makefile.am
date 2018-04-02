@@ -6,9 +6,13 @@ if ENABLE_CXX
 
 man1_MANS       += oshcxx.1
 
-install-data-hook:
+install-data-hook:	uninstall-local
 	cd $(man1dir); \
-	cp -p oshcxx.1 oshc++.1
+	$(LN_S) oshcxx.1 oshc++.1
+
+uninstall-local:
+	cd $(man1dir); \
+	$(RM) oshc++.1
 
 endif
 

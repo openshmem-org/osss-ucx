@@ -96,6 +96,14 @@ info_output_build_env(FILE *strm)
     int s;
     char host[BUFMAX];
 
+    output(strm, "Configured as",
+#ifdef CONFIG_FLAGS
+           CONFIG_FLAGS
+#else
+           UNKNOWN
+#endif /* CONFIG_FLAGS */
+           );
+
     output(strm, "Configure date",
 #ifdef CONFIG_BUILD_DATE
            CONFIG_BUILD_DATE
@@ -195,7 +203,7 @@ info_output_features(FILE *strm)
 void
 info_output_comms(FILE *strm)
 {
-    output(strm, "UCX Install",
+    output(strm, "Using UCX in",
 #ifdef HAVE_UCX
            UCX_DIR
 #else
@@ -211,7 +219,7 @@ info_output_comms(FILE *strm)
 #endif /* HAVE_UCX version */
            );
 
-    output(strm, "PMIx Install",
+    output(strm, "Using PMIx in",
 #ifdef HAVE_PMIX
            PMIX_DIR
 #else

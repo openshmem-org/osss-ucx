@@ -267,8 +267,6 @@ inline static void
 blocking_ep_disconnect(ucp_ep_h ep)
 {
     ucs_status_ptr_t req;
-    shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;
-    ucp_worker_h wrkr = ch->w;
 
     if (ep == NULL) {
         return;
@@ -286,7 +284,7 @@ blocking_ep_disconnect(ucp_ep_h ep)
         /* NOT REACHED */
     }
     else if (UCS_PTR_IS_ERR(req)) {
-        ucp_request_cancel(wrkr, req);
+        // ucp_request_cancel(wrkr, req);
         return;
         /* NOT REACHED */
     }
@@ -294,7 +292,8 @@ blocking_ep_disconnect(ucp_ep_h ep)
         ucs_status_t s;
 
         do {
-            (void) ucp_worker_progress(wrkr);
+            shmemc_progress();
+
 #ifdef HAVE_UCP_REQUEST_CHECK_STATUS
             s = ucp_request_check_status(req);
 #else
