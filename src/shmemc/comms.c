@@ -273,7 +273,7 @@ HELPER_FADD(64)
                                   t,                        \
                                   v, sizeof(v),             \
                                   pe);                      \
-        assert(s == UCS_OK);                                \
+        assert( (s == UCS_OK) || (s == UCS_INPROGRESS) );   \
     }
 
 HELPER_ADD(32)
