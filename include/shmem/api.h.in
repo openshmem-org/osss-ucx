@@ -1265,6 +1265,7 @@ extern "C"
     API_CTX_DECL_SWAP(int, int)
     API_CTX_DECL_SWAP(long, long)
     API_CTX_DECL_SWAP(longlong, long long)
+    API_CTX_DECL_SWAP(uchar, unsigned char)
     API_CTX_DECL_SWAP(uint, unsigned int)
     API_CTX_DECL_SWAP(ulong, unsigned long)
     API_CTX_DECL_SWAP(ulonglong, unsigned long long)
@@ -2813,8 +2814,6 @@ extern "C"
              int *: shmem_int_atomic_swap,                              \
              long *: shmem_long_atomic_swap,                            \
              long long *: shmem_longlong_atomic_swap,                   \
-             unsigned char *: shmem_uchar_atomic_swap,                  \
-             unsigned short *: shmem_ushort_atomic_swap,                \
              unsigned int *: shmem_uint_atomic_swap,                    \
              unsigned long *: shmem_ulong_atomic_swap,                  \
              unsigned long long *: shmem_ulonglong_atomic_swap          \
