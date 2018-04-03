@@ -1,48 +1,4 @@
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
-prog="`basename $0`"
-
-# trap empty command-line
-if [ $# -eq 0 ]
-then
-    cat <<EOF
-Usage: $prog [compiler flags] <input files...>
-EOF
-    exit 1
-fi
-
 compiler="${OSH_CC-@PTHREAD_CC@}"
-
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-shmem_dir=@prefix@
-shmem_include=@includedir@
-shmem_lib=@libdir@
-
-pmixlib_stanza="@PMIX_LIBS@"
-
-shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
-shmemlib_libs="-lshmem -lshmemc-ucx -lshmemu -lm"
-shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
-
-comms_stanza="@UCX_LIBS@"
-
-shmemlib_stanza="$shmemlib_stanza $comms_stanza"
-
-# check to see if linking required: if not, throw away link args
-for c in $@
-do
-    case $c in
-        -[cES])
-            shmemlib_stanza=""
-            ;;
-        *)
-            ;;
-    esac
-done
-    
-$compiler \
-    -I$shmem_include @PTHREAD_CFLAGS@ \
-    $@ \
-    $shmemlib_stanza @PTHREAD_LIBS@
