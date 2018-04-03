@@ -252,6 +252,7 @@ helper_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
                                    v, sizeof(v),                    \
                                    pe,                              \
                                    &ret);                           \
+        /* value came back? */                                      \
         assert(s == UCS_OK);                                        \
                                                                     \
         return (uint##_size##_t) ret;                               \
@@ -273,6 +274,7 @@ HELPER_FADD(64)
                                   t,                        \
                                   v, sizeof(v),             \
                                   pe);                      \
+        /* could still be in-flight */                      \
         assert( (s == UCS_OK) || (s == UCS_INPROGRESS) );   \
     }
 
@@ -364,7 +366,12 @@ HELPER_CSWAP(64)
 
 #ifndef HAVE_UCP_BITWISE_ATOMICS
 
-/* NB UCX currently doesn't have API support for these ops */
+/*
+ * 2018-04-03: UCX appears to be transitioning to using the post/fetch
+ * API for atomics, although there is talk of retaining the op32/64()
+ * layer for compatibility/utility.  The post/fetch routines above can
+ * be slotted in everywhere, if needed, when things are finalized.
+ */
 
 #define NOTUCP_ATOMIC_BITWISE_OP(_op, _opname, _size)               \
     inline static ucs_status_t                                      \
@@ -440,6 +447,10 @@ HELPER_FETCH_BITWISE_OP(^, xor, 64)
  * -- ordering -----------------------------------------------------------
  */
 
+/*
+ * fence and quiet only do something on storable contexts
+ */
+
 void
 shmemc_ctx_fence(shmem_ctx_t ctx)
 {
@@ -464,11 +475,11 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
     }
 }
 
+#ifdef ENABLE_EXPERIMENTAL
+
 /*
  * This should be correct, but not optimal.  Gets us going.
  */
-
-#ifdef ENABLE_EXPERIMENTAL
 
 int
 shmemc_ctx_fence_test(shmem_ctx_t ctx)
