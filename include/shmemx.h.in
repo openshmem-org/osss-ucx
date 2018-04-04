@@ -151,6 +151,68 @@ extern "C"
     void shmemx_ctx_start_session(shmem_ctx_t ctx);
     void shmemx_ctx_end_session(shmem_ctx_t ctx);
 
+    /*
+     * multiple symmetric heap support
+     */
+
+    shmemx_heap_index_t shmemx_name_to_index(const char *name);
+    const char *shmemx_index_to_name(shmemx_heap_index_t index);
+
+    void *shmemx_malloc_by_index(shmemx_heap_index_t index,
+                                 size_t s);
+    void *shmemx_calloc_by_index(shmemx_heap_index_t index,
+                                 size_t n, size_t s);
+    void shmemx_free_by_index(shmemx_heap_index_t index,
+                              void *p);
+    void *shmemx_realloc_by_index(shmemx_heap_index_t index,
+                                  void *p, size_t s);
+    void *shmemx_align_by_index(shmemx_heap_index_t index,
+                                size_t a, size_t s);
+    void *shmemx_malloc_by_name(const char *name,
+                                size_t s);
+    void *shmemx_calloc_by_name(const char *name,
+                                size_t n, size_t s);
+    void shmemx_free_by_name(const char *name,
+                             void *p);
+    void *shmemx_realloc_by_name(const char *name,
+                                 void *p, size_t s);
+    void *shmemx_align_by_name(const char *name,
+                               size_t a, size_t s);
+
+#if SHMEM_HAS_C11
+
+#define shmemx_malloc(_arg1, _s)                            \
+    _Generic(_arg1,                                         \
+             shmemx_heap_index_t: shmemx_malloc_by_index,   \
+             char *: shmemx_malloc_by_name                  \
+             )(_arg1, _s)
+
+#define shmemx_calloc(_arg1, _n, _s)                        \
+    _Generic(_arg1,                                         \
+             shmemx_heap_index_t: shmemx_calloc_by_index,   \
+             char *: shmemx_calloc_by_name                  \
+             )(_arg1, _n, _s)
+
+#define shmemx_free(_arg1, _p)                          \
+    _Generic(_arg1,                                     \
+             shmemx_heap_index_t: shmemx_free_by_index, \
+             char *: shmemx_free_by_name                \
+             )(_arg1, _p)
+
+#define shmemx_realloc(_arg1, _p, _s)                       \
+    _Generic(_arg1,                                         \
+             shmemx_heap_index_t: shmemx_realloc_by_index,  \
+             char *: shmemx_realloc_by_name                 \
+             )(_arg1, _p, _s)
+
+#define shmemx_align(_arg1, _a, _s)                         \
+    _Generic(_arg1,                                         \
+             shmemx_heap_index_t: shmemx_align_by_index,    \
+             char *: shmemx_align_by_name                   \
+             )(_arg1, _a, _s)
+
+#endif /* SHMEM_HAS_C11 */
+
 #ifdef __cplusplus
 }
 #endif  /* __cplusplus */
