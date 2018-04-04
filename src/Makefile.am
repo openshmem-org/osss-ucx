@@ -47,6 +47,11 @@ endif # threads
 # separate out the memory allocation routines
 #
 liballocator_a_SOURCES = allocator/dlmalloc.c allocator/memalloc.c
+
+if ENABLE_EXPERIMENTAL
+liballocator_a_SOURCES += allocator/xmemalloc.c
+endif # experimental
+
 liballocator_a_CFLAGS  = \
 			-DONLY_MSPACES=1 \
 			-DHAVE_MORECORE=0 \
@@ -63,7 +68,10 @@ MY_SOURCES            += fortran.c
 endif # fortran
 
 if ENABLE_EXPERIMENTAL
-MY_SOURCES            += wtime.c
+
+MY_SOURCES            += xwtime.c
+
+MY_SOURCES            += xshmalloc.c
 
 endif # experimental
 
