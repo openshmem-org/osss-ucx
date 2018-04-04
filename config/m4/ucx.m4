@@ -39,10 +39,10 @@ AS_IF([test -d "$with_ucx"],
 	      # we'll use the following as a representative of supporting bitwise AMOs
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_atomic_and64])],
-		[AC_MSG_NOTICE([UCX: ucp_atomic_and64 found])
+		[AC_MSG_NOTICE([UCX: (bit-wise check) ucp_atomic_and64 found])
  	         AC_DEFINE([HAVE_UCP_BITWISE_ATOMICS], [1], [UCX has bitwise atomics])
 		],
-		[AC_MSG_NOTICE([UCX: ucp_atomic_and64 NOT found])
+		[AC_MSG_NOTICE([UCX: (bit-wise check) ucp_atomic_and64 NOT found])
 		])
 	      AC_LANG_POP([C])
 	      UCX_DIR="$with_ucx"
