@@ -34,7 +34,7 @@ shmemx_name_to_index(const char *name)
     return shmemxa_name_to_index(name);
 }
 
-const char *
+char *
 shmemx_index_to_name(shmemx_heap_index_t index)
 {
     return shmemxa_index_to_name(index);

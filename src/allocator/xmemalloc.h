@@ -12,7 +12,7 @@ typedef int shmemx_heap_index_t;
  */
 
 shmemx_heap_index_t shmemxa_name_to_index(const char *name);
-const char *shmemxa_index_to_name(shmemx_heap_index_t index);
+char *shmemxa_index_to_name(shmemx_heap_index_t index);
 
 /*
  * memory allocation
