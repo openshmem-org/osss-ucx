@@ -36,28 +36,32 @@ KLIST_INIT(freelist, int, __int_free)
 
 static klist_t(freelist) *fl = NULL;
 
-static bool freelist_initialized = false;
-
 /*
- * insert context into PE state
- *
- * Return 0 on success, 1 on failure
+ * first call performs initialization, then reroutes to real work
  */
 
-inline static int
-register_context(shmemc_context_h ch)
+static int register_context_boot(shmemc_context_h ch);
+static int register_context_run(shmemc_context_h ch);
+
+static int (*register_fn)(shmemc_context_h ch) = register_context_boot;
+
+static int
+register_context_boot(shmemc_context_h ch)
+{
+    fl = kl_init(freelist);
+
+    register_fn = register_context_run;
+
+    return register_fn(ch);
+}
+
+static int
+register_context_run(shmemc_context_h ch)
 {
     size_t next;
-    kliter_t(freelist) *head;
+    kliter_t(freelist) *head = kl_begin(fl);
 
-    if (! freelist_initialized) {
-        fl = kl_init(freelist);
-        freelist_initialized = true;
-    }
-
-    head = kl_begin(fl);
-
-    if (head == kl_end(fl)) {
+    if (head == kl_end(fl)) {   /* nothing in free list */
         next = proc.comms.nctxts;
 
         /* if out of space, grab some more */
@@ -77,12 +81,11 @@ register_context(shmemc_context_h ch)
         /* and for next one */
         proc.comms.nctxts += 1;
     }
-    else {
-        /* grab & remove the head of the freelist */
+    else {                /* grab & remove the head of the freelist */
         next = kl_val(head);
         kl_shift(freelist, fl, NULL);
         logger(LOG_CONTEXTS,
-               "grabbing context #%lu from free list",
+               "reclaiming context #%lu from free list",
                next);
     }
 
@@ -91,6 +94,18 @@ register_context(shmemc_context_h ch)
     proc.comms.ctxts[next] = ch;
 
     return 0;
+}
+
+/*
+ * insert context into PE state
+ *
+ * Return 0 on success, 1 on failure
+ */
+
+inline static int
+register_context(shmemc_context_h ch)
+{
+    return register_fn(ch);
 }
 
 /*
@@ -104,7 +119,7 @@ deregister_context(shmemc_context_h ch)
     /* this one is re-usable */
     *kl_pushp(freelist, fl) = ch->id;
     logger(LOG_CONTEXTS,
-           "reusing context #%lu",
+           "context #%lu can be reused",
            ch->id);
 }
 
@@ -145,23 +160,24 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(newone->w));
     if (s != UCS_OK) {
-        goto bail;
+        goto cleanup;
         /* NOT REACHED */
     }
 
     if (register_context(newone) != 0) {
-        goto bail;
+        goto cleanup;
         /* NOT REACHED */
     }
 
     newone->creator_thread = shmemc_thread_id();
 
-    *ctxp = (shmem_ctx_t *) newone; /* handle back to caller */
+    /* handle back to caller */
+    *ctxp = (shmem_ctx_t *) newone;
 
     return 0;
     /* NOT REACHED */
 
- bail:
+ cleanup:
     free(newone);
     return 1;
 }
