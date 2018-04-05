@@ -81,8 +81,8 @@ register_context(shmemc_context_h ch)
         /* grab & remove the head of the freelist */
         next = kl_val(head);
         kl_shift(freelist, fl, NULL);
-        logger(LOG_INFO,
-               "grabbing context #%lu from free list\n",
+        logger(LOG_CONTEXTS,
+               "grabbing context #%lu from free list",
                next);
     }
 
@@ -103,8 +103,8 @@ deregister_context(shmemc_context_h ch)
     proc.comms.ctxts[ch->id] = NULL;
     /* this one is re-usable */
     *kl_pushp(freelist, fl) = ch->id;
-    logger(LOG_INFO,
-           "reusing context #%lu\n",
+    logger(LOG_CONTEXTS,
+           "reusing context #%lu",
            ch->id);
 }
 
@@ -179,7 +179,7 @@ shmemc_context_destroy(shmem_ctx_t ctx)
         /* NOT REACHED */
     }
     else if (ctx == SHMEM_CTX_DEFAULT) {
-        logger(LOG_CONTEXT,
+        logger(LOG_CONTEXTS,
                "it is illegal to destroy the default context, ignoring...");
         return;
         /* NOT REACHED */

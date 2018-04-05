@@ -61,7 +61,7 @@
                 /* NOT REACHED */                                       \
             }                                                           \
             write_to = tmptrg;                                          \
-            logger(LOG_REDUCTION,                                       \
+            logger(LOG_REDUCTIONS,                                      \
                    "target (%p) and source (%p, size %ld)"              \
                    " overlap, using temporary target",                  \
                    target, source, snred                                \
@@ -69,7 +69,7 @@
         }                                                               \
         else {                                                          \
             write_to = target;                                          \
-            logger(LOG_REDUCTION,                                       \
+            logger(LOG_REDUCTIONS,                                      \
                    "target (%p) and source (%p, size %ld)"              \
                    " do not overlap",                                   \
                    target, source, snred                                \

@@ -56,23 +56,24 @@ int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
 void shmemu_logger_init(void);
 void shmemu_logger_finalize(void);
 
-typedef enum shmemu_log {
-    LOG_ALL         = ~0,
-    /* individuals */
-    LOG_FATAL       = SHMEM_BIT_SET(0),
-    LOG_INIT        = SHMEM_BIT_SET(1),
-    LOG_FINALIZE    = SHMEM_BIT_SET(2),
-    LOG_MEMORY      = SHMEM_BIT_SET(3),
-    LOG_HEAP        = SHMEM_BIT_SET(4),
-    LOG_CONTEXT     = SHMEM_BIT_SET(5),
-    LOG_INFO        = SHMEM_BIT_SET(6),
-    LOG_REDUCTION   = SHMEM_BIT_SET(7),
-    LOG_BARRIER     = SHMEM_BIT_SET(8),
-    LOG_DEPRECATE   = SHMEM_BIT_SET(9),
-    LOG_LOCK        = SHMEM_BIT_SET(10),
-    LOG_ATOMICS     = SHMEM_BIT_SET(11),
-    LOG_UNKNOWN     = -1
-} shmemu_log_t;
+typedef const char *shmemu_log_t;
+
+typedef shmemu_log_t *shmemu_log_table_t;
+
+#define LOG_ALL        "ALL"
+#define LOG_FATAL      "FATAL"
+#define LOG_INIT       "INIT"
+#define LOG_FINALIZE   "FINALIZE"
+#define LOG_MEMORY     "MEMORY"
+#define LOG_HEAPS      "HEAPS"
+#define LOG_CONTEXTS   "CONTEXTS"
+#define LOG_INFO       "INFO"
+#define LOG_REDUCTIONS "REDUCTIONS"
+#define LOG_BARRIERS   "BARRIERS"
+#define LOG_DEPRECATE  "DEPRECATE"
+#define LOG_LOCKS      "LOCKS"
+#define LOG_ATOMICS    "ATOMICS"
+#define LOG_UNKNOWN    "UNKNOWN"
 
 /*
  * bail out on major problems early/late on during setup/finalize
@@ -81,7 +82,7 @@ void shmemu_fatal(const char *fmt, ...);
 
 #ifdef ENABLE_DEBUG
 
-void shmemu_logger(shmemu_log_t level, const char *fmt, ...);
+void shmemu_logger(shmemu_log_t cat, const char *fmt, ...);
 void shmemu_deprecate(const char *fn);
 
 # define logger(...) shmemu_logger(__VA_ARGS__)

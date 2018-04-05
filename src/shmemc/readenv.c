@@ -96,6 +96,10 @@ shmemc_env_init(void)
     if (e != NULL) {
         proc.env.debug_file = strdup(e); /* free at end */
     }
+    CHECK_ENV(e, DEBUG_CATEGORIES);
+    if (e != NULL) {
+        proc.env.debug_cats = strdup(e); /* free at end */
+    }
     CHECK_ENV(e, XPMEM_KLUDGE);
     if (e != NULL) {
         proc.env.xpmem_kludge = option_enabled_test(e);
@@ -127,6 +131,9 @@ shmemc_env_finalize(void)
 {
     if (proc.env.debug_file != NULL) {
         free(proc.env.debug_file);
+    }
+    if (proc.env.debug_cats != NULL) {
+        free(proc.env.debug_cats);
     }
 }
 
@@ -195,6 +202,12 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s%s\n",
             prefix,
             "Specific to this implementation:");
+    fprintf(stream, "%s\n", prefix);
+    fprintf(stream, "%s%-*s %-*s %s\n",
+            prefix,
+            var_width, "SHMEM_DEBUG_CATEGORIES",
+            val_width, " ",
+            "types of debugging information to show");
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,

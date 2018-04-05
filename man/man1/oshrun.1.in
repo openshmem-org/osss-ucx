@@ -47,6 +47,13 @@ enable run debugging (if configured).
 .LP
 This implementation also has
 .RS 4
+.IP "SHMEM_DEBUG_CATEGORIES (string: default none)"
+A comma-separated list of categories that generate debug messages (if
+debug enabled, v.i.): fatal, init, finalize, memory, heaps, contexts,
+info, reductions, barriers, deprecate, locks, atomics; or "all", which
+selects all of the above.
+.RE
+.RS 4
 .IP "SHMEM_DEBUG_FILE (string: default none)"
 file to receive debugging information.
 .RE
