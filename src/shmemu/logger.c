@@ -45,6 +45,7 @@ static shmemu_log_table_t table[] =
         LOG_LEVEL_EMIT(BARRIER),
         LOG_LEVEL_EMIT(DEPRECATE),
         LOG_LEVEL_EMIT(LOCK),
+        LOG_LEVEL_EMIT(ATOMICS),
         LOG_LEVEL_EMIT(UNKNOWN)
     };
 

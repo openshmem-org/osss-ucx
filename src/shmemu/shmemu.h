@@ -70,6 +70,7 @@ typedef enum shmemu_log {
     LOG_BARRIER     = SHMEM_BIT_SET(8),
     LOG_DEPRECATE   = SHMEM_BIT_SET(9),
     LOG_LOCK        = SHMEM_BIT_SET(10),
+    LOG_ATOMICS     = SHMEM_BIT_SET(11),
     LOG_UNKNOWN     = -1
 } shmemu_log_t;
 
