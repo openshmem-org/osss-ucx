@@ -230,11 +230,11 @@ shmemc_create_default_context(shmem_ctx_t *ctxp)
         /* NOT REACHED */
     }
 
-    /* handle back to caller */
-    *ctxp = ctx_def;
-
     proc.comms.xchg_wrkr_info[proc.rank].addr = addr;
     proc.comms.xchg_wrkr_info[proc.rank].len = len;
+
+    /* handle back to caller */
+    *ctxp = ctx_def;
 
     return 0;
 }
