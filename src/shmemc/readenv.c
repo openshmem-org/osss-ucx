@@ -88,6 +88,7 @@ shmemc_env_init(void)
      */
 
     proc.env.debug_file = NULL;
+    proc.env.debug_cats = NULL;
     proc.env.xpmem_kludge = false;
     proc.env.barrier_algo = SHMEMC_COLL_DEFAULT;
     proc.env.broadcast_algo = SHMEMC_COLL_DEFAULT;
