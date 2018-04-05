@@ -34,7 +34,7 @@ static int pe_width;
 static int stamp_width;
 
 /*
- * keep track of trace categoriy states
+ * keep track of trace category states
  */
 
 KHASH_MAP_INIT_STR(categories, bool)
