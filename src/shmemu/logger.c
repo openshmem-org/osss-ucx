@@ -160,7 +160,7 @@ void
 shmemu_logger(shmemu_log_t cat, const char *fmt, ...)
 {
     if (proc.env.debug) {
-        if (category_enabled(LOG_ALL) || category_enabled(cat)) {
+        if (category_enabled(cat) || category_enabled(LOG_ALL)) {
             char tmp1[TRACE_MSG_BUF_SIZE];
             char tmp2[TRACE_MSG_BUF_SIZE];
             va_list ap;
