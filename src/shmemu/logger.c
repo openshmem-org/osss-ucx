@@ -97,7 +97,7 @@ shmemu_logger_init(void)
         if (proc.env.debug_file != NULL) {
             log_stream = fopen(proc.env.debug_file, "a");
             if (log_stream == NULL) {
-                shmemu_fatal("can't open debug log file \"%s\"",
+                shmemu_fatal("can't append to debug log file \"%s\"",
                              proc.env.debug_file);
                 /* NOT REACHED */
             }
