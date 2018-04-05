@@ -152,6 +152,7 @@ typedef struct env_info {
      * this implementation
      */
     char *debug_file;        /* where does debugging output go? */
+    char *debug_cats;        /* show only these messages */
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
     shmemc_coll_t barrier_algo;
     shmemc_coll_t broadcast_algo;

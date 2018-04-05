@@ -12,6 +12,8 @@
 
 #include "shmem/defs.h"
 
+#include "klib/klist.h"
+
 #include <stdlib.h>
 
 #include <ucp/api/ucp.h>
@@ -25,11 +27,16 @@ static const size_t SPILL_BLOCK = 16;
 static size_t spill_ctxt = 0;
 
 /*
- * poor man's free-list
+ * manage free list of re-usable contexts
  */
 
-static bool can_reclaim = false;
-static size_t reclaim;
+#define __int_free(x)
+
+KLIST_INIT(freelist, int, __int_free)
+
+static klist_t(freelist) *fl = NULL;
+
+static bool freelist_initialized = false;
 
 /*
  * insert context into PE state
@@ -41,8 +48,16 @@ inline static int
 register_context(shmemc_context_h ch)
 {
     size_t next;
+    kliter_t(freelist) *head;
 
-    if (! can_reclaim) {
+    if (! freelist_initialized) {
+        fl = kl_init(freelist);
+        freelist_initialized = true;
+    }
+
+    head = kl_begin(fl);
+
+    if (head == kl_end(fl)) {
         next = proc.comms.nctxts;
 
         /* if out of space, grab some more */
@@ -63,8 +78,12 @@ register_context(shmemc_context_h ch)
         proc.comms.nctxts += 1;
     }
     else {
-        next = reclaim;
-        can_reclaim = false;
+        /* grab & remove the head of the freelist */
+        next = kl_val(head);
+        kl_shift(freelist, fl, NULL);
+        logger(LOG_CONTEXTS,
+               "grabbing context #%lu from free list",
+               next);
     }
 
     /* record this new context */
@@ -83,8 +102,10 @@ deregister_context(shmemc_context_h ch)
 {
     proc.comms.ctxts[ch->id] = NULL;
     /* this one is re-usable */
-    can_reclaim = true;
-    reclaim = ch->id;
+    *kl_pushp(freelist, fl) = ch->id;
+    logger(LOG_CONTEXTS,
+           "reusing context #%lu",
+           ch->id);
 }
 
 /*
@@ -158,7 +179,7 @@ shmemc_context_destroy(shmem_ctx_t ctx)
         /* NOT REACHED */
     }
     else if (ctx == SHMEM_CTX_DEFAULT) {
-        logger(LOG_CONTEXT,
+        logger(LOG_CONTEXTS,
                "it is illegal to destroy the default context, ignoring...");
         return;
         /* NOT REACHED */

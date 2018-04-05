@@ -1,0 +1,181 @@
+/* For license: see LICENSE file at top-level */
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
+#ifdef ENABLE_EXPERIMENTAL
+
+#include "shmemu.h"
+#include "shmemc.h"
+#include "shmem/defs.h"
+
+#include "shmem_mutex.h"
+#include "allocator/xmemalloc.h"
+
+#include <stdio.h>
+#include <sys/types.h>
+#include <stdlib.h>
+
+/*
+ * -- API --------------------------------------------------------------------
+ */
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmemx_name_to_index = pshmemx_name_to_index
+#define shmemx_name_to_index pshmemx_name_to_index
+#pragma weak shmemx_index_to_name = pshmemx_index_to_name
+#define shmemx_index_to_name pshmemx_index_to_name
+#endif /* ENABLE_PSHMEM */
+
+shmemx_heap_index_t
+shmemx_name_to_index(const char *name)
+{
+    return shmemxa_name_to_index(name);
+}
+
+char *
+shmemx_index_to_name(shmemx_heap_index_t index)
+{
+    return shmemxa_index_to_name(index);
+}
+
+/*
+ * access by numerical index
+ */
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmemx_malloc_by_index = pshmemx_malloc_by_index
+#define shmemx_malloc_by_index pshmemx_malloc_by_index
+#pragma weak shmemx_calloc_by_index = pshmemx_calloc_by_index
+#define shmemx_calloc_by_index pshmemx_calloc_by_index
+#pragma weak shmemx_free_by_index = pshmemx_free_by_index
+#define shmemx_free_by_index pshmemx_free_by_index
+#pragma weak shmemx_realloc_by_index = pshmemx_realloc_by_index
+#define shmemx_realloc_by_index pshmemx_realloc_by_index
+#pragma weak shmemx_align_by_index = pshmemx_align_by_index
+#define shmemx_align_by_index pshmemx_align_by_index
+#endif /* ENABLE_PSHMEM */
+
+void *
+shmemx_malloc_by_index(shmemx_heap_index_t index, size_t s)
+{
+    void *addr;
+
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_malloc_by_index(index, s));
+
+    shmemc_barrier_all();
+
+    return addr;
+}
+
+void *
+shmemx_calloc_by_index(shmemx_heap_index_t index, size_t n, size_t s)
+{
+    void *addr;
+
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_calloc_by_index(index, n, s));
+
+    shmemc_barrier_all();
+
+    return addr;
+}
+
+void
+shmemx_free_by_index(shmemx_heap_index_t index, void *p)
+{
+    shmemc_barrier_all();
+
+    SHMEMT_MUTEX_PROTECT(shmemxa_free_by_index(index, p));
+}
+
+/*
+ * realloc can cause memory to move around, so we protect it before
+ * *and* after (spec 1.4, p. 25)
+ */
+
+void *
+shmemx_realloc_by_index(shmemx_heap_index_t index, void *p, size_t s)
+{
+    void *addr;
+
+    shmemc_barrier_all();
+
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_realloc_by_index(index, p, s));
+
+    shmemc_barrier_all();
+
+    return addr;
+}
+
+void *
+shmemx_align_by_index(shmemx_heap_index_t index, size_t a, size_t s)
+{
+    void *addr;
+
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_align_by_index(index, a, s));
+
+    shmemc_barrier_all();
+
+    return addr;
+}
+
+/*
+ * use string as name to access (this will simply be a hash lookup to
+ * find the corresponding index).  Could also be inlined in shmemx.h.
+ */
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmemx_malloc_by_name = pshmemx_malloc_by_name
+#define shmemx_malloc_by_name pshmemx_malloc_by_name
+#pragma weak shmemx_calloc_by_name = pshmemx_calloc_by_name
+#define shmemx_calloc_by_name pshmemx_calloc_by_name
+#pragma weak shmemx_free_by_name = pshmemx_free_by_name
+#define shmemx_free_by_name pshmemx_free_by_name
+#pragma weak shmemx_realloc_by_name = pshmemx_realloc_by_name
+#define shmemx_realloc_by_name pshmemx_realloc_by_name
+#pragma weak shmemx_align_by_name = pshmemx_align_by_name
+#define shmemx_align_by_name pshmemx_align_by_name
+#endif /* ENABLE_PSHMEM */
+
+void *
+shmemx_malloc_by_name(const char *name, size_t s)
+{
+    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+
+    return shmemx_malloc_by_index(i, s);
+}
+
+void *
+shmemx_calloc_by_name(const char *name, size_t n, size_t s)
+{
+    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+
+    return shmemx_calloc_by_index(i, n, s);
+}
+
+void
+shmemx_free_by_name(const char *name, void *p)
+{
+    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+
+    shmemx_free_by_index(i, p);
+}
+
+void *
+shmemx_realloc_by_name(const char *name, void *p, size_t s)
+{
+    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+
+    return shmemx_realloc_by_index(i, p, s);
+}
+
+void *
+shmemx_align_by_name(const char *name, size_t a, size_t s)
+{
+    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+
+    return shmemx_align_by_index(i, a, s);
+}
+
+#endif  /* ENABLE_EXPERIMENTAL */
