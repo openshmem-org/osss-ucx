@@ -14,6 +14,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
+#include <assert.h>
 
 /*
  * internal helpers
@@ -61,7 +62,6 @@ shmemc_env_init(void)
 
     proc.env.print_version = false;
     proc.env.print_info = false;
-    proc.env.def_heap_size = 0;
     proc.env.debug = false;
 
     CHECK_ENV(e, VERSION);
@@ -72,16 +72,28 @@ shmemc_env_init(void)
     if (e != NULL) {
         proc.env.print_info = option_enabled_test(e);
     }
-    CHECK_ENV(e, SYMMETRIC_SIZE);
-    r = shmemu_parse_size( (e != NULL) ? e : SHMEM_DEFAULT_HEAP_SIZE,
-                           &proc.env.def_heap_size);
-    if (r != 0) {
-        shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
-    }
     CHECK_ENV(e, DEBUG);
     if (e != NULL) {
         proc.env.debug = option_enabled_test(e);
     }
+
+    /*
+     * heaps need a bit more handling
+     */
+
+    proc.env.heaps.nheaps = 1;  /* TODO */
+    proc.env.heaps.heapsize =
+        (size_t *) malloc(proc.env.heaps.nheaps *
+                          sizeof(*proc.env.heaps.heapsize));
+    assert(proc.env.heaps.heapsize != NULL);
+
+    CHECK_ENV(e, SYMMETRIC_SIZE);
+    r = shmemu_parse_size( (e != NULL) ? e : SHMEM_DEFAULT_HEAP_SIZE,
+                           &proc.env.heaps.heapsize[0] );
+    if (r != 0) {
+        shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
+    }
+
 
     /*
      * this implementation also has...
@@ -185,7 +197,8 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
 #define BUFSIZE 16
         char buf[BUFSIZE];
 
-        (void) shmemu_human_number(proc.env.def_heap_size, buf, BUFSIZE);
+        /* TODO hardwired index */
+        (void) shmemu_human_number(proc.env.heaps.heapsize[0], buf, BUFSIZE);
         fprintf(stream, "%s%-*s %-*s %s\n",
                 prefix,
                 var_width, "SHMEM_SYMMETRIC_SIZE",

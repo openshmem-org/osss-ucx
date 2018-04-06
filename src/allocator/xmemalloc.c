@@ -3,7 +3,16 @@
 #include "xmemalloc.h"
 #include "klib/khash.h"
 
+#include "dlmalloc.h"
+
 #include <stdio.h>
+#include <assert.h>
+
+static mspace *spaces;
+
+/*
+ * map named heap to its index
+ */
 
 KHASH_MAP_INIT_STR(heapnames, shmemx_heap_index_t)
 
@@ -77,65 +86,109 @@ shmemxa_index_to_name(shmemx_heap_index_t index)
     return NULL;
 }
 
+/*
+ * boot API
+ */
+
+static shmemx_heap_index_t nheaps; /* local copy */
+
+void
+shmemxa_init(shmemx_heap_index_t numheaps)
+{
+    spaces = (mspace *) malloc(numheaps * sizeof(*spaces));
+
+    assert(spaces != NULL);
+
+    nheaps = numheaps;
+}
+
+void
+shmemxa_finalize(void)
+{
+    if (spaces != NULL) {
+        free(spaces);
+    }
+}
+
+/*
+ * manage heap
+ */
+
+#define INDEX_CHECK(i)                          \
+    do {                                        \
+        assert( (0 <= (i)) && ((i) < nheaps) ); \
+    } while (0)
+
 void
 shmemxa_init_by_index(shmemx_heap_index_t index,
                       void *base, size_t capacity)
 {
-    return; /* myspace = create_mspace_with_base(base, capacity, 1); */
+    INDEX_CHECK(index);
+
+    spaces[index] = create_mspace_with_base(base, capacity, 1);
 }
 
 void
 shmemxa_finalize_by_index(shmemx_heap_index_t index)
 {
-    return; /* destroy_mspace(myspace); */
+    INDEX_CHECK(index);
+
+    destroy_mspace(spaces[index]);
 }
+
+/*
+ * heap allocations
+ */
 
 void *
 shmemxa_base_by_index(shmemx_heap_index_t index)
 {
-    return NULL;
+    INDEX_CHECK(index);
+
+    return spaces[index];
 }
-
-void
-shmemxa_init_by_name(const char *name,
-                     void *base, size_t capacity)
-{
-    return; /* myspace = create_mspace_with_base(base, capacity, 1); */
-}
-
-
 
 void *
 shmemxa_malloc_by_index(shmemx_heap_index_t index,
                         size_t size)
 {
-    return NULL;
+    INDEX_CHECK(index);
+
+    return mspace_malloc(spaces[index], size);
 }
 
 void *
 shmemxa_calloc_by_index(shmemx_heap_index_t index,
                         size_t count, size_t size)
 {
-    return NULL;
+    INDEX_CHECK(index);
+
+    return mspace_calloc(spaces[index], count, size);
 }
 
 void
 shmemxa_free_by_index(shmemx_heap_index_t index,
                       void *addr)
 {
-    return;
+    INDEX_CHECK(index);
+
+    mspace_free(spaces[index], addr);
 }
 
 void *
 shmemxa_realloc_by_index(shmemx_heap_index_t index,
                          void *addr, size_t new_size)
 {
-    return NULL;
+    INDEX_CHECK(index);
+
+    return mspace_realloc(spaces[index], addr, new_size);
 }
 
 void *
 shmemxa_align_by_index(shmemx_heap_index_t index,
                        size_t alignment, size_t size)
 {
-    return NULL;
+    INDEX_CHECK(index);
+
+    return mspace_memalign(spaces[index], alignment, size);
 }

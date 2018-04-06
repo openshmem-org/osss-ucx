@@ -70,7 +70,6 @@ endif # fortran
 if ENABLE_EXPERIMENTAL
 
 MY_SOURCES            += xwtime.c
-
 MY_SOURCES            += xshmalloc.c
 
 endif # experimental

@@ -4,8 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef ENABLE_EXPERIMENTAL
-
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem/defs.h"
@@ -177,5 +175,3 @@ shmemx_align_by_name(const char *name, size_t a, size_t s)
 
     return shmemx_align_by_index(i, a, s);
 }
-
-#endif  /* ENABLE_EXPERIMENTAL */
