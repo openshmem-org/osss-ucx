@@ -5,11 +5,11 @@
 
 #include <sys/types.h>          /* size_t */
 
-typedef int shmemx_heap_index_t;
-
 /*
  * translate between heap names and indices
  */
+
+typedef int shmemx_heap_index_t;
 
 shmemx_heap_index_t shmemxa_name_to_index(const char *name);
 char *shmemxa_index_to_name(shmemx_heap_index_t index);

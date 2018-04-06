@@ -154,6 +154,7 @@ extern "C"
     /*
      * multiple symmetric heap support
      */
+    typedef int shmemx_heap_index_t;
 
     shmemx_heap_index_t shmemx_name_to_index(const char *name);
     const char *shmemx_index_to_name(shmemx_heap_index_t index);
