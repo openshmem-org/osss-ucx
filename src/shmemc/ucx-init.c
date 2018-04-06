@@ -185,7 +185,8 @@ register_symmetric_heap(void)
         UCP_MEM_MAP_PARAM_FIELD_LENGTH |
         UCP_MEM_MAP_PARAM_FIELD_FLAGS;
 
-    mp.length = proc.env.def_heap_size;
+    /* TODO hardwired index */
+    mp.length = proc.env.heaps.heapsize[0];
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 

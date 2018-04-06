@@ -10,6 +10,10 @@
 #include "info.h"
 #include "threading.h"
 
+#ifdef ENABLE_EXPERIMENTAL
+#include "allocator/xmemalloc.h"
+#endif  /* ENABLE_EXPERIMENTAL */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +47,9 @@ finalize_helper(void)
                    proc.td.invoking_thread, this);
         }
 
+#ifdef ENABLE_EXPERIMENTAL
+        shmemxa_finalize();
+#endif  /* ENABLE_EXPERIMENTAL */
         shmemu_finalize();
         shmemc_finalize();
 
@@ -60,6 +67,9 @@ init_thread_helper(int requested, int *provided)
 
         shmemc_init();
         shmemu_init();
+#ifdef ENABLE_EXPERIMENTAL
+        shmemxa_init(proc.env.heaps.nheaps);
+#endif  /* ENABLE_EXPERIMENTAL */
 
         s = atexit(finalize_helper);
         if (s != 0) {

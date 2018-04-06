@@ -34,7 +34,7 @@ static int pe_width;
 static int stamp_width;
 
 /*
- * keep track of trace categoriy states
+ * keep track of trace category states
  */
 
 KHASH_MAP_INIT_STR(categories, bool)
@@ -51,7 +51,7 @@ category_set(shmemu_log_t name, bool state)
     kh_value(cats, k) = state;
 }
 
-static bool
+inline static bool
 category_enabled(shmemu_log_t name)
 {
     const khiter_t k = kh_get(categories, cats, name);
@@ -59,7 +59,7 @@ category_enabled(shmemu_log_t name)
     return (k != kh_end(cats)) ? kh_value(cats, k) : false;
 }
 
-static void
+inline static void
 upperize(char *str)
 {
     char *q;
@@ -69,10 +69,7 @@ upperize(char *str)
     }
 }
 
-/*
- * true if "all" was met
- */
-static bool
+inline static void
 parse_log_categories(void)
 {
     const char *delims = ",:;";
@@ -80,7 +77,7 @@ parse_log_categories(void)
     char *opt;
 
     if (cp == NULL) {
-        return false;
+        return;
         /* NOT REACHED */
     }
 
@@ -91,8 +88,6 @@ parse_log_categories(void)
         category_set(opt, true);
         opt = strtok(NULL, delims);
     }
-
-    return false;
 }
 
 void
@@ -165,7 +160,7 @@ void
 shmemu_logger(shmemu_log_t cat, const char *fmt, ...)
 {
     if (proc.env.debug) {
-        if (category_enabled(LOG_ALL) || category_enabled(cat)) {
+        if (category_enabled(cat) || category_enabled(LOG_ALL)) {
             char tmp1[TRACE_MSG_BUF_SIZE];
             char tmp2[TRACE_MSG_BUF_SIZE];
             va_list ap;

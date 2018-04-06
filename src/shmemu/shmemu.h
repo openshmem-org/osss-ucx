@@ -166,6 +166,22 @@ void shmemu_deprecate_finalize(void);
         }                                                               \
     } while (0)
 
+# define SHMEMU_CHECK_HEAP_INDEX(_idx)                              \
+    do {                                                            \
+        const int top_heap = proc.env.heaps.nheaps - 1;             \
+                                                                    \
+        if ( ((_idx) < 0) || ((_idx) > top_heap) ) {                \
+            logger(LOG_FATAL,                                       \
+                   "In %s(), heap index #%d"                        \
+                   "is outside allocated range [%d, %d]",           \
+                   __func__,                                        \
+                   _idx,                                            \
+                   0, top_heap                                      \
+                   );                                               \
+            /* NOT REACHED */                                       \
+        }                                                           \
+    } while (0)
+
 #else  /* ! ENABLE_DEBUG */
 
 # define logger(...)
@@ -178,6 +194,7 @@ void shmemu_deprecate_finalize(void);
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
 # define SHMEMU_CHECK_INIT()
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)
+# define SHMEMU_CHECK_HEAP_INDEX(idx)
 
 #endif /* ENABLE_DEBUG */
 

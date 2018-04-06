@@ -10,11 +10,14 @@
 static double epoch;
 
 inline static double
-read_time(void)
+shmemu_read_time(void)
 {
     struct timeval t;
 
-    gettimeofday(&t, NULL);
+    if (gettimeofday(&t, NULL) != 0) {
+        return 0.0;
+        /* NOT REACHED */
+    }
 
     return (double) (t.tv_sec + (t.tv_usec / 1.0e6));
 }
@@ -22,7 +25,7 @@ read_time(void)
 void
 shmemu_timer_init(void)
 {
-    epoch = read_time();
+    epoch = shmemu_read_time();
 }
 
 void
@@ -34,5 +37,5 @@ shmemu_timer_finalize(void)
 double
 shmemu_timer(void)
 {
-    return read_time() - epoch;
+    return shmemu_read_time() - epoch;
 }

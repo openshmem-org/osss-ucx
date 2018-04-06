@@ -136,6 +136,11 @@ typedef enum shmemc_coll {
  * } shmemc_coll_algo_t;
  */
 
+typedef struct heapinfo {
+    size_t nheaps;              /* how many heaps reuqested */
+    size_t *heapsize;           /* array of their sizes */
+} heapinfo_t;
+
 /*
  * implementations support some environment variables
  */
@@ -145,7 +150,7 @@ typedef struct env_info {
      */
     bool print_version;         /* produce info output? */
     bool print_info;
-    size_t def_heap_size;       /* TODO: expand for multiple heaps */
+    heapinfo_t heaps;
     bool debug;                 /* are we doing debugging? */
 
     /*
