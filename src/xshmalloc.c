@@ -60,6 +60,8 @@ shmemx_malloc_by_index(shmemx_heap_index_t index, size_t s)
 {
     void *addr;
 
+    SHMEMU_CHECK_HEAP_INDEX(index);
+
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_malloc_by_index(index, s));
 
     shmemc_barrier_all();
@@ -72,6 +74,8 @@ shmemx_calloc_by_index(shmemx_heap_index_t index, size_t n, size_t s)
 {
     void *addr;
 
+    SHMEMU_CHECK_HEAP_INDEX(index);
+
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_calloc_by_index(index, n, s));
 
     shmemc_barrier_all();
@@ -82,6 +86,8 @@ shmemx_calloc_by_index(shmemx_heap_index_t index, size_t n, size_t s)
 void
 shmemx_free_by_index(shmemx_heap_index_t index, void *p)
 {
+    SHMEMU_CHECK_HEAP_INDEX(index);
+
     shmemc_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(shmemxa_free_by_index(index, p));
@@ -119,8 +125,7 @@ shmemx_align_by_index(shmemx_heap_index_t index, size_t a, size_t s)
 }
 
 /*
- * use string as name to access (this will simply be a hash lookup to
- * find the corresponding index).  Could also be inlined in shmemx.h.
+ * use string as name to access
  */
 
 #ifdef ENABLE_PSHMEM
@@ -141,6 +146,8 @@ shmemx_malloc_by_name(const char *name, size_t s)
 {
     const shmemx_heap_index_t i = shmemxa_name_to_index(name);
 
+    SHMEMU_CHECK_HEAP_INDEX(i);
+
     return shmemx_malloc_by_index(i, s);
 }
 
@@ -148,6 +155,8 @@ void *
 shmemx_calloc_by_name(const char *name, size_t n, size_t s)
 {
     const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+
+    SHMEMU_CHECK_HEAP_INDEX(i);
 
     return shmemx_calloc_by_index(i, n, s);
 }
@@ -157,6 +166,8 @@ shmemx_free_by_name(const char *name, void *p)
 {
     const shmemx_heap_index_t i = shmemxa_name_to_index(name);
 
+    SHMEMU_CHECK_HEAP_INDEX(i);
+
     shmemx_free_by_index(i, p);
 }
 
@@ -165,6 +176,8 @@ shmemx_realloc_by_name(const char *name, void *p, size_t s)
 {
     const shmemx_heap_index_t i = shmemxa_name_to_index(name);
 
+    SHMEMU_CHECK_HEAP_INDEX(i);
+
     return shmemx_realloc_by_index(i, p, s);
 }
 
@@ -172,6 +185,8 @@ void *
 shmemx_align_by_name(const char *name, size_t a, size_t s)
 {
     const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+
+    SHMEMU_CHECK_HEAP_INDEX(i);
 
     return shmemx_align_by_index(i, a, s);
 }

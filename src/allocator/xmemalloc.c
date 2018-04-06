@@ -114,25 +114,16 @@ shmemxa_finalize(void)
  * manage heap
  */
 
-#define INDEX_CHECK(i)                          \
-    do {                                        \
-        assert( (0 <= (i)) && ((i) < nheaps) ); \
-    } while (0)
-
 void
 shmemxa_init_by_index(shmemx_heap_index_t index,
                       void *base, size_t capacity)
 {
-    INDEX_CHECK(index);
-
     spaces[index] = create_mspace_with_base(base, capacity, 1);
 }
 
 void
 shmemxa_finalize_by_index(shmemx_heap_index_t index)
 {
-    INDEX_CHECK(index);
-
     destroy_mspace(spaces[index]);
 }
 
@@ -143,8 +134,6 @@ shmemxa_finalize_by_index(shmemx_heap_index_t index)
 void *
 shmemxa_base_by_index(shmemx_heap_index_t index)
 {
-    INDEX_CHECK(index);
-
     return spaces[index];
 }
 
@@ -152,8 +141,6 @@ void *
 shmemxa_malloc_by_index(shmemx_heap_index_t index,
                         size_t size)
 {
-    INDEX_CHECK(index);
-
     return mspace_malloc(spaces[index], size);
 }
 
@@ -161,8 +148,6 @@ void *
 shmemxa_calloc_by_index(shmemx_heap_index_t index,
                         size_t count, size_t size)
 {
-    INDEX_CHECK(index);
-
     return mspace_calloc(spaces[index], count, size);
 }
 
@@ -170,8 +155,6 @@ void
 shmemxa_free_by_index(shmemx_heap_index_t index,
                       void *addr)
 {
-    INDEX_CHECK(index);
-
     mspace_free(spaces[index], addr);
 }
 
@@ -179,8 +162,6 @@ void *
 shmemxa_realloc_by_index(shmemx_heap_index_t index,
                          void *addr, size_t new_size)
 {
-    INDEX_CHECK(index);
-
     return mspace_realloc(spaces[index], addr, new_size);
 }
 
@@ -188,7 +169,5 @@ void *
 shmemxa_align_by_index(shmemx_heap_index_t index,
                        size_t alignment, size_t size)
 {
-    INDEX_CHECK(index);
-
     return mspace_memalign(spaces[index], alignment, size);
 }
