@@ -1,3 +1,5 @@
+/* For license: see LICENSE file at top-level */
+
 #ifndef _SHMEMC_THREADING_H
 #define _SHMEMC_THREADING_H 1
 

@@ -1,5 +1,5 @@
-
 # -- common footer -----------------------------------------------------
+# For license: see LICENSE file at top-level
 
 prog="`basename $0`"
 
@@ -29,6 +29,9 @@ comms_stanza="@UCX_LIBS@"
 shmemlib_stanza="$shmemlib_stanza $comms_stanza"
 
 # check to see if linking required: if not, throw away link args
+#
+# TODO: yeah, this is hardwired for GCC-like flags
+#
 for c in $@
 do
     case $c in
