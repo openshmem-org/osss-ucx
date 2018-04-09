@@ -1,5 +1,5 @@
-
 # -- common footer -----------------------------------------------------
+# For license: see LICENSE file at top-level
 
 prog="`basename $0`"
 
