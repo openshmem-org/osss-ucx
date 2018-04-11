@@ -24,4 +24,4 @@ AS_IF([test "x$fortran_happy" = "xyes" -a "x$enable_fortran" = "xyes"],
 	[AC_SUBST([ENABLE_FORTRAN], [0])]
 	)
 
-AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$ortran_happy" = "xyes"])
+AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$fortran_happy" = "xyes"])
