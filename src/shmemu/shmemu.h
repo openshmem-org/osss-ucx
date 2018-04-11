@@ -153,7 +153,7 @@ void shmemu_deprecate_finalize(void);
             const shmemc_thread_t me = shmemc_thread_id();              \
             const shmemc_thread_t cr = ch->creator_thread;              \
                                                                         \
-            if (cr != me) {                                             \
+            if (! shmemc_thread_equal(cr,  me)) {                       \
                 shmemu_fatal("In %s(), invoking thread #%d"             \
                              " not owner thread #%d"                    \
                              "in private context #%lu",                 \

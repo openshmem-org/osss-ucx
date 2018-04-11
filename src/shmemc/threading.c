@@ -12,12 +12,6 @@ shmemc_mutex_init(shmemc_mutex_t *tp)
     return pthread_mutex_init(tp, NULL);
 }
 
-unsigned long
-shmemc_thread_id(void)
-{
-    return pthread_self();
-}
-
 int
 shmemc_mutex_destroy(shmemc_mutex_t *mp)
 {
@@ -40,4 +34,16 @@ int
 shmemc_mutex_trylock(shmemc_mutex_t *mp)
 {
     return pthread_mutex_trylock(mp);
+}
+
+unsigned long
+shmemc_thread_id(void)
+{
+    return (unsigned long) pthread_self();
+}
+
+int
+shmemc_thread_equal(shmemc_thread_t t1, shmemc_thread_t t2)
+{
+    return pthread_equal(t1, t2);
 }
