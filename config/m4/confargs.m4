@@ -66,19 +66,6 @@ AS_IF([test "x$enable_threads" != "xno"],
 AM_CONDITIONAL([ENABLE_THREADS], [test "x$enable_threads" != "xno"])
 
 #
-# C++ compiler/linker: enabled by default
-#
-AC_ARG_ENABLE([cxx],
-	AS_HELP_STRING([--disable-cxx],
-			[Support C++ compiler? @<:@default=yes@:>@]))
-AS_IF([test "x$enable_cxx" != "xno"],
-	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ compiler])
-	 AC_SUBST([ENABLE_CXX], [1])],
-	[AC_SUBST([ENABLE_CXX], [0])]
-	)
-AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" != "xno"])
-
-#
 # Default symmetric heap size
 #
 AC_ARG_WITH([heap-size],

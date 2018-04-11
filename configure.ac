@@ -73,10 +73,8 @@ m4_include([config/m4/ucx.m4])
 
 m4_include([config/m4/confargs.m4])
 
-# C++
-AC_PROG_CXX
-AC_PROG_CXX_C_O
-AC_PROG_CXXCPP
+# c++ -specific checks
+m4_include([config/m4/cxx.m4])
 
 # Fortran-specific checks
 m4_include([config/m4/fortran.m4])
