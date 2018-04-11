@@ -66,17 +66,17 @@ AS_IF([test "x$enable_aligned_addresses" = "xyes"],
 AM_CONDITIONAL([ENABLE_ALIGNED_ADDRESSES], [test "x$enable_aligned_addresses" = "xyes"])
 
 #
-# threads: disabled by default
+# threads: enabled by default
 #
 AC_ARG_ENABLE([threads],
-	AS_HELP_STRING([--enable-threads],
-			[This implementation will support threading levels @<:@default=no@:>@]))
-AS_IF([test "x$enable_threads" = "xyes"],
+	AS_HELP_STRING([--disable-threads],
+			[This implementation will support threading levels @<:@default=yes@:>@]))
+AS_IF([test "x$enable_threads" != "xno"],
 	[AC_DEFINE([ENABLE_THREADS], [1], [Enable threading support])
 	 AC_SUBST([ENABLE_THREADS], [1])],
 	[AC_SUBST([ENABLE_THREADS], [0])]
 	)
-AM_CONDITIONAL([ENABLE_THREADS], [test "x$enable_threads" = "xyes"])
+AM_CONDITIONAL([ENABLE_THREADS], [test "x$enable_threads" != "xno"])
 
 #
 # C++ compiler/linker: enabled by default
@@ -94,7 +94,6 @@ AM_CONDITIONAL([ENABLE_CXX], [test "x$enable_cxx" != "xno"])
 #
 # Default symmetric heap size
 #
-
 AC_ARG_WITH([heap-size],
 	AS_HELP_STRING([--with-heap-size=VALUE],
 			[Make the default symmetric heap size VALUE @<:@default=shmem_default_heap_size@:>@]))
