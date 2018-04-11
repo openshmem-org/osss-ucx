@@ -79,15 +79,7 @@ AC_PROG_CXX_C_O
 AC_PROG_CXXCPP
 
 # Fortran-specific checks
-AC_PROG_FC
-
-if test "x$FC" != "x"
-then
-    AC_PROG_FC_C_O
-    AC_FC_LIBRARY_LDFLAGS
-    AC_FC_MAIN
-    AC_FC_WRAPPERS
-fi
+m4_include([config/m4/fortran.m4])
 
 # static and shared library detection
 AS_IF([test "x$enable_static" = "xyes"],

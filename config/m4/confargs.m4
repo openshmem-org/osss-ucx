@@ -40,19 +40,6 @@ AS_IF([test "x$enable_pshmem" = "xyes"],
 AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
 
 #
-# fortran API: disabled by default
-#
-AC_ARG_ENABLE([fortran],
-	AS_HELP_STRING([--enable-fortran],
-			[Enable deprecated Fortran API support @<:@default=no@:>@]))
-AS_IF([test "x$enable_fortran" = "xyes"],
-	[AC_DEFINE([ENABLE_FORTRAN], [1], [Enable Fortran API])
-	 AC_SUBST([ENABLE_FORTRAN], [1])],
-	[AC_SUBST([ENABLE_FORTRAN], [0])]
-	)
-AM_CONDITIONAL([ENABLE_FORTRAN], [test "x$enable_fortran" = "xyes"])
-
-#
 # address translation: disabled by default
 #
 AC_ARG_ENABLE([aligned-addresses],
