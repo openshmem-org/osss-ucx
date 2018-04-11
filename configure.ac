@@ -57,12 +57,27 @@ AM_SILENT_RULES([yes])
 
 AC_PROG_LN_S
 
-# C/C++
+# C
 AC_PROG_CC_C99
 AC_PROG_CC_C_O
 AC_PROG_INSTALL
 AM_PROG_CC_C_O
 
+# Checks for libraries.
+# for building shared libraries
+LT_INIT
+
+m4_include([config/m4/pmi.m4])
+m4_include([config/m4/pmix.m4])
+m4_include([config/m4/ucx.m4])
+
+m4_include([config/m4/confargs.m4])
+
+# prevent bail out in compiler tests below if fortran/c++ not enabled
+AS_IF([test "x$enable_fortran"  = "xno"],  [FC=no])
+AS_IF([test "x$enable_cxx"     != "xyes"], [CXX=no])
+
+# C++
 AC_PROG_CXX
 AC_PROG_CXX_C_O
 AC_PROG_CXXCPP
@@ -74,16 +89,6 @@ AC_FC_LIBRARY_LDFLAGS
 AC_FC_MAIN
 AC_FC_DUMMY_MAIN
 AC_FC_WRAPPERS
-
-# Checks for libraries.
-# for building shared libraries
-LT_INIT
-
-m4_include([config/m4/pmi.m4])
-m4_include([config/m4/pmix.m4])
-m4_include([config/m4/ucx.m4])
-
-m4_include([config/m4/confargs.m4])
 
 # static and shared library detection
 AS_IF([test "x$enable_static" = "xyes"],
