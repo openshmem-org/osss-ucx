@@ -10,18 +10,20 @@ PKG_CHECK_MODULES([PMI], [pmi], [
 			AC_MSG_NOTICE([Using PMI1 from pkg-config for process management])
 		], [
 		   AS_IF([test -d "$with_pmi"],
-		   	       [
-			       		AS_IF([test -r $with_pmi/include/pmi.h],
-					[
-						PMI_CFLAGS="-I$with_pmi/include"
-						PMI_LIBS="-L$with_pmi/lib -Wl,-rpath,$with_pmi/lib -lpmi"
-						PMI_DIR="$with_pmi"
-						pmi_happy=yes
-						AC_MSG_NOTICE([PMI: no pkg-config, but found installation directory])
-					]
-				)
-				], [	]
-				)
+	   	       [
+	       		AS_IF([test -r $with_pmi/include/pmi.h],
+				[
+					PMI_CFLAGS="-I$with_pmi/include"
+					PMI_LIBS="-L$with_pmi/lib64 -Wl,-rpath, -Wl$with_pmi/lib64"
+					PMI_LIBS="$PMI_LIBS -L$with_pmi/lib -Wl,-rpath -Wl,$with_pmi/lib"
+					PMI_LIBS="$PMI_LIBS -lpmi"
+					PMI_DIR="$with_pmi"
+					pmi_happy=yes
+					AC_MSG_NOTICE([PMI: no pkg-config, but found installation directory])
+				]
+			)
+			], [	]
+		)
 	]
 	)
 
