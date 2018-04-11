@@ -18,7 +18,9 @@ PKG_CHECK_MODULES([PMIX], [pmix], [
 	       		AS_IF([test -r $with_pmix/include/pmix.h],
 			[
 				PMIX_CFLAGS="-I$with_pmix/include"
-				PMIX_LIBS="-L$with_pmix/lib -Wl,-rpath,$with_pmix/lib -lpmix"
+				PMIX_LIBS="-L$with_pmix/lib64 -Wl,-rpath -Wl,$with_pmix/lib64"
+				PMIX_LIBS="$PMIX_LIBS -L$with_pmix/lib -Wl,-rpath -Wl,$with_pmix/lib"
+				PMIX_LIBS="$PMIX_LIBS -lpmix"
 				PMIX_DIR="$with_pmix"
 				pmix_happy=yes
 				AC_MSG_NOTICE([PMIx: no pkg-config, but found installation directory])
