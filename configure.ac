@@ -73,10 +73,6 @@ m4_include([config/m4/ucx.m4])
 
 m4_include([config/m4/confargs.m4])
 
-# prevent bail out in compiler tests below if fortran/c++ not enabled
-AS_IF([test "x$enable_fortran"  = "xno"],  [FC=no])
-AS_IF([test "x$enable_cxx"     != "xyes"], [CXX=no])
-
 # C++
 AC_PROG_CXX
 AC_PROG_CXX_C_O
@@ -84,11 +80,14 @@ AC_PROG_CXXCPP
 
 # Fortran-specific checks
 AC_PROG_FC
-AC_PROG_FC_C_O
-AC_FC_LIBRARY_LDFLAGS
-AC_FC_MAIN
-AC_FC_DUMMY_MAIN
-AC_FC_WRAPPERS
+
+if test "x$FC" != "x"
+then
+    AC_PROG_FC_C_O
+    AC_FC_LIBRARY_LDFLAGS
+    AC_FC_MAIN
+    AC_FC_WRAPPERS
+fi
 
 # static and shared library detection
 AS_IF([test "x$enable_static" = "xyes"],
