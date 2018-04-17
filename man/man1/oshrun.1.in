@@ -42,20 +42,22 @@ print information about supported environment variables
 .IP "SHMEM_SYMMETRIC_SIZE (number: default @SHMEM_DEFAULT_HEAP_SIZE@)"
 set the size of the symmetric heap.  Can use K,M,G,T units (2^10).
 .IP "SHMEM_DEBUG (bool: default false)"
-enable run debugging (if configured).
+enable run debugging/sanity checking (if configured).
 .RE
 .LP
 This implementation also has
 .RS 4
-.IP "SHMEM_DEBUG_CATEGORIES (string: default none)"
-A comma-separated list of categories that generate debug messages (if
-debug enabled, v.i.): fatal, init, finalize, memory, heaps, contexts,
-info, reductions, barriers, deprecate, locks, atomics; or "all", which
-selects all of the above.
+.IP "SHMEM_LOGGING (bool: default false)"
+enable message logging (if configured).
+.IP "SHMEM_LOGGING_EVENTS (string: default none)"
+A comma-separated list of events that select logging messages (if
+logging enabled, v.i.): fatal, init, finalize, memory, heaps,
+contexts, info, reductions, barriers, deprecate, locks, atomics; or
+"all", which selects all of the above.
 .RE
 .RS 4
-.IP "SHMEM_DEBUG_FILE (string: default none)"
-file to receive debugging information.
+.IP "SHMEM_LOGGING_FILE (string: default none)"
+file to receive logging information.
 .RE
 .RS 4
 .IP "SHMEM_BARRIER_ALGO (string: default tree)"

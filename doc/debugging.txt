@@ -8,20 +8,14 @@ This package must be compiled with --enable-debug
 Usage
 =====
 
-In the calling environment, the variables
+In the calling environment, the variable
 
     SHMEM_DEBUG
 
-must be set, and to a "true" value ("1", "y").
-
-    SHMEM_DEBUG_CATEGORIES
-
-must be set to a list of requested message categories (see "oshrun"
-man page for a full list).
+must be set to a "true" value ("1", "y").
 
 E.g.
 
     $ export SHMEM_DEBUG=y
-    $ export SHMEM_DEBUG_CATEGORIES=all
     $ oshrun ...
 

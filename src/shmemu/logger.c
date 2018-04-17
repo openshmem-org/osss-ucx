@@ -34,7 +34,7 @@ static int pe_width;
 static int stamp_width;
 
 /*
- * keep track of trace category states
+ * keep track of trace category events
  */
 
 KHASH_MAP_INIT_STR(categories, bool)
@@ -73,7 +73,7 @@ inline static void
 parse_log_categories(void)
 {
     const char *delims = ",:;";
-    char *cp = proc.env.debug_cats;
+    char *cp = proc.env.logging_events;
     char *opt;
 
     if (cp == NULL) {
@@ -103,11 +103,11 @@ shmemu_logger_init(void)
     }
 
     /* TODO "%" modifiers for extra info */
-    if (proc.env.debug_file != NULL) {
-        log_stream = fopen(proc.env.debug_file, "a");
+    if (proc.env.logging_file != NULL) {
+        log_stream = fopen(proc.env.logging_file, "a");
         if (log_stream == NULL) {
-            shmemu_fatal("can't append to debug log file \"%s\"",
-                         proc.env.debug_file);
+            shmemu_fatal("can't append to log file \"%s\"",
+                         proc.env.logging_file);
             /* NOT REACHED */
         }
     }

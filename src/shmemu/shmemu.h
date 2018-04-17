@@ -80,7 +80,7 @@ typedef shmemu_log_t *shmemu_log_table_t;
  */
 void shmemu_fatal(const char *fmt, ...);
 
-#ifdef ENABLE_DEBUG
+#ifdef ENABLE_LOGGING
 
 void shmemu_logger(shmemu_log_t cat, const char *fmt, ...);
 void shmemu_deprecate(const char *fn);
@@ -100,6 +100,18 @@ void shmemu_deprecate_finalize(void);
                          _name, #_cond);                                \
         }                                                               \
     } while (0)
+
+#else  /* ENABLE_LOGGING */
+
+# define logger(...)
+# define deprecate(_fn)
+# define shmemu_deprecate_init()
+# define shmemu_deprecate_finalize()
+# define shmemu_assert(_name, _cond)
+
+#endif  /* ENABLE_LOGGING */
+
+#ifdef EBABLE_DEBUG
 
 /*
  * sanity checks
@@ -183,12 +195,6 @@ void shmemu_deprecate_finalize(void);
     } while (0)
 
 #else  /* ! ENABLE_DEBUG */
-
-# define logger(...)
-# define deprecate(_fn)
-# define shmemu_deprecate_init()
-# define shmemu_deprecate_finalize()
-# define shmemu_assert(_name, _cond)
 
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)

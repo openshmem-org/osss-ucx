@@ -159,12 +159,20 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_FORTRAN */
            );
 
-    output(strm, "Debug messages",
+    output(strm, "Debug checks",
 #ifdef ENABLE_DEBUG
            "on"
 #else
            "off"
 #endif /* ENABLE_DEBUG */
+           );
+
+    output(strm, "Logging messages",
+#ifdef ENABLE_LOGGING
+           "on"
+#else
+           "off"
+#endif /* ENABLE_LOGGING */
            );
 
     output(strm, "Aligned symmetric addresses",

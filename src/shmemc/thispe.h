@@ -151,13 +151,14 @@ typedef struct env_info {
     bool print_version;         /* produce info output? */
     bool print_info;
     heapinfo_t heaps;
-    bool debug;                 /* are we doing debugging? */
+    bool debug;                 /* are we doing sanity debugging? */
 
     /*
      * this implementation
      */
-    char *debug_file;        /* where does debugging output go? */
-    char *debug_cats;        /* show only these messages */
+    bool logging;            /* turn on message logging? */
+    char *logging_file;      /* where does logging output go? */
+    char *logging_events;    /* show only these types of messages */
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
     shmemc_coll_t barrier_algo;
     shmemc_coll_t broadcast_algo;
