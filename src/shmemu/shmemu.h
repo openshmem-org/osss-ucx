@@ -73,6 +73,17 @@ int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
  */
 void shmemu_fatal(const char *fmt, ...);
 
+/*
+ * our own assertion check (e.g. to name the calling function)
+ */
+# define shmemu_assert(_name, _cond)                                    \
+    do {                                                                \
+        if (! (_cond)) {                                                \
+            shmemu_fatal("In \"%s\", assertion failed: %s",             \
+                         _name, #_cond);                                \
+        }                                                               \
+    } while (0)
+
 #ifdef ENABLE_LOGGING
 
 typedef const char *shmemu_log_t;
@@ -91,17 +102,6 @@ void shmemu_deprecate(const char *fn);
 void shmemu_deprecate_init(void);
 void shmemu_deprecate_finalize(void);
 
-/*
- * our own assertion check (e.g. to name the calling function)
- */
-# define shmemu_assert(_name, _cond)                                    \
-    do {                                                                \
-        if (! (_cond)) {                                                \
-            shmemu_fatal("In \"%s\", assertion failed: %s",             \
-                         _name, #_cond);                                \
-        }                                                               \
-    } while (0)
-
 #else  /* ENABLE_LOGGING */
 
 # define shmemu_logger_init()
@@ -112,8 +112,6 @@ void shmemu_deprecate_finalize(void);
 # define deprecate(_fn)
 # define shmemu_deprecate_init()
 # define shmemu_deprecate_finalize()
-
-# define shmemu_assert(_name, _cond)
 
 #endif  /* ENABLE_LOGGING */
 

@@ -17,7 +17,6 @@
 #include <stdlib.h>             /* getenv */
 #include <string.h>
 #include <strings.h>
-#include <assert.h>
 
 #include <ucp/api/ucp.h>
 
@@ -53,7 +52,7 @@ dump_mapped_mem_info(const char *name, const mem_info_t *mp)
         UCP_MEM_ATTR_FIELD_LENGTH;
 
     s = ucp_mem_query(mp->racc.mh, &attr);
-    assert(s == UCS_OK);
+    shmemu_assert("can't query memory attributes", s == UCS_OK);
 }
 
 inline static void
@@ -106,7 +105,8 @@ allocate_xworkers_table(void)
 {
     proc.comms.xchg_wrkr_info = (worker_info_t *)
         calloc(proc.nranks, sizeof(*(proc.comms.xchg_wrkr_info)));
-    assert(proc.comms.xchg_wrkr_info != NULL);
+    shmemu_assert("can't allocate memory for worker exchange",
+                  proc.comms.xchg_wrkr_info != NULL);
 }
 
 inline static void
@@ -125,7 +125,8 @@ allocate_endpoints_table(void)
 {
     proc.comms.eps = (ucp_ep_h *)
         calloc(proc.nranks, sizeof(*(proc.comms.eps)));
-    assert(proc.comms.eps != NULL);
+    shmemu_assert("can't allocate memory for endpoints",
+                  proc.comms.eps != NULL);
 }
 
 inline static void
@@ -191,7 +192,7 @@ register_symmetric_heap(void)
         UCP_MEM_MAP_ALLOCATE;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &def_symm_heap->racc.mh);
-    assert(s == UCS_OK);
+    shmemu_assert("can't map memory", s == UCS_OK);
 
     /*
      * query back to find where it is, and its actual size (might be
@@ -204,7 +205,7 @@ register_symmetric_heap(void)
         UCP_MEM_ATTR_FIELD_LENGTH;
 
     s = ucp_mem_query(def_symm_heap->racc.mh, &attr);
-    assert(s == UCS_OK);
+    shmemu_assert("can't query symmetric heap memory", s == UCS_OK);
 
     /* tell the PE what was given */
     def_symm_heap->base = (uint64_t) attr.address;
@@ -223,7 +224,7 @@ deregister_symmetric_heap(void)
     shmema_finalize();
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, def_symm_heap->racc.mh);
-    assert(s == UCS_OK);
+    shmemu_assert("can't unmap symmetric heap memory", s == UCS_OK);
 }
 
 inline static void
@@ -252,7 +253,7 @@ register_globals(void)
     globals->len  = len;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->racc.mh);
-    assert(s == UCS_OK);
+    shmemu_assert("can't map global memory", s == UCS_OK);
 }
 
 inline static void
@@ -261,7 +262,7 @@ deregister_globals(void)
     ucs_status_t s;
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->racc.mh);
-    assert(s == UCS_OK);
+    shmemu_assert("can't unmap global memory", s == UCS_OK);
 }
 
 inline static void
@@ -328,13 +329,15 @@ init_memory_regions(void)
     /* init that many regions on me */
     proc.comms.regions =
         (mem_region_t *) malloc(proc.comms.nregions * sizeof(mem_region_t));
-    assert(proc.comms.regions != NULL);
+    shmemu_assert("can't allocate memory for memory regions",
+                  proc.comms.regions != NULL);
 
     /* now prep for all PEs to exchange */
     for (i = 0; i < proc.comms.nregions; i += 1) {
         proc.comms.regions[i].minfo =
             (mem_info_t *) malloc(proc.nranks * sizeof(mem_info_t));
-        assert(proc.comms.regions[i].minfo != NULL);
+        shmemu_assert("can't allocate memory region metadata",
+                      proc.comms.regions[i].minfo != NULL);
     }
 }
 
@@ -400,12 +403,12 @@ shmemc_ucx_init(void)
 
     /* start initialization */
     s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
-    assert(s == UCS_OK);
+    shmemu_assert("can't read UCX config", s == UCS_OK);
 
     make_init_params(&pm);
 
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
-    assert(s == UCS_OK);
+    shmemu_assert("can't initialize UCX", s == UCS_OK);
 
     shmemc_env_init();
 
