@@ -53,13 +53,6 @@ int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
  * message logging
  */
 
-void shmemu_logger_init(void);
-void shmemu_logger_finalize(void);
-
-typedef const char *shmemu_log_t;
-
-typedef shmemu_log_t *shmemu_log_table_t;
-
 #define LOG_ALL        "ALL"
 #define LOG_FATAL      "FATAL"
 #define LOG_INIT       "INIT"
@@ -82,10 +75,18 @@ void shmemu_fatal(const char *fmt, ...);
 
 #ifdef ENABLE_LOGGING
 
-void shmemu_logger(shmemu_log_t cat, const char *fmt, ...);
+typedef const char *shmemu_log_t;
+
+typedef shmemu_log_t *shmemu_log_table_t;
+
+void shmemu_logger_init(void);
+void shmemu_logger_finalize(void);
+
+void shmemu_logger(shmemu_log_t evt, const char *fmt, ...);
 void shmemu_deprecate(const char *fn);
 
 # define logger(...) shmemu_logger(__VA_ARGS__)
+
 # define deprecate(_fn) shmemu_deprecate(_fn)
 void shmemu_deprecate_init(void);
 void shmemu_deprecate_finalize(void);
@@ -96,17 +97,22 @@ void shmemu_deprecate_finalize(void);
 # define shmemu_assert(_name, _cond)                                    \
     do {                                                                \
         if (! (_cond)) {                                                \
-            shmemu_fatal("In \"%s\" assertion failed: %s",              \
+            shmemu_fatal("In \"%s\", assertion failed: %s",             \
                          _name, #_cond);                                \
         }                                                               \
     } while (0)
 
 #else  /* ENABLE_LOGGING */
 
+# define shmemu_logger_init()
+# define shmemu_logger_finalize()
+
 # define logger(...)
+
 # define deprecate(_fn)
 # define shmemu_deprecate_init()
 # define shmemu_deprecate_finalize()
+
 # define shmemu_assert(_name, _cond)
 
 #endif  /* ENABLE_LOGGING */

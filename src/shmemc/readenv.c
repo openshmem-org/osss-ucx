@@ -100,8 +100,8 @@ shmemc_env_init(void)
      */
 
     proc.env.logging        = false;
-    proc.env.logging_file   = NULL;
     proc.env.logging_events = NULL;
+    proc.env.logging_file   = NULL;
     proc.env.xpmem_kludge   = false;
     proc.env.barrier_algo   = SHMEMC_COLL_DEFAULT;
     proc.env.broadcast_algo = SHMEMC_COLL_DEFAULT;
@@ -225,15 +225,13 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_LOGGING",
-            val_width, shmemu_human_option(proc.env.xpmem_kludge),
-            "enable logging messages");
-    fprintf(stream, "%s\n", prefix);
+            val_width, shmemu_human_option(proc.env.logging),
+            "enable logging messages (if configured)");
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_LOGGING_EVENTS",
             val_width, "...",   /* could be far too long to show */
             "types of logging events to show");
-    fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_LOGGING_FILE",

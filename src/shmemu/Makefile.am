@@ -7,10 +7,10 @@ OTHER_CPPFLAGS            = -I../../include \
 
 LIBSHMEMU_SOURCES         = shmemu-init.c \
 				hostname.c fatal.c timer.c unitparse.c \
-				miscops.c round.c logger.c
+				miscops.c round.c
 
 if ENABLE_LOGGING
-LIBSHMEMU_SOURCES        += deprecate.c
+LIBSHMEMU_SOURCES        += deprecate.c logger.c
 endif
 
 lib_LTLIBRARIES           = libshmemu.la

@@ -34,29 +34,29 @@ static int pe_width;
 static int stamp_width;
 
 /*
- * keep track of trace category events
+ * keep track of trace events
  */
 
-KHASH_MAP_INIT_STR(categories, bool)
+KHASH_MAP_INIT_STR(events, bool)
 
-static khash_t(categories) *cats;
+static khash_t(events) *events;
 
 inline static void
-category_set(shmemu_log_t name, bool state)
+event_set(shmemu_log_t name, bool state)
 {
     int nocheck;
     khiter_t k;
 
-    k = kh_put(categories, cats, name, &nocheck);
-    kh_value(cats, k) = state;
+    k = kh_put(events, events, name, &nocheck);
+    kh_value(events, k) = state;
 }
 
 inline static bool
-category_enabled(shmemu_log_t name)
+event_enabled(shmemu_log_t name)
 {
-    const khiter_t k = kh_get(categories, cats, name);
+    const khiter_t k = kh_get(events, events, name);
 
-    return (k != kh_end(cats)) ? kh_value(cats, k) : false;
+    return (k != kh_end(events)) ? kh_value(events, k) : false;
 }
 
 inline static void
@@ -70,7 +70,7 @@ upperize(char *str)
 }
 
 inline static void
-parse_log_categories(void)
+parse_log_events(void)
 {
     const char *delims = ",:;";
     char *cp = proc.env.logging_events;
@@ -85,7 +85,7 @@ parse_log_categories(void)
 
     while (opt != NULL) {
         upperize(opt);
-        category_set(opt, true);
+        event_set(opt, true);
         opt = strtok(NULL, delims);
     }
 }
@@ -93,7 +93,7 @@ parse_log_categories(void)
 void
 shmemu_logger_init(void)
 {
-    if (! proc.env.debug) {
+    if (! proc.env.logging) {
         return;
     }
 
@@ -122,22 +122,22 @@ shmemu_logger_init(void)
         stamp_width = 1;
     }
 
-    cats = kh_init(categories);
+    events = kh_init(events);
 
-    category_set(LOG_FATAL,      true);
-    category_set(LOG_INIT,       false);
-    category_set(LOG_FINALIZE,   false);
-    category_set(LOG_MEMORY,     false);
-    category_set(LOG_HEAPS,      false);
-    category_set(LOG_CONTEXTS,   false);
-    category_set(LOG_INFO,       false);
-    category_set(LOG_REDUCTIONS, false);
-    category_set(LOG_BARRIERS,   false);
-    category_set(LOG_DEPRECATE,  false);
-    category_set(LOG_LOCKS,      false);
-    category_set(LOG_ATOMICS,    false);
+    event_set(LOG_FATAL,      true);
+    event_set(LOG_INIT,       false);
+    event_set(LOG_FINALIZE,   false);
+    event_set(LOG_MEMORY,     false);
+    event_set(LOG_HEAPS,      false);
+    event_set(LOG_CONTEXTS,   false);
+    event_set(LOG_INFO,       false);
+    event_set(LOG_REDUCTIONS, false);
+    event_set(LOG_BARRIERS,   false);
+    event_set(LOG_DEPRECATE,  false);
+    event_set(LOG_LOCKS,      false);
+    event_set(LOG_ATOMICS,    false);
 
-    parse_log_categories();
+    parse_log_events();
 
     fatal_len = strlen(LOG_FATAL);
 }
@@ -145,7 +145,7 @@ shmemu_logger_init(void)
 void
 shmemu_logger_finalize(void)
 {
-    if (! proc.env.debug) {
+    if (! proc.env.logging) {
         return;
     }
 
@@ -157,10 +157,10 @@ shmemu_logger_finalize(void)
 #define TRACE_MSG_BUF_SIZE 256
 
 void
-shmemu_logger(shmemu_log_t cat, const char *fmt, ...)
+shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
 {
-    if (proc.env.debug) {
-        if (category_enabled(cat) || category_enabled(LOG_ALL)) {
+    if (proc.env.logging) {
+        if (event_enabled(evt) || event_enabled(LOG_ALL)) {
             char tmp1[TRACE_MSG_BUF_SIZE];
             char tmp2[TRACE_MSG_BUF_SIZE];
             va_list ap;
@@ -176,7 +176,7 @@ shmemu_logger(shmemu_log_t cat, const char *fmt, ...)
             snprintf(tmp2, TRACE_MSG_BUF_SIZE,
                      "%-*s %8s: ",
                      stamp_width, tmp1,
-                     cat
+                     evt
                      );
 
             va_start(ap, fmt);
@@ -195,7 +195,7 @@ shmemu_logger(shmemu_log_t cat, const char *fmt, ...)
             /* make sure this all goes out in 1 burst */
             fflush(log_stream);
 
-            if (strncmp(cat, LOG_FATAL, fatal_len) == 0) {
+            if (strncmp(evt, LOG_FATAL, fatal_len) == 0) {
                 shmemc_global_exit(1);
             }
         }
