@@ -9,7 +9,9 @@
 
 #include "shmem/defs.h"
 
+#if 0
 #include <ucp/api/ucp.h>
+#endif
 
 #if 0
 #define VOLATILIZE(_type, _var) (* ( volatile _type *) (_var))
@@ -58,11 +60,11 @@ COMMS_CTX_TEST_SIZE(64, ge, >=)
                                              int##_size##_t *var,       \
                                              int##_size##_t value)      \
     {                                                                   \
-        shmemc_context_h ch = (shmemc_context_h) ctx;                   \
+        /* shmemc_context_h ch = (shmemc_context_h) ctx; */             \
                                                                         \
         do {                                                            \
             shmemc_progress();                                          \
-            ucp_worker_wait_mem(ch->w, var);                            \
+            /* ucp_worker_wait_mem(ch->w, var); */                      \
         } while (shmemc_ctx_test_##_opname##_size(ctx, var, value) == 0); \
     }
 
