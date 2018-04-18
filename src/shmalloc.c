@@ -43,6 +43,12 @@ shmem_malloc(size_t s)
 
     shmemc_barrier_all();
 
+    logger(LOG_MEMORY,
+           "%s(size=%lu) -> %p",
+           __func__,
+           (unsigned long) s, addr
+           );
+
     return addr;
 }
 
@@ -55,6 +61,12 @@ shmem_calloc(size_t n, size_t s)
 
     shmemc_barrier_all();
 
+    logger(LOG_MEMORY,
+           "%s(count=%lu, size=%lu) -> %p",
+           __func__,
+           (unsigned long) n, (unsigned long) s, addr
+           );
+
     return addr;
 }
 
@@ -64,6 +76,12 @@ shmem_free(void *p)
     shmemc_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(shmema_free(p));
+
+    logger(LOG_MEMORY,
+           "%s(addr=%p)",
+           __func__,
+           p
+           );
 }
 
 /*
@@ -82,6 +100,12 @@ shmem_realloc(void *p, size_t s)
 
     shmemc_barrier_all();
 
+    logger(LOG_MEMORY,
+           "%s(addr=%p, size=%lu) -> %p",
+           __func__,
+           p, (unsigned long) s, addr
+           );
+
     return addr;
 }
 
@@ -93,6 +117,12 @@ shmem_align(size_t a, size_t s)
     SHMEMT_MUTEX_PROTECT(addr = shmema_align(a, s));
 
     shmemc_barrier_all();
+
+    logger(LOG_MEMORY,
+           "%s(align=%lu, size=%lu) -> %p",
+           __func__,
+           (unsigned long) a, (unsigned long) s, addr
+           );
 
     return addr;
 }

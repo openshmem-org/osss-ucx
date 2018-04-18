@@ -23,6 +23,12 @@ shmem_barrier(int start, int log2stride, int size, long *pSync)
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(pSync, 4);
 
+    logger(LOG_BARRIERS,
+           "%s(start=%d, log2stride=%d, size=%d, pSync=%p)",
+           __func__,
+           start, log2stride, size, pSync
+           );
+
     SHMEMT_MUTEX_PROTECT(shmemc_barrier(start, log2stride, size, pSync));
 }
 
@@ -30,6 +36,11 @@ void
 shmem_barrier_all(void)
 {
     SHMEMU_CHECK_INIT();
+
+    logger(LOG_BARRIERS,
+           "%s()",
+           __func__
+           );
 
     SHMEMT_MUTEX_PROTECT(shmemc_barrier_all());
 }
@@ -49,6 +60,12 @@ shmem_sync(int start, int log2stride, int size, long *pSync)
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(pSync, 4);
 
+    logger(LOG_BARRIERS,
+           "%s(start=%d, log2stride=%d, size=%d, pSync=%p)",
+           __func__,
+           start, log2stride, size, pSync
+           );
+
     SHMEMT_MUTEX_PROTECT(shmemc_sync(start, log2stride, size, pSync));
 }
 
@@ -56,6 +73,11 @@ void
 shmem_sync_all(void)
 {
     SHMEMU_CHECK_INIT();
+
+    logger(LOG_BARRIERS,
+           "%s()",
+           __func__
+           );
 
     SHMEMT_MUTEX_PROTECT(shmemc_sync_all());
 }

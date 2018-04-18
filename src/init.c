@@ -118,6 +118,12 @@ init_thread_helper(int requested, int *provided)
     }
     proc.refcount += 1;
 
+    logger(LOG_INIT,
+           "%s(requested=%d, provided->%d)",
+           __func__,
+           requested, *provided
+           );
+
     /* just declare success */
     return 0;
 }
@@ -153,6 +159,11 @@ shmem_finalize(void)
 {
     SHMEMU_CHECK_INIT();
 
+    logger(LOG_FINALIZE,
+           "%s()",
+           __func__
+           );
+
     finalize_helper();
 }
 
@@ -166,6 +177,12 @@ void
 shmem_query_thread(int *provided)
 {
     SHMEMU_CHECK_INIT();
+
+    logger(LOG_FINALIZE,
+           "%s() -> %d",
+           __func__,
+           proc.td.osh_tl
+           );
 
     *provided = proc.td.osh_tl;
 }

@@ -130,6 +130,7 @@ shmemu_logger_init(void)
     event_set(LOG_MEMORY,     false);
     event_set(LOG_HEAPS,      false);
     event_set(LOG_CONTEXTS,   false);
+    event_set(LOG_RANKS,      false);
     event_set(LOG_INFO,       false);
     event_set(LOG_REDUCTIONS, false);
     event_set(LOG_BARRIERS,   false);
