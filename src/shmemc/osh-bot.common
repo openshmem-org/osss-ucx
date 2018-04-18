@@ -43,4 +43,4 @@ do
     esac
 done
     
-$compiler -I$shmem_include @PTHREAD_CFLAGS@ $@ $shmemlib_stanza @PTHREAD_LIBS@
+$compiler -I$shmem_include @PTHREAD_CFLAGS@ "$@" $shmemlib_stanza @PTHREAD_LIBS@
