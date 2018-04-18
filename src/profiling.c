@@ -4,8 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef ENABLE_PSHMEM
-
 #include <stdio.h>
 
 #include "shmemu.h"
@@ -18,7 +16,7 @@
 void
 shmemx_pcontrol(int level)
 {
-#ifdef ENABLE_DEBUG
+#ifdef ENABLE_LOGGING
     char *msg;
 
     switch (level) {
@@ -34,7 +32,5 @@ shmemx_pcontrol(int level)
     }
 
     logger(LOG_INFO, "shmem_pcontrol(%d) is %s", level, msg);
-#endif  /* ENABLE_DEBUG */
+#endif  /* ENABLE_LOGGING */
 }
-
-#endif  /* ENABLE_PSHMEM */

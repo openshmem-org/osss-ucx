@@ -3,15 +3,26 @@
 # Feature checks
 
 #
-# debugging output: disabled by default
+# debugging checks: disabled by default
 #
 AC_ARG_ENABLE([debug],
-	AS_HELP_STRING([--enable-debug], [Enable library debug outptut @<:@default=no@:>@]),
+	AS_HELP_STRING([--enable-debug], [Enable library debuging @<:@default=no@:>@]),
 	AS_IF([test "x$enableval" = "xyes"],
 		    AC_DEFINE([ENABLE_DEBUG], [1], [Enable debug])
 		    ),
 	[])
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" = "xyes"])
+
+#
+# logging output: disabled by default
+#
+AC_ARG_ENABLE([logging],
+	AS_HELP_STRING([--enable-logging], [Enable library logging outptut @<:@default=no@:>@]),
+	AS_IF([test "x$enableval" = "xyes"],
+		    AC_DEFINE([ENABLE_LOGGING], [1], [Enable logging])
+		    ),
+	[])
+AM_CONDITIONAL([ENABLE_LOGGING], [test "x$enable_logging" = "xyes"])
 
 #
 # non-standard/proposed API features (shmemx): disabled by default

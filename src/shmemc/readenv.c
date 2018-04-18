@@ -14,7 +14,6 @@
 #include <ctype.h>
 #include <string.h>
 #include <strings.h>
-#include <assert.h>
 
 /*
  * internal helpers
@@ -61,8 +60,8 @@ shmemc_env_init(void)
      */
 
     proc.env.print_version = false;
-    proc.env.print_info = false;
-    proc.env.debug = false;
+    proc.env.print_info    = false;
+    proc.env.debug         = false;
 
     CHECK_ENV(e, VERSION);
     if (e != NULL) {
@@ -85,7 +84,8 @@ shmemc_env_init(void)
     proc.env.heaps.heapsize =
         (size_t *) malloc(proc.env.heaps.nheaps *
                           sizeof(*proc.env.heaps.heapsize));
-    assert(proc.env.heaps.heapsize != NULL);
+    shmemu_assert("can't allocate memory for heap size declaration",
+                  proc.env.heaps.heapsize != NULL);
 
     CHECK_ENV(e, SYMMETRIC_SIZE);
     r = shmemu_parse_size( (e != NULL) ? e : SHMEM_DEFAULT_HEAP_SIZE,
@@ -99,19 +99,24 @@ shmemc_env_init(void)
      * this implementation also has...
      */
 
-    proc.env.debug_file = NULL;
-    proc.env.debug_cats = NULL;
-    proc.env.xpmem_kludge = false;
-    proc.env.barrier_algo = SHMEMC_COLL_DEFAULT;
+    proc.env.logging        = false;
+    proc.env.logging_events = NULL;
+    proc.env.logging_file   = NULL;
+    proc.env.xpmem_kludge   = false;
+    proc.env.barrier_algo   = SHMEMC_COLL_DEFAULT;
     proc.env.broadcast_algo = SHMEMC_COLL_DEFAULT;
 
-    CHECK_ENV(e, DEBUG_FILE);
+    CHECK_ENV(e, LOGGING);
     if (e != NULL) {
-        proc.env.debug_file = strdup(e); /* free at end */
+        proc.env.logging = option_enabled_test(e);
     }
-    CHECK_ENV(e, DEBUG_CATEGORIES);
+    CHECK_ENV(e, LOGGING_FILE);
     if (e != NULL) {
-        proc.env.debug_cats = strdup(e); /* free at end */
+        proc.env.logging_file = strdup(e); /* free at end */
+    }
+    CHECK_ENV(e, LOGGING_EVENTS);
+    if (e != NULL) {
+        proc.env.logging_events = strdup(e); /* free at end */
     }
     CHECK_ENV(e, XPMEM_KLUDGE);
     if (e != NULL) {
@@ -142,11 +147,11 @@ shmemc_env_init(void)
 void
 shmemc_env_finalize(void)
 {
-    if (proc.env.debug_file != NULL) {
-        free(proc.env.debug_file);
+    if (proc.env.logging_file != NULL) {
+        free(proc.env.logging_file);
     }
-    if (proc.env.debug_cats != NULL) {
-        free(proc.env.debug_cats);
+    if (proc.env.logging_events != NULL) {
+        free(proc.env.logging_events);
     }
 }
 
@@ -210,7 +215,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             prefix,
             var_width, "SHMEM_DEBUG",
             val_width, shmemu_human_option(proc.env.debug),
-            "enable run debugging (if configured)");
+            "enable sanity checking (if configured)");
 
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%s\n",
@@ -219,15 +224,19 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
-            var_width, "SHMEM_DEBUG_CATEGORIES",
-            val_width, " ",
-            "types of debugging information to show");
-    fprintf(stream, "%s\n", prefix);
+            var_width, "SHMEM_LOGGING",
+            val_width, shmemu_human_option(proc.env.logging),
+            "enable logging messages (if configured)");
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
-            var_width, "SHMEM_DEBUG_FILE",
-            val_width, proc.env.debug_file ? proc.env.debug_file : "none",
-            "file to receive debugging information");
+            var_width, "SHMEM_LOGGING_EVENTS",
+            val_width, "...",   /* could be far too long to show */
+            "types of logging events to show");
+    fprintf(stream, "%s%-*s %-*s %s\n",
+            prefix,
+            var_width, "SHMEM_LOGGING_FILE",
+            val_width, proc.env.logging_file ? proc.env.logging_file : "none",
+            "file for logging information (if configured)");
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_XPMEM_KLUDGE",
