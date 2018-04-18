@@ -103,7 +103,9 @@ init_thread_helper(int requested, int *provided)
 
         /* save and return */
         proc.td.osh_tl = requested;
-        *provided = requested;
+        if (provided != NULL) {
+            *provided = proc.td.osh_tl;
+        }
 
         proc.td.invoking_thread = shmemc_thread_id();
 
@@ -117,6 +119,12 @@ init_thread_helper(int requested, int *provided)
         }
     }
     proc.refcount += 1;
+
+    logger(LOG_INIT,
+           "%s(requested=%d, provided->%d)",
+           __func__,
+           requested, proc.td.osh_tl
+           );
 
     /* just declare success */
     return 0;
@@ -139,9 +147,7 @@ shmem_init_thread(int requested, int *provided)
 void
 shmem_init(void)
 {
-    int prov_unused;
-
-    (void) init_thread_helper(SHMEM_THREAD_SINGLE, &prov_unused);
+    (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
 }
 
 /*
@@ -152,6 +158,11 @@ void
 shmem_finalize(void)
 {
     SHMEMU_CHECK_INIT();
+
+    logger(LOG_FINALIZE,
+           "%s()",
+           __func__
+           );
 
     finalize_helper();
 }
@@ -166,6 +177,12 @@ void
 shmem_query_thread(int *provided)
 {
     SHMEMU_CHECK_INIT();
+
+    logger(LOG_FINALIZE,
+           "%s() -> %d",
+           __func__,
+           proc.td.osh_tl
+           );
 
     *provided = proc.td.osh_tl;
 }
