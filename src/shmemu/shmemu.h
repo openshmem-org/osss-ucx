@@ -50,7 +50,7 @@ int shmemu_get_children_info(int tree_size, int tree_degree, int node,
 int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
 
 /*
- * message logging
+ * message logging (cf. logger.c to init these)
  */
 
 #define LOG_ALL        "ALL"
@@ -58,6 +58,8 @@ int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
 #define LOG_INIT       "INIT"
 #define LOG_FINALIZE   "FINALIZE"
 #define LOG_MEMORY     "MEMORY"
+#define LOG_RMA        "RMA"
+#define LOG_FENCE      "FENCE"
 #define LOG_HEAPS      "HEAPS"
 #define LOG_CONTEXTS   "CONTEXTS"
 #define LOG_RANKS      "RANKS"

@@ -4,6 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "shmemc.h"
 
 #include "shmem/defs.h"
@@ -16,5 +17,13 @@
 void *
 shmem_ptr(const void *target, int pe)
 {
-    return shmemc_ctx_ptr(SHMEM_CTX_DEFAULT, target, pe);
+    void *rw = shmemc_ctx_ptr(SHMEM_CTX_DEFAULT, target, pe);
+
+    logger(LOG_MEMORY,
+           "%s(target=%p, pe=%d) -> %p",
+           __func__,
+           target, pe, rw
+           );
+
+    return rw;
 }

@@ -128,7 +128,9 @@ shmemu_logger_init(void)
     event_set(LOG_INIT,       false);
     event_set(LOG_FINALIZE,   false);
     event_set(LOG_MEMORY,     false);
+    event_set(LOG_FENCE,      false);
     event_set(LOG_HEAPS,      false);
+    event_set(LOG_RMA,        false);
     event_set(LOG_CONTEXTS,   false);
     event_set(LOG_RANKS,      false);
     event_set(LOG_INFO,       false);
@@ -175,7 +177,7 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
                      );
 
             snprintf(tmp2, TRACE_MSG_BUF_SIZE,
-                     "%-*s %8s: ",
+                     "%-*s %10s: ",
                      stamp_width, tmp1,
                      evt
                      );

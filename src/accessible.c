@@ -4,6 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "shmemc.h"
 
 #ifdef ENABLE_PSHMEM
@@ -16,11 +17,27 @@
 int
 shmem_pe_accessible(int pe)
 {
-    return shmemc_pe_accessible(pe);
+    int s = shmemc_pe_accessible(pe);
+
+    logger(LOG_INFO,
+           "%s(pe=%d)",
+           __func__,
+           pe
+           );
+
+    return s;
 }
 
 int
 shmem_addr_accessible(const void *addr, int pe)
 {
-    return shmemc_addr_accessible(addr, pe);
+    int s = shmemc_addr_accessible(addr, pe);
+
+    logger(LOG_INFO,
+           "%s(addr=%p, pe=%d)",
+           __func__,
+           addr, pe
+           );
+
+    return s;
 }

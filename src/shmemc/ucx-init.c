@@ -436,7 +436,7 @@ shmemc_ucx_init(void)
 
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
-    shmemc_create_default_context(&SHMEM_CTX_DEFAULT);
+    shmemc_create_default_context();
 
 #if DUMP_DEBUG_INFO
     dump();

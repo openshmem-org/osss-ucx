@@ -25,3 +25,17 @@ E.g.
     $ export SHMEM_LOGGING_EVENTS=all
     $ oshrun ...
 
+Output Format
+=============
+
+Log lines are formatted, e.g.
+
+    [0:cn082:60765:0.000128] INIT: init_thread_helper(requested=0, provided->0)
+
+which is
+
+    [ PE# : hostname : pid : elapsed-time ] event-type message
+
+The message is often
+
+    routine ( arg=value, ... ) [ -> return-value ]

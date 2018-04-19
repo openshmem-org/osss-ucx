@@ -60,12 +60,17 @@
         SHMEMU_CHECK_INIT();                                            \
         SHMEMU_CHECK_SYMMETRIC(target, 2);                              \
                                                                         \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, value, pe                \
+               );                                                       \
+                                                                        \
         SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_swap##_size(ctx,            \
                                                         target, value,  \
                                                         pe));           \
         return v;                                                       \
     }
-
 SHMEM_CTX_TYPE_SWAP(int, int, 32)
 #if __WORDSIZE == 64
 SHMEM_CTX_TYPE_SWAP(long, long, 64)
@@ -124,6 +129,12 @@ SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
                                             int pe)                     \
     {                                                                   \
         _type v;                                                        \
+                                                                        \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, cond=%lu, value=%lu, pe=%d)",    \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, cond, value, pe          \
+               );                                                       \
                                                                         \
         SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_cswap##_size(ctx,           \
                                                          target, cond,  \
@@ -189,7 +200,15 @@ SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_fadd##_size(ctx, target, value, pe)); \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, value, pe                \
+               );                                                       \
+                                                                        \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_fadd##_size(ctx,            \
+                                                        target, value,  \
+                                                        pe));           \
         return v;                                                       \
     }
 
@@ -244,11 +263,19 @@ SHMEM_CTX_TYPE_FADD(ptrdiff, ptrdiff_t, 64)
 #define SHMEM_CTX_TYPE_FINC(_name, _type, _size)                        \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch_inc(shmem_ctx_t ctx,               \
-                                     _type *target, int pe)             \
+                                         _type *target, int pe)         \
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_finc##_size(ctx, target, pe)); \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, pe=%d)",                         \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, pe                       \
+               );                                                       \
+                                                                        \
+        SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_finc##_size(ctx,            \
+                                                        target, pe));   \
+                                                                        \
         return v;                                                       \
     }
 
@@ -307,7 +334,15 @@ SHMEM_CTX_TYPE_FINC(ptrdiff, ptrdiff_t, 64)
     shmem_ctx_##_name##_atomic_add(shmem_ctx_t ctx,                     \
                                    _type *target, _type value, int pe)  \
     {                                                                   \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_add##_size(ctx, target, value, pe)); \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, value, pe                \
+               );                                                       \
+                                                                        \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_add##_size(ctx,                 \
+                                                   target, value,       \
+                                                   pe));                \
     }
 
 SHMEM_CTX_TYPE_ADD(int, int, 32)
@@ -365,6 +400,12 @@ SHMEM_CTX_TYPE_ADD(ptrdiff, ptrdiff_t, 64)
     shmem_ctx_##_name##_atomic_inc(shmem_ctx_t ctx,                     \
                                    _type *target, int pe)               \
     {                                                                   \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, pe=%d)",                         \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, pe                       \
+               );                                                       \
+                                                                        \
         SHMEMT_MUTEX_PROTECT(shmemc_ctx_inc##_size(ctx, target, pe));   \
     }
 
@@ -425,6 +466,12 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, pe=%d)",                         \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, pe                       \
+               );                                                       \
+                                                                        \
         SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_fetch##_size(ctx, target, pe)); \
         return v;                                                       \
     }
@@ -484,6 +531,12 @@ SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t, 64)
     shmem_ctx_##_name##_atomic_set(shmem_ctx_t ctx,                     \
                                    _type *target, _type value, int pe)  \
     {                                                                   \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, value, pe                \
+               );                                                       \
+                                                                        \
         SHMEMT_MUTEX_PROTECT(shmemc_ctx_set##_size(ctx, target, value, pe)); \
     }
 
@@ -563,7 +616,14 @@ SHMEM_CTX_TYPE_SET(ptrdiff, ptrdiff_t, 64)
                                          _type *target,                 \
                                          _type value, int pe)           \
     {                                                                   \
-        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_opname##_size(ctx, target, value, pe)); \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, value, pe                \
+               );                                                       \
+                                                                        \
+        SHMEMT_MUTEX_PROTECT(shmemc_ctx_##_opname##_size(ctx, target,   \
+                                                         value, pe));   \
     }
 
 SHMEM_CTX_TYPE_BITWISE(xor, uint, unsigned int, 32)
@@ -649,6 +709,12 @@ SHMEM_CTX_TYPE_BITWISE(and, uint64, uint64_t, 64)
                                                _type value, int pe)     \
     {                                                                   \
         _type v;                                                        \
+                                                                        \
+        logger(LOG_ATOMICS,                                             \
+               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
+               __func__,                                                \
+               shmemc_context_id(ctx), target, value, pe                \
+               );                                                       \
                                                                         \
         SHMEMT_MUTEX_PROTECT(v = shmemc_ctx_fetch_##_opname##_size(ctx, \
                                                                    target, \
@@ -1202,7 +1268,6 @@ API_DEF_VOID_AMO2(and, uint64, uint64_t)
  * counts.  Provide variants for return types.  This needs to match
  * deprecation information in the header file.
  *
- * TODO: flesh out new 1.4 standard AMO types
  */
 
 #define SHMEM_DEPRECATE_VOID_AMO1(_op, _name, _type, _size)             \

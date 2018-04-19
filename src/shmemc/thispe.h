@@ -76,7 +76,9 @@ typedef struct shmemc_context {
     /*
      * possibly other things
      */
-} *shmemc_context_h;
+} shmemc_context_t;
+
+typedef shmemc_context_t *shmemc_context_h;
 
 /*
  * this comms-layer needs to know...
