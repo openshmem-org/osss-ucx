@@ -216,6 +216,18 @@ shmemc_context_destroy(shmem_ctx_t ctx)
 }
 
 /*
+ * return the id of a context (used for logging)
+ */
+
+unsigned long
+shmemc_context_id(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    return ch->id;
+}
+
+/*
  * the first, default, context gets a special SHMEM handle, also needs
  * address exchange through PMI, so we give it its own routine
  */

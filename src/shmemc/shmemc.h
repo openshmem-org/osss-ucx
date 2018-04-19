@@ -251,6 +251,7 @@ SHMEMC_CTX_WAIT_UNTIL(64, ge)
 
 int shmemc_context_create(long options, shmem_ctx_t *ctxp);
 void shmemc_context_destroy(shmem_ctx_t ctx);
+unsigned long shmemc_context_id(shmem_ctx_t ctx);
 /* used in up-level */
 int shmemc_create_default_context(shmem_ctx_t *ctxp);
 
