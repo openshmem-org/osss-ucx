@@ -58,6 +58,7 @@ int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
 #define LOG_INIT       "INIT"
 #define LOG_FINALIZE   "FINALIZE"
 #define LOG_MEMORY     "MEMORY"
+#define LOG_RMA        "RMA"
 #define LOG_HEAPS      "HEAPS"
 #define LOG_CONTEXTS   "CONTEXTS"
 #define LOG_RANKS      "RANKS"
