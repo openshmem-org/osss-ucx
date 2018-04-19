@@ -150,17 +150,18 @@ allocate_contexts_table(void)
 inline static void
 deallocate_contexts_table(void)
 {
+    shmemc_context_h def = (shmemc_context_h) SHMEM_CTX_DEFAULT;
     size_t c;
 
     /*
      * special release case for default context
      */
-    ucp_worker_release_address(proc.comms.ctxts[0]->w,
+    ucp_worker_release_address(def->w,
                                proc.comms.xchg_wrkr_info[proc.rank].addr);
     /*
-     * clear up each SHMEM context
+     * clear up each allocated SHMEM context
      */
-    for (c = 0; c < proc.comms.nctxts; c += 1) {
+    for (c = 1; c < proc.comms.nctxts; c += 1) {
         if (proc.comms.ctxts[c] != NULL) {
             ucp_worker_destroy(proc.comms.ctxts[c]->w);
             free(proc.comms.ctxts[c]);
