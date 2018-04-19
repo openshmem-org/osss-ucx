@@ -4,6 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "shmemc.h"
 
 #include "shmem_mutex.h"
@@ -19,12 +20,24 @@
 void
 shmem_ctx_quiet(shmem_ctx_t ctx)
 {
+    logger(LOG_FENCE,
+           "%s(ctx=%lu)",
+           __func__,
+           shmemc_context_id(ctx)
+           );
+
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_quiet(ctx));
 }
 
 void
 shmem_ctx_fence(shmem_ctx_t ctx)
 {
+    logger(LOG_FENCE,
+           "%s(ctx=%lu)",
+           __func__,
+           shmemc_context_id(ctx)
+           );
+
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(ctx));
 }
 
@@ -39,12 +52,22 @@ shmem_ctx_fence(shmem_ctx_t ctx)
 void
 shmem_quiet(void)
 {
+    logger(LOG_FENCE,
+           "%s()",
+           __func__
+           );
+
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_quiet(SHMEM_CTX_DEFAULT));
 }
 
 void
 shmem_fence(void)
 {
+    logger(LOG_FENCE,
+           "%s()",
+           __func__
+           );
+
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(SHMEM_CTX_DEFAULT));
 }
 
@@ -65,6 +88,12 @@ shmemx_ctx_quiet_test(shmem_ctx_t ctx)
 
     SHMEMT_MUTEX_PROTECT(s = shmemc_ctx_quiet_test(ctx));
 
+    logger(LOG_FENCE,
+           "%s(ctx=%lu) -> %d",
+           __func__,
+           shmemc_context_id(ctx), s
+           );
+
     return s;
 }
 
@@ -74,6 +103,12 @@ shmemx_ctx_fence_test(shmem_ctx_t ctx)
     int s;
 
     SHMEMT_MUTEX_PROTECT(s = shmemc_ctx_fence_test(ctx));
+
+    logger(LOG_FENCE,
+           "%s(ctx=%lu) -> %d",
+           __func__,
+           shmemc_context_id(ctx), s
+           );
 
     return s;
 }
