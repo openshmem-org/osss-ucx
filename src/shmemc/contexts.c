@@ -153,22 +153,18 @@ shmemc_context_fill(long options, shmemc_context_h ch)
 
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(ch->w));
     if (s != UCS_OK) {
-        goto cleanup;
+        return 1;
         /* NOT REACHED */
     }
 
     if (register_context(ch) != 0) {
-        goto cleanup;
+        return 1;
         /* NOT REACHED */
     }
 
     ch->creator_thread = shmemc_thread_id();
 
     return 0;
-    /* NOT REACHED */
-
- cleanup:
-    return 1;
 }
 
 /*
