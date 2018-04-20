@@ -225,7 +225,7 @@ shmemc_context_destroy(shmem_ctx_t ctx)
     }
     else {
         logger(LOG_FATAL,
-               "attempt to destroy null context, ignoring..."
+               "attempt to destroy a null context"
                );
     }
 }
