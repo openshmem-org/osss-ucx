@@ -21,6 +21,8 @@ shmem_ctx_t SHMEM_CTX_DEFAULT = (shmem_ctx_t *) &shmemc_default_context;
 
 /*
  * create new context with supplied options
+ *
+ * Return 1 on success, 0 on failure
  */
 
 int

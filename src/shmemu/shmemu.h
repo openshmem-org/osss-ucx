@@ -79,11 +79,11 @@ void shmemu_fatal(const char *fmt, ...);
 /*
  * our own assertion check (e.g. to name the calling function)
  */
-# define shmemu_assert(_name, _cond)                                    \
+# define shmemu_assert(_text, _cond)                                    \
     do {                                                                \
         if (! (_cond)) {                                                \
-            shmemu_fatal("In \"%s\", assertion failed: %s",             \
-                         _name, #_cond);                                \
+            shmemu_fatal("%s, assertion failed: %s",                    \
+                         _text, #_cond);                                \
         }                                                               \
     } while (0)
 
