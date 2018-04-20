@@ -37,6 +37,9 @@ KLIST_INIT(freelist, int, __int_free)
 static klist_t(freelist) *fl = NULL;
 
 /*
+ * Register and de-register contexts
+ *
+ *
  * first call performs initialization, then reroutes to real work
  */
 
@@ -186,16 +189,14 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
     }
 
     n = shmemc_context_fill(options, ch);
-
     if (n == 0) {
         *ctxp = (shmem_ctx_t) ch;
     }
     else {
-        *ctxp = NULL;
         free(ch);
     }
 
-    return 0;
+    return n;
 }
 
 /*
