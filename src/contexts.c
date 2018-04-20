@@ -21,6 +21,8 @@ shmem_ctx_t SHMEM_CTX_DEFAULT = (shmem_ctx_t *) &shmemc_default_context;
 
 /*
  * create new context with supplied options
+ *
+ * Return 1 on success, 0 on failure
  */
 
 int
@@ -33,7 +35,7 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
     SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(options, ctxp));
 
     logger(LOG_CONTEXTS,
-           "%s(options=%ld, ctxp->%p)",
+           "%s(options=%#lx, ctxp->%p)",
            __func__,
            options, *ctxp
            );

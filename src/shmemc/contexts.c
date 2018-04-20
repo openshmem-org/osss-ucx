@@ -195,7 +195,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
         free(ch);
     }
 
-    return n;
+    return 0;
 }
 
 /*
@@ -245,6 +245,8 @@ shmemc_context_id(shmem_ctx_t ctx)
 /*
  * the first, default, context gets a special SHMEM handle, also needs
  * address exchange through PMI, so we give it its own routine
+ *
+ * Return 0 if successful, 1 otherwise
  */
 
 shmemc_context_t shmemc_default_context;

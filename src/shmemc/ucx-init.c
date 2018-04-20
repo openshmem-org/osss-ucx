@@ -400,6 +400,7 @@ extern long *shmemc_sync_all_psync;
 void
 shmemc_ucx_init(void)
 {
+    int n;
     ucs_status_t s;
     ucp_params_t pm;
 
@@ -438,7 +439,9 @@ shmemc_ucx_init(void)
 
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
-    shmemc_create_default_context();
+
+    n = shmemc_create_default_context();
+    shmemu_assert("couldn't create default context", n == 0);
 
 #if DUMP_DEBUG_INFO
     dump();
