@@ -206,30 +206,27 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 void
 shmemc_context_destroy(shmem_ctx_t ctx)
 {
-    if (ctx == NULL) {
-        logger(LOG_CONTEXTS,
-               "attempt to destroy null context, ignoring...");
-        return;
-        /* NOT REACHED */
-    }
-    else if (ctx == SHMEM_CTX_DEFAULT) {
-        logger(LOG_CONTEXTS,
-               "it is illegal to destroy the default context, ignoring...");
-        return;
-        /* NOT REACHED */
+    if (ctx != NULL) {
+        if (ctx != SHMEM_CTX_DEFAULT) {
+            shmemc_context_h ch = (shmemc_context_h) ctx;
+
+            /* spec 1.4 ++ has implicit quiet for storable contexts */
+            shmemc_ctx_quiet(ch);
+
+            ucp_worker_destroy(ch->w);
+
+            deregister_context(ch);
+        }
+        else {
+            logger(LOG_FATAL,
+                   "cannot destroy the default context"
+                   );
+        }
     }
     else {
-        shmemc_context_h ch = (shmemc_context_h) ctx;
-
-        /*
-         * spec 1.4 requires implicit quiet on destroy for storable
-         * contexts
-         */
-        shmemc_ctx_quiet(ch);
-
-        ucp_worker_destroy(ch->w);
-
-        deregister_context(ch);
+        logger(LOG_FATAL,
+               "attempt to destroy null context, ignoring..."
+               );
     }
 }
 
