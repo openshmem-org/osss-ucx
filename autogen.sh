@@ -1,4 +1,6 @@
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
-exec autoreconf -ivf
+mkdir -p m4
+autoreconf -ivf
+rm -rf autom4te.cache
