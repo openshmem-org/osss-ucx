@@ -17,6 +17,11 @@
 #define shmem_ctx_destroy pshmem_ctx_destroy
 #endif /* ENABLE_PSHMEM */
 
+/*
+ * the default context is a link-time constant and has to be
+ * instantiated at all times
+ */
+
 shmem_ctx_t SHMEM_CTX_DEFAULT = (shmem_ctx_t *) &shmemc_default_context;
 
 /*
