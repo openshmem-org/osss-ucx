@@ -222,7 +222,7 @@ deregister_globals(mem_info_t *gip)
  */
 
 inline static void
-register_symmetric_heap(mem_info_t *mip)
+register_symmetric_heap(size_t regno, mem_info_t *mip)
 {
     ucs_status_t s;
     ucp_mem_map_params_t mp;
@@ -234,7 +234,7 @@ register_symmetric_heap(mem_info_t *mip)
         UCP_MEM_MAP_PARAM_FIELD_FLAGS;
 
     /* TODO hardwired index */
-    mp.length = proc.env.heaps.heapsize[0];
+    mp.length = proc.env.heaps.heapsize[regno];
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
@@ -332,8 +332,8 @@ init_memory_regions(void)
 {
     size_t i;
 
-    /* TODO: hardwire for now: globals + default symmetric heap */
-    proc.comms.nregions = 2;
+    /* 1 globals region, plus symmetric heaps */
+    proc.comms.nregions = 1 + proc.env.heaps.nheaps;
 
     /* init that many regions on me */
     proc.comms.regions =
@@ -408,6 +408,7 @@ void
 shmemc_ucx_init(void)
 {
     int n;
+    size_t hi;
     ucs_status_t s;
     ucp_params_t pm;
 
@@ -432,9 +433,12 @@ shmemc_ucx_init(void)
     globals = & proc.comms.regions[0].minfo[proc.rank];
     def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
 
-    /* TODO: generalize for multiple heaps */
+    /* register global variables (implicitly index 0), then all heaps */
     register_globals(globals);
-    register_symmetric_heap(def_symm_heap);
+
+    for (hi = 1; hi < proc.comms.nregions; hi += 1) {
+        register_symmetric_heap(hi, def_symm_heap);
+    }
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
