@@ -177,7 +177,7 @@ static mem_info_t *globals;
 static mem_info_t *def_symm_heap;
 
 inline static void
-register_symmetric_heap(void)
+register_symmetric_heap(mem_info_t *mip)
 {
     ucs_status_t s;
     ucp_mem_map_params_t mp;
@@ -193,7 +193,7 @@ register_symmetric_heap(void)
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &def_symm_heap->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->racc.mh);
     shmemu_assert("can't map memory", s == UCS_OK);
 
     /*
@@ -206,16 +206,16 @@ register_symmetric_heap(void)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(def_symm_heap->racc.mh, &attr);
+    s = ucp_mem_query(mip->racc.mh, &attr);
     shmemu_assert("can't query symmetric heap memory", s == UCS_OK);
 
     /* tell the PE what was given */
-    def_symm_heap->base = (uint64_t) attr.address;
-    def_symm_heap->end  = def_symm_heap->base + attr.length;
-    def_symm_heap->len  = attr.length;
+    mip->base = (uint64_t) attr.address;
+    mip->end  = mip->base + attr.length;
+    mip->len  = attr.length;
 
     /* initialize the heap allocator */
-    shmema_init((void *) def_symm_heap->base, def_symm_heap->len);
+    shmema_init((void *) mip->base, mip->len);
 }
 
 inline static void
@@ -230,7 +230,7 @@ deregister_symmetric_heap(void)
 }
 
 inline static void
-register_globals(void)
+register_globals(mem_info_t *gip)
 {
     extern char data_start; /* from the executable */
     extern char end; /* from the executable */
@@ -250,12 +250,14 @@ register_globals(void)
         UCP_MEM_MAP_ALLOCATE |
         UCP_MEM_MAP_FIXED;
 
-    globals->base = g_base;
-    globals->end  = globals->base + len;
-    globals->len  = len;
+    gip->base = g_base;
+    gip->end  = gip->base + len;
+    gip->len  = len;
 
-    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &gip->racc.mh);
     shmemu_assert("can't map global memory", s == UCS_OK);
+
+    /* don't need allocator, variables already there */
 }
 
 inline static void
@@ -426,8 +428,8 @@ shmemc_ucx_init(void)
     def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
 
     /* TODO: generalize for multiple heaps */
-    register_globals();
-    register_symmetric_heap();
+    register_globals(globals);
+    register_symmetric_heap(def_symm_heap);
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
