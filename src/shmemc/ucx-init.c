@@ -177,6 +177,51 @@ static mem_info_t *globals;
 static mem_info_t *def_symm_heap;
 
 inline static void
+register_globals(mem_info_t *gip)
+{
+    extern char data_start; /* from the executable */
+    extern char end; /* from the executable */
+    uint64_t g_base = (uint64_t) &data_start;
+    uint64_t g_end = (uint64_t) &end;
+    const size_t len = g_end - g_base;
+    ucp_mem_map_params_t mp;
+    ucs_status_t s;
+
+    mp.field_mask =
+        UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
+        UCP_MEM_MAP_PARAM_FIELD_LENGTH;
+
+    mp.address = (void *) g_base;
+    mp.length = len;
+    mp.flags =
+        UCP_MEM_MAP_ALLOCATE |
+        UCP_MEM_MAP_FIXED;
+
+    gip->base = g_base;
+    gip->end  = gip->base + len;
+    gip->len  = len;
+
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &gip->racc.mh);
+    shmemu_assert("can't map global memory", s == UCS_OK);
+
+    /* don't need allocator, variables already there */
+}
+
+inline static void
+deregister_globals(mem_info_t *gip)
+{
+    ucs_status_t s;
+
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, gip->racc.mh);
+    shmemu_assert("can't unmap global memory", s == UCS_OK);
+}
+
+/*
+ * while there's only 1 globals area, we can theoretically have
+ * multiple symmetric heaps
+ */
+
+inline static void
 register_symmetric_heap(mem_info_t *mip)
 {
     ucs_status_t s;
@@ -219,54 +264,14 @@ register_symmetric_heap(mem_info_t *mip)
 }
 
 inline static void
-deregister_symmetric_heap(void)
+deregister_symmetric_heap(mem_info_t *mip)
 {
     ucs_status_t s;
 
     shmema_finalize();
 
-    s = ucp_mem_unmap(proc.comms.ucx_ctxt, def_symm_heap->racc.mh);
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->racc.mh);
     shmemu_assert("can't unmap symmetric heap memory", s == UCS_OK);
-}
-
-inline static void
-register_globals(mem_info_t *gip)
-{
-    extern char data_start; /* from the executable */
-    extern char end; /* from the executable */
-    uint64_t g_base = (uint64_t) &data_start;
-    uint64_t g_end = (uint64_t) &end;
-    const size_t len = g_end - g_base;
-    ucp_mem_map_params_t mp;
-    ucs_status_t s;
-
-    mp.field_mask =
-        UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
-        UCP_MEM_MAP_PARAM_FIELD_LENGTH;
-
-    mp.address = (void *) g_base;
-    mp.length = len;
-    mp.flags =
-        UCP_MEM_MAP_ALLOCATE |
-        UCP_MEM_MAP_FIXED;
-
-    gip->base = g_base;
-    gip->end  = gip->base + len;
-    gip->len  = len;
-
-    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &gip->racc.mh);
-    shmemu_assert("can't map global memory", s == UCS_OK);
-
-    /* don't need allocator, variables already there */
-}
-
-inline static void
-deregister_globals(void)
-{
-    ucs_status_t s;
-
-    s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->racc.mh);
-    shmemu_assert("can't unmap global memory", s == UCS_OK);
 }
 
 inline static void
@@ -473,8 +478,8 @@ shmemc_ucx_finalize(void)
     FREE_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
 
     /* TODO: generalize for multiple heaps */
-    deregister_symmetric_heap();
-    deregister_globals();
+    deregister_symmetric_heap(def_symm_heap);
+    deregister_globals(globals);
 
     shmemc_broadcast_finalize();
     shmemc_barrier_finalize();
