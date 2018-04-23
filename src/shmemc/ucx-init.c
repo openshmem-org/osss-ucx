@@ -348,6 +348,40 @@ init_memory_regions(void)
         shmemu_assert("can't allocate memory region metadata",
                       proc.comms.regions[i].minfo != NULL);
     }
+
+    /* local shortcuts TODO: hardwired index */
+    globals = & proc.comms.regions[0].minfo[proc.rank];
+    def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
+}
+
+inline static void
+register_memory_regions(void)
+{
+    size_t hi;
+
+    /* register global variables (implicitly index 0), then all heaps */
+    register_globals(globals);
+
+    for (hi = 0; hi < proc.env.heaps.nheaps; hi += 1) {
+        mem_info_t *shp = & proc.comms.regions[hi + 1].minfo[proc.rank];
+
+        register_symmetric_heap(hi, shp);
+    }
+}
+
+inline static void
+deregister_memory_regions(void)
+{
+    size_t hi;
+
+    /* deregister symmetric heaps, then globals (index 0) */
+    for (hi = 0; hi < proc.env.heaps.nheaps; hi += 1) {
+        mem_info_t *shp = & proc.comms.regions[hi + 1].minfo[proc.rank];
+
+        deregister_symmetric_heap(shp);
+    }
+
+    deregister_globals(globals);
 }
 
 /**
@@ -408,7 +442,6 @@ void
 shmemc_ucx_init(void)
 {
     int n;
-    size_t hi;
     ucs_status_t s;
     ucp_params_t pm;
 
@@ -428,17 +461,7 @@ shmemc_ucx_init(void)
     shmemc_broadcast_init();
 
     init_memory_regions();
-
-    /* local shortcuts TODO: hardwired index */
-    globals = & proc.comms.regions[0].minfo[proc.rank];
-    def_symm_heap = & proc.comms.regions[1].minfo[proc.rank];
-
-    /* register global variables (implicitly index 0), then all heaps */
-    register_globals(globals);
-
-    for (hi = 1; hi < proc.comms.nregions; hi += 1) {
-        register_symmetric_heap(hi, def_symm_heap);
-    }
+    register_memory_regions();
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
@@ -481,9 +504,7 @@ shmemc_ucx_finalize(void)
     FREE_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
     FREE_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
 
-    /* TODO: generalize for multiple heaps */
-    deregister_symmetric_heap(def_symm_heap);
-    deregister_globals(globals);
+    deregister_memory_regions();
 
     shmemc_broadcast_finalize();
     shmemc_barrier_finalize();
