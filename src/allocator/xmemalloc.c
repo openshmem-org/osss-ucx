@@ -47,6 +47,7 @@ record_name(const char *name)
     k = kh_put(heapnames, names, name, &there);
     if (there != 1) {
         return -1;
+        /* NOT REACHED */
     }
 
     kh_value(names, k) = mine;

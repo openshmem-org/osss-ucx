@@ -60,6 +60,7 @@ shmemx_malloc_by_index(shmemx_heap_index_t index, size_t s)
 {
     void *addr;
 
+    SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_HEAP_INDEX(index);
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_malloc_by_index(index, s));
@@ -74,6 +75,7 @@ shmemx_calloc_by_index(shmemx_heap_index_t index, size_t n, size_t s)
 {
     void *addr;
 
+    SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_HEAP_INDEX(index);
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_calloc_by_index(index, n, s));
@@ -86,7 +88,9 @@ shmemx_calloc_by_index(shmemx_heap_index_t index, size_t n, size_t s)
 void
 shmemx_free_by_index(shmemx_heap_index_t index, void *p)
 {
+    SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_HEAP_INDEX(index);
+    SHMEMU_CHECK_SYMMETRIC(p, 2);
 
     shmemc_barrier_all();
 
@@ -103,6 +107,10 @@ shmemx_realloc_by_index(shmemx_heap_index_t index, void *p, size_t s)
 {
     void *addr;
 
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_HEAP_INDEX(index);
+    SHMEMU_CHECK_SYMMETRIC(p, 2);
+
     shmemc_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_realloc_by_index(index, p, s));
@@ -116,6 +124,9 @@ void *
 shmemx_align_by_index(shmemx_heap_index_t index, size_t a, size_t s)
 {
     void *addr;
+
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_HEAP_INDEX(index);
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_align_by_index(index, a, s));
 
@@ -144,49 +155,76 @@ shmemx_align_by_index(shmemx_heap_index_t index, size_t a, size_t s)
 void *
 shmemx_malloc_by_name(const char *name, size_t s)
 {
-    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+    const shmemx_heap_index_t index = shmemxa_name_to_index(name);
+    void *addr;
 
-    SHMEMU_CHECK_HEAP_INDEX(i);
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_HEAP_INDEX(index);
 
-    return shmemx_malloc_by_index(i, s);
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_malloc_by_index(index, s));
+
+    return addr;
 }
 
 void *
 shmemx_calloc_by_name(const char *name, size_t n, size_t s)
 {
-    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+    const shmemx_heap_index_t index = shmemxa_name_to_index(name);
+    void *addr;
 
-    SHMEMU_CHECK_HEAP_INDEX(i);
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_HEAP_INDEX(index);
 
-    return shmemx_calloc_by_index(i, n, s);
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_calloc_by_index(index, n, s));
+
+    return addr;
 }
 
 void
 shmemx_free_by_name(const char *name, void *p)
 {
-    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+    const shmemx_heap_index_t index = shmemxa_name_to_index(name);
 
-    SHMEMU_CHECK_HEAP_INDEX(i);
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_HEAP_INDEX(index);
+    SHMEMU_CHECK_SYMMETRIC(p, 2);
 
-    shmemx_free_by_index(i, p);
+    shmemc_barrier_all();
+
+    SHMEMT_MUTEX_PROTECT(shmemxa_free_by_index(index, p));
 }
 
 void *
 shmemx_realloc_by_name(const char *name, void *p, size_t s)
 {
-    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+    const shmemx_heap_index_t index = shmemxa_name_to_index(name);
+    void *addr;
 
-    SHMEMU_CHECK_HEAP_INDEX(i);
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_HEAP_INDEX(index);
+    SHMEMU_CHECK_SYMMETRIC(p, 2);
 
-    return shmemx_realloc_by_index(i, p, s);
+    shmemc_barrier_all();
+
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_realloc_by_index(index, p, s));
+
+    shmemc_barrier_all();
+
+    return addr;
 }
 
 void *
 shmemx_align_by_name(const char *name, size_t a, size_t s)
 {
-    const shmemx_heap_index_t i = shmemxa_name_to_index(name);
+    const shmemx_heap_index_t index = shmemxa_name_to_index(name);
+    void *addr;
 
-    SHMEMU_CHECK_HEAP_INDEX(i);
+    SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_HEAP_INDEX(index);
 
-    return shmemx_align_by_index(i, a, s);
+    SHMEMT_MUTEX_PROTECT(addr = shmemxa_align_by_index(index, a, s));
+
+    shmemc_barrier_all();
+
+    return addr;
 }
