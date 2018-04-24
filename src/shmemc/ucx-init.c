@@ -21,28 +21,6 @@
 #include <ucp/api/ucp.h>
 
 /*
- * UCX config
- */
-inline static void
-make_init_params(ucp_params_t *pmp)
-{
-    pmp->field_mask =
-        UCP_PARAM_FIELD_FEATURES |
-        UCP_PARAM_FIELD_MT_WORKERS_SHARED |
-        UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
-
-    pmp->features =
-        UCP_FEATURE_RMA |       /* put/get */
-        UCP_FEATURE_AMO32 |     /* 32-bit atomics */
-        UCP_FEATURE_AMO64 |     /* 64-bit atomics */
-        UCP_FEATURE_WAKEUP;     /* events */
-
-    pmp->mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
-
-    pmp->estimated_num_eps = proc.nranks;
-}
-
-/*
  * worker tables
  */
 inline static void
@@ -380,28 +358,53 @@ extern long *shmemc_sync_all_psync;
         shmema_free(_var);                                              \
     } while (0)
 
+/*
+ * UCX config
+ */
+
+inline static void
+ucx_init_ready(void)
+{
+    ucs_status_t s;
+    ucp_params_t pm;
+
+    s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
+    shmemu_assert("can't read UCX config", s == UCS_OK);
+
+    pm.field_mask =
+        UCP_PARAM_FIELD_FEATURES |
+        UCP_PARAM_FIELD_MT_WORKERS_SHARED |
+        UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
+
+    pm.features =
+        UCP_FEATURE_RMA |       /* put/get */
+        UCP_FEATURE_AMO32 |     /* 32-bit atomics */
+        UCP_FEATURE_AMO64 |     /* 64-bit atomics */
+        UCP_FEATURE_WAKEUP;     /* events (not used, but looking ahead) */
+
+    pm.mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
+
+    pm.estimated_num_eps = proc.nranks;
+
+    s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
+    shmemu_assert("can't initialize UCX", s == UCS_OK);
+}
+
 void
 shmemc_ucx_init(void)
 {
     int n;
-    ucs_status_t s;
-    ucp_params_t pm;
 
-    /* start initialization */
-    s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
-    shmemu_assert("can't read UCX config", s == UCS_OK);
+    ucx_init_ready();
 
-    make_init_params(&pm);
-
-    s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
-    shmemu_assert("can't initialize UCX", s == UCS_OK);
-
+    /* user-supplied setup */
     shmemc_env_init();
 
     /* collectives are go */
     shmemc_barrier_init();
     shmemc_broadcast_init();
 
+    /* make remote memory usable */
     init_memory_regions();
     register_memory_regions();
 
@@ -422,8 +425,13 @@ shmemc_ucx_init(void)
     /* don't need config info any more */
     ucp_config_release(proc.comms.ucx_cfg);
 
+    /* set up globalexit handler */
     shmemc_globalexit_init();
 }
+
+/*
+ * ucx_finalize basically just undoes ucx_init
+ */
 
 void
 shmemc_ucx_finalize(void)
