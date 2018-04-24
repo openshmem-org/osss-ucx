@@ -146,27 +146,27 @@ shmem_align(size_t a, size_t s)
 void *
 shmalloc(size_t s)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 2);
     return shmem_malloc(s);
 }
 
 void
 shfree(void *p)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 2);
     shmem_free(p);
 }
 
 void *
 shrealloc(void *p, size_t s)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 2);
     return shmem_realloc(p, s);
 }
 
 void *
 shmemalign(size_t a, size_t s)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 2);
     return shmem_align(a, s);
 }

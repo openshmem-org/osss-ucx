@@ -199,6 +199,6 @@ shmem_query_thread(int *provided)
 void
 start_pes(int n /* unused */)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 2);
     shmem_init();
 }

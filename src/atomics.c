@@ -1274,7 +1274,7 @@ API_DEF_VOID_AMO2(and, uint64, uint64_t)
     void                                                                \
     shmem_##_name##_##_op(_type *target, int pe)                        \
     {                                                                   \
-        deprecate(__func__);                                            \
+        deprecate(__func__, 1, 4);                                      \
         shmemc_##_op##_size(target, pe);                                \
     }
 
@@ -1282,7 +1282,7 @@ API_DEF_VOID_AMO2(and, uint64, uint64_t)
     void                                                                \
     shmem_##_name##_##_op(_type *target, _type value, int pe)           \
     {                                                                   \
-        deprecate(__func__);                                            \
+        deprecate(__func__, 1, 4);                                      \
         shmemc_##_op##_size(target, value, pe);                         \
     }
 
@@ -1292,7 +1292,7 @@ API_DEF_VOID_AMO2(and, uint64, uint64_t)
                           _type cond, _type value,                      \
                           int pe)                                       \
     {                                                                   \
-        deprecate(__func__);                                            \
+        deprecate(__func__, 1, 4);                                      \
         shmemc_##_op##_size(target, cond, value, pe);                   \
     }
 
@@ -1300,7 +1300,7 @@ API_DEF_VOID_AMO2(and, uint64, uint64_t)
     _type                                                               \
     shmem_##_name##_##_op(_type *target, int pe)                        \
     {                                                                   \
-        deprecate(__func__);                                            \
+        deprecate(__func__, 1, 4);                                      \
         return shmemc_##_op##_size(target, pe);                         \
     }
 
@@ -1308,7 +1308,7 @@ API_DEF_VOID_AMO2(and, uint64, uint64_t)
     _type                                                               \
     shmem_##_name##_##_op(_type *target, _type value, int pe)           \
     {                                                                   \
-        deprecate(__func__);                                            \
+        deprecate(__func__, 1, 4);                                      \
         return shmemc_##_op##_size(target, value, pe);                  \
     }
 
@@ -1318,7 +1318,7 @@ API_DEF_VOID_AMO2(and, uint64, uint64_t)
                           _type cond, _type value,                      \
                           int pe)                                       \
     {                                                                   \
-        deprecate(__func__);                                            \
+        deprecate(__func__, 1, 4);                                      \
         return shmemc_##_op##_size(target, cond, value, pe);            \
     }
 

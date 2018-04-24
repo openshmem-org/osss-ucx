@@ -97,11 +97,11 @@ void shmemu_logger_init(void);
 void shmemu_logger_finalize(void);
 
 void shmemu_logger(shmemu_log_t evt, const char *fmt, ...);
-void shmemu_deprecate(const char *fn);
+void shmemu_deprecate(const char *fn, int maj, int min);
 
 # define logger(...) shmemu_logger(__VA_ARGS__)
 
-# define deprecate(_fn) shmemu_deprecate(_fn)
+# define deprecate(...) shmemu_deprecate(__VA_ARGS__)
 void shmemu_deprecate_init(void);
 void shmemu_deprecate_finalize(void);
 
@@ -112,7 +112,7 @@ void shmemu_deprecate_finalize(void);
 
 # define logger(...)
 
-# define deprecate(_fn)
+# define deprecate(...)
 # define shmemu_deprecate_init()
 # define shmemu_deprecate_finalize()
 
