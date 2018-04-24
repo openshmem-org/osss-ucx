@@ -125,22 +125,6 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
  *  -- helpers for atomics -----------------------------------------------
  */
 
-void
-shmemc_progress(void)
-{
-    shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;
-
-    (void) ucp_worker_progress(ch->w);
-}
-
-void
-shmemc_ctx_progress(shmem_ctx_t ctx)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    (void) ucp_worker_progress(ch->w);
-}
-
 /*
  * a dummy callback that does nothing
  */

@@ -39,8 +39,19 @@ void shmemc_print_env_vars(FILE *stream, const char *prefix);
  * -- Per-context routines ---------------------------------------------------
  */
 
-void shmemc_progress(void);
-void shmemc_ctx_progress(shmem_ctx_t ctx);
+inline static void
+shmemc_ctx_progress(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    (void) ucp_worker_progress(ch->w);
+}
+
+inline static void
+shmemc_progress(void)
+{
+    shmemc_ctx_progress(SHMEM_CTX_DEFAULT);
+}
 
 void shmemc_ctx_fence(shmem_ctx_t ctx);
 void shmemc_ctx_quiet(shmem_ctx_t ctx);
