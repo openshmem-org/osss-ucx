@@ -43,6 +43,7 @@ static klist_t(freelist) *fl = NULL;
  */
 
 static int register_context_boot(shmemc_context_h ch);
+static int register_context_run(shmemc_context_h ch);
 
 static int (*register_fn)(shmemc_context_h ch) = register_context_boot;
 
