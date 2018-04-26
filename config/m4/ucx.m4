@@ -7,7 +7,8 @@ AC_ARG_WITH([ucx],
 
 AS_IF([test -d "$with_ucx"],
       [
-          AS_IF([test -r "$with_ucx/include/ucp/api/ucp.h"],
+          ucp_hdr="$with_ucx/include/ucp/api/ucp.h"
+          AS_IF([test -r "$ucp_hdr"],
           [
 	      CPPFLAGS="-I$with_ucx/include $CPPFLAGS"
 	      UCX_LIBS="-L$with_ucx/lib64 -Wl,-rpath -Wl,$with_ucx/lib64"
@@ -38,13 +39,13 @@ AS_IF([test -d "$with_ucx"],
 		],
 		[AC_MSG_NOTICE([UCX: ucp_request_check_status NOT found])
 		])
-	      # we'll use the following as a representative of supporting bitwise AMOs
-	      AC_COMPILE_IFELSE(
-		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_atomic_and64])],
-		[AC_MSG_NOTICE([UCX: (bit-wise check) ucp_atomic_and64 found])
+	      # we'll use the following as a representative of
+	      # supporting bitwise AMOs
+	      AS_IF([fgrep -q UCP_ATOMIC_POST_OP_XOR $ucp_hdr],
+		[AC_MSG_NOTICE([UCX: native bit-wise atomics found])
  	         AC_DEFINE([HAVE_UCP_BITWISE_ATOMICS], [1], [UCX has bitwise atomics])
 		],
-		[AC_MSG_NOTICE([UCX: (bit-wise check) ucp_atomic_and64 NOT found])
+		[AC_MSG_NOTICE([UCX: native bit-wise atomics NOT found])
 		])
 	      AC_LANG_POP([C])
 	      UCX_DIR="$with_ucx"
