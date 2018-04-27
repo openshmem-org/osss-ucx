@@ -1,3 +1,4 @@
+
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
@@ -6,16 +7,26 @@ progname="`basename $0`"
 # test left-to-right order
 LAUNCHERS="mpiexec mpirun"
 
-launcher=""
+# possibly from environment
+launcher="${SHMEM_LAUNCHER-}"
 
-for L in $LAUNCHERS
-do
-    if hash "$L" >/dev/null 2>&1
-    then
-        launcher="$L"
-        break
-    fi
-done
+if [ -z "$launcher" ]
+then
+    # possibly from configure
+    launcher="@SHMEM_LAUNCHER@"
+fi
+
+if [ -z "$launcher" ]
+then
+    for L in $LAUNCHERS
+    do
+        if hash "$L" >/dev/null 2>&1
+        then
+            launcher="$L"
+            break
+        fi  
+    done
+fi
 
 if [ -z "$launcher" ]
 then
