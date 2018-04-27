@@ -40,17 +40,19 @@ shmemc_init(void)
     shmemc_pmi_barrier_all();
     shmemc_pmi_exchange_all_rkeys();
 
-#if 0
-    shmemc_barrier_all();
-#endif
+    /*
+     * TODO: 2018-04-27: newest UCX has revamped AMOs, getting hangs
+     * without flush here
+     */
+    shmemc_quiet();
 }
 
 void
 shmemc_finalize(void)
 {
-    shmemc_barrier_all();       /* finalize has implicit global barrier */
+    /* finalize has implicit global barrier */
+    shmemc_barrier_all();
 
-    /* shmemc_pmi_barrier_all(); */
     shmemc_pmi_client_finalize();
 
     shmemc_ucx_finalize();

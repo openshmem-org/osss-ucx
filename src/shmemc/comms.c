@@ -122,8 +122,58 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
 }
 
 /*
- *  -- helpers for atomics -----------------------------------------------
+ * -- ordering -----------------------------------------------------------
  */
+
+/*
+ * fence and quiet only do something on storable contexts
+ */
+
+void
+shmemc_ctx_fence(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    if (! ch->attr.nostore) {
+        const ucs_status_t s = ucp_worker_fence(ch->w);
+
+        shmemu_assert("fence failed", s == UCS_OK);
+    }
+}
+
+void
+shmemc_ctx_quiet(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    if (! ch->attr.nostore) {
+        const ucs_status_t s = ucp_worker_flush(ch->w);
+
+        shmemu_assert("quiet/flush failed", s == UCS_OK);
+    }
+}
+
+#ifdef ENABLE_EXPERIMENTAL
+
+/*
+ * This should be correct, but not optimal.  Gets us going.
+ */
+
+int
+shmemc_ctx_fence_test(shmem_ctx_t ctx)
+{
+    shmemc_ctx_fence(ctx);
+    return 1;
+}
+
+int
+shmemc_ctx_quiet_test(shmem_ctx_t ctx)
+{
+    shmemc_ctx_quiet(ctx);
+    return 1;
+}
+
+#endif  /* ENABLE_EXPERIMENTAL */
 
 /*
  * a dummy callback that does nothing
@@ -134,6 +184,24 @@ noop_callback(void *request, ucs_status_t status)
 {
     logger(LOG_ATOMICS,
            "AMO didn't complete immediately, using callback");
+}
+
+/*
+ * make progress
+ */
+
+inline static void
+helper_ctx_progress(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    (void) ucp_worker_progress(ch->w);
+}
+
+inline static void
+helper_progress(void)
+{
+    helper_ctx_progress(SHMEM_CTX_DEFAULT);
 }
 
 /*
@@ -149,13 +217,14 @@ check_wait_for_request(shmemc_context_h ch, void *req)
         return UCS_OK;
     }
     else if (UCS_PTR_IS_ERR(req)) {
+        ucp_request_cancel(ch->w, req);
         return UCS_PTR_STATUS(req);
     }
     else {                      /* wait for completion */
         ucs_status_t s;
 
         do {
-            shmemc_progress();
+            ucp_worker_progress(ch->w);
 
 #ifdef HAVE_UCP_REQUEST_CHECK_STATUS
             s = ucp_request_check_status(req);
@@ -167,6 +236,10 @@ check_wait_for_request(shmemc_context_h ch, void *req)
         return s;
     }
 }
+
+/*
+ *  -- helpers for atomics -----------------------------------------------
+ */
 
 /*
  * post-or-fetch-and-wait AMO to target address "t" on PE "pe" with
@@ -226,19 +299,20 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
                                    uint64_t t, uint##_size##_t v,   \
                                    int pe)                          \
     {                                                               \
-        uint64_t ret = 0;                                           \
+        uint##_size##_t ret = 0;                                    \
         ucs_status_t s;                                             \
+        uint64_t r_t;                                               \
+        ucp_rkey_h rkey;                                            \
+        ucp_ep_h ep;                                                \
                                                                     \
-        s = ucx_atomic_fetch_op(UCP_ATOMIC_FETCH_OP_FADD,        \
-                                   ch,                              \
-                                   t,                               \
-                                   v, sizeof(v),                    \
-                                   pe,                              \
-                                   &ret);                           \
+        get_remote_key_and_addr(t, pe, &rkey, &r_t);                \
+        ep = lookup_ucp_ep(ch, pe);                                 \
+                                                                    \
+        s = ucp_atomic_fadd##_size(ep, v, r_t, rkey, &ret);         \
         /* value came back? */                                      \
-        shmemu_assert("fetch op failed", s == UCS_OK);              \
+        shmemu_assert("fetch-add failed", s == UCS_OK);             \
                                                                     \
-        return (uint##_size##_t) ret;                               \
+        return ret;                                                 \
     }
 
 HELPER_FADD(32)
@@ -251,14 +325,16 @@ HELPER_FADD(64)
                              int pe)                            \
     {                                                           \
         ucs_status_t s;                                         \
+        uint64_t r_t;                                           \
+        ucp_rkey_h rkey;                                        \
+        ucp_ep_h ep;                                            \
                                                                 \
-        s = ucx_atomic_post_op(UCP_ATOMIC_POST_OP_ADD,          \
-                               ch,                              \
-                               t,                               \
-                               v, sizeof(v),                    \
-                               pe);                             \
-        /* could still be in-flight */                          \
-        shmemu_assert("post op failed",                         \
+        get_remote_key_and_addr(t, pe, &rkey, &r_t);            \
+        ep = lookup_ucp_ep(ch, pe);                             \
+                                                                \
+        s = ucp_atomic_add##_size(ep, v, r_t, rkey);            \
+        /* could still be in flight */                          \
+        shmemu_assert("add op failed",                          \
                       (s == UCS_OK) || (s == UCS_INPROGRESS) ); \
     }
 
@@ -303,7 +379,7 @@ HELPER_INC(64)
     {                                                           \
         uint64_t r_t;                                           \
         ucp_rkey_h rkey;                                        \
-        uint##_size##_t ret;                                    \
+        uint##_size##_t ret = 0;                                \
         ucp_ep_h ep;                                            \
         ucs_status_t s;                                         \
                                                                 \
@@ -328,7 +404,7 @@ HELPER_SWAP(64)
     {                                                                   \
         uint64_t r_t;                                                   \
         ucp_rkey_h rkey;                                                \
-        uint##_size##_t ret;                                            \
+        uint##_size##_t ret = 0;                                        \
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
                                                                         \
@@ -350,172 +426,135 @@ HELPER_CSWAP(64)
  * Newer versions of UCX now have native support for bitwise atomics:
  * we detect this during configure.
  *
- * So the fragments below decide on whether to use those native
- * routines, or to fake it with a CAS.
- *
- * Fragments expect
- *    "t"        as local address
- *    "v"        as value to operate on,
- *    "pe"       as remote PE#
- *    "ret"      as return value
- *
  */
 
 #ifdef HAVE_UCP_BITWISE_ATOMICS
 
-#define DO_FETCH_FRAGMENT(_ucp_op, _op, _opname, _size)                 \
-    do {                                                                \
-        ucs_status_t s =                                                \
-            ucx_atomic_fetch_op(UCP_ATOMIC_FETCH_OP_F##_ucp_op,         \
+#define HELPER_BITWISE_FETCH_ATOMIC(_ucp_op, _opname, _size)            \
+    inline static uint##_size##_t                                       \
+    helper_atomic_fetch_##_opname##_size(shmemc_context_h ch,           \
+                                         uint64_t t, uint##_size##_t v, \
+                                         int pe)                        \
+    {                                                                   \
+        uint64_t ret = 0;                                               \
+        ucs_status_t s;                                                 \
+                                                                        \
+        s = ucx_atomic_fetch_op(UCP_ATOMIC_FETCH_OP_F##_ucp_op,         \
                                 ch,                                     \
                                 t,                                      \
                                 v, sizeof(v),                           \
                                 pe,                                     \
                                 &ret);                                  \
         /* value came back? */                                          \
-        shmemu_assert("fetch bitwise op failed", s == UCS_OK);          \
-    } while (0)
-
-#define DO_POST_FRAGMENT(_ucp_op, _op, _opname, _size)                  \
-    do {                                                                \
-        ucs_status_t s =                                                \
-            ucx_atomic_post_op(UCP_ATOMIC_POST_OP_##_ucp_op,            \
-                               ch,                                      \
-                               t,                                       \
-                               v, sizeof(v),                            \
-                               pe);                                     \
-        shmemu_assert("bitwise op failed",                              \
-                      (s == UCS_OK) || (s == UCS_INPROGRESS) );         \
-    } while (0)
-
-#else  /* HAVE_UCP_BITWISE_ATOMICS */
-
-#define DO_FETCH_FRAGMENT(_ucp_op, _op, _opname, _size)                 \
-    do {                                                                \
-        uint##_size##_t rval, rval_orig;                                \
-        uint64_t r_t;                                                   \
-        ucp_rkey_h rkey;                                                \
-        ucp_ep_h ep;                                                    \
-        ucs_status_t s;                                                 \
+        shmemu_assert("fetch op " #_opname " failed", s == UCS_OK);     \
                                                                         \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
-        ep = lookup_ucp_ep(ch, pe);                                     \
-                                                                        \
-        do {                                                            \
-            s = ucp_get(ep, &rval_orig, sizeof(rval_orig), r_t, rkey);  \
-            shmemu_assert("get failed", s == UCS_OK);                   \
-                                                                        \
-            rval = (rval_orig) _op v;                                   \
-                                                                        \
-            s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
-                                        r_t, rkey,                      \
-                                        (uint##_size##_t *) &ret);      \
-        } while (ret != rval_orig);                                     \
-    } while (0)
+        return (uint##_size##_t) ret;                                   \
+    }
 
-#define DO_POST_FRAGMENT(_ucp_op, _op, _opname, _size)                  \
-    do {                                                                \
-        uint64_t ret;                                                   \
-                                                                        \
-        DO_FETCH_FRAGMENT(_ucp_op, _op, _opname, _size);                \
-    } while (0)
+HELPER_BITWISE_FETCH_ATOMIC(AND, and, 32)
+HELPER_BITWISE_FETCH_ATOMIC(AND, and, 64)
+HELPER_BITWISE_FETCH_ATOMIC(OR,  or,  32)
+HELPER_BITWISE_FETCH_ATOMIC(OR,  or,  64)
+HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 32)
+HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 64)
 
-#endif  /* HAVE_UCP_BITWISE_ATOMICS */
+#define HELPER_BITWISE_ATOMIC(_ucp_op, _opname, _size)              \
+    inline static void                                              \
+    helper_atomic_##_opname##_size(shmemc_context_h ch,             \
+                                   uint64_t t, uint##_size##_t v,   \
+                                   int pe)                          \
+    {                                                               \
+        ucs_status_t s;                                             \
+                                                                    \
+        s = ucx_atomic_post_op(UCP_ATOMIC_POST_OP_##_ucp_op,        \
+                               ch,                                  \
+                               t,                                   \
+                               v, sizeof(v),                        \
+                               pe);                                 \
+        shmemu_assert("post op " #_opname " failed",                \
+                      (s == UCS_OK) || (s == UCS_INPROGRESS) );     \
+    }
 
-#define HELPER_BITWISE_FETCH_OP(_ucp_op, _op, _opname, _size)           \
+HELPER_BITWISE_ATOMIC(AND, and, 32)
+HELPER_BITWISE_ATOMIC(AND, and, 64)
+HELPER_BITWISE_ATOMIC(OR,  or,  32)
+HELPER_BITWISE_ATOMIC(OR,  or,  64)
+HELPER_BITWISE_ATOMIC(XOR, xor, 32)
+HELPER_BITWISE_ATOMIC(XOR, xor, 64)
+
+#else  /* ! HAVE_UCP_BITWISE_ATOMICS */
+
+#define HELPER_BITWISE_FETCH_ATOMIC(_op, _opname, _size)                \
     inline static uint##_size##_t                                       \
     helper_atomic_fetch_##_opname##_size(shmemc_context_h ch,           \
                                          uint64_t t, uint##_size##_t v, \
                                          int pe)                        \
     {                                                                   \
-        uint64_t ret;                                                   \
+        uint##_size##_t ret = 0;                                        \
+        uint##_size##_t rval, rval_orig;                                \
+        ucs_status_t s;                                                 \
+        uint64_t r_t;                                                   \
+        ucp_rkey_h rkey;                                                \
+        ucp_ep_h ep;                                                    \
                                                                         \
-        DO_FETCH_FRAGMENT(_ucp_op, _op, _opname, _size);                \
+        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
+        ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
-        return (uint##_size##_t) ret;                                   \
+        do {                                                            \
+            s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
+                        r_t, rkey);                                     \
+            shmemu_assert("get failed", s == UCS_OK);                   \
+                                                                        \
+            rval = (rval_orig) _op v;                                   \
+                                                                        \
+            s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
+                                        r_t, rkey, &ret);               \
+        } while (ret != rval_orig);                                     \
+                                                                        \
+        return ret;                                                     \
     }
 
-HELPER_BITWISE_FETCH_OP(AND, &, and, 32)
-HELPER_BITWISE_FETCH_OP(AND, &, and, 64)
-HELPER_BITWISE_FETCH_OP(OR,  |, or,  32)
-HELPER_BITWISE_FETCH_OP(OR,  |, or,  64)
-HELPER_BITWISE_FETCH_OP(XOR, ^, xor, 32)
-HELPER_BITWISE_FETCH_OP(XOR, ^, xor, 64)
+HELPER_BITWISE_FETCH_ATOMIC(|, or,  32)
+HELPER_BITWISE_FETCH_ATOMIC(|, or,  64)
+HELPER_BITWISE_FETCH_ATOMIC(&, and, 32)
+HELPER_BITWISE_FETCH_ATOMIC(&, and, 64)
+HELPER_BITWISE_FETCH_ATOMIC(^, xor, 32)
+HELPER_BITWISE_FETCH_ATOMIC(^, xor, 64)
 
-#define HELPER_BITWISE_OP(_ucp_op, _op, _opname, _size)                 \
+#define HELPER_BITWISE_ATOMIC(_op, _opname, _size)                      \
     inline static void                                                  \
     helper_atomic_##_opname##_size(shmemc_context_h ch,                 \
                                    uint64_t t, uint##_size##_t v,       \
                                    int pe)                              \
     {                                                                   \
-        DO_POST_FRAGMENT(_ucp_op, _op, _opname, _size);                 \
+        (void) helper_atomic_fetch_##_opname##_size(ch, t, v, pe);      \
     }
 
-HELPER_BITWISE_OP(AND, &, and, 32)
-HELPER_BITWISE_OP(AND, &, and, 64)
-HELPER_BITWISE_OP(OR,  |, or,  32)
-HELPER_BITWISE_OP(OR,  |, or,  64)
-HELPER_BITWISE_OP(XOR, ^, xor, 32)
-HELPER_BITWISE_OP(XOR, ^, xor, 64)
+HELPER_BITWISE_ATOMIC(|, or,  32)
+HELPER_BITWISE_ATOMIC(|, or,  64)
+HELPER_BITWISE_ATOMIC(&, and, 32)
+HELPER_BITWISE_ATOMIC(&, and, 64)
+HELPER_BITWISE_ATOMIC(^, xor, 32)
+HELPER_BITWISE_ATOMIC(^, xor, 64)
+
+#endif  /* HAVE_UCP_BITWISE_ATOMICS */
 
 /**
  * API
  *
  **/
 
-/*
- * -- ordering -----------------------------------------------------------
- */
-
-/*
- * fence and quiet only do something on storable contexts
- */
-
 void
-shmemc_ctx_fence(shmem_ctx_t ctx)
+shmemc_ctx_progress(shmem_ctx_t ctx)
 {
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    if (! ch->attr.nostore) {
-        const ucs_status_t s = ucp_worker_fence(ch->w);
-
-        shmemu_assert("fence failed", s == UCS_OK);
-    }
+    helper_ctx_progress(ctx);
 }
 
 void
-shmemc_ctx_quiet(shmem_ctx_t ctx)
+shmemc_progress(void)
 {
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    if (! ch->attr.nostore) {
-        const ucs_status_t s = ucp_worker_flush(ch->w);
-
-        shmemu_assert("quiet/flush failed", s == UCS_OK);
-    }
+    helper_progress();
 }
-
-#ifdef ENABLE_EXPERIMENTAL
-
-/*
- * This should be correct, but not optimal.  Gets us going.
- */
-
-int
-shmemc_ctx_fence_test(shmem_ctx_t ctx)
-{
-    shmemc_ctx_fence(ctx);
-    return 1;
-}
-
-int
-shmemc_ctx_quiet_test(shmem_ctx_t ctx)
-{
-    shmemc_ctx_quiet(ctx);
-    return 1;
-}
-
-#endif  /* ENABLE_EXPERIMENTAL */
 
 /*
  * -- accessible memory pointers -----------------------------------------
