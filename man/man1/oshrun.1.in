@@ -69,6 +69,12 @@ Algorithm name to use for barriers: currently one of "linear", "tree",
 Algorithm name to use for broadcasts: currently one of "linear",
 "tree", "dissem", "binomial", "binomial2".
 .RE
+.RS 4
+.IP "SHMEM_LAUNCHER (default: search)"
+Name of program to use for underlying PMI-aware (currently PMIx-aware)
+launcher.  Default behavior is to search for an MPI launcher.  Can
+also be set by configure.
+.RE
 .\"
 .RE
 .\"
