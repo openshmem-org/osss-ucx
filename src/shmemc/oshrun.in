@@ -1,4 +1,72 @@
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
-exec mpiexec $@
+progname="`basename $0`"
+
+# test left-to-right order
+LAUNCHERS="mpiexec mpirun"
+
+bail_out()
+{
+cat <<EOF
+Usage: $progname [-v] [-h] [launcher-args] program [program-args]
+
+    -v, --verbose        verbose launch
+    -h, --help           show this help, and exit
+
+EOF
+    exit 1
+}
+
+RES="`getopt -q -o vh -l verbose,help -n "$progname" -- "$@"`"
+
+# trap bad args
+if [ $? -ne 0 ]
+then
+    bail_out
+fi
+
+eval set -- "$RES"
+
+verbose=n
+
+while true
+do
+    case $1 in
+        -v | --v*)
+            verbose=y
+            shift
+            ;;
+        --)                     # end of parsing
+            shift
+            break
+            ;;
+        *)
+            bail_out
+            ;;
+    esac
+done
+
+launcher=""
+
+for L in $LAUNCHERS
+do
+    if hash "$L" >/dev/null 2>&1
+    then
+        launcher="$L"
+        break
+    fi
+done
+
+if [ -z "$launcher" ]
+then
+    echo "$progname: no launcher found, tried $LAUNCHERS"
+    exit 1
+fi     
+
+if [ $verbose = y ]
+then
+    echo "$progname: About to run \"$launcher $@\""
+fi     
+
+exec $launcher "$@"
