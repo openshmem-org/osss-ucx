@@ -33,35 +33,35 @@
 void
 shmem_set_cache_inv(void)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 3);
 }
 
 void
 shmem_clear_cache_inv(void)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 3);
 }
 
 void
 shmem_set_cache_line_inv(void *target)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 3);
 }
 
 void
 shmem_clear_cache_line_inv(void *target)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 3);
 }
 
 void
 shmem_udcflush(void)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 3);
 }
 
 void
 shmem_udcflush_line(void *target)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 3);
 }

@@ -1,4 +1,37 @@
+
 #!/bin/sh
 # For license: see LICENSE file at top-level
 
-exec mpiexec $@
+progname="`basename $0`"
+
+# test left-to-right order
+LAUNCHERS="mpiexec mpirun"
+
+# possibly from environment
+launcher="${SHMEM_LAUNCHER-}"
+
+if [ -z "$launcher" ]
+then
+    # possibly from configure
+    launcher="@SHMEM_LAUNCHER@"
+fi
+
+if [ -z "$launcher" ]
+then
+    for L in $LAUNCHERS
+    do
+        if hash "$L" >/dev/null 2>&1
+        then
+            launcher="$L"
+            break
+        fi  
+    done
+fi
+
+if [ -z "$launcher" ]
+then
+    echo "$progname: no launcher found, tried $LAUNCHERS"
+    exit 1
+fi     
+
+exec $launcher "$@"

@@ -60,13 +60,13 @@ shmem_n_pes(void)
 int
 _my_pe(void)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 2);
     return shmemc_my_pe();
 }
 
 int
 _num_pes(void)
 {
-    deprecate(__func__);
+    deprecate(__func__, 1, 2);
     return shmemc_n_pes();
 }

@@ -64,7 +64,7 @@ inline static void
 allocate_contexts_table(void)
 {
     /*
-     * no SHMEM contexts created yet
+     * no new SHMEM contexts created yet
      */
     proc.comms.nctxts = 0;
     proc.comms.ctxts = NULL;
@@ -245,6 +245,10 @@ disconnect_all_endpoints(void)
     }
 }
 
+/*
+ * create backing for memory regions (heaps & globals)
+ */
+
 inline static void
 init_memory_regions(void)
 {
@@ -271,12 +275,15 @@ init_memory_regions(void)
     globals = & proc.comms.regions[0].minfo[proc.rank];
 }
 
+/*
+ * register global variables (implicitly index 0), then all heaps
+ */
+
 inline static void
 register_memory_regions(void)
 {
     size_t hi;
 
-    /* register global variables (implicitly index 0), then all heaps */
     register_globals();
 
     for (hi = 1; hi < proc.comms.nregions; hi += 1) {

@@ -39,7 +39,6 @@ static klist_t(freelist) *fl = NULL;
 /*
  * Register and de-register contexts
  *
- *
  * first call performs initialization, then reroutes to real work
  */
 
@@ -119,8 +118,10 @@ inline static void
 deregister_context(shmemc_context_h ch)
 {
     proc.comms.ctxts[ch->id] = NULL;
+
     /* this one is re-usable */
     *kl_pushp(freelist, fl) = ch->id;
+
     logger(LOG_CONTEXTS,
            "context #%lu can be reused",
            ch->id);
@@ -132,7 +133,7 @@ deregister_context(shmemc_context_h ch)
  * Return 0 on success, 1 on failure
  */
 
-static int
+inline static int
 shmemc_context_fill(long options, shmemc_context_h ch)
 {
     ucs_status_t s;

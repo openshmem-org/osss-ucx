@@ -3,7 +3,7 @@
 #ifndef _MPP_SHMEM_H
 #define _MPP_SHMEM_H 1
 
-#warning "<mpp/shmem.h> is a deprecated location, use <shmem.h> instead"
+#warning "<mpp/shmem.h> is a deprecated location since specification 1.1, use <shmem.h> instead"
 
 #include <shmem.h>
 

@@ -32,7 +32,7 @@ record(const char *name)
  * need to restrict this report to first usage only
  */
 void
-shmemu_deprecate(const char *fn_name)
+shmemu_deprecate(const char *fn_name, int maj, int min)
 {
     if (already_seen(fn_name)) {
         return;
@@ -41,7 +41,11 @@ shmemu_deprecate(const char *fn_name)
 
     record(fn_name);
 
-    logger(LOG_DEPRECATE, "\"%s\" is deprecated", fn_name);
+    logger(LOG_DEPRECATE,
+           "\"%s\" is deprecated as of specification %d.%d",
+           fn_name,
+           maj, min
+           );
 }
 
 void

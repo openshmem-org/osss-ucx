@@ -20,6 +20,12 @@
  */
 
 /*
+ * for string formatting
+ */
+
+#define BUFSIZE 16
+
+/*
  * return non-zero if option enabled, 0 if not
  */
 
@@ -93,7 +99,6 @@ shmemc_env_init(void)
     if (r != 0) {
         shmemu_fatal("Couldn't work out requested heap size \"%s\"", e);
     }
-
 
     /*
      * this implementation also has...
@@ -199,7 +204,6 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width, shmemu_human_option(proc.env.print_info),
             "print this information");
     {
-#define BUFSIZE 16
         char buf[BUFSIZE];
 
         /* TODO hardwired index */
@@ -209,7 +213,6 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
                 var_width, "SHMEM_SYMMETRIC_SIZE",
                 val_width, buf,
                 "requested size of the symmetric heap");
-#undef BUFSIZE
     }
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
