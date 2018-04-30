@@ -115,7 +115,7 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
 {
     const long r = lookup_region(local_addr, proc.rank);
 
-    shmemu_assert(r >= 0, "remote key/address lookup");
+    shmemu_assert(r >= 0, "can't find memory region for %p", local_addr);
 
     *rkey_p = lookup_rkey(r, pe);
     *raddr_p = translate_address(local_addr, r, pe);
@@ -137,7 +137,7 @@ shmemc_ctx_fence(shmem_ctx_t ctx)
     if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_fence(ch->w);
 
-        shmemu_assert(s == UCS_OK, "fence failed");
+        shmemu_assert(s == UCS_OK, "fence failed (status %d)", s);
     }
 }
 
@@ -149,7 +149,7 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
     if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_flush(ch->w);
 
-        shmemu_assert(s == UCS_OK, "quiet/flush failed");
+        shmemu_assert(s == UCS_OK, "quiet/flush failed (status %d)", s);
     }
 }
 
