@@ -115,7 +115,7 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
 {
     const long r = lookup_region(local_addr, proc.rank);
 
-    shmemu_assert("remote key/address lookup", r >= 0);
+    shmemu_assert(r >= 0, "remote key/address lookup");
 
     *rkey_p = lookup_rkey(r, pe);
     *raddr_p = translate_address(local_addr, r, pe);
@@ -137,7 +137,7 @@ shmemc_ctx_fence(shmem_ctx_t ctx)
     if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_fence(ch->w);
 
-        shmemu_assert("fence failed", s == UCS_OK);
+        shmemu_assert(s == UCS_OK, "fence failed");
     }
 }
 
@@ -149,7 +149,7 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
     if (! ch->attr.nostore) {
         const ucs_status_t s = ucp_worker_flush(ch->w);
 
-        shmemu_assert("quiet/flush failed", s == UCS_OK);
+        shmemu_assert(s == UCS_OK, "quiet/flush failed");
     }
 }
 
@@ -310,7 +310,7 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
                                                                     \
         s = ucp_atomic_fadd##_size(ep, v, r_t, rkey, &ret);         \
         /* value came back? */                                      \
-        shmemu_assert("fetch-add failed", s == UCS_OK);             \
+        shmemu_assert(s == UCS_OK, "fetch-add failed");             \
                                                                     \
         return ret;                                                 \
     }
@@ -334,8 +334,8 @@ HELPER_FADD(64)
                                                                 \
         s = ucp_atomic_add##_size(ep, v, r_t, rkey);            \
         /* could still be in flight */                          \
-        shmemu_assert("add op failed",                          \
-                      (s == UCS_OK) || (s == UCS_INPROGRESS) ); \
+        shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),   \
+                      "add op failed");                         \
     }
 
 HELPER_ADD(32)
@@ -387,7 +387,7 @@ HELPER_INC(64)
         ep = lookup_ucp_ep(ch, pe);                             \
                                                                 \
         s = ucp_atomic_swap##_size(ep, v, r_t, rkey, &ret);     \
-        shmemu_assert("swap failed", s == UCS_OK);              \
+        shmemu_assert(s == UCS_OK, "swap failed");              \
                                                                 \
         return ret;                                             \
     }
@@ -412,7 +412,7 @@ HELPER_SWAP(64)
         ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
         s = ucp_atomic_cswap##_size(ep, c, v, r_t, rkey, &ret);         \
-        shmemu_assert("condtional swap failed", s == UCS_OK);           \
+        shmemu_assert(s == UCS_OK, "condtional swap failed");           \
                                                                         \
         return ret;                                                     \
     }
@@ -430,6 +430,9 @@ HELPER_CSWAP(64)
 
 #ifdef HAVE_UCP_BITWISE_ATOMICS
 
+#define MAKE_UCP_FETCH_OP(_op)     UCP_ATOMIC_FETCH_OP_F##_op
+#define MAKE_UCP_POST_OP(_op)      UCP_ATOMIC_POST_OP_##_op
+
 #define HELPER_BITWISE_FETCH_ATOMIC(_ucp_op, _opname, _size)            \
     inline static uint##_size##_t                                       \
     helper_atomic_fetch_##_opname##_size(shmemc_context_h ch,           \
@@ -437,16 +440,16 @@ HELPER_CSWAP(64)
                                          int pe)                        \
     {                                                                   \
         uint64_t ret = 0;                                               \
-        ucs_status_t s;                                                 \
-                                                                        \
-        s = ucx_atomic_fetch_op(UCP_ATOMIC_FETCH_OP_F##_ucp_op,         \
+        const ucs_status_t s =                                          \
+            ucx_atomic_fetch_op(MAKE_UCP_FETCH_OP(_ucp_op),             \
                                 ch,                                     \
                                 t,                                      \
                                 v, sizeof(v),                           \
                                 pe,                                     \
                                 &ret);                                  \
+                                                                        \
         /* value came back? */                                          \
-        shmemu_assert("fetch op " #_opname " failed", s == UCS_OK);     \
+        shmemu_assert(s == UCS_OK, "fetch op " #_opname " failed");     \
                                                                         \
         return (uint##_size##_t) ret;                                   \
     }
@@ -464,15 +467,15 @@ HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 64)
                                    uint64_t t, uint##_size##_t v,   \
                                    int pe)                          \
     {                                                               \
-        ucs_status_t s;                                             \
-                                                                    \
-        s = ucx_atomic_post_op(UCP_ATOMIC_POST_OP_##_ucp_op,        \
+        const ucs_status_t s =                                      \
+            ucx_atomic_post_op(MAKE_UCP_POST_OP(_ucp_op),           \
                                ch,                                  \
                                t,                                   \
                                v, sizeof(v),                        \
                                pe);                                 \
-        shmemu_assert("post op " #_opname " failed",                \
-                      (s == UCS_OK) || (s == UCS_INPROGRESS) );     \
+                                                                    \
+        shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),       \
+                      "post op " #_opname " failed");               \
     }
 
 HELPER_BITWISE_ATOMIC(AND, and, 32)
@@ -503,8 +506,7 @@ HELPER_BITWISE_ATOMIC(XOR, xor, 64)
         do {                                                            \
             s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
                         r_t, rkey);                                     \
-            shmemu_assert("get failed", s == UCS_OK);                   \
-                                                                        \
+            shmemu_assert(s == UCS_OK, "get failed in CAS");            \
             rval = (rval_orig) _op v;                                   \
                                                                         \
             s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
@@ -626,7 +628,7 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_put(ep, src, nbytes, rdest, rkey);
-    shmemu_assert("put failed", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "put failed");
 }
 
 void
@@ -643,7 +645,7 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_get(ep, dest, nbytes, r_src, rkey);
-    shmemu_assert("get failed", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "get failed");
 }
 
 /*
@@ -669,8 +671,8 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_put_nbi(ep, src, nbytes, rdest, rkey);
-    shmemu_assert("non-blocking put failed",
-                  (s == UCS_OK) || (s == UCS_INPROGRESS));
+    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
+                  "non-blocking put failed");
 }
 
 void
@@ -687,8 +689,8 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     ep = lookup_ucp_ep(ctx, pe);
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, rkey);
-    shmemu_assert("non-blocking get failed",
-                  (s == UCS_OK) || (s == UCS_INPROGRESS));
+    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
+                  "non-blocking get failed");
  }
 
 /*

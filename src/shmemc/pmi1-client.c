@@ -64,10 +64,10 @@ shmemc_pmi_publish_worker(void)
            proc.comms.xchg_wrkr_info[proc.rank].len);
 
     ps = PMI_KVS_Put(kvs_name, key, val);
-    shmemu_assert("put of worker blob failed", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "put of worker blob failed");
 
     ps = PMI_KVS_Commit(kvs_name);
-    shmemu_assert("worker blob commit failed", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "worker blob commit failed");
 }
 
 void
@@ -86,13 +86,13 @@ shmemc_pmi_exchange_workers(void)
                  i);
 
         ps = PMI_KVS_Get(kvs_name, key, val, kvs_max_len);
-        shmemu_assert("get of remote worker blob failed", ps == PMI_SUCCESS);
+        shmemu_assert(ps == PMI_SUCCESS, "get of remote worker blob failed");
 
         sscanf(val, "%8lu", &len);
 
         proc.comms.xchg_wrkr_info[i].buf = (char *) malloc(len);
-        shmemu_assert("can't allocate memory for remote worker blob",
-                      proc.comms.xchg_wrkr_info[i].buf != NULL);
+        shmemu_assert(proc.comms.xchg_wrkr_info[i].buf != NULL,
+                      "can't allocate memory for remote worker blob");
         memcpy(proc.comms.xchg_wrkr_info[i].buf, val + 8, len);
     }
 }
@@ -121,10 +121,9 @@ shmemc_pmi_exchange_all_rkeys(void)
 void
 shmemc_pmi_barrier_all(void)
 {
-    int ps;
+    const int ps = PMI_Barrier();
 
-    ps = PMI_Barrier();
-    shmemu_assert("PMI barrier failed", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "PMI barrier failed");
 }
 
 /*
@@ -138,32 +137,32 @@ shmemc_pmi_client_init(void)
     int spawned;
 
     ps = PMI_Init(&spawned);
-    shmemu_assert("can't initialize PMI", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "can't initialize PMI");
 
     /* get rank */
     ps = PMI_Get_rank(&proc.rank);
-    shmemu_assert("PMI can't get PE rank", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "PMI can't get PE rank");
 
-    shmemu_assert("PMI PE rank is not valid", proc.rank >= 0);
+    shmemu_assert(proc.rank >= 0, "PMI PE rank is not valid");
 
     ps = PMI_Get_size(&proc.nranks);
-    shmemu_assert("PMI can't get program size", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "PMI can't get program size");
 
     /* is the world a sane size? */
-    shmemu_assert("PMI count of PE ranks is not valid", proc.nranks > 0);
-    shmemu_assert("PMI PE rank is not valid", IS_VALID_PE_NUMBER(proc.rank));
+    shmemu_assert(proc.nranks > 0, "PMI count of PE ranks is not valid");
+    shmemu_assert(IS_VALID_PE_NUMBER(proc.rank), "PMI PE rank is not valid");
 
     proc.npeers = 0;
     proc.peers = NULL;
 
     ps = PMI_KVS_Get_key_length_max(&kvs_max_len);
-    shmemu_assert("PMI can't get max key length", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "PMI can't get max key length");
 
     kvs_name = alloc_string();
-    shmemu_assert("PMI can't allocate name string", kvs_name != NULL);
+    shmemu_assert(kvs_name != NULL, "PMI can't allocate name string");
 
     ps = PMI_KVS_Get_my_name(kvs_name, kvs_max_len);
-    shmemu_assert("PMI can't find its name", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "PMI can't find its name");
 }
 
 void
@@ -173,7 +172,7 @@ shmemc_pmi_client_finalize(void)
     int pe;
 
     ps = PMI_Finalize();
-    shmemu_assert("PMI can't finalize", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "PMI can't finalize");
 
     /* TODO: PMI client common code below */
 
@@ -205,5 +204,5 @@ shmemc_pmi_client_abort(const char *msg, int status)
     pmix_status_t ps;
 
     ps = PMI_Abort(status, msg);
-    shmemu_assert("PMI can't abort", ps == PMI_SUCCESS);
+    shmemu_assert(ps == PMI_SUCCESS, "PMI can't abort");
 }

@@ -76,17 +76,6 @@ int shmemu_get_children_info_binomial(int tree_size, int node, int *children);
  */
 void shmemu_fatal(const char *fmt, ...);
 
-/*
- * our own assertion check (e.g. to name the calling function)
- */
-# define shmemu_assert(_text, _cond)                                    \
-    do {                                                                \
-        if (! (_cond)) {                                                \
-            shmemu_fatal("%s, assertion failed: %s",                    \
-                         _text, #_cond);                                \
-        }                                                               \
-    } while (0)
-
 #ifdef ENABLE_LOGGING
 
 typedef const char *shmemu_log_t;
@@ -118,7 +107,19 @@ void shmemu_deprecate_finalize(void);
 
 #endif  /* ENABLE_LOGGING */
 
-#ifdef EBABLE_DEBUG
+#ifdef ENABLE_DEBUG
+
+/*
+ * our own assertion check.  Usage:
+ *
+ * shmemu_assert(condition-check, shmemu_fatal args...)
+ */
+# define shmemu_assert(_cond, ...)                                      \
+    do {                                                                \
+        if (! (_cond)) {                                                \
+            shmemu_fatal("%s, assertion failed: %s", __VA_ARGS__);      \
+        }                                                               \
+    } while (0)
 
 /*
  * sanity checks
@@ -202,6 +203,11 @@ void shmemu_deprecate_finalize(void);
     } while (0)
 
 #else  /* ! ENABLE_DEBUG */
+
+/*
+ * prevent unused-variable warnings
+ */
+# define shmemu_assert(_cond, ...) ((void)(_cond))
 
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)

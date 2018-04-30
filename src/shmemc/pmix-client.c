@@ -29,7 +29,7 @@ parse_peers(char *peerstr)
 
     /* parse the PE #s out of the string */
     proc.peers = (int *) calloc(proc.npeers, sizeof(*proc.peers));
-    shmemu_assert("can't allocate memory for peer list", proc.peers != NULL);
+    shmemu_assert(proc.peers != NULL, "can't allocate memory for peer list");
 
     next = strtok(peerstr, sep);
     while (next != NULL) {
@@ -69,7 +69,7 @@ shmemc_pmi_publish_heap_info(void)
         ia[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
         ps = PMIx_Publish(ia, nfields);
-        shmemu_assert("can't publish heap", ps == PMIX_SUCCESS);
+        shmemu_assert( ps == PMIX_SUCCESS, "can't publish heap");
     }
 
     PMIX_INFO_FREE(ia, nfields);
@@ -101,10 +101,10 @@ shmemc_pmi_exchange_heap_info(void)
             snprintf(fetch_size.key, PMIX_MAX_KEYLEN, region_size_fmt, pe, r);
 
             ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
-            shmemu_assert("can't fetch heap base", ps == PMIX_SUCCESS);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap base");
 
             ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
-            shmemu_assert("can't fetch heap size", ps == PMIX_SUCCESS);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap size");
 
             /* slightly redundant storage, but useful */
             proc.comms.regions[r].minfo[pe].base =
@@ -138,7 +138,7 @@ shmemc_pmi_publish_worker(void)
     bop->bytes = (char *) proc.comms.xchg_wrkr_info[proc.rank].addr;
     bop->size = proc.comms.xchg_wrkr_info[proc.rank].len;
     ps = PMIx_Publish(&pi, 1);
-    shmemu_assert("can't publish worker blob", ps == PMIX_SUCCESS);
+    shmemu_assert(ps == PMIX_SUCCESS, "can't publish worker blob");
 }
 
 void
@@ -161,12 +161,12 @@ shmemc_pmi_exchange_workers(void)
 
         snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
         ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
-        shmemu_assert("can't find remote worker blob", ps == PMIX_SUCCESS);
+        shmemu_assert(ps == PMIX_SUCCESS, "can't find remote worker blob");
 
         /* save published worker */
         proc.comms.xchg_wrkr_info[i].buf = (char *) malloc(bop->size);
-        shmemu_assert("can't allocate memory for remote workers",
-                      proc.comms.xchg_wrkr_info[i].buf != NULL);
+        shmemu_assert(proc.comms.xchg_wrkr_info[i].buf != NULL,
+                      "can't allocate memory for remote workers");
         memcpy(proc.comms.xchg_wrkr_info[i].buf, bop->bytes, bop->size);
     }
 }
@@ -192,7 +192,7 @@ shmemc_pmi_publish_my_rkeys(void)
                           proc.comms.regions[r].minfo[proc.rank].racc.mh,
                           &packed_rkey, &rkey_len
                           );
-        shmemu_assert("can't unpack rkey", s == UCS_OK);
+        shmemu_assert(s == UCS_OK, "can't unpack rkey");
 
         PMIX_INFO_CONSTRUCT(&pi);
         snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, r);
@@ -200,7 +200,7 @@ shmemc_pmi_publish_my_rkeys(void)
         bop->bytes = (char *) packed_rkey;
         bop->size = rkey_len;
         ps = PMIx_Publish(&pi, 1);
-        shmemu_assert("can't publish rkey", ps == PMIX_SUCCESS);
+        shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
 
         ucp_rkey_buffer_release(packed_rkey);
     }
@@ -231,17 +231,17 @@ shmemc_pmi_exchange_all_rkeys(void)
             snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, r);
 
             ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
-            shmemu_assert("can't fetch remote rkey", ps == PMIX_SUCCESS);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
             proc.comms.regions[r].minfo[i].racc.rkey =
                 (ucp_rkey_h) malloc(bop->size);
-            shmemu_assert("can't allocate memory for remote rkey",
-                          proc.comms.regions[r].minfo[i].racc.rkey != NULL);
+            shmemu_assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL,
+                          "can't allocate memory for remote rkey");
 
             s = ucp_ep_rkey_unpack(proc.comms.eps[i],
                                    bop->bytes,
                                    &proc.comms.regions[r].minfo[i].racc.rkey
                                    );
-            shmemu_assert("can't unpack remote rkey", s == UCS_OK);
+            shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
         }
 
     }
@@ -274,11 +274,11 @@ shmemc_pmi_client_init(void)
     ps = PMIx_Init(&my_proc, NULL, 0);
 #endif  /* HAVE_PMIX_NO_INIT_HINTS */
 
-    shmemu_assert("can't initialize PMIx", ps == PMIX_SUCCESS);
+    shmemu_assert(ps == PMIX_SUCCESS, "can't initialize PMIx");
 
     /* we can get our own rank immediately */
     proc.rank = (int) my_proc.rank;
-    shmemu_assert("PMIx PE rank is not valid", proc.rank >= 0);
+    shmemu_assert(proc.rank >= 0, "PMIx PE rank is not valid");
 
     /* make a new proc to query things not linked to a specific rank */
     PMIX_PROC_CONSTRUCT(&wc_proc);
@@ -286,26 +286,26 @@ shmemc_pmi_client_init(void)
     wc_proc.rank = PMIX_RANK_WILDCARD;
 
     ps = PMIx_Get(&wc_proc, PMIX_JOB_SIZE, NULL, 0, &vp);
-    shmemu_assert("PMIx can't get program size", ps == PMIX_SUCCESS);
+    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't get program size");
 
     /* this is the program size / number of ranks/PEs */
     proc.nranks = (int) vp->data.uint32;
 
     /* is the world a sane size? */
-    shmemu_assert("PMIx count of PE ranks is not valid", proc.nranks > 0);
-    shmemu_assert("PMIx PE rank is not valid", IS_VALID_PE_NUMBER(proc.rank));
+    shmemu_assert(proc.nranks > 0, "PMIx count of PE ranks is not valid");
+    shmemu_assert(IS_VALID_PE_NUMBER(proc.rank), "PMIx PE rank is not valid");
 
     /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
-    shmemu_assert("PMIx can't find PE's peers", ps == PMIX_SUCCESS);
+    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't find PE's peers");
 
     proc.npeers = (int) vp->data.uint32;
     /* how's the 'hood look? */
-    shmemu_assert("PMIx PE's peer count", proc.npeers >= 0);
-    shmemu_assert("PMIx PE's peer count too high", proc.npeers <= proc.nranks);
+    shmemu_assert(proc.npeers >= 0, "PMIx PE's peer count");
+    shmemu_assert(proc.npeers <= proc.nranks, "PMIx PE's peer count too high");
 
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
-    shmemu_assert("PMIx can't find PE's peer list", ps == PMIX_SUCCESS);
+    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't find PE's peer list");
 
     parse_peers(vp->data.string);
 }
@@ -322,7 +322,7 @@ shmemc_pmi_client_finalize(void)
     ps = PMIx_Finalize(NULL, 0);
 #endif  /* HAVE_PMIX_NO_INIT_HINTS */
 
-    shmemu_assert("PMIx can't finalize", ps == PMIX_SUCCESS);
+    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't finalize");
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
         size_t r;
@@ -348,5 +348,5 @@ shmemc_pmi_client_abort(const char *msg, int status)
     pmix_status_t ps;
 
     ps = PMIx_Abort(status, msg, NULL, 0);
-    shmemu_assert("PMIx can't abort", ps == PMIX_SUCCESS);
+    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't abort");
 }
