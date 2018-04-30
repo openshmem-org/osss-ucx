@@ -449,7 +449,9 @@ HELPER_CSWAP(64)
                                 &ret);                                  \
                                                                         \
         /* value came back? */                                          \
-        shmemu_assert(s == UCS_OK, "fetch op " #_opname " failed");     \
+        shmemu_assert(s == UCS_OK,                                      \
+                      "fetch op \"%s\" failed (status %d)",             \
+                      #_opname, s);                                     \
                                                                         \
         return (uint##_size##_t) ret;                                   \
     }
@@ -475,7 +477,8 @@ HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 64)
                                pe);                                 \
                                                                     \
         shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),       \
-                      "post op " #_opname " failed");               \
+                      "post op \"%s\" failed (status %d)",          \
+                      #_opname, s);                                 \
     }
 
 HELPER_BITWISE_ATOMIC(AND, and, 32)
