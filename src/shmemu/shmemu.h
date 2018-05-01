@@ -207,7 +207,7 @@ void shmemu_deprecate_finalize(void);
 /*
  * prevent unused-variable warnings
  */
-# define shmemu_assert(_cond, ...) ((void)(_cond))
+# define shmemu_assert(_cond, ...) (void)(_cond)
 
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
