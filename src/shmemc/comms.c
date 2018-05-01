@@ -28,7 +28,7 @@ lookup_ucp_ep(shmemc_context_h ch /* unused */, int pe)
 }
 
 /*
- * find remote rkey
+ * find rkey for memory "region" on PE "pe"
  */
 inline static ucp_rkey_h
 lookup_rkey(size_t region, int pe)
@@ -37,7 +37,7 @@ lookup_rkey(size_t region, int pe)
 }
 
 /*
- * where the heap lives
+ * where the heap lives on PE "pe"
  */
 inline static uint64_t
 get_base(size_t region, int pe)
@@ -49,6 +49,10 @@ get_base(size_t region, int pe)
  * -- translation helpers ---------------------------------------------------
  */
 
+/*
+ * is the given address in this memory region?  Non-zero if yes, 0 if
+ * not.
+ */
 inline static int
 in_region(uint64_t addr, size_t region, int pe)
 {
