@@ -182,8 +182,6 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 static void
 noop_callback(void *request, ucs_status_t status)
 {
-    logger(LOG_ATOMICS,
-           "AMO didn't complete immediately, using callback");
 }
 
 /*
