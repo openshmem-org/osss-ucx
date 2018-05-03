@@ -28,8 +28,8 @@ allocate_xworkers_table(void)
 {
     proc.comms.xchg_wrkr_info = (worker_info_t *)
         calloc(proc.nranks, sizeof(*(proc.comms.xchg_wrkr_info)));
-    shmemu_assert("can't allocate memory for worker exchange",
-                  proc.comms.xchg_wrkr_info != NULL);
+    shmemu_assert(proc.comms.xchg_wrkr_info != NULL,
+                  "can't allocate memory for worker exchange");
 }
 
 inline static void
@@ -48,8 +48,8 @@ allocate_endpoints_table(void)
 {
     proc.comms.eps = (ucp_ep_h *)
         calloc(proc.nranks, sizeof(*(proc.comms.eps)));
-    shmemu_assert("can't allocate memory for endpoints",
-                  proc.comms.eps != NULL);
+    shmemu_assert(proc.comms.eps != NULL,
+                  "can't allocate memory for endpoints");
 }
 
 inline static void
@@ -124,7 +124,7 @@ register_globals()
     globals->len  = len;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->racc.mh);
-    shmemu_assert("can't map global memory", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "can't map global memory");
 
     /* don't need allocator, variables already there */
 }
@@ -135,7 +135,7 @@ deregister_globals(void)
     ucs_status_t s;
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->racc.mh);
-    shmemu_assert("can't unmap global memory", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "can't unmap global memory");
 }
 
 /*
@@ -160,7 +160,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
         UCP_MEM_MAP_ALLOCATE;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->racc.mh);
-    shmemu_assert("can't map memory", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "can't map symmetric heap memory");
 
     /*
      * query back to find where it is, and its actual size (might be
@@ -173,7 +173,8 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
         UCP_MEM_ATTR_FIELD_LENGTH;
 
     s = ucp_mem_query(mip->racc.mh, &attr);
-    shmemu_assert("can't query symmetric heap memory", s == UCS_OK);
+    shmemu_assert(s == UCS_OK,
+                  "can't query extent of symmetric heap memory");
 
     /* tell the PE what was given */
     mip->base = (uint64_t) attr.address;
@@ -190,7 +191,7 @@ deregister_symmetric_heap(mem_info_t *mip)
     ucs_status_t s;
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->racc.mh);
-    shmemu_assert("can't unmap symmetric heap memory", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "can't unmap symmetric heap memory");
 }
 
 inline static void
@@ -260,15 +261,15 @@ init_memory_regions(void)
     /* init that many regions on me */
     proc.comms.regions =
         (mem_region_t *) malloc(proc.comms.nregions * sizeof(mem_region_t));
-    shmemu_assert("can't allocate memory for memory regions",
-                  proc.comms.regions != NULL);
+    shmemu_assert(proc.comms.regions != NULL,
+                  "can't allocate memory for memory regions");
 
     /* now prep for all PEs to exchange */
     for (i = 0; i < proc.comms.nregions; i += 1) {
         proc.comms.regions[i].minfo =
             (mem_info_t *) malloc(proc.nranks * sizeof(mem_info_t));
-        shmemu_assert("can't allocate memory region metadata",
-                      proc.comms.regions[i].minfo != NULL);
+        shmemu_assert(proc.comms.regions[i].minfo != NULL,
+                      "can't allocate memory region metadata");
     }
 
     /* to access global variables */
@@ -376,7 +377,7 @@ ucx_init_ready(void)
     ucp_params_t pm;
 
     s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
-    shmemu_assert("can't read UCX config", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "can't read UCX config");
 
     pm.field_mask =
         UCP_PARAM_FIELD_FEATURES |
@@ -394,7 +395,7 @@ ucx_init_ready(void)
     pm.estimated_num_eps = proc.nranks;
 
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
-    shmemu_assert("can't initialize UCX", s == UCS_OK);
+    shmemu_assert(s == UCS_OK, "can't initialize UCX");
 }
 
 void
@@ -427,7 +428,7 @@ shmemc_ucx_init(void)
     allocate_contexts_table();
 
     n = shmemc_create_default_context();
-    shmemu_assert("couldn't create default context", n == 0);
+    shmemu_assert(n == 0, "couldn't create default context");
 
     /* don't need config info any more */
     ucp_config_release(proc.comms.ucx_cfg);

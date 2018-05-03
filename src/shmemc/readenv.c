@@ -90,8 +90,8 @@ shmemc_env_init(void)
     proc.env.heaps.heapsize =
         (size_t *) malloc(proc.env.heaps.nheaps *
                           sizeof(*proc.env.heaps.heapsize));
-    shmemu_assert("can't allocate memory for heap size declaration",
-                  proc.env.heaps.heapsize != NULL);
+    shmemu_assert(proc.env.heaps.heapsize != NULL,
+                  "can't allocate memory for heap size declaration");
 
     CHECK_ENV(e, SYMMETRIC_SIZE);
     r = shmemu_parse_size( (e != NULL) ? e : SHMEM_DEFAULT_HEAP_SIZE,
