@@ -212,6 +212,12 @@ helper_progress(void)
  * TODO: possible consolidation with EP disconnect code
  */
 
+#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
+# define UCX_REQUEST_CHECK(_request) ucp_request_check_status(_request)
+#else
+# define UCX_REQUEST_CHECK(_request) ucp_request_test(_request, NULL)
+#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
+
 inline static ucs_status_t
 check_wait_for_request(shmemc_context_h ch, void *req)
 {
@@ -228,11 +234,7 @@ check_wait_for_request(shmemc_context_h ch, void *req)
         do {
             ucp_worker_progress(ch->w);
 
-#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
-            s = ucp_request_check_status(req);
-#else
-            s = ucp_request_test(req, NULL);
-#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
+            s = UCX_REQUEST_CHECK(req);
         } while (s == UCS_INPROGRESS);
         ucp_request_free(req);
         return s;

@@ -88,7 +88,7 @@ AS_IF([test "x$enable_shared" = "xyes"],
 	    )
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h])
+AC_CHECK_HEADERS([stdlib.h unistd.h string.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h sched.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL
@@ -106,7 +106,7 @@ AC_CHECK_TYPES([ptrdiff_t])
 # AC_FUNC_MALLOC
 # AC_FUNC_REALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([atexit gettimeofday gethostname uname memset strlcat])
+AC_CHECK_FUNCS([atexit gettimeofday gethostname uname memset strlcat sched_yield])
 AC_CHECK_LIB([m], [log10])
 
 AM_INIT_AUTOMAKE
