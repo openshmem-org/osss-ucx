@@ -5,13 +5,13 @@ Links
 =====
 
 * OpenSHMEM
-    * http://www.openshmem.org/
+    * [http://www.openshmem.org/](http://www.openshmem.org/)
 * OpenUCX
-    * http://www.openucx.org/
+    * [http://www.openucx.org/](http://www.openucx.org/)
 * PMIx
-    * https://pmix.github.io/pmix/
+    * [https://pmix.github.io/pmix/](https://pmix.github.io/pmix/)
 * Open-MPI
-    * http://www.open-mpi.org/
+    * [http://www.open-mpi.org/](http://www.open-mpi.org/)
 
 ---
 
