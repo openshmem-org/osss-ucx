@@ -16,21 +16,21 @@ Links
 ---
 
 * Copyright (c) 2016 - 2018
-  * Stony Brook University
+      * Stony Brook University
 * Copyright (c) 2015 - 2018
-  * Los Alamos National Security, LLC.
+      * Los Alamos National Security, LLC.
 * Copyright (c) 2017 - 2018
-  * Rice University.  Neither the name of Rice University nor the names
-    of its contributors may be used to endorse or promote products
-    derived from this software without specific prior written
-    permission.
+      * Rice University.  Neither the name of Rice University nor the names
+        of its contributors may be used to endorse or promote products
+        derived from this software without specific prior written
+        permission.
 * Copyright (c) 2011 - 2016
-  * University of Houston System and UT-Battelle, LLC.
+    * University of Houston System and UT-Battelle, LLC.
 * Copyright (c) 2009 - 2016
-  * Silicon Graphics International Corp.  SHMEM is copyrighted
-    by Silicon Graphics International Corp. (SGI) The OpenSHMEM API
-    (shmem) is released by Open Source Software Solutions, Inc., under an
-    agreement with Silicon Graphics International Corp. (SGI).
+    * Silicon Graphics International Corp.  SHMEM is copyrighted
+      by Silicon Graphics International Corp. (SGI) The OpenSHMEM API
+      (shmem) is released by Open Source Software Solutions, Inc., under an
+      agreement with Silicon Graphics International Corp. (SGI).
 
 All rights reserved.
 
