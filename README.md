@@ -1,3 +1,20 @@
+This project is the Open Source Software Solutions (OSSS) OpenSHMEM
+Implementation on top of OpenUCX (UCX) and PMIx.
+
+Links
+=====
+
+* OpenSHMEM
+    * [http://www.openshmem.org/](http://www.openshmem.org/)
+* OpenUCX
+    * [http://www.openucx.org/](http://www.openucx.org/)
+* PMIx
+    * [https://pmix.github.io/pmix/](https://pmix.github.io/pmix/)
+* Open-MPI
+    * [http://www.open-mpi.org/](http://www.open-mpi.org/)
+
+---
+
 * Copyright (c) 2016 - 2018
       * Stony Brook University
 * Copyright (c) 2015 - 2018
