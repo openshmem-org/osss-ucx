@@ -129,15 +129,6 @@ typedef enum shmemc_coll {
 
 #define SHMEMC_COLL_DEFAULT SHMEMC_COLL_TREE
 
-/*
- * typedef struct shmemc_coll_algo {
- *    shmemc_coll_t barrier;
- *    shmemc_coll_t broadcast;
- *    shmemc_coll_t collect;
- *    shmemc_coll_t alltoall;
- * } shmemc_coll_algo_t;
- */
-
 typedef struct heapinfo {
     size_t nheaps;              /* how many heaps reuqested */
     size_t *heapsize;           /* array of their sizes */
