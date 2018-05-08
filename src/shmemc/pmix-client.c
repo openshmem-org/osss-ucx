@@ -274,11 +274,16 @@ shmemc_pmi_client_init(void)
     ps = PMIx_Init(&my_proc, NULL, 0);
 #endif  /* HAVE_PMIX_NO_INIT_HINTS */
 
-    shmemu_assert(ps == PMIX_SUCCESS, "can't initialize PMIx");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't initialize (%s)",
+                  PMIx_Error_string(ps));
 
     /* we can get our own rank immediately */
     proc.rank = (int) my_proc.rank;
-    shmemu_assert(proc.rank >= 0, "PMIx PE rank is not valid");
+    shmemu_assert(proc.rank >= 0,
+                  "PMIx PE rank %d is not valid (%s)",
+                  proc.rank,
+                  PMIx_Error_string(ps));
 
     /* make a new proc to query things not linked to a specific rank */
     PMIX_PROC_CONSTRUCT(&wc_proc);
@@ -286,26 +291,40 @@ shmemc_pmi_client_init(void)
     wc_proc.rank = PMIX_RANK_WILDCARD;
 
     ps = PMIx_Get(&wc_proc, PMIX_JOB_SIZE, NULL, 0, &vp);
-    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't get program size");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't get program size (%s)",
+                  PMIx_Error_string(ps));
 
     /* this is the program size / number of ranks/PEs */
     proc.nranks = (int) vp->data.uint32;
 
     /* is the world a sane size? */
-    shmemu_assert(proc.nranks > 0, "PMIx count of PE ranks is not valid");
-    shmemu_assert(IS_VALID_PE_NUMBER(proc.rank), "PMIx PE rank is not valid");
+    shmemu_assert(proc.nranks > 0,
+                  "PMIx count of PE ranks %d is not valid",
+                  proc.nranks);
+    shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
+                  "PMIx PE rank %d is not valid",
+                  proc.rank);
 
     /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
-    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't find PE's peers");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't find PE's peers (%s)",
+                  PMIx_Error_string(ps));
 
     proc.npeers = (int) vp->data.uint32;
     /* how's the 'hood look? */
-    shmemu_assert(proc.npeers >= 0, "PMIx PE's peer count");
-    shmemu_assert(proc.npeers <= proc.nranks, "PMIx PE's peer count too high");
+    shmemu_assert(proc.npeers >= 0,
+                  "PMIx PE's peer count %d must be >= 0",
+                  proc.npeers);
+    shmemu_assert(proc.npeers <= proc.nranks,
+                  "PMIx PE's peer count %d bigger than program %d",
+                  proc.npeers, proc.nranks);
 
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
-    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't find PE's peer list");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't find PE's peer list (s)",
+                  PMIx_Error_string(ps));
 
     parse_peers(vp->data.string);
 }
@@ -322,24 +341,22 @@ shmemc_pmi_client_finalize(void)
     ps = PMIx_Finalize(NULL, 0);
 #endif  /* HAVE_PMIX_NO_INIT_HINTS */
 
-    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't finalize");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't finalize (%s)",
+                  PMIx_Error_string(ps));
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
         size_t r;
 
         /* clean up allocations for exchanged buffers */
-        if (proc.comms.xchg_wrkr_info[pe].buf != NULL) {
-            free(proc.comms.xchg_wrkr_info[pe].buf);
-        }
+        free(proc.comms.xchg_wrkr_info[pe].buf);
         for (r = 0; r < proc.comms.nregions; r += 1) {
             ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
         }
     }
 
     /* clean up memory recording peer PEs */
-    if (proc.peers != NULL) {
-        free(proc.peers);
-    }
+    free(proc.peers);
 }
 
 void
@@ -348,5 +365,7 @@ shmemc_pmi_client_abort(const char *msg, int status)
     pmix_status_t ps;
 
     ps = PMIx_Abort(status, msg, NULL, 0);
-    shmemu_assert(ps == PMIX_SUCCESS, "PMIx can't abort");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't abort (%s)",
+                  PMIx_Error_string(ps));
 }
