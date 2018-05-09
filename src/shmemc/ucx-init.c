@@ -150,12 +150,17 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     ucp_mem_map_params_t mp;
     ucp_mem_attr_t attr;
 
+    shmemu_assert(proc.env.heaps.heapsize[heapno] > 0,
+                  "Cannot register empty symmetric heap #%lu",
+                  (unsigned long) heapno);
+
     /* now register it with UCX */
     mp.field_mask =
         UCP_MEM_MAP_PARAM_FIELD_LENGTH |
         UCP_MEM_MAP_PARAM_FIELD_FLAGS;
 
     mp.length = proc.env.heaps.heapsize[heapno];
+
     mp.flags =
         UCP_MEM_MAP_ALLOCATE;
 

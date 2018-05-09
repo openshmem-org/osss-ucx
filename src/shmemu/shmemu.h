@@ -114,11 +114,11 @@ void shmemu_deprecate_finalize(void);
  *
  * shmemu_assert(condition-check, shmemu_fatal args...)
  */
-# define shmemu_assert(_cond, ...)                                      \
-    do {                                                                \
-        if (! (_cond)) {                                                \
-            shmemu_fatal("%s, assertion failed: %s", __VA_ARGS__);      \
-        }                                                               \
+# define shmemu_assert(_cond, ...)              \
+    do {                                        \
+        if (! (_cond)) {                        \
+            shmemu_fatal(__VA_ARGS__);          \
+        }                                       \
     } while (0)
 
 /*

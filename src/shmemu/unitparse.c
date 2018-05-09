@@ -16,7 +16,7 @@
  *
  */
 
-static char *units_string = "kmgtpe";
+static char *units_string = "KMGTPE";
 static const size_t multiplier = 1024;
 
 /**
@@ -32,7 +32,7 @@ parse_unit(char u, size_t *sp)
     char *usp = units_string;
     size_t bytes = multiplier;
 
-    u = tolower(u);
+    u = toupper(u);
     while (*usp != '\0') {
         if (*usp == u) {
             foundit = 1;
@@ -103,25 +103,29 @@ int
 shmemu_human_number(double bytes, char *buf, size_t buflen)
 {
     char *walk = units_string;
+    unsigned wc = 0;            /* walk count */
     size_t divvy = multiplier;
     double b = bytes;
+    char unit = '\0';
 
     while (*walk) {
         const size_t d = (size_t) bytes / divvy;
 
         /* find when we've gone too far */
         if (d == 0) {
-            walk -= 1;
+            if (wc > 0) {
+                walk -= 1;
+                unit = *walk;
+            }
             break;
             /* NOT REACHED */
         }
-        walk += 1;
+        wc += 1, walk += 1;
         divvy *= multiplier;
         b /= multiplier;
     }
 
-    /* ok if *walk is NUL */
-    snprintf(buf, buflen, "%.1f%c", b, toupper(*walk));
+    snprintf(buf, buflen, "%.1f%c", b, unit);
 
     return 0;
 }
