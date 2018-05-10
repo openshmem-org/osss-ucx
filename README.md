@@ -15,6 +15,13 @@ Links
 
 ---
 
+<a href="https://scan.coverity.com/projects/openshmem-osss-ucx">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/14306/badge.svg"/>
+</a>
+
+--
+
 * Copyright (c) 2016 - 2018
       * Stony Brook University
 * Copyright (c) 2015 - 2018
