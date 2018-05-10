@@ -34,6 +34,11 @@ static int pe_width;
 static int stamp_width;
 
 /*
+ * cache process ID
+ */
+static pid_t mypid;
+
+/*
  * keep track of trace events
  */
 
@@ -143,6 +148,8 @@ shmemu_logger_init(void)
     parse_log_events();
 
     fatal_len = strlen(LOG_FATAL);
+
+    mypid = getpid();
 }
 
 void
@@ -171,38 +178,41 @@ static char tmp2[TRACE_MSG_BUF_SIZE];
 void
 shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
 {
-    if (proc.env.logging) {
-        if (event_enabled(evt) || event_enabled(LOG_ALL)) {
-            va_list ap;
+    if (! proc.env.logging) {
+        return;
+    }
 
-            snprintf(tmp1, TRACE_MSG_BUF_SIZE,
-                     "[%*d:%s:%d:%6.6f]",
-                     pe_width, proc.rank,
-                     host,
-                     (int) getpid(),
-                     shmemu_timer()
-                     );
+    if (event_enabled(evt) || event_enabled(LOG_ALL)) {
+        va_list ap;
 
-            snprintf(tmp2, TRACE_MSG_BUF_SIZE,
-                     "%-*s %10s: ",
-                     stamp_width, tmp1,
-                     evt
-                     );
+        snprintf(tmp1, TRACE_MSG_BUF_SIZE,
+                 "[%*d:%s:%d:%6.6f]",
+                 pe_width, proc.rank,
+                 host,
+                 (int) mypid,
+                 shmemu_timer()
+                 );
 
-            va_start(ap, fmt);
-            vsnprintf(tmp1, TRACE_MSG_BUF_SIZE, fmt, ap);
-            va_end(ap);
+        snprintf(tmp2, TRACE_MSG_BUF_SIZE,
+                 "%-*s %10s: ",
+                 stamp_width, tmp1,
+                 evt
+                 );
 
-            STRCAT_SAFE(tmp2, tmp1, strlen(tmp1));
-            STRCAT_SAFE(tmp2, "\n", 1);
+        va_start(ap, fmt);
+        vsnprintf(tmp1, TRACE_MSG_BUF_SIZE, fmt, ap);
+        va_end(ap);
 
-            fputs(tmp2, log_stream);
-            /* make sure this all goes out in 1 burst */
-            fflush(log_stream);
+        STRCAT_SAFE(tmp2, tmp1, strlen(tmp1));
+        STRCAT_SAFE(tmp2, "\n", 1);
 
-            if (strncmp(evt, LOG_FATAL, fatal_len) == 0) {
-                shmemc_global_exit(1);
-            }
+        fputs(tmp2, log_stream);
+        /* make sure this all goes out in 1 burst */
+        fflush(log_stream);
+
+        if (strncmp(evt, LOG_FATAL, fatal_len) == 0) {
+            shmemc_global_exit(1);
+            /* NOT REACHED */
         }
     }
 }
