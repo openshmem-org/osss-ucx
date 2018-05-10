@@ -35,9 +35,7 @@ allocate_xworkers_table(void)
 inline static void
 deallocate_xworkers_table(void)
 {
-    if (proc.comms.xchg_wrkr_info != NULL) {
-        free(proc.comms.xchg_wrkr_info);
-    }
+    free(proc.comms.xchg_wrkr_info);
 }
 
 /*
@@ -55,9 +53,7 @@ allocate_endpoints_table(void)
 inline static void
 deallocate_endpoints_table(void)
 {
-    if (proc.comms.eps != NULL) {
-        free(proc.comms.eps);
-    }
+    free(proc.comms.eps);
 }
 
 inline static void

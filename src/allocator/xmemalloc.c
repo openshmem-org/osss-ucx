@@ -106,9 +106,7 @@ shmemxa_init(shmemx_heap_index_t numheaps)
 void
 shmemxa_finalize(void)
 {
-    if (spaces != NULL) {
-        free(spaces);
-    }
+    free(spaces);
 }
 
 /*
