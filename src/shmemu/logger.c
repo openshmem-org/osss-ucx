@@ -159,6 +159,9 @@ shmemu_logger_finalize(void)
 
 #define TRACE_MSG_BUF_SIZE 256
 
+static char tmp1[TRACE_MSG_BUF_SIZE];
+static char tmp2[TRACE_MSG_BUF_SIZE];
+
 #ifdef HAVE_STRLCAT
 # define STRCAT_SAFE strlcat
 #else
@@ -170,8 +173,6 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
 {
     if (proc.env.logging) {
         if (event_enabled(evt) || event_enabled(LOG_ALL)) {
-            char tmp1[TRACE_MSG_BUF_SIZE];
-            char tmp2[TRACE_MSG_BUF_SIZE];
             va_list ap;
 
             snprintf(tmp1, TRACE_MSG_BUF_SIZE,
