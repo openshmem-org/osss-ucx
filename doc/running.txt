@@ -6,16 +6,16 @@ Prerequisites
 PMIx
 ====
 
-v1.2.x, or newer, release; or from git:
+v1.2.x, or newer, release; or from github master:
 
-    PMIx              : https://github.com/pmix/pmix/
+    PMIx      : https://github.com/pmix/pmix/
 
 UCX
 ===
 
-Either a release or cloned:
+Tested with all releases and from github master:
 
-    UCX from github   : https://github.com/openucx/ucx/
+    UCX       : https://github.com/openucx/ucx/
 
 If you want to build threading support, UCX should be installed with
 
@@ -28,11 +28,21 @@ For PMIx-aware "mpiexec" launcher:
 
     OpenMPI downloads : https://www.open-mpi.org/software/ompi/
 
-    N.B. For PMIx v1 series, use OpenMPI 2.1.2 or newer.
-         For PMIx v2 series and newer, use OpenMPI 3.0.0 or newer.
+Combinations
+============
 
-Sequence
-========
+For all users, any version of UCX is fine.
+
+The interaction with most impact is that of PMIx and Open-MPI:
+
+  o For end-users, the easiest route is PMIx 1.2.5 and Open-MPI 2.1.3
+    to provide a stable launch environment.
+
+  o For developers, the github master versions throughout will track
+    all the latest updates.
+
+Building Sequence
+=================
 
 1. In the top-level source directory, run ./autogen.sh
 
