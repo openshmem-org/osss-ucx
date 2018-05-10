@@ -16,6 +16,7 @@ then
       AC_FC_LIBRARY_LDFLAGS
       AC_FC_WRAPPERS
       fortran_happy=yes
+      AC_MSG_WARN([Fortran support is deprecated as of OpenSHMEM 1.4])
     fi
 fi
 
