@@ -239,7 +239,7 @@ shmemc_context_destroy(shmem_ctx_t ctx)
 unsigned long
 shmemc_context_id(shmem_ctx_t ctx)
 {
-    shmemc_context_h ch = (shmemc_context_h) ctx;
+    const shmemc_context_h ch = (shmemc_context_h) ctx;
 
     return ch->id;
 }
@@ -250,7 +250,6 @@ shmemc_context_id(shmem_ctx_t ctx)
  *
  * Return 0 if successful, 1 otherwise
  */
-
 shmemc_context_t shmemc_default_context;
 
 int
