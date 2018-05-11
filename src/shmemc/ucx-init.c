@@ -198,6 +198,8 @@ deregister_symmetric_heap(mem_info_t *mip)
     ucs_status_t s;
     const unsigned long hn = (unsigned long) mip->id; /* printing */
 
+    NO_WARN_UNUSED(hn);
+
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->racc.mh);
     shmemu_assert(s == UCS_OK,
                   "can't unmap memory for symmetric heap #%lu",
