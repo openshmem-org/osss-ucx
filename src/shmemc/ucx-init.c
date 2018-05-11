@@ -145,10 +145,11 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     ucs_status_t s;
     ucp_mem_map_params_t mp;
     ucp_mem_attr_t attr;
+    const unsigned long hn = (unsigned long) heapno; /* printing */
 
     shmemu_assert(proc.env.heaps.heapsize[heapno] > 0,
                   "Cannot register empty symmetric heap #%lu",
-                  (unsigned long) heapno);
+                  hn);
 
     /* now register it with UCX */
     mp.field_mask =
@@ -161,7 +162,11 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
         UCP_MEM_MAP_ALLOCATE;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->racc.mh);
-    shmemu_assert(s == UCS_OK, "can't map symmetric heap memory");
+    shmemu_assert(s == UCS_OK,
+                  "can't map memory for symmetric heap #%lu",
+                  hn);
+
+    mip->id = hn;
 
     /*
      * query back to find where it is, and its actual size (might be
@@ -175,7 +180,8 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
 
     s = ucp_mem_query(mip->racc.mh, &attr);
     shmemu_assert(s == UCS_OK,
-                  "can't query extent of symmetric heap memory");
+                  "can't query extent of memory for symmetric heap #%lu",
+                  hn);
 
     /* tell the PE what was given */
     mip->base = (uint64_t) attr.address;
@@ -190,9 +196,12 @@ inline static void
 deregister_symmetric_heap(mem_info_t *mip)
 {
     ucs_status_t s;
+    const unsigned long hn = (unsigned long) mip->id; /* printing */
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->racc.mh);
-    shmemu_assert(s == UCS_OK, "can't unmap symmetric heap memory");
+    shmemu_assert(s == UCS_OK,
+                  "can't unmap memory for symmetric heap #%lu",
+                  hn);
 }
 
 inline static void
