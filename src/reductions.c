@@ -37,6 +37,7 @@
                                 int PE_start, int logPE_stride, int PE_size, \
                                 _type *pWrk, long *pSync)               \
     {                                                                   \
+        NO_WARN_UNUSED(initval);                                        \
         const int me = shmem_my_pe();                                   \
         const int step = 1 << logPE_stride;                             \
         const int nloops = nreduce / SHMEM_REDUCE_MIN_WRKDATA_SIZE;     \

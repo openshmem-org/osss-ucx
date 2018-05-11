@@ -22,8 +22,10 @@
  * shortcut to look up the UCP endpoint of a context
  */
 inline static ucp_ep_h
-lookup_ucp_ep(shmemc_context_h ch /* unused */, int pe)
+lookup_ucp_ep(shmemc_context_h ch, int pe)
 {
+    NO_WARN_UNUSED(ch);
+
     return proc.comms.eps[pe];
 }
 
@@ -186,6 +188,8 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 static void
 noop_callback(void *request, ucs_status_t status)
 {
+    NO_WARN_UNUSED(request);
+    NO_WARN_UNUSED(status);
 }
 
 /*
@@ -577,6 +581,8 @@ shmemc_progress(void)
 void *
 shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
+    NO_WARN_UNUSED(ctx);
+
     /* check to see if UCX is new enough */
 #ifdef HAVE_UCP_RKEY_PTR
     uint64_t r_addr;            /* address on other PE */

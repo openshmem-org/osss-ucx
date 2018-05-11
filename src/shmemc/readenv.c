@@ -152,12 +152,8 @@ shmemc_env_init(void)
 void
 shmemc_env_finalize(void)
 {
-    if (proc.env.logging_file != NULL) {
-        free(proc.env.logging_file);
-    }
-    if (proc.env.logging_events != NULL) {
-        free(proc.env.logging_events);
-    }
+    free(proc.env.logging_file);
+    free(proc.env.logging_events);
 }
 
 static const int var_width = 22;

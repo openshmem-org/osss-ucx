@@ -29,6 +29,8 @@
                                      int##_size##_t *var,               \
                                      int##_size##_t value)              \
     {                                                                   \
+        NO_WARN_UNUSED(ctx);                                            \
+                                                                        \
         return ( (*var) _op (value) ) ? 1 : 0;                          \
     }
 

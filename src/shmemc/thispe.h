@@ -35,6 +35,7 @@ typedef struct mem_region_access {
  * info:
  */
 typedef struct mem_info {
+    size_t id;                  /* number of this heap */
     uint64_t base;              /* start of this heap */
     uint64_t end;               /* end of this heap */
     size_t len;                 /* its size (b) */
@@ -55,6 +56,9 @@ typedef struct mem_region {
  * OpenSHMEM context requires...
  */
 
+/*
+ * context attributes, see OpenSMHEM 1.4 spec, sec. 9.4.1, pp. 30-31
+ */
 typedef struct shmemc_context_attr {
     bool serialized;
     bool private;
