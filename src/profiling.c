@@ -16,6 +16,8 @@
 void
 shmemx_pcontrol(int level)
 {
+    NO_WARN_UNUSED(level);
+
 #ifdef ENABLE_LOGGING
     char *msg;
 
