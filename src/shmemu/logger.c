@@ -36,7 +36,7 @@ static int stamp_width;
 /*
  * cache process ID
  */
-static pid_t mypid;
+static int mypid;
 
 /*
  * keep track of trace events
@@ -149,7 +149,7 @@ shmemu_logger_init(void)
 
     fatal_len = strlen(LOG_FATAL);
 
-    mypid = getpid();
+    mypid = (int) getpid();
 }
 
 void
@@ -164,10 +164,11 @@ shmemu_logger_finalize(void)
     }
 }
 
-#define TRACE_MSG_BUF_SIZE 256
+#define TRACE_MSG_BUF_SIZE_1 256
+#define TRACE_MSG_BUF_SIZE_2 (TRACE_MSG_BUF_SIZE_1 * 2)
 
-static char tmp1[TRACE_MSG_BUF_SIZE];
-static char tmp2[TRACE_MSG_BUF_SIZE];
+static char tmp1[TRACE_MSG_BUF_SIZE_1];
+static char tmp2[TRACE_MSG_BUF_SIZE_2];
 
 #ifdef HAVE_STRLCAT
 # define STRCAT_SAFE strlcat
@@ -185,22 +186,22 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
     if (event_enabled(evt) || event_enabled(LOG_ALL)) {
         va_list ap;
 
-        snprintf(tmp1, TRACE_MSG_BUF_SIZE,
+        snprintf(tmp1, TRACE_MSG_BUF_SIZE_1,
                  "[%*d:%s:%d:%6.6f]",
                  pe_width, proc.rank,
                  host,
-                 (int) mypid,
+                 mypid,
                  shmemu_timer()
                  );
 
-        snprintf(tmp2, TRACE_MSG_BUF_SIZE,
-                 "%-*s %10s: ",
+        snprintf(tmp2, TRACE_MSG_BUF_SIZE_2,
+                 "%-*s %s: ",
                  stamp_width, tmp1,
                  evt
                  );
 
         va_start(ap, fmt);
-        vsnprintf(tmp1, TRACE_MSG_BUF_SIZE, fmt, ap);
+        vsnprintf(tmp1, TRACE_MSG_BUF_SIZE_1, fmt, ap);
         va_end(ap);
 
         STRCAT_SAFE(tmp2, tmp1, strlen(tmp1));
