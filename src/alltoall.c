@@ -32,6 +32,7 @@
                            int logPE_stride, int PE_size,               \
                            long *pSync)                                 \
     {                                                                   \
+        NO_WARN_UNUSED(pSync);                                          \
         const int step = 1 << logPE_stride;                             \
         int pe, i;                                                      \
                                                                         \
@@ -62,6 +63,7 @@ SHMEM_ALLTOALLS_TYPE(64, 8)
                           int logPE_stride, int PE_size,                \
                           long *pSync)                                  \
     {                                                                   \
+        NO_WARN_UNUSED(pSync);                                          \
         const int step = 1 << logPE_stride;                             \
         int pe, i;                                                      \
                                                                         \
