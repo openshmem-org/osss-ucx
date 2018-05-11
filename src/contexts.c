@@ -76,12 +76,16 @@ shmem_ctx_destroy(shmem_ctx_t ctx)
 void
 shmemx_ctx_start_session(shmem_ctx_t ctx)
 {
+    NO_WARN_UNUSED(ctx);
+
     SHMEMU_CHECK_INIT();
 }
 
 void
 shmemx_ctx_end_session(shmem_ctx_t ctx)
 {
+    NO_WARN_UNUSED(ctx);
+
     SHMEMU_CHECK_INIT();
 }
 

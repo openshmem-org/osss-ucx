@@ -138,8 +138,10 @@ FORTRAN_STRIDED_COMPLEX_OPS(get, d, double)
  */
 
 void
-FORTRANIFY(start_pes)(int *npes /* unused */ )
+FORTRANIFY(start_pes)(int *npes)
 {
+    NO_WARN_UNUSED(npes);
+
     shmem_init();
 }
 
@@ -1052,6 +1054,8 @@ void
 FORTRANIFY(shpalloc)(uintptr_t **addr, int *length,
                      int *errcode, int *abort)
 {
+    NO_WARN_UNUSED(abort);
+
     /* convert 32-bit words to bytes */
     const int scale = sizeof(int32_t);
     void *symm_addr;
@@ -1109,6 +1113,8 @@ FORTRANIFY(shpalloc)(uintptr_t **addr, int *length,
 void
 FORTRANIFY(shpdeallc)(uintptr_t **addr, int *errcode, int *abort)
 {
+    NO_WARN_UNUSED(abort);
+
     logger(LOG_MEMORY,
            "shpdeallc(addr = %p, errcode = %d, abort = %d)",
            *addr, *errcode, *abort);
@@ -1153,6 +1159,8 @@ void
 FORTRANIFY(shpclmove)(uintptr_t **addr, int *length,
                       int *errcode, int *abort)
 {
+    NO_WARN_UNUSED(abort);
+
     *addr = shmema_realloc(*addr, *length);
 
     /* pass back status code */

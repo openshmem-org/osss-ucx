@@ -197,8 +197,11 @@ shmem_query_thread(int *provided)
 #endif /* ENABLE_PSHMEM */
 
 void
-start_pes(int n /* unused */)
+start_pes(int n)
 {
+    NO_WARN_UNUSED(n);
+
     deprecate(__func__, 1, 2);
+
     shmem_init();
 }

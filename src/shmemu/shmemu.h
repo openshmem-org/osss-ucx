@@ -107,6 +107,11 @@ void shmemu_deprecate_finalize(void);
 
 #endif  /* ENABLE_LOGGING */
 
+/*
+ * mark args as unused
+ */
+#define NO_WARN_UNUSED(_obj) (void)(_obj)
+
 #ifdef ENABLE_DEBUG
 
 /*
@@ -207,7 +212,7 @@ void shmemu_deprecate_finalize(void);
 /*
  * prevent unused-variable warnings
  */
-# define shmemu_assert(_cond, ...) (void)(_cond)
+# define shmemu_assert(_cond, ...) NO_WARN_UNUSED(_cond)
 
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
