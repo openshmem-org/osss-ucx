@@ -1,42 +1,53 @@
-#!/bin/sh
+#!/usr/bin/env perl
+# Emacs: -*- mode: cperl; -*-
 # For license: see LICENSE file at top-level
 
-progname="`basename $0`"
+use strict;
+use warnings;
+use diagnostics;
 
-# possibly from environment
-launcher="${SHMEM_LAUNCHER-}"
+use File::Basename;
+my $progname = basename($ARGV[0]);
 
-if [ -z "$launcher" ]
-then
-    # possibly from configure
-    launcher="@SHMEM_LAUNCHER@"
-fi
+my $launcher = '';
 
-if [ -z "$launcher" ]
-then
-    launcher=prun
-fi
+if (defined $ENV{SHMEM_LAUNCHER}) {
+  $launcher = $ENV{SHMEM_LAUNCHER};
+}
 
-if [ "$launcher" = "prun" ]
-then
-    #
-    # wait for daemon to be ready, & then record pid (sleep is nasty
-    # fudge for now)
-    #
-    prte --daemonize
-    sleep 1
-    prte_pid="`pgrep -x -U $USER prte`"
-fi
+if ($launcher eq '') {
+  $launcher = '@SHMEM_LAUNCHER@';
+}
 
-$launcher "$@"
-err=$?
+if ($launcher eq '') {
+  $launcher = 'prun';
+}
 
-if [ "$launcher" = "prun" ]
-then
-    #
-    # clean up prte daemon
-    #
-    kill -TERM $prte_pid
-fi
+my $pid = open my $pipe, '-|', 'prte';
 
-exit $err
+if (! defined $pid) {
+  print STDERR "$progname: failed to run PRTE\n";
+  exit 1;
+}
+
+if ($pid) {			# parent
+  # print "Parent has child PID $pid\n";
+
+  my $ok = 0;
+  while (<$pipe>) {
+    if (/^DVM ready/) {
+      $ok = 1;
+      last;
+    }
+  }
+
+  if ($ok) {
+    # print "Parent got start-up from child\n";
+
+    system $launcher, @ARGV;
+  }
+
+  # print "Parent reaps child PID $pid\n";
+  kill TERM => $pid;
+  waitpid($pid,0);
+}
