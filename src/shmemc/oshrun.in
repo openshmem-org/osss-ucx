@@ -9,6 +9,10 @@
 use File::Basename;
 my $progname = basename($ARGV[0]);
 
+#
+# ------------------------------------------------------------------------
+#
+
 my $launcher = '';
 
 #
@@ -33,42 +37,74 @@ if ($launcher eq '') {
 }
 
 #
-# start daemons in child process
+# ------------------------------------------------------------------------
 #
-my $pid = open my $pipe, '-|', 'prte';
 
-if (! defined $pid) {
-  print STDERR "$progname: failed to run PRTE\n";
-  exit 1;
+sub run_it {
+  return system $launcher, @ARGV;
 }
 
 #
-# parent waits for daemon to be ready, then launches user app
+# ------------------------------------------------------------------------
 #
-if ($pid) {
-  my $ok = 0;
 
-  while (<$pipe>) {
-    if (/^DVM ready/) {
-      $ok = 1;
-      last;
+sub prun_launch {
+  #
+  # start daemons in child process
+  #
+  my $pid = open my $pipe, '-|', 'prte';
+
+  if (! defined $pid) {
+    print STDERR "$progname: failed to run PRTE\n";
+    exit 1;
+  }
+
+  #
+  # parent waits for daemon to be ready, then launches user app
+  #
+  if ($pid) {
+    my $ok = 0;
+
+    while (<$pipe>) {
+      if (/^DVM ready/) {
+	$ok = 1;
+	last;
+      }
     }
+
+    #
+    # assume worst; if app is good this will later be 0
+    #
+    my $status = 1;
+
+    if ($ok) {
+      $status = run_it();
+    }
+
+    #
+    # shut down daemons
+    #
+    kill TERM => $pid;
+    waitpid($pid,0);
+
+    return $status;
   }
-
-  #
-  # assume worst; if app is good this will later be 0
-  #
-  my $status = 1;
-
-  if ($ok) {
-    $status = system $launcher, @ARGV;
-  }
-
-  #
-  # shut down daemons
-  #
-  kill TERM => $pid;
-  waitpid($pid,0);
-
-  exit $status;
 }
+
+#
+# ------------------------------------------------------------------------
+#
+
+my $err;
+
+#
+# if we're using PRRTE, fire up support, otherwise just launch
+#
+if ($launcher eq 'prun') {
+  $err = prun_launch();
+}
+else {
+  $err = run_it();
+}
+
+exit $err;
