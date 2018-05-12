@@ -29,7 +29,13 @@ fi
 
 if [ -z "$launcher" ]
 then
-    echo "$progname: no launcher found, tried $LAUNCHERS"
+    echo "$progname: no launcher found, tried:"
+    echo
+    for L in $LAUNCHERS
+    do
+        echo "        $L"
+    done
+    echo
     exit 1
 fi     
 
