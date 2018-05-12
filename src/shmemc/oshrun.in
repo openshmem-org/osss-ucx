@@ -3,9 +3,6 @@
 
 progname="`basename $0`"
 
-# test left-to-right order
-LAUNCHERS="mpiexec mpirun"
-
 # possibly from environment
 launcher="${SHMEM_LAUNCHER-}"
 
@@ -17,20 +14,29 @@ fi
 
 if [ -z "$launcher" ]
 then
-    for L in $LAUNCHERS
-    do
-        if hash "$L" >/dev/null 2>&1
-        then
-            launcher="$L"
-            break
-        fi  
-    done
+    launcher=prun
 fi
 
-if [ -z "$launcher" ]
+if [ "$launcher" = "prun" ]
 then
-    echo "$progname: no launcher found, tried $LAUNCHERS"
-    exit 1
-fi     
+    #
+    # wait for daemon to be ready, & then record pid (sleep is nasty
+    # fudge for now)
+    #
+    prte --daemonize
+    sleep 1
+    prte_pid="`pgrep -x -U $USER prte`"
+fi
 
-exec $launcher "$@"
+$launcher "$@"
+err=$?
+
+if [ "$launcher" = "prun" ]
+then
+    #
+    # clean up prte daemon
+    #
+    kill -TERM $prte_pid
+fi
+
+exit $err
