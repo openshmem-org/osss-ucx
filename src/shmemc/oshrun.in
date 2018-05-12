@@ -43,7 +43,7 @@ if (! defined $pid) {
 }
 
 #
-# parent waits for daemon to be eady, then launches user app
+# parent waits for daemon to be ready, then launches user app
 #
 if ($pid) {
   my $ok = 0;
