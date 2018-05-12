@@ -55,7 +55,10 @@ if ($pid) {
     }
   }
 
-  my $status;
+  #
+  # assume worst; if app is good this will later be 0
+  #
+  my $status = 1;
 
   if ($ok) {
     $status = system $launcher, @ARGV;
