@@ -2,27 +2,39 @@
 # Emacs: -*- mode: cperl; -*-
 # For license: see LICENSE file at top-level
 
-use strict;
-use warnings;
-use diagnostics;
+# use strict;
+# use warnings;
+# use diagnostics;
 
 use File::Basename;
 my $progname = basename($ARGV[0]);
 
 my $launcher = '';
 
+#
+# anything in environment?
+#
 if (defined $ENV{SHMEM_LAUNCHER}) {
   $launcher = $ENV{SHMEM_LAUNCHER};
 }
 
+#
+# configure might have given us a SHMEM_LAUNCHER
+#
 if ($launcher eq '') {
   $launcher = '@SHMEM_LAUNCHER@';
 }
 
+#
+# still nothing, use default
+#
 if ($launcher eq '') {
   $launcher = 'prun';
 }
 
+#
+# start daemons in child process
+#
 my $pid = open my $pipe, '-|', 'prte';
 
 if (! defined $pid) {
@@ -30,10 +42,12 @@ if (! defined $pid) {
   exit 1;
 }
 
-if ($pid) {			# parent
-  # print "Parent has child PID $pid\n";
-
+#
+# parent waits for daemon to be eady, then launches user app
+#
+if ($pid) {
   my $ok = 0;
+
   while (<$pipe>) {
     if (/^DVM ready/) {
       $ok = 1;
@@ -41,13 +55,17 @@ if ($pid) {			# parent
     }
   }
 
-  if ($ok) {
-    # print "Parent got start-up from child\n";
+  my $status;
 
-    system $launcher, @ARGV;
+  if ($ok) {
+    $status = system $launcher, @ARGV;
   }
 
-  # print "Parent reaps child PID $pid\n";
+  #
+  # shut down daemons
+  #
   kill TERM => $pid;
   waitpid($pid,0);
+
+  exit $status;
 }
