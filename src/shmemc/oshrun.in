@@ -72,9 +72,11 @@ sub prrte_shutdown {
   kill TERM => $prrte_pid;
   waitpid($prrte_pid,0);
   close $prrte_pipe;
+
+  debug("PRRTE shut down (pid $prrte_pid)...");
 }
 
-sub prun_launch {
+sub prrte_launch {
   #
   # start daemon in child process
   #
@@ -84,7 +86,7 @@ sub prun_launch {
     die "$progname: failed to run PRRTE daemon: $!\n";
   }
 
-  debug("waiting for PRRTE (pid $prrte_pid)...");
+  debug("PRRTE wait (pid $prrte_pid)...");
 
   #
   # parent waits for daemon to be ready, then launches user app
@@ -118,10 +120,6 @@ sub prun_launch {
       $status = bare_launch();
     }
 
-    prrte_shutdown();
-
-    debug("PRRTE shut down (pid $prrte_pid)...");
-
     return $status;
   }
 }
@@ -136,7 +134,9 @@ my $err;
 # if we're using PRRTE, fire up support, otherwise just launch
 #
 if ($launcher eq 'prun') {
-  $err = prun_launch();
+  $err = prrte_launch();
+
+  prrte_shutdown();
 }
 else {
   $err = bare_launch();
