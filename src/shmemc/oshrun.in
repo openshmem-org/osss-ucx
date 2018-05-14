@@ -133,7 +133,10 @@ my $err;
 #
 # if we're using PRRTE, fire up support, otherwise just launch
 #
-if ($launcher eq 'prun') {
+
+my $is_prun = basename($launcher) eq 'prun';
+
+if ($is_prun) {
   $err = prrte_launch();
 
   prrte_shutdown();
