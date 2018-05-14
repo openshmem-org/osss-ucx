@@ -2,15 +2,27 @@
 # Emacs: -*- mode: cperl; -*-
 # For license: see LICENSE file at top-level
 
-# use strict;
-# use warnings;
-# use diagnostics;
+use strict;
+use warnings;
+use diagnostics;
 
 use File::Basename;
-my $progname = basename($ARGV[0]);
+my $progname = basename($0);
 
 #
-# ------------------------------------------------------------------------
+# -- encapsulate debugging output ----------------------------------------
+#
+
+use constant DEBUG => 1;
+
+sub debug {
+  if (DEBUG) {
+    print STDERR "DEBUG($progname): @_\n";
+  }
+}
+
+#
+# -- work out which launcher is required ---------------------------------
 #
 
 my $launcher = '';
@@ -37,62 +49,85 @@ if ($launcher eq '') {
 }
 
 #
-# ------------------------------------------------------------------------
+# -- do the underlying launch of app -------------------------------------
 #
 
-sub run_it {
+sub bare_launch {
   return system $launcher, @ARGV;
 }
 
 #
-# ------------------------------------------------------------------------
+# -- for PRRTE, control of prte daemon -----------------------------------
 #
+
+#
+# controlling launched daemon
+#
+my ($prrte_pid, $prrte_pipe);
+
+sub prrte_shutdown {
+  #
+  # shut down daemons
+  #
+  kill TERM => $prrte_pid;
+  waitpid($prrte_pid,0);
+  close $prrte_pipe;
+}
 
 sub prun_launch {
   #
-  # start daemons in child process
+  # start daemon in child process
   #
-  my $pid = open my $pipe, '-|', 'prte';
+  $prrte_pid = open $prrte_pipe, '-|', 'prte';
 
-  if (! defined $pid) {
-    print STDERR "$progname: failed to run PRTE\n";
-    exit 1;
+  if (! defined $prrte_pid) {
+    die "$progname: failed to run PRRTE daemon: $!\n";
   }
+
+  debug("waiting for PRRTE (pid $prrte_pid)...");
 
   #
   # parent waits for daemon to be ready, then launches user app
   #
-  if ($pid) {
-    my $ok = 0;
+  if ($prrte_pid) {
+    my $ready = 0;
 
-    while (<$pipe>) {
+    while (<$prrte_pipe>) {
       if (/^DVM ready/) {
-	$ok = 1;
+	$ready = 1;
 	last;
       }
     }
+
+    if (! $ready) {
+      prrte_shutdown();
+
+      die "$progname: internal error at line " .
+	__LINE__ .
+	", should not be here\n";
+    }
+
+    debug("PRRTE ready (pid $prrte_pid)...");
 
     #
     # assume worst; if app is good this will later be 0
     #
     my $status = 1;
 
-    if ($ok) {
-      $status = run_it();
+    if ($ready) {
+      $status = bare_launch();
     }
 
-    #
-    # shut down daemons
-    #
-    kill TERM => $pid;
-    waitpid($pid,0);
+    prrte_shutdown();
+
+    debug("PRRTE shut down (pid $prrte_pid)...");
 
     return $status;
   }
 }
 
 #
-# ------------------------------------------------------------------------
+# -- let's do it! --------------------------------------------------------
 #
 
 my $err;
@@ -104,7 +139,7 @@ if ($launcher eq 'prun') {
   $err = prun_launch();
 }
 else {
-  $err = run_it();
+  $err = bare_launch();
 }
 
 exit $err;
