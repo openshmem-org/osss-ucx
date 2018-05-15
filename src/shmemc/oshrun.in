@@ -6,6 +6,8 @@ use strict;
 use warnings;
 use diagnostics;
 
+use Term::ANSIColor;
+
 use File::Basename;
 my $progname = basename($0);
 
@@ -21,7 +23,7 @@ $debug = $ENV{$debug_env} if defined $ENV{$debug_env};
 
 sub debug {
   if ($debug) {
-    print STDERR "DEBUG($progname): @_\n";
+    print STDERR colored("DEBUG($progname): @_", 'bold'), "\n";
   }
 }
 
@@ -39,17 +41,62 @@ if (defined $ENV{SHMEM_LAUNCHER}) {
 }
 
 #
-# configure might have given us a SHMEM_LAUNCHER
+# configure might have given us a SHMEM_LAUNCHER, otherwise this is a
+# strange-looking no-op
 #
 if ($launcher eq '') {
   $launcher = '@SHMEM_LAUNCHER@';
 }
 
 #
-# still nothing, use default
+# still nothing, can we find something?
 #
+
+use Memoize;
+memoize('which');
+
+sub which {
+  my $f = shift;
+  my @ps = split ':', $ENV{PATH};
+
+  for my $p (@ps) {
+    my $try = "$p/$f";
+    if ( -x $try ) {
+      return $try;
+    }
+  }
+  return undef;
+}
+
 if ($launcher eq '') {
-  $launcher = 'prun';
+  my @Launchers = qw(prun mpiexec mpirun);
+
+  for my $L (@Launchers) {
+    my $pl = which($L);
+    next unless defined $pl;
+
+    debug("try launcher in \"$pl\"");
+
+    if ($L eq 'prun') {
+      my $pr = $pl;
+      $pr =~ s/prun$/prte/;
+      if ( -x $pr ) {
+	debug("found daemon in \"$pr\"");
+      }
+      else {
+	debug("prun but no prte, skipping");
+	next;
+      }
+    }
+
+    # take this one
+    $launcher = $L;
+    last;
+  }
+}
+
+if ($launcher eq '') {
+  die "$progname: unable to find launcher";
 }
 
 debug("launcher is \"$launcher\"");
