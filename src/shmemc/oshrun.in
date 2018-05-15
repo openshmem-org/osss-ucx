@@ -91,7 +91,7 @@ sub prrte_launch {
   #
   # start daemon in child process
   #
-  debug("PRRTE start");
+  debug("PRRTE: start");
 
   $prrte_pid = open $prrte_pipe, '-|', 'prte';
 
