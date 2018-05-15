@@ -52,8 +52,10 @@ if ($launcher eq '') {
 # still nothing, can we find something?
 #
 
-use Memoize;
-memoize('which');
+eval "use Memoize";
+if(! $@) {
+  memoize('which');
+}
 
 sub which {
   my $f = shift;
