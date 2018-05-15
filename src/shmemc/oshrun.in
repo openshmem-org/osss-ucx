@@ -80,10 +80,10 @@ sub prrte_shutdown {
   close $prrte_pipe;
 
   if ($killed == $prrte_pid) {
-    debug("PRRTE shut down (pid $prrte_pid)");
+    debug("PRRTE:$prrte_pid: shut down");
   }
   else {
-    die "$progname: couldn't kill PRRTE daemon (pid $prrte_pid): $!";
+    die "$progname:$prrte_pid: couldn't kill PRRTE daemon: $!";
   }
 }
 
@@ -91,15 +91,13 @@ sub prrte_launch {
   #
   # start daemon in child process
   #
-  debug("PRRTE start");
+  debug("PRRTE: starting up");
 
   $prrte_pid = open $prrte_pipe, '-|', 'prte';
 
   if (! defined $prrte_pid) {
     die "$progname: failed to run PRRTE daemon: $!";
   }
-
-  debug("PRRTE wait (pid $prrte_pid)");
 
   #
   # parent waits for daemon to be ready, then launches user app
@@ -122,7 +120,7 @@ sub prrte_launch {
 	", should not be here";
     }
 
-    debug("PRRTE ready (pid $prrte_pid)");
+    debug("PRRTE:$prrte_pid: ready");
 
     #
     # assume worst; if app is good this will later be 0
