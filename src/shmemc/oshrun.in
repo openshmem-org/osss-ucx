@@ -6,8 +6,6 @@ use strict;
 use warnings;
 use diagnostics;
 
-use Term::ANSIColor;
-
 use File::Basename;
 my $progname = basename($0);
 
@@ -21,9 +19,21 @@ my $debug_env = 'OSHRUN_DEBUG';
 
 $debug = $ENV{$debug_env} if defined $ENV{$debug_env};
 
+my $do_effect = 1;
+eval 'use Term::ANSIColor';
+if ($@) {
+  $do_effect = 0;
+}
+
 sub debug {
   if ($debug) {
-    print STDERR colored("DEBUG($progname): @_", 'bold'), "\n";
+    my $msg = "DEBUG($progname): @_\n";
+    if ($do_effect) {
+      print STDERR colored($msg, 'bold');
+    }
+    else {
+      print STDERR $msg;
+    }
   }
 }
 
@@ -52,7 +62,7 @@ if ($launcher eq '') {
 # still nothing, can we find something?
 #
 
-eval "use Memoize";
+eval 'use Memoize';
 if(! $@) {
   memoize('which');
 }
