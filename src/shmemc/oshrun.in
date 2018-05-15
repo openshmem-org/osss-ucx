@@ -1,36 +1,161 @@
-#!/bin/sh
+#!/usr/bin/env perl
+# Emacs: -*- mode: cperl; -*-
 # For license: see LICENSE file at top-level
 
-progname="`basename $0`"
+use strict;
+use warnings;
+use diagnostics;
 
-# test left-to-right order
-LAUNCHERS="mpiexec mpirun"
+use File::Basename;
+my $progname = basename($0);
 
-# possibly from environment
-launcher="${SHMEM_LAUNCHER-}"
+#
+# -- encapsulate debugging output ----------------------------------------
+#
 
-if [ -z "$launcher" ]
-then
-    # possibly from configure
-    launcher="@SHMEM_LAUNCHER@"
-fi
+my $debug = 1;			# default
 
-if [ -z "$launcher" ]
-then
-    for L in $LAUNCHERS
-    do
-        if hash "$L" >/dev/null 2>&1
-        then
-            launcher="$L"
-            break
-        fi  
-    done
-fi
+my $debug_env = 'OSHRUN_DEBUG';
 
-if [ -z "$launcher" ]
-then
-    echo "$progname: no launcher found, tried $LAUNCHERS"
-    exit 1
-fi     
+$debug = $ENV{$debug_env} if defined $ENV{$debug_env};
 
-exec $launcher "$@"
+sub debug {
+  if ($debug) {
+    print STDERR "DEBUG($progname): @_\n";
+  }
+}
+
+#
+# -- work out which launcher is required ---------------------------------
+#
+
+my $launcher = '';
+
+#
+# anything in environment?
+#
+if (defined $ENV{SHMEM_LAUNCHER}) {
+  $launcher = $ENV{SHMEM_LAUNCHER};
+}
+
+#
+# configure might have given us a SHMEM_LAUNCHER
+#
+if ($launcher eq '') {
+  $launcher = '@SHMEM_LAUNCHER@';
+}
+
+#
+# still nothing, use default
+#
+if ($launcher eq '') {
+  $launcher = 'prun';
+}
+
+debug("launcher is \"$launcher\"");
+
+#
+# -- do the underlying launch of app -------------------------------------
+#
+
+sub bare_launch {
+  return system $launcher, @ARGV;
+}
+
+#
+# -- for PRRTE, control of prte daemon -----------------------------------
+#
+
+#
+# controlling launched daemon
+#
+my ($prrte_pid, $prrte_pipe);
+
+sub prrte_shutdown {
+  #
+  # shut down daemons
+  #
+  kill TERM => $prrte_pid;
+  my $killed = waitpid($prrte_pid,0);
+  close $prrte_pipe;
+
+  if ($killed == $prrte_pid) {
+    debug("PRRTE shut down (pid $prrte_pid)");
+  }
+  else {
+    die "$progname: couldn't kill PRRTE daemon (pid $prrte_pid): $!";
+  }
+}
+
+sub prrte_launch {
+  #
+  # start daemon in child process
+  #
+  debug("PRRTE start");
+
+  $prrte_pid = open $prrte_pipe, '-|', 'prte';
+
+  if (! defined $prrte_pid) {
+    die "$progname: failed to run PRRTE daemon: $!";
+  }
+
+  debug("PRRTE wait (pid $prrte_pid)");
+
+  #
+  # parent waits for daemon to be ready, then launches user app
+  #
+  if ($prrte_pid) {
+    my $ready = 0;
+
+    while (<$prrte_pipe>) {
+      if (/^DVM ready/) {
+	$ready = 1;
+	last;
+      }
+    }
+
+    if (! $ready) {
+      prrte_shutdown();
+
+      die "$progname: internal error at line " .
+	__LINE__ .
+	", should not be here";
+    }
+
+    debug("PRRTE ready (pid $prrte_pid)");
+
+    #
+    # assume worst; if app is good this will later be 0
+    #
+    my $status = 1;
+
+    if ($ready) {
+      $status = bare_launch();
+    }
+
+    return $status;
+  }
+}
+
+#
+# -- let's do it! --------------------------------------------------------
+#
+
+my $err;
+
+#
+# if we're using PRRTE, fire up support, otherwise just launch
+#
+
+my $is_prun = basename($launcher) eq 'prun';
+
+if ($is_prun) {
+  $err = prrte_launch();
+
+  prrte_shutdown();
+}
+else {
+  $err = bare_launch();
+}
+
+exit $err;
