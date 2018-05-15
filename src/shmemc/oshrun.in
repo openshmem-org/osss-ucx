@@ -13,10 +13,14 @@ my $progname = basename($0);
 # -- encapsulate debugging output ----------------------------------------
 #
 
-use constant DEBUG => 1;
+my $debug = 1;			# default
+
+my $debug_env = 'OSHRUN_DEBUG';
+
+$debug = $ENV{$debug_env} if defined $ENV{$debug_env};
 
 sub debug {
-  if (DEBUG) {
+  if ($debug) {
     print STDERR "DEBUG($progname): @_\n";
   }
 }
@@ -48,6 +52,8 @@ if ($launcher eq '') {
   $launcher = 'prun';
 }
 
+debug("launcher is \"$launcher\"");
+
 #
 # -- do the underlying launch of app -------------------------------------
 #
@@ -70,23 +76,30 @@ sub prrte_shutdown {
   # shut down daemons
   #
   kill TERM => $prrte_pid;
-  waitpid($prrte_pid,0);
+  my $killed = waitpid($prrte_pid,0);
   close $prrte_pipe;
 
-  debug("PRRTE shut down (pid $prrte_pid)...");
+  if ($killed == $prrte_pid) {
+    debug("PRRTE shut down (pid $prrte_pid)");
+  }
+  else {
+    die "$progname: couldn't kill PRRTE daemon (pid $prrte_pid): $!";
+  }
 }
 
 sub prrte_launch {
   #
   # start daemon in child process
   #
+  debug("PRRTE start");
+
   $prrte_pid = open $prrte_pipe, '-|', 'prte';
 
   if (! defined $prrte_pid) {
-    die "$progname: failed to run PRRTE daemon: $!\n";
+    die "$progname: failed to run PRRTE daemon: $!";
   }
 
-  debug("PRRTE wait (pid $prrte_pid)...");
+  debug("PRRTE wait (pid $prrte_pid)");
 
   #
   # parent waits for daemon to be ready, then launches user app
@@ -106,10 +119,10 @@ sub prrte_launch {
 
       die "$progname: internal error at line " .
 	__LINE__ .
-	", should not be here\n";
+	", should not be here";
     }
 
-    debug("PRRTE ready (pid $prrte_pid)...");
+    debug("PRRTE ready (pid $prrte_pid)");
 
     #
     # assume worst; if app is good this will later be 0
