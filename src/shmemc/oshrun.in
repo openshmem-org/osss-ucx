@@ -91,15 +91,13 @@ sub prrte_launch {
   #
   # start daemon in child process
   #
-  debug("PRRTE: start");
+  debug("PRRTE: starting up");
 
   $prrte_pid = open $prrte_pipe, '-|', 'prte';
 
   if (! defined $prrte_pid) {
     die "$progname: failed to run PRRTE daemon: $!";
   }
-
-  debug("PRRTE:$prrte_pid: starting up");
 
   #
   # parent waits for daemon to be ready, then launches user app
