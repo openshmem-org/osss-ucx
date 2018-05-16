@@ -17,7 +17,10 @@ my $debug = 1;                  # default
 
 my $debug_env = 'OSHRUN_DEBUG';
 
-$debug = $ENV{$debug_env} if defined $ENV{$debug_env};
+if (defined $ENV{$debug_env}) {
+  my $d = lc $ENV{$debug_env};
+  $debug = ($d =~ /^[y1]/);
+}
 
 my $do_effect = 1;
 eval 'use Term::ANSIColor';
