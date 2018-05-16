@@ -13,7 +13,7 @@ my $progname = basename($0);
 # -- encapsulate debugging output ----------------------------------------
 #
 
-my $debug = 1;			# default
+my $debug = 1;                  # default
 
 my $debug_env = 'OSHRUN_DEBUG';
 
@@ -93,11 +93,11 @@ if ($launcher eq '') {
       my $pr = $pl;
       $pr =~ s/prun$/prte/;
       if ( -x $pr ) {
-	debug("found daemon in \"$pr\"");
+        debug("found daemon in \"$pr\"");
       }
       else {
-	debug("prun but no prte, skipping");
-	next;
+        debug("prun but no prte, skipping");
+        next;
       }
     }
 
@@ -166,8 +166,8 @@ sub prrte_launch {
 
     while (<$prrte_pipe>) {
       if (/^DVM ready/) {
-	$ready = 1;
-	last;
+        $ready = 1;
+        last;
       }
     }
 
@@ -175,8 +175,8 @@ sub prrte_launch {
       prrte_shutdown();
 
       die "$progname: internal error at line " .
-	__LINE__ .
-	", should not be here";
+        __LINE__ .
+        ", should not be here";
     }
 
     debug("PRRTE:$prrte_pid: ready");

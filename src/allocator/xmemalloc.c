@@ -76,7 +76,7 @@ shmemxa_index_to_name(shmemx_heap_index_t index)
     khiter_t k;
 
     for (k = kh_begin(names); k != kh_end(names); k += 1) {
-		if (kh_exist(names, k)) {
+        if (kh_exist(names, k)) {
             if (kh_value(names, k) == index) {
                 return (char *) kh_key(names, k);
                 /* NOT REACHED */
