@@ -91,7 +91,7 @@ if ($launcher eq '') {
 
     if ($L eq 'prun') {
       my $pr = $pl;
-      $pr =~ s/prun$/prte/;
+      $pr =~ s%/prun$%/prte%;
       if ( -x $pr ) {
         debug("found daemon in \"$pr\"");
       }
