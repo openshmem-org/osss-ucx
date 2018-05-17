@@ -31,12 +31,7 @@ if ($@) {
 sub debug {
   if ($debug) {
     my $msg = "DEBUG($progname): @_\n";
-    if ($do_effect) {
-      print STDERR colored($msg, 'bold');
-    }
-    else {
-      print STDERR $msg;
-    }
+    print STDERR $do_effect ? colored($msg, 'bold') : $msg;
   }
 }
 
@@ -47,15 +42,15 @@ sub debug {
 my $launcher = '';
 
 #
-# anything in environment?
+# Anything in environment?
 #
 if (defined $ENV{SHMEM_LAUNCHER}) {
   $launcher = $ENV{SHMEM_LAUNCHER};
 }
 
 #
-# configure might have given us a SHMEM_LAUNCHER, otherwise this is a
-# strange-looking no-op
+# Configure might have given us a SHMEM_LAUNCHER (otherwise this is a
+# strange-looking no-op)
 #
 if ($launcher eq '') {
   $launcher = '@SHMEM_LAUNCHER@';
@@ -82,6 +77,11 @@ sub which {
   }
   return undef;
 }
+
+#
+# Nothing provided, so look for suitable launcher.  Prefer prun from
+# PRRTE.
+#
 
 if ($launcher eq '') {
   my @Launchers = qw(prun mpiexec mpirun);
@@ -129,7 +129,7 @@ sub bare_launch {
 #
 
 #
-# controlling launched daemon
+# Controlling launched daemon
 #
 my ($prrte_pid, $prrte_pipe);
 
@@ -204,7 +204,7 @@ sub prrte_launch {
 my $err;
 
 #
-# if we're using PRRTE, fire up support, otherwise just launch
+# If we're using PRRTE, fire up support, otherwise just launch
 #
 
 my $is_prun = basename($launcher) eq 'prun';
