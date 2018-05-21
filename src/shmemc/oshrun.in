@@ -121,6 +121,7 @@ debug("launcher is \"$launcher\"");
 #
 
 sub bare_launch {
+  debug("launch: \"$launcher @ARGV\"");
   return system $launcher, @ARGV;
 }
 
