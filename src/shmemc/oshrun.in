@@ -30,7 +30,7 @@ if ($@) {
 
 sub debug {
   if ($debug) {
-    my $msg = "DEBUG($progname): @_\n";
+    my $msg = "$progname: @_\n";
     print STDERR $do_effect ? colored($msg, 'bold') : $msg;
   }
 }
