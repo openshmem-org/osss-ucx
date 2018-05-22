@@ -13,7 +13,7 @@ my $progname = basename($0);
 # -- encapsulate debugging output ----------------------------------------
 #
 
-my $debug = 1;                  # default
+my $debug = 0;                  # default
 
 my $debug_env = 'OSHRUN_DEBUG';
 
