@@ -13,15 +13,25 @@ my $progname = basename($0);
 # -- encapsulate debugging output ----------------------------------------
 #
 
-my $debug = 1;			# default
+my $debug = 0;                  # default
 
 my $debug_env = 'OSHRUN_DEBUG';
 
-$debug = $ENV{$debug_env} if defined $ENV{$debug_env};
+if (defined $ENV{$debug_env}) {
+  my $d = lc $ENV{$debug_env};
+  $debug = ($d =~ /^[y1]/);
+}
+
+my $do_effect = 1;
+eval 'use Term::ANSIColor';
+if ($@) {
+  $do_effect = 0;
+}
 
 sub debug {
   if ($debug) {
-    print STDERR "DEBUG($progname): @_\n";
+    my $msg = "$progname: @_\n";
+    print STDERR $do_effect ? colored($msg, 'bold') : $msg;
   }
 }
 
@@ -32,24 +42,76 @@ sub debug {
 my $launcher = '';
 
 #
-# anything in environment?
+# Anything in environment?
 #
 if (defined $ENV{SHMEM_LAUNCHER}) {
   $launcher = $ENV{SHMEM_LAUNCHER};
 }
 
 #
-# configure might have given us a SHMEM_LAUNCHER
+# Configure might have given us a SHMEM_LAUNCHER (otherwise this is a
+# strange-looking no-op)
 #
 if ($launcher eq '') {
   $launcher = '@SHMEM_LAUNCHER@';
 }
 
 #
-# still nothing, use default
+# still nothing, can we find something?
 #
+
+eval 'use Memoize';
+if(! $@) {
+  memoize('which');
+}
+
+sub which {
+  my $f = shift;
+  my @ps = split ':', $ENV{PATH};
+
+  for my $p (@ps) {
+    my $try = "$p/$f";
+    if ( -x $try ) {
+      return $try;
+    }
+  }
+  return undef;
+}
+
+#
+# Nothing provided, so look for suitable launcher.  Prefer prun from
+# PRRTE.
+#
+
 if ($launcher eq '') {
-  $launcher = 'prun';
+  my @Launchers = qw(prun mpiexec mpirun);
+
+  for my $L (@Launchers) {
+    my $pl = which($L);
+    next unless defined $pl;
+
+    debug("try launcher in \"$pl\"");
+
+    if ($L eq 'prun') {
+      my $pr = $pl;
+      $pr =~ s%/prun$%/prte%;
+      if ( -x $pr ) {
+        debug("found daemon in \"$pr\"");
+      }
+      else {
+        debug("prun but no prte, skipping");
+        next;
+      }
+    }
+
+    # take this one
+    $launcher = $L;
+    last;
+  }
+}
+
+if ($launcher eq '') {
+  die "$progname: unable to find launcher";
 }
 
 debug("launcher is \"$launcher\"");
@@ -59,6 +121,7 @@ debug("launcher is \"$launcher\"");
 #
 
 sub bare_launch {
+  debug("launch: \"$launcher @ARGV\"");
   return system $launcher, @ARGV;
 }
 
@@ -67,7 +130,7 @@ sub bare_launch {
 #
 
 #
-# controlling launched daemon
+# Controlling launched daemon
 #
 my ($prrte_pid, $prrte_pipe);
 
@@ -107,8 +170,8 @@ sub prrte_launch {
 
     while (<$prrte_pipe>) {
       if (/^DVM ready/) {
-	$ready = 1;
-	last;
+        $ready = 1;
+        last;
       }
     }
 
@@ -116,8 +179,8 @@ sub prrte_launch {
       prrte_shutdown();
 
       die "$progname: internal error at line " .
-	__LINE__ .
-	", should not be here";
+        __LINE__ .
+        ", should not be here";
     }
 
     debug("PRRTE:$prrte_pid: ready");
@@ -142,7 +205,7 @@ sub prrte_launch {
 my $err;
 
 #
-# if we're using PRRTE, fire up support, otherwise just launch
+# If we're using PRRTE, fire up support, otherwise just launch
 #
 
 my $is_prun = basename($launcher) eq 'prun';

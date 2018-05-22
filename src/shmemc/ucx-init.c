@@ -272,14 +272,14 @@ init_memory_regions(void)
 
     /* init that many regions on me */
     proc.comms.regions =
-        (mem_region_t *) malloc(proc.comms.nregions * sizeof(mem_region_t));
+        (mem_region_t *) calloc(proc.comms.nregions, sizeof(mem_region_t));
     shmemu_assert(proc.comms.regions != NULL,
                   "can't allocate memory for memory regions");
 
     /* now prep for all PEs to exchange */
     for (i = 0; i < proc.comms.nregions; i += 1) {
         proc.comms.regions[i].minfo =
-            (mem_info_t *) malloc(proc.nranks * sizeof(mem_info_t));
+            (mem_info_t *) calloc(proc.nranks, sizeof(mem_info_t));
         shmemu_assert(proc.comms.regions[i].minfo != NULL,
                       "can't allocate memory region metadata");
     }
