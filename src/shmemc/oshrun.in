@@ -27,6 +27,7 @@ eval 'use Term::ANSIColor';
 if ($@) {
   $do_effect = 0;
 }
+$do_effect = 0 unless -t STDERR;
 
 sub debug {
   if ($debug) {
