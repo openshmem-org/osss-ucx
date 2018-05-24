@@ -125,8 +125,6 @@ if ($launcher eq '') {
   die "$progname: unable to find launcher";
 }
 
-debug("launcher is \"$launcher\"");
-
 #
 # -- do the underlying launch of app -------------------------------------
 #
