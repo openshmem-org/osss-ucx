@@ -6,7 +6,10 @@ use strict;
 use warnings;
 use diagnostics;
 
-use File::Basename;
+use IPC::Open3 qw(open3);
+use Symbol qw(gensym);
+
+use File::Basename qw(basename);
 my $progname = basename($0);
 
 #
@@ -92,16 +95,18 @@ if ($launcher eq '') {
   my @Launchers = qw(prun mpiexec mpirun);
 
   for my $L (@Launchers) {
+    debug("try launcher \"$L\"");
+
     my $pl = which($L);
     next unless defined $pl;
 
-    debug("try launcher in \"$pl\"");
+    debug("potential launcher in \"$pl\"");
 
     if ($L eq 'prun') {
       my $pr = $pl;
       $pr =~ s%/prun$%/prte%;
       if ( -x $pr ) {
-        debug("found daemon in \"$pr\"");
+        debug("found PRRTE starter in \"$pr\"");
       }
       else {
         debug("prun but no prte, skipping");
@@ -110,6 +115,7 @@ if ($launcher eq '') {
     }
 
     # take this one
+    debug("using launcher in \"$pl\"");
     $launcher = $L;
     last;
   }
@@ -118,8 +124,6 @@ if ($launcher eq '') {
 if ($launcher eq '') {
   die "$progname: unable to find launcher";
 }
-
-debug("launcher is \"$launcher\"");
 
 #
 # -- do the underlying launch of app -------------------------------------
@@ -131,75 +135,91 @@ sub bare_launch {
 }
 
 #
-# -- for PRRTE, control of prte daemon -----------------------------------
+# -- for PRRTE -----------------------------------------------------------
 #
 
+# stubbing to prep for more complicated prte invocations:
+# my @prte_cmd
+#   = qw(
+#         prte
+#         -pmca pmix pmix3x
+#         -pmca grpcomm bmg
+#         -pmca odls_base_verbose 10
+#         -pmca errmgr_base_verbose 10
+#         -pmca propagate_base_verbose 10
+#         -debug-daemons
+#      );
+
+my @prte_cmd
+  = qw(
+        prte
+     );
+
+my ($chin, $chout, $cherr);     # child stdio
+my $prte_pid;
+
 #
-# Controlling launched daemon
+# For controlling launched starter
 #
-my ($prrte_pid, $prrte_pipe);
 
 sub prrte_shutdown {
-  #
-  # shut down daemons
-  #
-  kill TERM => $prrte_pid;
-  my $killed = waitpid($prrte_pid,0);
-  close $prrte_pipe;
+  my $pid = shift;
 
-  if ($killed == $prrte_pid) {
-    debug("PRRTE:$prrte_pid: shut down");
+  #
+  # shut down starter
+  #
+  kill TERM => $pid;
+  my $killed = waitpid($pid,0);
+
+  if ($killed == $pid) {
+    debug("PRRTE:$pid: shut down");
   }
   else {
-    die "$progname:$prrte_pid: couldn't kill PRRTE daemon: $!";
+    die "$progname:$pid: couldn't kill PRRTE starter: $!";
   }
 }
 
 sub prrte_launch {
   #
-  # start daemon in child process
+  # starter is in child process
   #
   debug("PRRTE: starting up");
 
-  $prrte_pid = open $prrte_pipe, '-|', 'prte';
+  $cherr = gensym();            # need lvalue
 
-  if (! defined $prrte_pid) {
-    die "$progname: failed to run PRRTE daemon: $!";
+  $prte_pid = open3($chin, $chout, $cherr, @prte_cmd);
+
+  if (! defined $prte_pid) {
+    die "$progname: failed to run PRRTE starter: $!";
   }
 
+  my $response = 'DVM ready';
+
   #
-  # parent waits for daemon to be ready, then launches user app
+  # parent waits for starter to be ready, then launches user app
   #
-  if ($prrte_pid) {
+  if ($prte_pid) {
     my $ready = 0;
 
-    while (<$prrte_pipe>) {
-      if (/^DVM ready/) {
+    while (<$chout>) {
+      if (/^$response/) {
         $ready = 1;
         last;
       }
     }
 
     if (! $ready) {
-      prrte_shutdown();
+      prrte_shutdown($prte_pid);
 
       die "$progname: internal error at line " .
         __LINE__ .
         ", should not be here";
     }
 
-    debug("PRRTE:$prrte_pid: ready");
+    debug("PRRTE:$prte_pid: $response");
 
-    #
-    # assume worst; if app is good this will later be 0
-    #
-    my $status = 1;
-
-    if ($ready) {
-      $status = bare_launch();
-    }
-
-    return $status;
+    # if good to go, return status of launch; otherwise error
+    return $ready ? bare_launch() : 1;
   }
 }
 
@@ -210,7 +230,7 @@ sub prrte_launch {
 my $err;
 
 #
-# If we're using PRRTE, fire up support, otherwise just launch
+# If we're using PRRTE, fire up support; otherwise just launch
 #
 
 my $is_prun = basename($launcher) eq 'prun';
@@ -218,7 +238,7 @@ my $is_prun = basename($launcher) eq 'prun';
 if ($is_prun) {
   $err = prrte_launch();
 
-  prrte_shutdown();
+  prrte_shutdown($prte_pid);
 }
 else {
   $err = bare_launch();
