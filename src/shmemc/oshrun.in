@@ -22,10 +22,15 @@ if (defined $ENV{$debug_env}) {
   $debug = ($d =~ /^[y1]/);
 }
 
-my $do_effect = 1;
+my $do_effect;
+
 eval 'use Term::ANSIColor';
 if ($@) {
   $do_effect = 0;
+}
+else {
+  # only use effects on terminals
+  $do_effect = ( -t STDERR );
 }
 
 sub debug {
