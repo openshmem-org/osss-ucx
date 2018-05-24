@@ -79,9 +79,7 @@ sub which {
 
   for my $p (@ps) {
     my $try = "$p/$f";
-    if ( -x $try ) {
-      return $try;
-    }
+    return $try if ( -x $try );
   }
   return undef;
 }
@@ -129,7 +127,7 @@ if ($launcher eq '') {
 # -- do the underlying launch of app -------------------------------------
 #
 
-sub bare_launch {
+sub run_app {
   debug("launch: \"$launcher @ARGV\"");
   return system $launcher, @ARGV;
 }
@@ -142,40 +140,39 @@ sub bare_launch {
 # my @prte_cmd
 #   = qw(
 #         prte
-#         -pmca pmix pmix3x
-#         -pmca grpcomm bmg
-#         -pmca odls_base_verbose 10
-#         -pmca errmgr_base_verbose 10
-#         -pmca propagate_base_verbose 10
-#         -debug-daemons
+#         --pmca pmix pmix3x
+#         --pmca grpcomm bmg
+#         --pmca odls_base_verbose 10
+#         --pmca errmgr_base_verbose 10
+#         --pmca propagate_base_verbose 10
+#         --debug-daemons
 #      );
 
 my @prte_cmd
   = qw(
         prte
      );
+my $prte_pid;
 
 my ($chin, $chout, $cherr);     # child stdio
-my $prte_pid;
 
 #
 # For controlling launched starter
 #
 
 sub prrte_shutdown {
-  my $pid = shift;
-
   #
   # shut down starter
   #
-  kill TERM => $pid;
-  my $killed = waitpid($pid,0);
+  kill TERM => $prte_pid;
 
-  if ($killed == $pid) {
-    debug("PRRTE:$pid: shut down");
+  my $killed = waitpid($prte_pid, 0);
+
+  if ($killed == $prte_pid) {
+    debug("PRRTE:$prte_pid: shut down");
   }
   else {
-    die "$progname:$pid: couldn't kill PRRTE starter: $!";
+    die "$progname:$prte_pid: couldn't kill PRRTE starter: $!";
   }
 }
 
@@ -201,6 +198,7 @@ sub prrte_launch {
   if ($prte_pid) {
     my $ready = 0;
 
+    # TODO: timeout?
     while (<$chout>) {
       if (/^$response/) {
         $ready = 1;
@@ -208,18 +206,17 @@ sub prrte_launch {
       }
     }
 
-    if (! $ready) {
-      prrte_shutdown($prte_pid);
-
-      die "$progname: internal error at line " .
-        __LINE__ .
-        ", should not be here";
+    # off we go!
+    if ($ready) {
+      debug("PRRTE:$prte_pid: $response");
+      return 0;
     }
 
-    debug("PRRTE:$prte_pid: $response");
-
-    # if good to go, return status of launch; otherwise error
-    return $ready ? bare_launch() : 1;
+    # uh-oh
+    warn "$progname: internal error at line " .
+      __LINE__ .
+      ", should not be here";
+    return 1;
   }
 }
 
@@ -227,21 +224,24 @@ sub prrte_launch {
 # -- let's do it! --------------------------------------------------------
 #
 
-my $err;
-
 #
 # If we're using PRRTE, fire up support; otherwise just launch
 #
 
 my $is_prun = basename($launcher) eq 'prun';
 
+my $err = 0;
+
 if ($is_prun) {
   $err = prrte_launch();
-
-  prrte_shutdown($prte_pid);
 }
-else {
-  $err = bare_launch();
+
+unless ($err) {
+  $err = run_app();
+}
+
+if ($is_prun) {
+  prrte_shutdown();
 }
 
 exit $err;
