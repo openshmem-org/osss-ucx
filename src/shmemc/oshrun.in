@@ -21,8 +21,7 @@ my $debug = 0;                  # default
 my $debug_env = 'OSHRUN_DEBUG';
 
 if (defined $ENV{$debug_env}) {
-  my $d = lc $ENV{$debug_env};
-  $debug = ($d =~ /^[y1]/);
+  $debug = ( $ENV{$debug_env} =~ /^[y1]/i) ;
 }
 
 my $do_effect;
@@ -228,11 +227,11 @@ sub prrte_launch {
 # If we're using PRRTE, fire up support; otherwise just launch
 #
 
-my $is_prun = basename($launcher) eq 'prun';
+my $is_prrte = basename($launcher) eq 'prun';
 
 my $err = 0;
 
-if ($is_prun) {
+if ($is_prrte) {
   $err = prrte_launch();
 }
 
@@ -240,7 +239,7 @@ unless ($err) {
   $err = run_app();
 }
 
-if ($is_prun) {
+if ($is_prrte) {
   prrte_shutdown();
 }
 
