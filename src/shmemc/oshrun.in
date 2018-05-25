@@ -21,7 +21,7 @@ my $debug = 0;                  # default
 my $debug_env = 'OSHRUN_DEBUG';
 
 if (defined $ENV{$debug_env}) {
-  $debug = ( $ENV{$debug_env} =~ /^[y1]/i) ;
+  $debug = ( $ENV{$debug_env} =~ /^[y1-9]/i) ;
 }
 
 my $do_effect;
