@@ -201,7 +201,8 @@ start_pes(int n)
 {
     NO_WARN_UNUSED(n);
 
-    deprecate(__func__, 1, 2);
-
     shmem_init();
+
+    /* can't tell anyone until init has really happened */
+    deprecate(__func__, 1, 2);
 }
