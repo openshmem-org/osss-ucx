@@ -57,7 +57,7 @@ shmemc_pmi_publish_heap_info(void)
 
     PMIX_INFO_CREATE(ia, nfields);    /* base, size */
 
-    /* everyone publishes their info (except for globals) */
+    /* everyone (except for globals) publishes their info */
     for (r = 1; r < proc.comms.nregions; r += 1) {
         snprintf(ia[0].key, PMIX_MAX_KEYLEN, region_base_fmt, proc.rank, r);
         ia[0].value.type = PMIX_UINT64;
@@ -69,7 +69,7 @@ shmemc_pmi_publish_heap_info(void)
         ia[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
         ps = PMIx_Publish(ia, nfields);
-        shmemu_assert( ps == PMIX_SUCCESS, "can't publish heap");
+        shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap");
     }
 
     PMIX_INFO_FREE(ia, nfields);
@@ -115,7 +115,6 @@ shmemc_pmi_exchange_heap_info(void)
                 proc.comms.regions[r].minfo[pe].base +
                 fetch_size.value.data.size;
         }
-
     }
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
