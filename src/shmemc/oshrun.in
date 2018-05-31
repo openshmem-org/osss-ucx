@@ -21,7 +21,7 @@ my $debug = 0;                  # default
 my $debug_env = 'OSHRUN_DEBUG';
 
 if (defined $ENV{$debug_env}) {
-  $debug = ( $ENV{$debug_env} =~ /^[y1-9]/i) ;
+  $debug = ( $ENV{$debug_env} =~ /^[y1-9]/i );
 }
 
 my $do_effect;
@@ -56,8 +56,8 @@ if (defined $ENV{SHMEM_LAUNCHER}) {
 }
 
 #
-# Configure might have given us a SHMEM_LAUNCHER (otherwise this is a
-# strange-looking no-op)
+# Configure might have given us a SHMEM_LAUNCHER (otherwise, in the
+# installed file, this is a strange-looking no-op)
 #
 if ($launcher eq '') {
   $launcher = '@SHMEM_LAUNCHER@';
@@ -88,8 +88,42 @@ sub which {
 # PRRTE.
 #
 
+my $prrte_starter;
+
+my $prun = qq(prun);
+
 if ($launcher eq '') {
-  my @Launchers = qw(prun mpiexec mpirun);
+  my $pl = which($prun);
+
+  if (defined $pl) {
+    debug("found a $prun in \"$pl\"");
+
+    my @Starters = qw(prte psrvr);
+
+    for my $strt (@Starters) {
+      my $ps = $pl;
+      $ps =~ s%/$prun$%/$strt%;
+      debug("checking for PRRTE starter in \"$ps\"");
+
+      if ( -x $ps ) {
+        debug("found PRRTE starter in \"$ps\"");
+        $prrte_starter = $ps;
+        $launcher = $prun;
+        last;
+      }
+      else {
+        debug("no starter \"$ps\", skipping");
+      }
+    } # end loop
+  } # end if
+}
+
+#
+# no prun, look for Open-MPI
+#
+
+if ($launcher eq '') {
+  my @Launchers = qw(mpiexec mpirun);
 
   for my $L (@Launchers) {
     debug("try launcher \"$L\"");
@@ -97,22 +131,9 @@ if ($launcher eq '') {
     my $pl = which($L);
     next unless defined $pl;
 
-    debug("potential launcher in \"$pl\"");
-
-    if ($L eq 'prun') {
-      my $pr = $pl;
-      $pr =~ s%/prun$%/prte%;
-      if ( -x $pr ) {
-        debug("found PRRTE starter in \"$pr\"");
-      }
-      else {
-        debug("prun but no prte, skipping");
-        next;
-      }
-    }
+    debug("likely launcher in \"$pl\"");
 
     # take this one
-    debug("using launcher in \"$pl\"");
     $launcher = $L;
     last;
   }
@@ -128,6 +149,7 @@ if ($launcher eq '') {
 
 sub run_app {
   debug("launch: \"$launcher @ARGV\"");
+  debug("-" x 70);
   return system $launcher, @ARGV;
 }
 
@@ -147,10 +169,15 @@ sub run_app {
 #         --debug-daemons
 #      );
 
-my @prte_cmd
-  = qw(
-        prte
-     );
+my $pae = $ENV{PRTE_ARGS};
+
+my @envargs = (defined $pae) ? split('\s+', $pae) : ();
+
+my @prte_cmd =
+  (
+   $prrte_starter,
+   @envargs
+  );
 my $prte_pid;
 
 my ($chin, $chout, $cherr);     # child stdio
@@ -189,7 +216,7 @@ sub prrte_launch {
     die "$progname: failed to run PRRTE starter: $!";
   }
 
-  my $response = 'DVM ready';
+  my $expected_response = 'DVM ready';
 
   #
   # parent waits for starter to be ready, then launches user app
@@ -199,7 +226,7 @@ sub prrte_launch {
 
     # TODO: timeout?
     while (<$chout>) {
-      if (/^$response/) {
+      if (/^$expected_response/) {
         $ready = 1;
         last;
       }
@@ -207,7 +234,7 @@ sub prrte_launch {
 
     # off we go!
     if ($ready) {
-      debug("PRRTE:$prte_pid: $response");
+      debug("PRRTE:$prte_pid: $expected_response");
       return 0;
     }
 
