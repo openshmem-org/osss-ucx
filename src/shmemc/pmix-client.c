@@ -50,29 +50,30 @@ static const char *region_size_fmt = "%d:%d:mr:size";
 void
 shmemc_pmi_publish_heap_info(void)
 {
-    const unsigned int nfields = 2;
-    pmix_info_t *ia;
+    pmix_info_t base;
+    pmix_info_t size;
     pmix_status_t ps;
     size_t r;
 
-    PMIX_INFO_CREATE(ia, nfields);    /* base, size */
+    PMIX_INFO_CONSTRUCT(&base);
+    PMIX_INFO_CONSTRUCT(&size);
 
     /* everyone (except for globals) publishes their info */
     for (r = 1; r < proc.comms.nregions; r += 1) {
-        snprintf(ia[0].key, PMIX_MAX_KEYLEN, region_base_fmt, proc.rank, r);
-        ia[0].value.type = PMIX_UINT64;
-        ia[0].value.data.uint64 =
+        snprintf(base.key, PMIX_MAX_KEYLEN, region_base_fmt, proc.rank, r);
+        base.value.type = PMIX_UINT64;
+        base.value.data.uint64 =
             (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
 
-        snprintf(ia[1].key, PMIX_MAX_KEYLEN, region_size_fmt, proc.rank, r);
-        ia[1].value.type = PMIX_SIZE;
-        ia[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
+        snprintf(size.key, PMIX_MAX_KEYLEN, region_size_fmt, proc.rank, r);
+        size.value.type = PMIX_SIZE;
+        size.value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
-        ps = PMIx_Publish(ia, nfields);
-        shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap");
+        ps = PMIx_Publish(&base, 1);
+        shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
+        ps = PMIx_Publish(&size, 1);
+        shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
     }
-
-    PMIX_INFO_FREE(ia, nfields);
 }
 
 void
@@ -87,7 +88,7 @@ shmemc_pmi_exchange_heap_info(void)
     int pe;
 
     PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&fetch_base);
     PMIX_PDATA_CONSTRUCT(&fetch_size);
@@ -106,11 +107,11 @@ shmemc_pmi_exchange_heap_info(void)
             ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
             shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap size");
 
-            /* slightly redundant storage, but useful */
             proc.comms.regions[r].minfo[pe].base =
                 fetch_base.value.data.uint64;
             proc.comms.regions[r].minfo[pe].len =
                 fetch_size.value.data.size;
+            /* slightly redundant storage, but useful */
             proc.comms.regions[r].minfo[pe].end =
                 proc.comms.regions[r].minfo[pe].base +
                 fetch_size.value.data.size;
