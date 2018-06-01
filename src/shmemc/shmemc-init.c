@@ -26,7 +26,6 @@ shmemc_init(void)
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
     shmemc_pmi_publish_worker();
-    shmemc_pmi_barrier_all();
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
     shmemc_pmi_exchange_heap_info();
@@ -34,10 +33,10 @@ shmemc_init(void)
 
     /* exchange worker info and then create EPs */
     shmemc_pmi_exchange_workers();
+
     shmemc_ucx_make_remote_endpoints();
 
     shmemc_pmi_publish_my_rkeys();
-    shmemc_pmi_barrier_all();
     shmemc_pmi_exchange_all_rkeys();
 
     /*

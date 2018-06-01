@@ -17,36 +17,21 @@
 
 #include <ucp/api/ucp.h>
 
+/* -------------------------------------------------------------- */
+
 /*
- * read out the peer PE numbers
+ * Make local info avaialable to PMIx
  */
-inline static void
-parse_peers(char *peerstr)
-{
-    int i = 0;
-    char *next;
-    const char *sep = ",";
-
-    /* parse the PE #s out of the string */
-    proc.peers = (int *) calloc(proc.npeers, sizeof(*proc.peers));
-    shmemu_assert(proc.peers != NULL, "can't allocate memory for peer list");
-
-    next = strtok(peerstr, sep);
-    while (next != NULL) {
-        proc.peers[i] = (int) strtol(next, NULL, 10);
-        i += 1;
-        next = strtok(NULL, sep);
-    }
-}
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
+static const char *region_base_fmt = "base:%lu:%d"; /* region, pe */
+static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
-/*
- * formats are <pe>:<region-index>:region:<key>
- */
-static const char *region_base_fmt = "%d:%d:mr:base";
-static const char *region_size_fmt = "%d:%d:mr:size";
+static const char *wrkr_exch_fmt   = "wrkr:%d";     /* pe */
+static const char *rkey_exch_fmt   = "rkey:%lu:%d"; /* region, pe */
 
+#ifndef ENABLE_ALIGNED_ADDRESSES
 void
 shmemc_pmi_publish_heap_info(void)
 {
@@ -60,12 +45,12 @@ shmemc_pmi_publish_heap_info(void)
 
     /* everyone (except for globals) publishes their info */
     for (r = 1; r < proc.comms.nregions; r += 1) {
-        snprintf(base.key, PMIX_MAX_KEYLEN, region_base_fmt, proc.rank, r);
+        snprintf(base.key, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.rank);
         base.value.type = PMIX_UINT64;
         base.value.data.uint64 =
             (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
 
-        snprintf(size.key, PMIX_MAX_KEYLEN, region_size_fmt, proc.rank, r);
+        snprintf(size.key, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.rank);
         size.value.type = PMIX_SIZE;
         size.value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
@@ -75,52 +60,7 @@ shmemc_pmi_publish_heap_info(void)
         shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
     }
 }
-
-void
-shmemc_pmi_exchange_heap_info(void)
-{
-    pmix_status_t ps;
-    pmix_pdata_t fetch_base;
-    pmix_pdata_t fetch_size;
-    pmix_info_t waiter;
-    int all = 0;
-    size_t r;
-    int pe;
-
-    PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
-
-    PMIX_PDATA_CONSTRUCT(&fetch_base);
-    PMIX_PDATA_CONSTRUCT(&fetch_size);
-
-    /* exchange regions (except for globals) */
-    for (r = 1; r < proc.comms.nregions; r += 1) {
-
-        for (pe = 0; pe < proc.nranks; pe += 1) {
-            /* can I merge these?  No luck so far */
-            snprintf(fetch_base.key, PMIX_MAX_KEYLEN, region_base_fmt, pe, r);
-            snprintf(fetch_size.key, PMIX_MAX_KEYLEN, region_size_fmt, pe, r);
-
-            ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap base");
-
-            ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap size");
-
-            proc.comms.regions[r].minfo[pe].base =
-                fetch_base.value.data.uint64;
-            proc.comms.regions[r].minfo[pe].len =
-                fetch_size.value.data.size;
-            /* slightly redundant storage, but useful */
-            proc.comms.regions[r].minfo[pe].end =
-                proc.comms.regions[r].minfo[pe].base +
-                fetch_size.value.data.size;
-        }
-    }
-}
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
-
-static const char *wrkr_exch_fmt = "%d:wrkr:addr";
 
 void
 shmemc_pmi_publish_worker(void)
@@ -140,6 +80,88 @@ shmemc_pmi_publish_worker(void)
     ps = PMIx_Publish(&pi, 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish worker blob");
 }
+
+void
+shmemc_pmi_publish_my_rkeys(void)
+{
+    pmix_status_t ps;
+    pmix_info_t pi;
+    void *packed_rkey;
+    size_t rkey_len;
+    size_t r;
+
+    for (r = 0; r < proc.comms.nregions; r += 1) {
+        pmix_byte_object_t *bop = &pi.value.data.bo;
+        const ucs_status_t s =
+            ucp_rkey_pack(proc.comms.ucx_ctxt,
+                          proc.comms.regions[r].minfo[proc.rank].racc.mh,
+                          &packed_rkey, &rkey_len
+                          );
+        shmemu_assert(s == UCS_OK, "can't unpack rkey");
+
+        PMIX_INFO_CONSTRUCT(&pi);
+        snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
+        pi.value.type = PMIX_BYTE_OBJECT;
+        bop->bytes = (char *) packed_rkey;
+        bop->size = rkey_len;
+        ps = PMIx_Publish(&pi, 1);
+        shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
+
+        ucp_rkey_buffer_release(packed_rkey);
+    }
+}
+
+/* -------------------------------------------------------------- */
+
+/*
+ * Get remote info out of PMIx
+ */
+
+#ifndef ENABLE_ALIGNED_ADDRESSES
+void
+shmemc_pmi_exchange_heap_info(void)
+{
+    pmix_status_t ps;
+    pmix_pdata_t fetch_base;
+    pmix_pdata_t fetch_size;
+    pmix_info_t waiter;
+    int all = 0;
+    size_t r;
+    int pe;
+
+    PMIX_INFO_CONSTRUCT(&waiter);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
+
+    PMIX_PDATA_CONSTRUCT(&fetch_base);
+    PMIX_PDATA_CONSTRUCT(&fetch_size);
+
+    /* exchange regions (exclude globals) */
+    for (r = 1; r < proc.comms.nregions; r += 1) {
+        for (pe = 0; pe < proc.nranks; pe += 1) {
+            /* can I merge these?  No luck so far */
+            snprintf(fetch_base.key, PMIX_MAX_KEYLEN,
+                     region_base_fmt, r, pe);
+            snprintf(fetch_size.key, PMIX_MAX_KEYLEN,
+                     region_size_fmt, r, pe);
+
+            ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap base");
+
+            ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap size");
+
+            proc.comms.regions[r].minfo[pe].base =
+                fetch_base.value.data.uint64;
+            proc.comms.regions[r].minfo[pe].len =
+                fetch_size.value.data.size;
+            /* slightly redundant storage, but useful */
+            proc.comms.regions[r].minfo[pe].end =
+                proc.comms.regions[r].minfo[pe].base +
+                fetch_size.value.data.size;
+        }
+    }
+}
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 void
 shmemc_pmi_exchange_workers(void)
@@ -171,41 +193,6 @@ shmemc_pmi_exchange_workers(void)
     }
 }
 
-/*
- * PE:rkey:HEAPNO
- */
-static const char *rkey_exch_fmt = "%d:rkey:%d";
-
-void
-shmemc_pmi_publish_my_rkeys(void)
-{
-    pmix_status_t ps;
-    pmix_info_t pi;
-    void *packed_rkey;
-    size_t rkey_len;
-    size_t r;
-
-    for (r = 0; r < proc.comms.nregions; r += 1) {
-        pmix_byte_object_t *bop = &pi.value.data.bo;
-        const ucs_status_t s =
-            ucp_rkey_pack(proc.comms.ucx_ctxt,
-                          proc.comms.regions[r].minfo[proc.rank].racc.mh,
-                          &packed_rkey, &rkey_len
-                          );
-        shmemu_assert(s == UCS_OK, "can't unpack rkey");
-
-        PMIX_INFO_CONSTRUCT(&pi);
-        snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, proc.rank, r);
-        pi.value.type = PMIX_BYTE_OBJECT;
-        bop->bytes = (char *) packed_rkey;
-        bop->size = rkey_len;
-        ps = PMIx_Publish(&pi, 1);
-        shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
-
-        ucp_rkey_buffer_release(packed_rkey);
-    }
-}
-
 void
 shmemc_pmi_exchange_all_rkeys(void)
 {
@@ -228,7 +215,7 @@ shmemc_pmi_exchange_all_rkeys(void)
             const int i = (pe + proc.rank) % proc.nranks;
             ucs_status_t s;
 
-            snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, i, r);
+            snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, i);
 
             ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
             shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
@@ -244,6 +231,31 @@ shmemc_pmi_exchange_all_rkeys(void)
             shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
         }
 
+    }
+}
+
+/* -------------------------------------------------------------- */
+
+/*
+ * read out the peer PE numbers
+ */
+inline static void
+parse_peers(char *peerstr)
+{
+    int i = 0;
+    char *next;
+    const char *sep = ",";
+
+    /* parse the PE #s out of the string */
+    proc.peers = (int *) calloc(proc.npeers,
+                                sizeof(*proc.peers)); /* free at end */
+    shmemu_assert(proc.peers != NULL, "can't allocate memory for peer list");
+
+    next = strtok(peerstr, sep);
+    while (next != NULL) {
+        proc.peers[i] = (int) strtol(next, NULL, 10);
+        i += 1;
+        next = strtok(NULL, sep);
     }
 }
 
