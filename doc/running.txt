@@ -1,55 +1,41 @@
 # For license: see LICENSE file at top-level
 
-Prerequisites
-=============
+At a minimum, make sure OSSS-UCX, and a suitable Open-MPI (see
+building.txt) are on your PATH in that priority:
 
-PMIx
-====
+    $ export PATH=/path/to/install/openmpi/bin:$PATH
+    $ export PATH=/path/to/install/osss-ucx/bin:$PATH
 
-v1.2.x, or newer, release; or from github master:
+and test:
 
-    PMIx      : https://github.com/pmix/pmix/
+    $ which mpiexec
+    /path/to/install/openmpi/bin/mpiexec
 
-UCX
-===
+    $ which oshcc
+    /path/to/install/osss-ucx/bin/oshcc
 
-Tested with all releases and from github master:
+You can set up a modulefile (http://modules.sourceforge.net/) to
+simplify this process and set up other SHMEM environment variables
+that might be of interest, e.g. something like:
 
-    UCX       : https://github.com/openucx/ucx/
+    +---------------------------------------------------------------+
+    |                                                               |
+    | #%Module1.0#############################################      |
+    | #                                                             |
+    |                                                               |
+    | set             openmpi_root      /path/to/install/openmpi    |
+    | prepend-path    PATH              $openmpi_root/bin           |
+    | prepend-path    MANPATH           $openmpi_root/share/man     |
+    | prepend-path    PKG_CONFIG_PATH   $openmpi_root/lib/pkgconfig |
+    |                                                               |
+    | set             shmem_root        /path/to/install/osss-ucx   |
+    | prepend-path    PATH              $shmem_root/bin             |
+    | prepend-path    MANPATH           $shmem_root/share/man       |
+    | prepend-path    PKG_CONFIG_PATH   $shmem_root/lib/pkgconfig   |
+    |                                                               |
+    | setenv          SHMEM_INFO        y                           |
+    +---------------------------------------------------------------+
 
-If you want to build threading support, UCX should be installed with
-
-    --enable-mt
-
-OpenMPI
-=======
-
-For PMIx-aware "mpiexec" launcher:
-
-    OpenMPI downloads : https://www.open-mpi.org/software/ompi/
-
-Combinations
-============
-
-For all users, any version of UCX is fine.
-
-The interaction with most impact is that of PMIx and Open-MPI:
-
-  o For end-users, the easiest route is PMIx 1.2.5 and Open-MPI 2.1.3
-    to provide a stable launch environment.
-
-  o For developers, the github master versions throughout will track
-    all the latest updates.
-
-Building Sequence
-=================
-
-1. In the top-level source directory, run ./autogen.sh
-
-2. You can build this package either in-source-tree or
-   out-of-source-tree
-
-3. configure script can be told where PMIx and UCX live, and other
-   options
-
-4. make and make install
+The details of actually running an OpenSHMEM program with OSSS-UCX
+will vary greatly depending on your environment, be it LSF, SLURM,
+Torque, standalone...
