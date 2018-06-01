@@ -36,8 +36,8 @@ shmemc_init(void)
 
     shmemc_ucx_make_remote_endpoints();
 
-    shmemc_pmi_publish_my_rkeys();
-    shmemc_pmi_exchange_all_rkeys();
+    shmemc_pmi_publish_keys();
+    shmemc_pmi_exchange_rkeys();
 
     /*
      * TODO: 2018-04-27: newest UCX has revamped AMOs, getting hangs

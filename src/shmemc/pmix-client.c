@@ -82,7 +82,7 @@ shmemc_pmi_publish_worker(void)
 }
 
 void
-shmemc_pmi_publish_my_rkeys(void)
+shmemc_pmi_publish_keys(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
@@ -169,11 +169,11 @@ shmemc_pmi_exchange_workers(void)
     pmix_status_t ps;
     pmix_pdata_t fetch;
     pmix_info_t waiter;
-    int all = 1;
+    int all = 0;
     int pe;
 
     PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
@@ -194,17 +194,17 @@ shmemc_pmi_exchange_workers(void)
 }
 
 void
-shmemc_pmi_exchange_all_rkeys(void)
+shmemc_pmi_exchange_rkeys(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
     pmix_info_t waiter;
-    int all = 1;
+    int any = 1;
     int pe;
     size_t r;
 
     PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT32);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &any, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
@@ -249,7 +249,8 @@ parse_peers(char *peerstr)
     /* parse the PE #s out of the string */
     proc.peers = (int *) calloc(proc.npeers,
                                 sizeof(*proc.peers)); /* free at end */
-    shmemu_assert(proc.peers != NULL, "can't allocate memory for peer list");
+    shmemu_assert(proc.peers != NULL,
+                  "can't allocate memory for peer list");
 
     next = strtok(peerstr, sep);
     while (next != NULL) {
