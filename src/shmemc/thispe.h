@@ -178,7 +178,8 @@ typedef struct thispe_info {
     env_info_t env;             /* environment vars */
     thread_desc_t td;           /* threading model invoked */
     int rank;                   /* rank info */
-    int nranks;                 /* how many ranks */
+    int nranks;                 /* num ranks requested */
+    int maxranks;               /* universe size (e.g. for spares) */
     shmemc_status_t status;     /* up, down, out to lunch etc */
     int refcount;               /* library initialization count */
     int *peers;                 /* peer PEs in a node group */

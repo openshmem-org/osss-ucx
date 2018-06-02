@@ -346,7 +346,8 @@ shmemc_ucx_make_remote_endpoints(void)
         s = ucp_ep_create(ch->w, &epm, &proc.comms.eps[pe]);
 
         /*
-         * this can fail if we have e.g. mlx4 and not mlx5 infiniband
+         * this can fail if we have e.g. mlx4 and not mlx5 infiniband.
+         * I can tell it's failed, but I don't really know why...
          */
         if (s != UCS_OK) {
             shmemu_fatal("Unable to create remote endpoints: %s",

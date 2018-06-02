@@ -98,6 +98,9 @@ inline static uint64_t
 translate_address(uint64_t local_addr, size_t region, int pe)
 {
 #ifdef ENABLE_ALIGNED_ADDRESSES
+    NO_WARN_UNUSED(region);
+    NO_WARN_UNUSED(pe);
+
     return local_addr;
 #else
     if (region == 0) {
