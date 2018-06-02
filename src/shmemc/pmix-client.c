@@ -308,13 +308,22 @@ shmemc_pmi_client_init(void)
                   "PMIx can't get program size (%s)",
                   PMIx_Error_string(ps));
 
-    /* this is the program size / number of ranks/PEs */
-    proc.nranks = (int) vp->data.uint32;
+    proc.nranks = (int) vp->data.uint32; /* number of ranks/PEs */
+
+    ps = PMIx_Get(&wc_proc, PMIX_UNIV_SIZE, NULL, 0, &vp);
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't get universe size (%s)",
+                  PMIx_Error_string(ps));
+
+    proc.maxranks = (int) vp->data.uint32; /* total ranks available */
 
     /* is the world a sane size? */
     shmemu_assert(proc.nranks > 0,
                   "PMIx count of PE ranks %d is not valid",
                   proc.nranks);
+    shmemu_assert(proc.maxranks > 0,
+                  "PMIx PE universe size %d is not valid",
+                  proc.maxranks);
     shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
                   "PMIx PE rank %d is not valid",
                   proc.rank);
