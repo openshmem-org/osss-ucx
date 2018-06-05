@@ -1,0 +1,22 @@
+# For license: see LICENSE file at top-level
+
+Using PRRTE as launcher
+=======================
+
+PRRTE is the server-side of PMIx.  It can be used instead of Open-MPI
+as the launcher.
+
+Sample author config
+--------------------
+
+    .../configure \
+        --with-tm \
+        --prefix=/path/to/install/prrte \
+        --with-pmix=/path/to/install/pmix
+
+OSSS-UCX's oshrun command will detect PRRTE's prun command and use it
+instead of mpiexec.
+
+In case of problems, the environment variable OSHRUN_DEBUG can be set
+to y|1 to provide debugging output during oshrun start-up for
+detection of PRRTE/Open-MPI.
