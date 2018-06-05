@@ -155,12 +155,12 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
     pmix_pdata_t *hd;
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
     pmix_info_t waiter;
-    int any = 1;
+    int all = 0;
     int pe;
     size_t r;
 
     PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &any, PMIX_INT);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&rd);
 #ifndef ENABLE_ALIGNED_ADDRESSES
