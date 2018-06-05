@@ -246,6 +246,42 @@ shmemc_pmi_barrier_all(void)
     PMIx_Fence(NULL, 0, NULL, 0);
 }
 
+/*
+ * handle the different init/fini APIs
+ */
+
+inline static pmix_status_t
+pmix_init_wrapper(pmix_proc_t *pp)
+{
+    pmix_status_t ps;
+
+#ifdef HAVE_PMIX_NO_INIT_HINTS
+    ps = PMIx_Init(pp);
+#else
+    ps = PMIx_Init(pp, NULL, 0);
+#endif  /* HAVE_PMIX_NO_INIT_HINTS */
+
+    return ps;
+}
+
+inline static pmix_status_t
+pmix_finalize_wrapper(void)
+{
+    pmix_status_t ps;
+
+#ifdef HAVE_PMIX_NO_INIT_HINTS
+    ps = PMIx_Finalize();
+#else
+    ps = PMIx_Finalize(NULL, 0);
+#endif  /* HAVE_PMIX_NO_INIT_HINTS */
+
+    return ps;
+}
+
+/*
+ * get the PMIx client-side up and running
+ */
+
 void
 shmemc_pmi_client_init(void)
 {
@@ -255,11 +291,7 @@ shmemc_pmi_client_init(void)
     pmix_value_t *vp = &v;      /* holds things we get from PMIx */
     pmix_status_t ps;
 
-#ifdef HAVE_PMIX_NO_INIT_HINTS
-    ps = PMIx_Init(&my_proc);
-#else
-    ps = PMIx_Init(&my_proc, NULL, 0);
-#endif  /* HAVE_PMIX_NO_INIT_HINTS */
+    ps = pmix_init_wrapper(&my_proc);
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't initialize (%s)",
@@ -325,17 +357,17 @@ shmemc_pmi_client_init(void)
     parse_peers(vp->data.string);
 }
 
+/*
+ * shut down PMIx client-side
+ */
+
 void
 shmemc_pmi_client_finalize(void)
 {
     pmix_status_t ps;
     int pe;
 
-#ifdef HAVE_PMIX_NO_INIT_HINTS
-    ps = PMIx_Finalize();
-#else
-    ps = PMIx_Finalize(NULL, 0);
-#endif  /* HAVE_PMIX_NO_INIT_HINTS */
+    ps = pmix_finalize_wrapper();
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't finalize (%s)",
@@ -354,6 +386,10 @@ shmemc_pmi_client_finalize(void)
     /* clean up memory recording peer PEs */
     free(proc.peers);
 }
+
+/*
+ * crunch out if fatal error
+ */
 
 void
 shmemc_pmi_client_abort(const char *msg, int status)
