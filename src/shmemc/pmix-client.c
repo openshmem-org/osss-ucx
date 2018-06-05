@@ -216,7 +216,7 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
 inline static void
 parse_peers(char *peerstr)
 {
-    int i = 0;
+    size_t i = 0;
     char *next;
     const char *sep = ",";
 
