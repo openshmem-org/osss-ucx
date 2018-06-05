@@ -53,9 +53,16 @@ AS_IF([test -d "$with_ucx"],
 	      AC_SUBST([UCX_DIR])
 	      AC_SUBST([UCX_LIBS])
 	      ucx_happy=yes
+          ],
+	  [
+	    AC_MSG_ERROR([Unable to find UCX UCP header file in $ucp_hdr])
           ]
           )
+      ],
+      [
+        AC_MSG_ERROR([Unable to find UCX in $with_ucx])
       ]
+
       )
 
 AS_IF([test "x$ucx_happy" = "xyes"],
