@@ -14,22 +14,15 @@ void shmemc_pmi_barrier_all(void);
 /*
  * pub
  */
-#ifndef ENABLE_ALIGNED_ADDRESSES
-void shmemc_pmi_publish_heap_info(void);
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 void shmemc_pmi_publish_worker(void);
-void shmemc_pmi_publish_keys(void);
+void shmemc_pmi_publish_rkeys_and_heaps(void);
 
 /*
  * exchange
  */
 
-#ifndef ENABLE_ALIGNED_ADDRESSES
-void shmemc_pmi_exchange_heap_info(void);
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
-
 void shmemc_pmi_exchange_workers(void);
-void shmemc_pmi_exchange_rkeys(void);
+void shmemc_pmi_exchange_rkeys_and_heaps(void);
 
 #endif /* ! _SHMEMC_PMIX_CLIENT_H */

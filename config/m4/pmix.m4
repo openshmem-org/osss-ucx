@@ -15,7 +15,8 @@ PKG_CHECK_MODULES([PMIX], [pmix], [
 ], [
    AS_IF([test -d "$with_pmix"],
    	       [
-	       		AS_IF([test -r $with_pmix/include/pmix.h],
+	       		pmix_hdr="$with_pmix/include/pmix.h"
+	       		AS_IF([test -r "$pmix_hdr"],
 			[
 				PMIX_CFLAGS="-I$with_pmix/include"
 				PMIX_LIBS="-L$with_pmix/lib64 -Wl,-rpath -Wl,$with_pmix/lib64"
@@ -23,11 +24,13 @@ PKG_CHECK_MODULES([PMIX], [pmix], [
 				PMIX_LIBS="$PMIX_LIBS -lpmix"
 				PMIX_DIR="$with_pmix"
 				pmix_happy=yes
-				AC_MSG_NOTICE([PMIx: no pkg-config, but found installation directory])
-			]
+				AC_MSG_NOTICE([PMIx: found installation directory])
+			], [
+			     AC_MSG_ERROR([Unable to find PMIx header file in $pmix_hdr])
+		           ]
 		)
 		], [
-			AC_MSG_ERROR([Unable to find PMIx])
+			AC_MSG_ERROR([Unable to find PMIx in $with_pmix])
 		]
 		)
 ]

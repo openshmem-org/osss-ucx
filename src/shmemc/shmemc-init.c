@@ -21,23 +21,16 @@ shmemc_init(void)
 
     /* now heap registered... */
 
-#ifndef ENABLE_ALIGNED_ADDRESSES
-    shmemc_pmi_publish_heap_info();
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
-
     shmemc_pmi_publish_worker();
-
-#ifndef ENABLE_ALIGNED_ADDRESSES
-    shmemc_pmi_exchange_heap_info();
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
     /* exchange worker info and then create EPs */
     shmemc_pmi_exchange_workers();
 
     shmemc_ucx_make_remote_endpoints();
 
-    shmemc_pmi_publish_keys();
-    shmemc_pmi_exchange_rkeys();
+    shmemc_pmi_publish_rkeys_and_heaps();
+
+    shmemc_pmi_exchange_rkeys_and_heaps();
 
     /*
      * TODO: 2018-04-27: newest UCX has revamped AMOs, getting hangs

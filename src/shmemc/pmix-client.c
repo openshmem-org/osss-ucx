@@ -23,44 +23,7 @@
  * Make local info avaialable to PMIx
  */
 
-#ifndef ENABLE_ALIGNED_ADDRESSES
-static const char *region_base_fmt = "base:%lu:%d"; /* region, pe */
-static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
-
 static const char *wrkr_exch_fmt   = "wrkr:%d";     /* pe */
-static const char *rkey_exch_fmt   = "rkey:%lu:%d"; /* region, pe */
-
-#ifndef ENABLE_ALIGNED_ADDRESSES
-void
-shmemc_pmi_publish_heap_info(void)
-{
-    pmix_info_t base;
-    pmix_info_t size;
-    pmix_status_t ps;
-    size_t r;
-
-    PMIX_INFO_CONSTRUCT(&base);
-    PMIX_INFO_CONSTRUCT(&size);
-
-    /* everyone (except for globals) publishes their info */
-    for (r = 1; r < proc.comms.nregions; r += 1) {
-        snprintf(base.key, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.rank);
-        base.value.type = PMIX_UINT64;
-        base.value.data.uint64 =
-            (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
-
-        snprintf(size.key, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.rank);
-        size.value.type = PMIX_SIZE;
-        size.value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
-
-        ps = PMIx_Publish(&base, 1);
-        shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
-        ps = PMIx_Publish(&size, 1);
-        shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
-    }
-}
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 void
 shmemc_pmi_publish_worker(void)
@@ -81,14 +44,27 @@ shmemc_pmi_publish_worker(void)
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish worker blob");
 }
 
+static const char *rkey_exch_fmt   = "rkey:%lu:%d"; /* region, pe */
+
+#ifndef ENABLE_ALIGNED_ADDRESSES
+static const char *region_base_fmt = "base:%lu:%d"; /* region, pe */
+static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
+
 void
-shmemc_pmi_publish_keys(void)
+shmemc_pmi_publish_rkeys_and_heaps(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
+    pmix_info_t base;
+    pmix_info_t size;
     void *packed_rkey;
     size_t rkey_len;
     size_t r;
+
+    PMIX_INFO_CONSTRUCT(&pi);
+    PMIX_INFO_CONSTRUCT(&base);
+    PMIX_INFO_CONSTRUCT(&size);
 
     for (r = 0; r < proc.comms.nregions; r += 1) {
         pmix_byte_object_t *bop = &pi.value.data.bo;
@@ -99,7 +75,6 @@ shmemc_pmi_publish_keys(void)
                           );
         shmemu_assert(s == UCS_OK, "can't unpack rkey");
 
-        PMIX_INFO_CONSTRUCT(&pi);
         snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
         pi.value.type = PMIX_BYTE_OBJECT;
         bop->bytes = (char *) packed_rkey;
@@ -108,6 +83,24 @@ shmemc_pmi_publish_keys(void)
         shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
 
         ucp_rkey_buffer_release(packed_rkey);
+
+#ifndef ENABLE_ALIGNED_ADDRESSES
+        if (r > 0) {
+            snprintf(base.key, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.rank);
+            base.value.type = PMIX_UINT64;
+            base.value.data.uint64 =
+                (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
+
+            snprintf(size.key, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.rank);
+            size.value.type = PMIX_SIZE;
+            size.value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
+
+            ps = PMIx_Publish(&base, 1);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
+            ps = PMIx_Publish(&size, 1);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
+        }
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
     }
 }
 
@@ -116,52 +109,6 @@ shmemc_pmi_publish_keys(void)
 /*
  * Get remote info out of PMIx
  */
-
-#ifndef ENABLE_ALIGNED_ADDRESSES
-void
-shmemc_pmi_exchange_heap_info(void)
-{
-    pmix_status_t ps;
-    pmix_pdata_t fetch_base;
-    pmix_pdata_t fetch_size;
-    pmix_info_t waiter;
-    int all = 0;
-    size_t r;
-    int pe;
-
-    PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
-
-    PMIX_PDATA_CONSTRUCT(&fetch_base);
-    PMIX_PDATA_CONSTRUCT(&fetch_size);
-
-    /* exchange regions (exclude globals) */
-    for (r = 1; r < proc.comms.nregions; r += 1) {
-        for (pe = 0; pe < proc.nranks; pe += 1) {
-            /* can I merge these?  No luck so far */
-            snprintf(fetch_base.key, PMIX_MAX_KEYLEN,
-                     region_base_fmt, r, pe);
-            snprintf(fetch_size.key, PMIX_MAX_KEYLEN,
-                     region_size_fmt, r, pe);
-
-            ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap base");
-
-            ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap size");
-
-            proc.comms.regions[r].minfo[pe].base =
-                fetch_base.value.data.uint64;
-            proc.comms.regions[r].minfo[pe].len =
-                fetch_size.value.data.size;
-            /* slightly redundant storage, but useful */
-            proc.comms.regions[r].minfo[pe].end =
-                proc.comms.regions[r].minfo[pe].base +
-                fetch_size.value.data.size;
-        }
-    }
-}
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 void
 shmemc_pmi_exchange_workers(void)
@@ -194,10 +141,11 @@ shmemc_pmi_exchange_workers(void)
 }
 
 void
-shmemc_pmi_exchange_rkeys(void)
+shmemc_pmi_exchange_rkeys_and_heaps(void)
 {
     pmix_status_t ps;
-    pmix_pdata_t fetch;
+    pmix_pdata_t fetch_base;
+    pmix_pdata_t fetch_size;
     pmix_info_t waiter;
     int any = 1;
     int pe;
@@ -206,18 +154,20 @@ shmemc_pmi_exchange_rkeys(void)
     PMIX_INFO_CONSTRUCT(&waiter);
     PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &any, PMIX_INT);
 
-    PMIX_PDATA_CONSTRUCT(&fetch);
+    PMIX_PDATA_CONSTRUCT(&fetch_base);
+    PMIX_PDATA_CONSTRUCT(&fetch_size);
 
     for (r = 0; r < proc.comms.nregions; r += 1) {
 
         for (pe = 0; pe < proc.nranks; pe += 1) {
-            const pmix_byte_object_t *bop = &fetch.value.data.bo;
+            const pmix_byte_object_t *bop = &fetch_base.value.data.bo;
             const int i = (pe + proc.rank) % proc.nranks;
             ucs_status_t s;
 
-            snprintf(fetch.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, i);
+            /* rkey first */
+            snprintf(fetch_base.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, i);
 
-            ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
+            ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
             shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
             proc.comms.regions[r].minfo[i].racc.rkey =
                 (ucp_rkey_h) malloc(bop->size);
@@ -229,8 +179,32 @@ shmemc_pmi_exchange_rkeys(void)
                                    &proc.comms.regions[r].minfo[i].racc.rkey
                                    );
             shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
-        }
 
+#ifndef ENABLE_ALIGNED_ADDRESSES
+            /* now heaps, but skip globals */
+            if (r > 0) {
+                snprintf(fetch_base.key, PMIX_MAX_KEYLEN,
+                         region_base_fmt, r, i);
+                snprintf(fetch_size.key, PMIX_MAX_KEYLEN,
+                         region_size_fmt, r, i);
+
+                ps = PMIx_Lookup(&fetch_base, 1, &waiter, 1);
+                shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap base");
+
+                ps = PMIx_Lookup(&fetch_size, 1, &waiter, 1);
+                shmemu_assert(ps == PMIX_SUCCESS, "can't fetch heap size");
+
+                proc.comms.regions[r].minfo[i].base =
+                    fetch_base.value.data.uint64;
+                proc.comms.regions[r].minfo[i].len =
+                    fetch_size.value.data.size;
+                /* slightly redundant storage, but useful */
+                proc.comms.regions[r].minfo[i].end =
+                    proc.comms.regions[r].minfo[i].base +
+                    fetch_size.value.data.size;
+            }
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
+        }
     }
 }
 
@@ -242,7 +216,7 @@ shmemc_pmi_exchange_rkeys(void)
 inline static void
 parse_peers(char *peerstr)
 {
-    int i = 0;
+    size_t i = 0;
     char *next;
     const char *sep = ",";
 
