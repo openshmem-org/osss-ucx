@@ -120,17 +120,20 @@ AC_DEFINE_UNQUOTED([CONFIG_BUILD_HOST],["$host"],[Where this package was compile
 # check for pthreads and how to set it up
 #
 m4_include([config/m4/ax_pthread.m4])
-
 AX_PTHREAD
-
 AC_SUBST([PTHREAD_CC])
 AC_SUBST([PTHREAD_CFLAGS])
 AC_SUBST([PTHREAD_LIBS])
 
 #
+# see if compiler knows about builtin_expect
+#
+m4_include([config/m4/ax_gcc_builtin.m4])
+AX_GCC_BUILTIN(__builtin_expect)
+
+#
 # Stub for doxygen
 #
-
 m4_include([config/m4/ax_prog_doxygen.m4])
 
 DX_INIT_DOXYGEN([openshmem])

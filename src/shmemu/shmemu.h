@@ -19,8 +19,13 @@
  * for branch prediction optimization
  *
  */
-#define shmemu_likely(_expr)   __builtin_expect(!!(_expr), 1)
-#define shmemu_unlikely(_expr) __builtin_expect(!!(_expr), 0)
+#ifdef HAVE___BUILTIN_EXPECT
+# define shmemu_likely(_expr)   __builtin_expect(!!(_expr), 1)
+# define shmemu_unlikely(_expr) __builtin_expect(!!(_expr), 0)
+#else  /* HAVE___BUILTIN_EXPECT */
+# define shmemu_likely(_expr)   (_expr)
+# define shmemu_unlikely(_expr) (_expr)
+#endif  /* HAVE___BUILTIN_EXPECT */
 
 /*
  * Return non-zero if PE is a valid rank, 0 otherwise
