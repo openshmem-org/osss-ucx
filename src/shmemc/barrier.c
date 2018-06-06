@@ -23,7 +23,7 @@ barrier_sync_helper_linear(int start, int log2stride, int size, long *pSync)
     const int stride = 1 << log2stride;
     const long npokes = SHMEM_SYNC_VALUE + size - 1;
 
-    if (start == me) {
+    if (shmemu_unlikely(start == me)) {
         long poke = ~SHMEM_SYNC_VALUE;
         int pe = start + stride;
         int i;

@@ -36,7 +36,7 @@ broadcast_helper_linear(void *target, const void *source, size_t nbytes,
     const int me = proc.rank;
 
     shmemc_barrier(PE_start, logPE_stride, PE_size, pSync);
-    if (me != root) {
+    if (shmemu_likely(me != root)) {
         shmemc_get(target, source, nbytes, root);
     }
 }
