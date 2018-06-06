@@ -23,12 +23,6 @@
 #define shmemu_unlikely(_expr) __builtin_expect(!!(_expr), 0)
 
 /*
- * how many elements in array T?
- *
- */
-#define TABLE_SIZE(_t) ( sizeof(_t) / sizeof((_t)[0]) )
-
-/*
  * Return non-zero if PE is a valid rank, 0 otherwise
  */
 #define IS_VALID_PE_NUMBER(_pe)                 \
