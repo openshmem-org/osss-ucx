@@ -16,6 +16,13 @@
 #include <stdarg.h>
 
 /*
+ * for branch prediction optimization
+ *
+ */
+#define shmemu_likely(_expr)   __builtin_expect(!!(_expr), 1)
+#define shmemu_unlikely(_expr) __builtin_expect(!!(_expr), 0)
+
+/*
  * how many elements in array T?
  *
  */
@@ -133,7 +140,7 @@ void shmemu_deprecate_finalize(void);
     do {                                                        \
         const int top_pe = proc.nranks - 1;                     \
                                                                 \
-        if ((_pe < 0) || (_pe > top_pe)) {                      \
+        if (shmemu_unlikely((_pe < 0) || (_pe > top_pe))) {     \
             logger(LOG_FATAL,                                   \
                    "In %s(), PE argument #%d is %d: "           \
                    "outside allocated range [%d, %d]",          \
@@ -146,22 +153,23 @@ void shmemu_deprecate_finalize(void);
         }                                                       \
     } while (0)
 
-# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                 \
-    do {                                                        \
-        if (! shmemc_addr_accessible(_addr, proc.rank)) {       \
-            logger(LOG_FATAL,                                   \
-                   "In %s(), address %p in argument #%d "       \
-                   "is not symmetric",                          \
-                   __func__,                                    \
-                   _addr, _argpos                               \
-                   );                                           \
-            /* NOT REACHED */                                   \
-        }                                                       \
+# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                     \
+    do {                                                            \
+        if (shmemu_unlikely(! shmemc_addr_accessible(_addr,         \
+                                                     proc.rank))) { \
+            logger(LOG_FATAL,                                       \
+                   "In %s(), address %p in argument #%d "           \
+                   "is not symmetric",                              \
+                   __func__,                                        \
+                   _addr, _argpos                                   \
+                   );                                               \
+            /* NOT REACHED */                                       \
+        }                                                           \
     } while (0)
 
 # define SHMEMU_CHECK_INIT()                                            \
     do {                                                                \
-        if (proc.refcount < 1) {                                        \
+        if (shmemu_unlikely(proc.refcount < 1)) {                       \
             shmemu_fatal("In %s(), attempt to use OpenSHMEM library"    \
                          " before initialization",                      \
                          __func__                                       \
@@ -191,20 +199,20 @@ void shmemu_deprecate_finalize(void);
         }                                                               \
     } while (0)
 
-# define SHMEMU_CHECK_HEAP_INDEX(_idx)                              \
-    do {                                                            \
-        const int top_heap = proc.env.heaps.nheaps - 1;             \
-                                                                    \
-        if ( ((_idx) < 0) || ((_idx) > top_heap) ) {                \
-            logger(LOG_FATAL,                                       \
-                   "In %s(), heap index #%d"                        \
-                   "is outside allocated range [%d, %d]",           \
-                   __func__,                                        \
-                   _idx,                                            \
-                   0, top_heap                                      \
-                   );                                               \
-            /* NOT REACHED */                                       \
-        }                                                           \
+# define SHMEMU_CHECK_HEAP_INDEX(_idx)                                  \
+    do {                                                                \
+        const int top_heap = proc.env.heaps.nheaps - 1;                 \
+                                                                        \
+        if (shmemu_unlikely( ((_idx) < 0) || ((_idx) > top_heap) )) {   \
+            logger(LOG_FATAL,                                           \
+                   "In %s(), heap index #%d"                            \
+                   "is outside allocated range [%d, %d]",               \
+                   __func__,                                            \
+                   _idx,                                                \
+                   0, top_heap                                          \
+                   );                                                   \
+            /* NOT REACHED */                                           \
+        }                                                               \
     } while (0)
 
 #else  /* ! ENABLE_DEBUG */
