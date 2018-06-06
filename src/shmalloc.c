@@ -39,7 +39,7 @@ shmem_malloc(size_t s)
 {
     void *addr;
 
-    if (s == 0) {
+    if (shmemu_unlikely(s == 0)) {
         return NULL;
     }
 
@@ -61,7 +61,7 @@ shmem_calloc(size_t n, size_t s)
 {
     void *addr;
 
-    if ((n == 0) || (s == 0)) {
+    if (shmemu_unlikely((n == 0) || (s == 0))) {
         return NULL;
     }
 
@@ -102,7 +102,7 @@ shmem_realloc(void *p, size_t s)
 {
     void *addr;
 
-    if (s == 0) {
+    if (shmemu_unlikely(s == 0)) {
         return NULL;
     }
 
@@ -126,7 +126,7 @@ shmem_align(size_t a, size_t s)
 {
     void *addr;
 
-    if (s == 0) {
+    if (shmemu_unlikely(s == 0)) {
         return NULL;
     }
 

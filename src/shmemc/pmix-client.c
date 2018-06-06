@@ -87,7 +87,7 @@ shmemc_pmi_publish_rkeys_and_heaps(void)
         ucp_rkey_buffer_release(packed_rkey);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-        if (r > 0) {
+        if (shmemu_likely(r > 0)) {
             snprintf(hi[0].key, PMIX_MAX_KEYLEN,
                      region_base_fmt, r, proc.rank);
             hi[0].value.type = PMIX_UINT64;
@@ -193,7 +193,7 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
             /* now heaps, but skip globals */
-            if (r > 0) {
+            if (shmemu_likely(r > 0)) {
                 snprintf(hd[0].key, PMIX_MAX_KEYLEN,
                          region_base_fmt, r, i);
                 snprintf(hd[1].key, PMIX_MAX_KEYLEN,

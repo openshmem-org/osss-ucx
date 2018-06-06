@@ -74,7 +74,7 @@ register_context_run(shmemc_context_h ch)
                 realloc(proc.comms.ctxts,
                         spill_ctxt * sizeof(*(proc.comms.ctxts)));
 
-            if (proc.comms.ctxts == NULL) {
+            if (shmemu_unlikely(proc.comms.ctxts == NULL)) {
                 return 1;
                 /* NOT REACHED */
             }
@@ -156,12 +156,12 @@ shmemc_context_fill(long options, shmemc_context_h ch)
     }
 
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(ch->w));
-    if (s != UCS_OK) {
+    if (shmemu_unlikely(s != UCS_OK)) {
         return 1;
         /* NOT REACHED */
     }
 
-    if (register_context(ch) != 0) {
+    if (shmemu_unlikely(register_context(ch) != 0)) {
         return 1;
         /* NOT REACHED */
     }
@@ -190,7 +190,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
     }
 
     n = shmemc_context_fill(options, ch);
-    if (n == 0) {
+    if (shmemu_likely(n == 0)) {
         *ctxp = (shmem_ctx_t) ch;
     }
     else {
@@ -208,8 +208,8 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 void
 shmemc_context_destroy(shmem_ctx_t ctx)
 {
-    if (ctx != NULL) {
-        if (ctx != SHMEM_CTX_DEFAULT) {
+    if (shmemu_likely(ctx != NULL)) {
+        if (shmemu_likely(ctx != SHMEM_CTX_DEFAULT)) {
             shmemc_context_h ch = (shmemc_context_h) ctx;
 
             /* spec 1.4 ++ has implicit quiet for storable contexts */
@@ -263,14 +263,14 @@ shmemc_create_default_context(void)
     const long default_options = 0L;
 
     n = shmemc_context_fill(default_options, ch);
-    if (n != 0) {
+    if (shmemu_unlikely(n != 0)) {
         return 1;
         /* NOT REACHED */
     }
 
     /* get address for remote access to worker */
     s = ucp_worker_get_address(ch->w, &addr, &len);
-    if (s != UCS_OK) {
+    if (shmemu_unlikely(s != UCS_OK)) {
         return 1;
         /* NOT REACHED */
     }
