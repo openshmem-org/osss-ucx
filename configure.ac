@@ -73,6 +73,9 @@ m4_include([config/m4/ucx.m4])
 
 m4_include([config/m4/confargs.m4])
 
+# not used at present
+# m4_include([config/m4/attribute_aligned.m4])
+
 # c++ -specific checks
 m4_include([config/m4/cxx.m4])
 

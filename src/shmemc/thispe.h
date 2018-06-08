@@ -3,6 +3,10 @@
 #ifndef _THISPE_H
 #define _THISPE_H 1
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "boolean.h"
 #include "threading.h"
 
