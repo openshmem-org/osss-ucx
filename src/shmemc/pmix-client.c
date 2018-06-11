@@ -99,8 +99,16 @@ shmemc_pmi_publish_rkeys_and_heaps(void)
             hi[1].value.type = PMIX_SIZE;
             hi[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
+            /* newer PMIx should be able to do this at one go */
+#if PMIX_VERSION_MAJOR > 2
             ps = PMIx_Publish(hi, 2);
             shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base/size");
+#else /* PMIX_VERSION_MAJOR */
+            ps = PMIx_Publish(&hi[0], 1);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
+            ps = PMIx_Publish(&hi[1], 1);
+            shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
+#endif  /* PMIX_VERSION_MAJOR */
         }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
     }
@@ -199,10 +207,18 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
                 snprintf(hd[1].key, PMIX_MAX_KEYLEN,
                          region_size_fmt, r, i);
 
+#if PMIX_VERSION_MAJOR > 2
                 ps = PMIx_Lookup(hd, 2, &waiter, 1);
                 shmemu_assert(ps == PMIX_SUCCESS,
                               "can't fetch heap base/size");
-
+#else /* PMIX_VERSION_MAJOR */
+                ps = PMIx_Lookup(&hd[0], 1, &waiter, 1);
+                shmemu_assert(ps == PMIX_SUCCESS,
+                              "can't fetch heap base");
+                ps = PMIx_Lookup(&hd[1], 1, &waiter, 1);
+                shmemu_assert(ps == PMIX_SUCCESS,
+                              "can't fetch heap size");
+#endif /* PMIX_VERSION_MAJOR */
                 proc.comms.regions[r].minfo[i].base =
                     hd[0].value.data.uint64;
                 proc.comms.regions[r].minfo[i].len =
