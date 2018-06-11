@@ -221,7 +221,7 @@ info_output_comms(FILE *strm)
 
     output(strm, "UCX Version",
 #ifdef HAVE_UCX
-           UCX_VERSION
+           UCX_VERSION_STRING
 #else
            INTERNAL_ERROR
 #endif /* HAVE_UCX version */
@@ -236,7 +236,7 @@ info_output_comms(FILE *strm)
            );
     output(strm, "PMIx Version",
 #ifdef HAVE_PMIX
-           PMIX_VERSION
+           PMIX_VERSION_STRING
 #else
            INTERNAL_ERROR
 #endif /* HAVE_PMIX version */
