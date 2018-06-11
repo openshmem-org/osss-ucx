@@ -3,7 +3,7 @@
 .SH NAME
 \fBoshrun\fP \- run an OpenSHMEM program
 .SH SYNOPSIS
-\fBoshrun\fP
+\fBoshrun | oshexec\fP
 .RS 4
 .br
 [launcher pass-through arguments]
@@ -13,8 +13,8 @@
 program [arguments...]
 .RE
 .SH DESCRIPTION
-\fBoshrun\fP runs an OpenSHMEM program on the given number of
-processing elements.
+\fBoshrun\fP, a.k.a. \fBoshexec\fP, runs an OpenSHMEM program on the
+given number of processing elements.
 .SH OPTIONS
 .IP "-n N | -np N" 4
 Run the program on N processing elements (PEs or processors).

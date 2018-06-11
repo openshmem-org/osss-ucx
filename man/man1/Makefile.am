@@ -6,18 +6,36 @@ if ENABLE_CXX
 
 man1_MANS       += oshcxx.1
 
-install-data-hook:	uninstall-local
+install-cxx-alt:	uninstall-cxx-alt
 	cd $(man1dir); \
 	$(LN_S) oshcxx.1 oshc++.1
 
-uninstall-local:
+uninstall-cxx-alt:
 	cd $(man1dir); \
 	$(RM) oshc++.1
 
-endif
+else
+
+install-cxx-alt:
+
+uninstall-cxx-alt:
+
+endif # c++
+
+install-run-alt:	uninstall-run-alt
+	cd $(man1dir); \
+	$(LN_S) oshrun.1 oshexec.1
+
+uninstall-run-alt:
+	cd $(man1dir); \
+	$(RM) oshexec.1
+
+install-data-hook:	install-cxx-alt	install-run-alt
+
+uninstall-local:	uninstall-cxx-alt	uninstall-run-alt
 
 if ENABLE_FORTRAN
 
 man1_MANS       += oshfort.1
 
-endif
+endif # fortran
