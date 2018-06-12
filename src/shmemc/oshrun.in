@@ -96,23 +96,23 @@ if ($launcher eq '') {
   my $pl = which($prun);
 
   if (defined $pl) {
-    debug("found \"$pl\"");
+    debug("prrte: found \"$pl\"");
 
     my @Starters = qw(prte psrvr);
 
     for my $strt (@Starters) {
       my $ps = $pl;
       $ps =~ s%/$prun$%/$strt%;
-      debug("starter: check \"$ps\"");
+      debug("prrte: check \"$ps\"");
 
       if ( -x $ps ) {
-        debug("starter: found \"$strt\"");
+        debug("prrte: found \"$strt\"");
         $prrte_starter = $ps;
         $launcher = $prun;
         last;
       }
       else {
-        debug("starter: no \"$strt\", skipping");
+        debug("prrte: no \"$strt\", skipping");
       }
     } # end loop
   } # end if
@@ -126,12 +126,12 @@ if ($launcher eq '') {
   my @Launchers = qw(mpiexec mpirun);
 
   for my $L (@Launchers) {
-    debug("launcher: try \"$L\"");
+    debug("launch: try \"$L\"");
 
     my $pl = which($L);
     next unless defined $pl;
 
-    debug("launcher: possible \"$L\"");
+    debug("launch: possible \"$L\"");
 
     # take this one
     $launcher = $L;
@@ -148,7 +148,7 @@ if ($launcher eq '') {
 #
 
 sub run_app {
-  debug("launcher: \"$launcher @ARGV\"");
+  debug("launch: \"$launcher @ARGV\"");
   debug("-" x 70);
   return system $launcher, @ARGV;
 }
@@ -195,7 +195,7 @@ sub prrte_shutdown {
   my $killed = waitpid($prte_pid, 0);
 
   if ($killed == $prte_pid) {
-    debug("PRRTE:$prte_pid: shut down");
+    debug("prrte: pid $prte_pid shut down");
   }
   else {
     die "$progname:$prte_pid: couldn't kill PRRTE starter: $!";
@@ -206,7 +206,7 @@ sub prrte_launch {
   #
   # starter is in child process
   #
-  debug("PRRTE: starting up");
+  debug("prrte: starting up");
 
   $cherr = gensym();            # need lvalue
 
@@ -234,7 +234,7 @@ sub prrte_launch {
 
     # off we go!
     if ($ready) {
-      debug("PRRTE:$prte_pid: $expected_response");
+      debug("prrte: pid $prte_pid says \"$expected_response\"");
       return 0;
     }
 
