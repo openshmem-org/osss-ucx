@@ -96,23 +96,23 @@ if ($launcher eq '') {
   my $pl = which($prun);
 
   if (defined $pl) {
-    debug("found a $prun in \"$pl\"");
+    debug("found \"$pl\"");
 
     my @Starters = qw(prte psrvr);
 
     for my $strt (@Starters) {
       my $ps = $pl;
       $ps =~ s%/$prun$%/$strt%;
-      debug("checking for PRRTE starter in \"$ps\"");
+      debug("starter: check \"$ps\"");
 
       if ( -x $ps ) {
-        debug("found PRRTE starter in \"$ps\"");
+        debug("starter: found \"$strt\"");
         $prrte_starter = $ps;
         $launcher = $prun;
         last;
       }
       else {
-        debug("no starter \"$ps\", skipping");
+        debug("starter: no \"$strt\", skipping");
       }
     } # end loop
   } # end if
@@ -126,12 +126,12 @@ if ($launcher eq '') {
   my @Launchers = qw(mpiexec mpirun);
 
   for my $L (@Launchers) {
-    debug("try launcher \"$L\"");
+    debug("launcher: try \"$L\"");
 
     my $pl = which($L);
     next unless defined $pl;
 
-    debug("likely launcher in \"$pl\"");
+    debug("launcher: possible \"$L\"");
 
     # take this one
     $launcher = $L;
@@ -148,7 +148,7 @@ if ($launcher eq '') {
 #
 
 sub run_app {
-  debug("launch: \"$launcher @ARGV\"");
+  debug("launcher: \"$launcher @ARGV\"");
   debug("-" x 70);
   return system $launcher, @ARGV;
 }
@@ -213,7 +213,7 @@ sub prrte_launch {
   $prte_pid = open3($chin, $chout, $cherr, @prte_cmd);
 
   if (! defined $prte_pid) {
-    die "$progname: failed to run PRRTE starter: $!";
+    die "$progname: failed to run starter: $!";
   }
 
   my $expected_response = 'DVM ready';
