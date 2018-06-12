@@ -3,7 +3,7 @@
 .SH NAME
 \fBoshrun\fP \- run an OpenSHMEM program
 .SH SYNOPSIS
-\fBoshrun\fP
+\fBoshrun | oshexec\fP
 .RS 4
 .br
 [launcher pass-through arguments]
@@ -13,35 +13,37 @@
 program [arguments...]
 .RE
 .SH DESCRIPTION
-\fBoshrun\fP runs an OpenSHMEM program on the given number of
-processing elements.
+\fBoshrun\fP, a.k.a. \fBoshexec\fP, runs an OpenSHMEM program on the
+given number of processing elements.
 .SH OPTIONS
 .IP "-n N | -np N" 4
 Run the program on N processing elements (PEs or processors).
 Overrides any PE count inherited from launch environment.
 .LP
 .SH ENVIRONMENT
-OpenSHMEM environment variables are prefixed with "SHMEM_".  Some
-older SHMEM implementations had variables prefixed with "SMA_": these
-are still supported in OpenSHMEM, but are deprecated.  If both are set
-for a given variable, the "SHMEM_" one will be used.
+OpenSHMEM environment variables are prefixed with "SHMEM_".
 .LP
 If set, boolean flags are enabled with a non-zero numeric value, or
 "y", "yes", or "on"; disabled with zero numeric value, or "n", "no",
 or "off".
+.LP
+Some older SHMEM implementations had variables prefixed with "SMA_":
+these are still supported in OpenSHMEM, but are deprecated.  If both
+are set for a given variable, the "SHMEM_" one will be used.
+.LP
 .\"
 .RS 4
 .\"
 .LP
 Required by specification
 .RS 4
-.IP "SHMEM_VERSION (bool: default false)"
+.IP "SHMEM_VERSION, SMA_VERSION (bool: default false)"
 print library version at start-up
-.IP "SHMEM_INFO (bool: default false)"
+.IP "SHMEM_INFO, SMA_INFO (bool: default false)"
 print information about supported environment variables
-.IP "SHMEM_SYMMETRIC_SIZE (number: default @SHMEM_DEFAULT_HEAP_SIZE@)"
+.IP "SHMEM_SYMMETRIC_SIZE, SMA_SYMMETRIC_SIZE (number: default @SHMEM_DEFAULT_HEAP_SIZE@)"
 set the size of the symmetric heap.  Can use K,M,G,T units (2^10).
-.IP "SHMEM_DEBUG (bool: default false)"
+.IP "SHMEM_DEBUG, SMA_DEBUG (bool: default false)"
 enable run debugging/sanity checking (if configured).
 .RE
 .LP

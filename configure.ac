@@ -73,6 +73,9 @@ m4_include([config/m4/ucx.m4])
 
 m4_include([config/m4/confargs.m4])
 
+m4_include([config/m4/ax_gcc_func_attribute.m4])
+m4_include([config/m4/attribute_checks.m4])
+
 # c++ -specific checks
 m4_include([config/m4/cxx.m4])
 

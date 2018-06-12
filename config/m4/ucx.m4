@@ -70,11 +70,11 @@ AS_IF([test "x$ucx_happy" = "xyes"],
        maj=`awk '$2 == "UCP_API_MAJOR" {print $3}' $hdr`
        min=`awk '$2 == "UCP_API_MINOR" {print $3}' $hdr`
 
-       UCX_VERSION=`printf "%u.%u" $maj $min`
-       AS_BOX(UCX version is $UCX_VERSION)
+       UCX_VERSION_STRING=`printf "%u.%u" $maj $min`
+       AS_BOX(UCX version is $UCX_VERSION_STRING)
 
-       AC_DEFINE_UNQUOTED([UCX_VERSION], ["$UCX_VERSION"], [Version of UCX])
-       AC_SUBST([UCX_VERSION])
+       AC_DEFINE_UNQUOTED([UCX_VERSION_STRING], ["$UCX_VERSION_STRING"], [Version of UCX])
+       AC_SUBST([UCX_VERSION_STRING])
        
        # AC_MSG_NOTICE([Selecting UCX as communications layer])
       ]

@@ -41,28 +41,51 @@ libshmemc_ucx_a_CFLAGS    = $(UCX_CFLAGS) $(EXTRA_CFLAGS) $(OTHER_CPPFLAGS)
 MY_WRAPPERS               = oshcc oshrun
 
 if ENABLE_CXX
-
 MY_WRAPPERS              += oshcxx
-
-# create alternate name for wrapper
-
-install-exec-hook:	uninstall-local
-	cd $(bindir); \
-	$(LN_S) oshcxx oshc++
-
-uninstall-local:
-	cd $(bindir); \
-	$(RM) oshc++
-
 endif # c++
 
 if ENABLE_FORTRAN
-
 MY_WRAPPERS              += oshfort
-
 endif # fortran
 
+#
+# create alternate name for C++ compiler wrapper
+# (if configured)
+#
+if ENABLE_CXX
 
-# install these
+install-cxx-alt:	uninstall-cxx-alt
+	cd $(bindir); \
+	$(LN_S) oshcxx oshc++
 
+uninstall-cxx-alt:
+	cd $(bindir); \
+	$(RM) oshc++
+
+else
+
+install-cxx-alt:
+
+uninstall-cxx-alt:
+
+endif # c++
+
+#
+# create alternate name for launcher
+#
+install-run-alt:	uninstall-run-alt
+	cd $(bindir); \
+	$(LN_S) oshrun oshexec
+
+uninstall-run-alt:
+	cd $(bindir); \
+	$(RM) oshexec
+
+install-exec-hook:	install-cxx-alt install-run-alt
+
+uninstall-local:	uninstall-cxx-alt uninstall-run-alt
+
+#
+# and install these
+#
 bin_SCRIPTS               = $(MY_WRAPPERS)

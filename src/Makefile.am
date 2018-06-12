@@ -18,14 +18,9 @@ all_cppflags           = $(shmemc_cppflags) $(shmemu_cppflags) $(MY_INCLUDE)
 
 MY_SOURCES             = \
                                 accessible.c \
-                                alltoall.c \
                                 atomics.c \
-                                barrier.c \
-                                broadcast.c \
                                 cache.c \
-                                collect.c \
 				contexts.c \
-                                fcollect.c \
                                 globalexit.c \
 				info.c \
                                 init.c \
@@ -34,10 +29,17 @@ MY_SOURCES             = \
                                 putget.c \
                                 quiet.c \
 				ranks.c  \
-                                reductions.c \
                                 shmalloc.c \
                                 version.c \
                                 waituntil.c
+
+MY_SOURCES             += \
+				collectives/alltoall.c \
+				collectives/barrier.c \
+				collectives/broadcast.c \
+				collectives/collect.c \
+				collectives/fcollect.c \
+				collectives/reductions.c
 
 if ENABLE_THREADS
 MY_SOURCES            += shmem_mutex.c

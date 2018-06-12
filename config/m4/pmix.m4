@@ -66,11 +66,11 @@ AS_IF([test "x$pmix_happy" = "xyes"],
        maj=`awk '$2 == "PMIX_VERSION_MAJOR" {print strtonum($3)}' $hdr`
        min=`awk '$2 == "PMIX_VERSION_MINOR" {print strtonum($3)}' $hdr`
 
-       PMIX_VERSION=`printf "%lu.%lu" $maj $min`
-       AS_BOX(PMIx version is $PMIX_VERSION)
+       PMIX_VERSION_STRING=`printf "%lu.%lu" $maj $min`
+       AS_BOX(PMIx version is $PMIX_VERSION_STRING)
 
-       AC_DEFINE_UNQUOTED([PMIX_VERSION], ["$PMIX_VERSION"], [Version of PMIx])
-       AC_SUBST([PMIX_VERSION])
+       AC_DEFINE_UNQUOTED([PMIX_VERSION_STRING], ["$PMIX_VERSION_STRING"], [Version of PMIx])
+       AC_SUBST([PMIX_VERSION_STRING])
       ]
 )
 

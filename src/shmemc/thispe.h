@@ -3,6 +3,10 @@
 #ifndef _THISPE_H
 #define _THISPE_H 1
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif /* HAVE_CONFIG_H */
+
 #include "boolean.h"
 #include "threading.h"
 
@@ -146,8 +150,8 @@ typedef struct env_info {
      * required
      */
     bool print_version;         /* produce info output? */
-    bool print_info;
-    heapinfo_t heaps;
+    bool print_info;            /* show settings at program start? */
+    heapinfo_t heaps;           /* the heaps we manage */
     bool debug;                 /* are we doing sanity debugging? */
 
     /*
@@ -157,8 +161,8 @@ typedef struct env_info {
     char *logging_file;      /* where does logging output go? */
     char *logging_events;    /* show only these types of messages */
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
-    shmemc_coll_t barrier_algo;
-    shmemc_coll_t broadcast_algo;
+    shmemc_coll_t barrier_algo;   /* algorithms to use ... */
+    shmemc_coll_t broadcast_algo; /* ... for these collectives */
 } env_info_t;
 
 /*
@@ -167,7 +171,7 @@ typedef struct env_info {
 typedef struct shmemc_team {
     unsigned long id;           /* team ID */
     int *members;               /* list of PEs in the team */
-    size_t nmembers;
+    size_t nmembers;            /* how many PEs */
 } shmemc_team_t;
 
 /*
