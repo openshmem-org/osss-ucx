@@ -5,7 +5,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemc-ucx.h"
-#include "shmemu.h"
 #include "shmemc.h"
 
 #include "pmi-client.h"
