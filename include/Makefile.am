@@ -65,8 +65,8 @@ nobase_include_HEADERS  = $(SHMEM_HDRS)
 # these are installed regardless of whether SHMEMX_ enabled
 
 install-data-hook:
-	cp -p $(srcdir)/$(SHMEMX_HEADER_C) $(includedir)/shmemx.h
-	cp -p $(srcdir)/$(SHMEMX_HEADER_F) $(includedir)/shmemx.fh
+	$(INSTALL_DATA) $(srcdir)/$(SHMEMX_HEADER_C) $(includedir)/shmemx.h
+	$(INSTALL_DATA) $(srcdir)/$(SHMEMX_HEADER_F) $(includedir)/shmemx.fh
 
 uninstall-local:
 	$(RM) $(includedir)/shmemx.h $(includedir)/shmemx.fh
