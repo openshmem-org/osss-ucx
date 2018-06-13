@@ -169,7 +169,7 @@ typedef struct env_info {
  * PEs can belong to teams
  */
 typedef struct shmemc_team {
-    unsigned long id;           /* team ID */
+    size_t id;                  /* team ID# */
     int *members;               /* list of PEs in the team */
     size_t nmembers;            /* how many PEs */
 } shmemc_team_t;
@@ -181,8 +181,8 @@ typedef struct thispe_info {
     comms_info_t comms;         /* per-comms layer info */
     env_info_t env;             /* environment vars */
     thread_desc_t td;           /* threading model invoked */
-    int rank;                   /* rank info */
-    int nranks;                 /* num ranks requested */
+    int rank;                   /* physical rank info */
+    int nranks;                 /* number of ranks requested */
     int maxranks;               /* universe size (e.g. for spares) */
     shmemc_status_t status;     /* up, down, out to lunch etc */
     int refcount;               /* library initialization count */
