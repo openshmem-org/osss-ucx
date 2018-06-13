@@ -236,7 +236,7 @@ shmemc_context_destroy(shmem_ctx_t ctx)
  * return the id of a context (used for logging)
  */
 
-unsigned long
+size_t
 shmemc_context_id(shmem_ctx_t ctx)
 {
     const shmemc_context_h ch = (shmemc_context_h) ctx;
