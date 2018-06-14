@@ -14,8 +14,6 @@
 
 /*
  * query thread level support
- *
- * TODO: should this be here or in pe-query.c ?
  */
 
 void
