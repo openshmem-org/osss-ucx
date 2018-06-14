@@ -253,7 +253,7 @@ shmemc_context_id(shmem_ctx_t ctx)
 shmemc_context_t shmemc_default_context;
 
 int
-shmemc_create_default_context(void)
+shmemc_init_default_context(void)
 {
     shmemc_context_h ch = &shmemc_default_context;
     int n;

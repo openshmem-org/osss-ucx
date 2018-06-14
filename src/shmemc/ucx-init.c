@@ -440,8 +440,8 @@ shmemc_ucx_init(void)
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
 
-    n = shmemc_create_default_context();
-    shmemu_assert(n == 0, "couldn't create default context");
+    n = shmemc_init_default_context();
+    shmemu_assert(n == 0, "couldn't initialize default context");
 
     /* don't need config info any more */
     ucp_config_release(proc.comms.ucx_cfg);
