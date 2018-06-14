@@ -22,8 +22,6 @@
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_init_thread = pshmem_init_thread
 #define shmem_init_thread pshmem_init_thread
-#pragma weak shmem_query_thread = pshmem_query_thread
-#define shmem_query_thread pshmem_query_thread
 #pragma weak shmem_init = pshmem_init
 #define shmem_init pshmem_init
 #pragma weak shmem_finalize = pshmem_finalize
@@ -165,26 +163,6 @@ shmem_finalize(void)
            );
 
     finalize_helper();
-}
-
-/*
- * query thread level support
- *
- * TODO: should this be here or in pe-query.c ?
- */
-
-void
-shmem_query_thread(int *provided)
-{
-    SHMEMU_CHECK_INIT();
-
-    logger(LOG_FINALIZE,
-           "%s() -> %d",
-           __func__,
-           proc.td.osh_tl
-           );
-
-    *provided = proc.td.osh_tl;
 }
 
 /*
