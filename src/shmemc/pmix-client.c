@@ -19,8 +19,13 @@
 
 /* -------------------------------------------------------------- */
 
-/* control lookups */
-static pmix_info_t waiter;
+/*
+ * Persistent local state
+ */
+
+static pmix_info_t waiter;      /* control lookups */
+static pmix_proc_t my_proc;     /* about me */
+static pmix_proc_t wc_proc;     /* wildcard lookups */
 
 /*
  * Make local info avaialable to PMIx
@@ -323,8 +328,6 @@ pmix_finalize_wrapper(void)
 void
 shmemc_pmi_client_init(void)
 {
-    pmix_proc_t my_proc;        /* about me */
-    pmix_proc_t wc_proc;        /* wildcard lookups */
     pmix_value_t v;
     pmix_value_t *vp = &v;      /* holds things we get from PMIx */
     pmix_status_t ps;
