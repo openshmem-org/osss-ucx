@@ -19,6 +19,9 @@
 
 /* -------------------------------------------------------------- */
 
+/* control lookups */
+static pmix_info_t waiter;
+
 /*
  * Make local info avaialable to PMIx
  */
@@ -129,12 +132,7 @@ shmemc_pmi_exchange_workers(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
-    pmix_info_t waiter;
-    int all = 0;
     int pe;
-
-    PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
@@ -162,13 +160,8 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
 #ifndef ENABLE_ALIGNED_ADDRESSES
     pmix_pdata_t *hd;
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
-    pmix_info_t waiter;
-    int all = 0;
     int pe;
     size_t r;
-
-    PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&rd);
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -260,6 +253,23 @@ parse_peers(char *peerstr)
         i += 1;
         next = strtok(NULL, sep);
     }
+}
+
+/* -------------------------------------------------------------- */
+
+inline static void
+make_waiter(void)
+{
+    int all = 0;
+
+    PMIX_INFO_CONSTRUCT(&waiter);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
+}
+
+inline static void
+release_waiter(void)
+{
+    return;                     /* nothing needed */
 }
 
 /* -------------------------------------------------------------- */
@@ -383,6 +393,8 @@ shmemc_pmi_client_init(void)
                   PMIx_Error_string(ps));
 
     parse_peers(vp->data.string);
+
+    make_waiter();
 }
 
 /*
@@ -412,6 +424,9 @@ shmemc_pmi_client_finalize(void)
     }
 
     /* clean up memory recording peer PEs */
+
+    release_waiter();
+
     free(proc.peers);
 }
 
