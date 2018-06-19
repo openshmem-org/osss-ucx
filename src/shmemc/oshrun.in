@@ -37,7 +37,7 @@ else {
 
 sub debug {
   if ($debug) {
-    my $msg = "$progname: @_\n";
+    my $msg = "$progname:@_\n";
     print STDERR $do_effect ? colored($msg, 'bold') : $msg;
   }
 }
@@ -96,14 +96,15 @@ if ($launcher eq '') {
   my $pl = which($prun);
 
   if (defined $pl) {
-    debug("prrte: found \"$pl\"");
+    debug("prrte: found \"$prun\"");
 
     my @Starters = qw(prte psrvr);
 
     for my $strt (@Starters) {
+      debug("prrte: check matching \"$strt\"");
+
       my $ps = $pl;
       $ps =~ s%/$prun$%/$strt%;
-      debug("prrte: check \"$ps\"");
 
       if ( -x $ps ) {
         debug("prrte: found \"$strt\"");
@@ -126,12 +127,12 @@ if ($launcher eq '') {
   my @Launchers = qw(mpiexec mpirun);
 
   for my $L (@Launchers) {
-    debug("launch: try \"$L\"");
+    debug("launch: look for \"$L\"");
 
     my $pl = which($L);
     next unless defined $pl;
 
-    debug("launch: possible \"$L\"");
+    debug("launch: using \"$pl\"");
 
     # take this one
     $launcher = $L;
@@ -268,6 +269,9 @@ unless ($err) {
 
 if ($is_prrte) {
   prrte_shutdown();
+}
+else {
+  debug("launch: done");
 }
 
 exit $err;
