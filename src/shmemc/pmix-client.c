@@ -42,10 +42,11 @@ shmemc_pmi_publish_worker(void)
 
     PMIX_INFO_CONSTRUCT(&pi);
 
+    bop = & pi.value.data.bo;
+
     /* everyone publishes their info */
     snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
     pi.value.type = PMIX_BYTE_OBJECT;
-    bop = &pi.value.data.bo;
     bop->bytes = (char *) proc.comms.xchg_wrkr_info[proc.rank].addr;
     bop->size = proc.comms.xchg_wrkr_info[proc.rank].len;
     ps = PMIx_Publish(&pi, 1);
@@ -60,8 +61,7 @@ static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 inline static void
-publish_one_rkeys(pmix_info_t *rip,
-                   size_t r)
+publish_one_rkeys(pmix_info_t *rip, size_t r)
 {
     pmix_status_t ps;
     pmix_byte_object_t *bop = & rip->value.data.bo;
@@ -86,7 +86,7 @@ publish_one_rkeys(pmix_info_t *rip,
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
 inline static void
-publish_one_heap(pmix_info_t *hip, size_t r)
+publish_one_heap(pmix_info_t hip[2], size_t r)
 {
     pmix_status_t ps;
 
@@ -107,9 +107,9 @@ publish_one_heap(pmix_info_t *hip, size_t r)
     ps = PMIx_Publish(hip, 2);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base/size");
 #else /* PMIX_VERSION_MAJOR */
-    ps = PMIx_Publish(hip[0], 1);
+    ps = PMIx_Publish(&hip[0], 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
-    ps = PMIx_Publish(hip[1], 1);
+    ps = PMIx_Publish(&hip[1], 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
 #endif  /* PMIX_VERSION_MAJOR */
 }
@@ -155,12 +155,14 @@ shmemc_pmi_exchange_workers(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
+    pmix_byte_object_t *bop;
     int pe;
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
+    bop = & fetch.value.data.bo;
+
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        const pmix_byte_object_t *bop = &fetch.value.data.bo;
         const int i = (pe + proc.rank) % proc.nranks;
 
         snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
@@ -177,8 +179,7 @@ shmemc_pmi_exchange_workers(void)
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
 inline static void
-exchange_one_heap(pmix_pdata_t *hdp,
-                  size_t r, int pe)
+exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 {
     const int i = (pe + proc.rank) % proc.nranks;
     pmix_status_t ps;
@@ -193,10 +194,10 @@ exchange_one_heap(pmix_pdata_t *hdp,
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap base/size");
 #else /* PMIX_VERSION_MAJOR */
-    ps = PMIx_Lookup(hdp[0], 1, &waiter, 1);
+    ps = PMIx_Lookup(&hdp[0], 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap base");
-    ps = PMIx_Lookup(hdp[1], 1, &waiter, 1);
+    ps = PMIx_Lookup(&hdp[1], 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap size");
 #endif /* PMIX_VERSION_MAJOR */
@@ -212,9 +213,7 @@ exchange_one_heap(pmix_pdata_t *hdp,
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 inline static void
-exchange_one_rkeys(pmix_pdata_t *rdp,
-                   size_t r,
-                   int pe)
+exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
     const int i = (pe + proc.rank) % proc.nranks;
     pmix_status_t ps;
@@ -239,8 +238,7 @@ exchange_one_rkeys(pmix_pdata_t *rdp,
 }
 
 inline static void
-exchange_all_rkeys(pmix_pdata_t *rdp,
-                   size_t r)
+exchange_all_rkeys(pmix_pdata_t *rdp, size_t r)
 {
     int pe;
 
@@ -253,7 +251,7 @@ exchange_all_rkeys(pmix_pdata_t *rdp,
 
 inline static void
 exchange_one_rkeys_and_heaps(pmix_pdata_t *rdp,
-                             pmix_pdata_t *hdp,
+                             pmix_pdata_t hdp[2],
                              size_t r)
 {
     int pe;
