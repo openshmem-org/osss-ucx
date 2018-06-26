@@ -4,8 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemc-ucx.h"
-#include "shmemu.h"
+#include "ucx-shmemc.h"
 #include "shmemc.h"
 
 #include "pmi-client.h"

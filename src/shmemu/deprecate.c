@@ -12,34 +12,24 @@ KHASH_SET_INIT_STR(deprecations)
 
 static khash_t(deprecations) *table;
 
-inline static int
-already_seen(const char *name)
-{
-    const khint_t k = kh_get(deprecations, table, name);
-
-    return (k != kh_end(table));
-}
-
-inline static void
-record(const char *name)
-{
-    int absent;
-
-    (void) kh_put(deprecations, table, name, &absent);
-}
-
 /*
- * need to restrict this report to first usage only
+ * restrict report to first usage only or it's far too noisy
+ *
+ * (maj, min) is the spec version in which the routine fn_name was
+ * first deprecated
+ *
  */
 void
 shmemu_deprecate(const char *fn_name, int maj, int min)
 {
-    if (already_seen(fn_name)) {
+    int absent;
+
+    (void) kh_put(deprecations, table, fn_name, &absent);
+
+    if (shmemu_likely(absent) == 0) {
         return;
         /* NOT REACHED */
     }
-
-    record(fn_name);
 
     logger(LOG_DEPRECATE,
            "\"%s\" is deprecated as of specification %d.%d",

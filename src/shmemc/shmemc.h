@@ -257,7 +257,7 @@ void shmemc_context_destroy(shmem_ctx_t ctx);
 unsigned long shmemc_context_id(shmem_ctx_t ctx);
 
 extern shmemc_context_t shmemc_default_context;
-int shmemc_create_default_context(void);
+int shmemc_init_default_context(void);
 
 /*
  * -- barriers & syncs -------------------------------------------------------

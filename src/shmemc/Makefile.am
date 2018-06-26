@@ -7,26 +7,33 @@ LIBSHMEMC_SOURCES         = \
 				broadcast.c \
 				collalgo.c \
 				collect.c \
-				comms.c \
-				contexts.c \
 				fcollect.c \
 				globalexit.c \
 				locks.c \
 				readenv.c \
 				shmemc-init.c \
-				state.c \
-				threading.c \
+				state.c
+
+#
+# -- begin: UCX sources --
+#
+LIBSHMEMC_SOURCES        += \
+				ucx-comms.c \
+				ucx-contexts.c \
 				ucx-init.c \
-				waituntil.c
+				ucx-waituntil.c
 
 if HAVE_PMI
-LIBSHMEMC_SOURCES         += pmi1-client.c
+LIBSHMEMC_SOURCES         += ucx-pmi1-client.c
 EXTRA_CFLAGS                 = @PMI_CFLAGS@
 endif
 if HAVE_PMIX
-LIBSHMEMC_SOURCES         += pmix-client.c
+LIBSHMEMC_SOURCES         += ucx-pmix-client.c
 EXTRA_CFLAGS                 = @PMIX_CFLAGS@
 endif
+#
+# -- end: UCX sources --
+#
 
 lib_LTLIBRARIES           = libshmemc-ucx.la
 libshmemc_ucx_la_SOURCES  = $(LIBSHMEMC_SOURCES)

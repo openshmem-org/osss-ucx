@@ -204,7 +204,7 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
         vsnprintf(tmp1, TRACE_MSG_BUF_SIZE_1, fmt, ap);
         va_end(ap);
 
-        STRCAT_SAFE(tmp2, tmp1, strlen(tmp1));
+        STRCAT_SAFE(tmp2, tmp1, TRACE_MSG_BUF_SIZE_1);
         STRCAT_SAFE(tmp2, "\n", 1);
 
         fputs(tmp2, log_stream);

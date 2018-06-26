@@ -8,7 +8,6 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "boolean.h"
-#include "threading.h"
 
 #include "shmem/defs.h"
 
@@ -236,7 +235,7 @@ shmemc_context_destroy(shmem_ctx_t ctx)
  * return the id of a context (used for logging)
  */
 
-unsigned long
+size_t
 shmemc_context_id(shmem_ctx_t ctx)
 {
     const shmemc_context_h ch = (shmemc_context_h) ctx;
@@ -253,7 +252,7 @@ shmemc_context_id(shmem_ctx_t ctx)
 shmemc_context_t shmemc_default_context;
 
 int
-shmemc_create_default_context(void)
+shmemc_init_default_context(void)
 {
     shmemc_context_h ch = &shmemc_default_context;
     int n;

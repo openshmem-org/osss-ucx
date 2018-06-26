@@ -22,7 +22,7 @@
  * instantiated at all times
  */
 
-shmem_ctx_t SHMEM_CTX_DEFAULT = (shmem_ctx_t *) &shmemc_default_context;
+shmem_ctx_t SHMEM_CTX_DEFAULT = (shmem_ctx_t) &shmemc_default_context;
 
 /*
  * create new context with supplied options

@@ -20,6 +20,14 @@
 /* -------------------------------------------------------------- */
 
 /*
+ * Persistent local state
+ */
+
+static pmix_info_t waiter;      /* control lookups */
+static pmix_proc_t my_proc;     /* about me */
+static pmix_proc_t wc_proc;     /* wildcard lookups */
+
+/*
  * Make local info avaialable to PMIx
  */
 
@@ -34,10 +42,11 @@ shmemc_pmi_publish_worker(void)
 
     PMIX_INFO_CONSTRUCT(&pi);
 
+    bop = & pi.value.data.bo;
+
     /* everyone publishes their info */
     snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
     pi.value.type = PMIX_BYTE_OBJECT;
-    bop = &pi.value.data.bo;
     bop->bytes = (char *) proc.comms.xchg_wrkr_info[proc.rank].addr;
     bop->size = proc.comms.xchg_wrkr_info[proc.rank].len;
     ps = PMIx_Publish(&pi, 1);
@@ -51,70 +60,87 @@ static const char *region_base_fmt = "base:%lu:%d"; /* region, pe */
 static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
+inline static void
+publish_one_rkeys(pmix_info_t *rip, size_t r)
+{
+    pmix_status_t ps;
+    pmix_byte_object_t *bop = & rip->value.data.bo;
+    void *packed_rkey;
+    size_t rkey_len;
+    const ucs_status_t s =
+        ucp_rkey_pack(proc.comms.ucx_ctxt,
+                      proc.comms.regions[r].minfo[proc.rank].racc.mh,
+                      &packed_rkey, &rkey_len
+                      );
+    shmemu_assert(s == UCS_OK, "can't unpack rkey");
+
+    snprintf(rip->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
+    rip->value.type = PMIX_BYTE_OBJECT;
+    bop->bytes = (char *) packed_rkey;
+    bop->size = rkey_len;
+    ps = PMIx_Publish(rip, 1);
+    shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
+
+    ucp_rkey_buffer_release(packed_rkey);
+}
+
+#ifndef ENABLE_ALIGNED_ADDRESSES
+inline static void
+publish_one_heap(pmix_info_t hip[2], size_t r)
+{
+    pmix_status_t ps;
+
+    snprintf(hip[0].key, PMIX_MAX_KEYLEN,
+             region_base_fmt, r, proc.rank);
+    hip[0].value.type = PMIX_UINT64;
+    hip[0].value.data.uint64 =
+        (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
+
+    snprintf(hip[1].key, PMIX_MAX_KEYLEN,
+             region_size_fmt, r, proc.rank);
+    hip[1].value.type = PMIX_SIZE;
+    hip[1].value.data.size =
+        proc.comms.regions[r].minfo[proc.rank].len;
+
+    /* newer PMIx should be able to do this at one go */
+#if PMIX_VERSION_MAJOR > 2
+    ps = PMIx_Publish(hip, 2);
+    shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base/size");
+#else /* PMIX_VERSION_MAJOR */
+    ps = PMIx_Publish(&hip[0], 1);
+    shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
+    ps = PMIx_Publish(&hip[1], 1);
+    shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
+#endif  /* PMIX_VERSION_MAJOR */
+}
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
+
 void
 shmemc_pmi_publish_rkeys_and_heaps(void)
 {
-    pmix_status_t ps;
-    pmix_info_t pi;
+    pmix_info_t ri;
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    pmix_info_t *hi;
+    pmix_info_t *hip;
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
-    void *packed_rkey;
-    size_t rkey_len;
     size_t r;
 
-    PMIX_INFO_CONSTRUCT(&pi);
+    PMIX_INFO_CONSTRUCT(&ri);
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    PMIX_INFO_CREATE(hi, 2);
+    PMIX_INFO_CREATE(hip, 2);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
-    for (r = 0; r < proc.comms.nregions; r += 1) {
-        pmix_byte_object_t *bop = &pi.value.data.bo;
-        const ucs_status_t s =
-            ucp_rkey_pack(proc.comms.ucx_ctxt,
-                          proc.comms.regions[r].minfo[proc.rank].racc.mh,
-                          &packed_rkey, &rkey_len
-                          );
-        shmemu_assert(s == UCS_OK, "can't unpack rkey");
+    publish_one_rkeys(&ri, 0);
 
-        snprintf(pi.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
-        pi.value.type = PMIX_BYTE_OBJECT;
-        bop->bytes = (char *) packed_rkey;
-        bop->size = rkey_len;
-        ps = PMIx_Publish(&pi, 1);
-        shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
-
-        ucp_rkey_buffer_release(packed_rkey);
+    for (r = 1; r < proc.comms.nregions; r += 1) {
+        publish_one_rkeys(&ri, r);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-        if (shmemu_likely(r > 0)) {
-            snprintf(hi[0].key, PMIX_MAX_KEYLEN,
-                     region_base_fmt, r, proc.rank);
-            hi[0].value.type = PMIX_UINT64;
-            hi[0].value.data.uint64 =
-                (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
-
-            snprintf(hi[1].key, PMIX_MAX_KEYLEN,
-                     region_size_fmt, r, proc.rank);
-            hi[1].value.type = PMIX_SIZE;
-            hi[1].value.data.size = proc.comms.regions[r].minfo[proc.rank].len;
-
-            /* newer PMIx should be able to do this at one go */
-#if PMIX_VERSION_MAJOR > 2
-            ps = PMIx_Publish(hi, 2);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base/size");
-#else /* PMIX_VERSION_MAJOR */
-            ps = PMIx_Publish(&hi[0], 1);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
-            ps = PMIx_Publish(&hi[1], 1);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
-#endif  /* PMIX_VERSION_MAJOR */
-        }
+        publish_one_heap(hip, r);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
     }
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    PMIX_INFO_FREE(hi, 2);
+    PMIX_INFO_FREE(hip, 2);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 }
 
@@ -129,17 +155,14 @@ shmemc_pmi_exchange_workers(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
-    pmix_info_t waiter;
-    int all = 0;
+    pmix_byte_object_t *bop;
     int pe;
-
-    PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
+    bop = & fetch.value.data.bo;
+
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        const pmix_byte_object_t *bop = &fetch.value.data.bo;
         const int i = (pe + proc.rank) % proc.nranks;
 
         snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
@@ -154,85 +177,120 @@ shmemc_pmi_exchange_workers(void)
     }
 }
 
+#ifndef ENABLE_ALIGNED_ADDRESSES
+inline static void
+exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
+{
+    const int i = (pe + proc.rank) % proc.nranks;
+    pmix_status_t ps;
+
+    snprintf(hdp[0].key, PMIX_MAX_KEYLEN,
+             region_base_fmt, r, i);
+    snprintf(hdp[1].key, PMIX_MAX_KEYLEN,
+             region_size_fmt, r, i);
+
+#if PMIX_VERSION_MAJOR > 2
+    ps = PMIx_Lookup(hdp, 2, &waiter, 1);
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't fetch heap base/size");
+#else /* PMIX_VERSION_MAJOR */
+    ps = PMIx_Lookup(&hdp[0], 1, &waiter, 1);
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't fetch heap base");
+    ps = PMIx_Lookup(&hdp[1], 1, &waiter, 1);
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't fetch heap size");
+#endif /* PMIX_VERSION_MAJOR */
+    proc.comms.regions[r].minfo[i].base =
+        hdp[0].value.data.uint64;
+    proc.comms.regions[r].minfo[i].len =
+        hdp[1].value.data.size;
+    /* slightly redundant storage, but useful */
+    proc.comms.regions[r].minfo[i].end =
+        proc.comms.regions[r].minfo[i].base +
+        hdp[1].value.data.size;
+}
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
+
+inline static void
+exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
+{
+    const int i = (pe + proc.rank) % proc.nranks;
+    pmix_status_t ps;
+    const pmix_byte_object_t *bop = & rdp->value.data.bo;
+    ucs_status_t s;
+
+    snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, i);
+
+    ps = PMIx_Lookup(rdp, 1, &waiter, 1);
+    shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
+
+    proc.comms.regions[r].minfo[i].racc.rkey =
+        (ucp_rkey_h) malloc(bop->size);
+    shmemu_assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL,
+                  "can't allocate memory for remote rkey");
+
+    s = ucp_ep_rkey_unpack(proc.comms.eps[i],
+                           bop->bytes,
+                           &proc.comms.regions[r].minfo[i].racc.rkey
+                           );
+    shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
+}
+
+inline static void
+exchange_all_rkeys(pmix_pdata_t *rdp, size_t r)
+{
+    int pe;
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        const int i = (pe + proc.rank) % proc.nranks;
+
+        exchange_one_rkeys(rdp, r, i);
+    }
+}
+
+inline static void
+exchange_one_rkeys_and_heaps(pmix_pdata_t *rdp,
+                             pmix_pdata_t hdp[2],
+                             size_t r)
+{
+    int pe;
+
+    for (pe = 0; pe < proc.nranks; pe += 1) {
+        const int i = (pe + proc.rank) % proc.nranks;
+
+        exchange_one_rkeys(rdp, r, i);
+
+#ifndef ENABLE_ALIGNED_ADDRESSES
+        exchange_one_heap(hdp, r, i);
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
+    }  /* PE loop */
+}
+
 void
 shmemc_pmi_exchange_rkeys_and_heaps(void)
 {
-    pmix_status_t ps;
+    size_t r;
     pmix_pdata_t rd;
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    pmix_pdata_t *hd;
+    pmix_pdata_t *hdp;
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
-    pmix_info_t waiter;
-    int all = 0;
-    int pe;
-    size_t r;
-
-    PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
 
     PMIX_PDATA_CONSTRUCT(&rd);
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    PMIX_PDATA_CREATE(hd, 2);
+    PMIX_PDATA_CREATE(hdp, 2);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
-    for (r = 0; r < proc.comms.nregions; r += 1) {
+    /* global rkeys */
+    exchange_all_rkeys(&rd, 0);
 
-        for (pe = 0; pe < proc.nranks; pe += 1) {
-            const pmix_byte_object_t *bop = &rd.value.data.bo;
-            const int i = (pe + proc.rank) % proc.nranks;
-            ucs_status_t s;
-
-            /* rkey first */
-            snprintf(rd.key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, i);
-
-            ps = PMIx_Lookup(&rd, 1, &waiter, 1);
-            shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
-
-            proc.comms.regions[r].minfo[i].racc.rkey =
-                (ucp_rkey_h) malloc(bop->size);
-            shmemu_assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL,
-                          "can't allocate memory for remote rkey");
-
-            s = ucp_ep_rkey_unpack(proc.comms.eps[i],
-                                   bop->bytes,
-                                   &proc.comms.regions[r].minfo[i].racc.rkey
-                                   );
-            shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
-
-#ifndef ENABLE_ALIGNED_ADDRESSES
-            /* now heaps, but skip globals */
-            if (shmemu_likely(r > 0)) {
-                snprintf(hd[0].key, PMIX_MAX_KEYLEN,
-                         region_base_fmt, r, i);
-                snprintf(hd[1].key, PMIX_MAX_KEYLEN,
-                         region_size_fmt, r, i);
-
-#if PMIX_VERSION_MAJOR > 2
-                ps = PMIx_Lookup(hd, 2, &waiter, 1);
-                shmemu_assert(ps == PMIX_SUCCESS,
-                              "can't fetch heap base/size");
-#else /* PMIX_VERSION_MAJOR */
-                ps = PMIx_Lookup(&hd[0], 1, &waiter, 1);
-                shmemu_assert(ps == PMIX_SUCCESS,
-                              "can't fetch heap base");
-                ps = PMIx_Lookup(&hd[1], 1, &waiter, 1);
-                shmemu_assert(ps == PMIX_SUCCESS,
-                              "can't fetch heap size");
-#endif /* PMIX_VERSION_MAJOR */
-                proc.comms.regions[r].minfo[i].base =
-                    hd[0].value.data.uint64;
-                proc.comms.regions[r].minfo[i].len =
-                    hd[1].value.data.size;
-                /* slightly redundant storage, but useful */
-                proc.comms.regions[r].minfo[i].end =
-                    proc.comms.regions[r].minfo[i].base +
-                    hd[1].value.data.size;
-            }
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
-        }
+    /* now everything else */
+    for (r = 1; r < proc.comms.nregions; r += 1) {
+        exchange_one_rkeys_and_heaps(&rd, hdp, r);
     }
+
 #ifndef ENABLE_ALIGNED_ADDRESSES
-    PMIX_PDATA_FREE(hd, 2);
+    PMIX_PDATA_FREE(hdp, 2);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 }
 
@@ -260,6 +318,23 @@ parse_peers(char *peerstr)
         i += 1;
         next = strtok(NULL, sep);
     }
+}
+
+/* -------------------------------------------------------------- */
+
+inline static void
+make_waiter(void)
+{
+    int all = 0;
+
+    PMIX_INFO_CONSTRUCT(&waiter);
+    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
+}
+
+inline static void
+release_waiter(void)
+{
+    return;                     /* nothing needed */
 }
 
 /* -------------------------------------------------------------- */
@@ -313,8 +388,6 @@ pmix_finalize_wrapper(void)
 void
 shmemc_pmi_client_init(void)
 {
-    pmix_proc_t my_proc;        /* about me */
-    pmix_proc_t wc_proc;        /* wildcard lookups */
     pmix_value_t v;
     pmix_value_t *vp = &v;      /* holds things we get from PMIx */
     pmix_status_t ps;
@@ -383,6 +456,8 @@ shmemc_pmi_client_init(void)
                   PMIx_Error_string(ps));
 
     parse_peers(vp->data.string);
+
+    make_waiter();
 }
 
 /*
@@ -412,6 +487,9 @@ shmemc_pmi_client_finalize(void)
     }
 
     /* clean up memory recording peer PEs */
+
+    release_waiter();
+
     free(proc.peers);
 }
 
