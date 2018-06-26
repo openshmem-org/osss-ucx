@@ -8,7 +8,6 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "boolean.h"
-#include "threading.h"
 
 #include "shmem/defs.h"
 
