@@ -12,8 +12,7 @@ LIBSHMEMC_SOURCES         = \
 				locks.c \
 				readenv.c \
 				shmemc-init.c \
-				state.c \
-				threading.c
+				state.c
 
 #
 # -- begin: UCX sources --
