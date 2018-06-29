@@ -20,6 +20,11 @@
 /* -------------------------------------------------------------- */
 
 /*
+ * rotate/spread PE communications
+ */
+#define SHIFT(_pe) ( ((_pe) + proc.rank) % proc.nranks )
+
+/*
  * Persistent local state
  */
 
@@ -163,7 +168,7 @@ shmemc_pmi_exchange_workers(void)
     bop = & fetch.value.data.bo;
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        const int i = (pe + proc.rank) % proc.nranks;
+        const int i = SHIFT(pe);
 
         snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
         ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
@@ -181,7 +186,7 @@ shmemc_pmi_exchange_workers(void)
 inline static void
 exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 {
-    const int i = (pe + proc.rank) % proc.nranks;
+    const int i = SHIFT(pe);
     pmix_status_t ps;
 
     snprintf(hdp[0].key, PMIX_MAX_KEYLEN,
@@ -215,7 +220,7 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 inline static void
 exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
-    const int i = (pe + proc.rank) % proc.nranks;
+    const int i = SHIFT(pe);
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
     ucs_status_t s;
@@ -243,7 +248,7 @@ exchange_all_rkeys(pmix_pdata_t *rdp, size_t r)
     int pe;
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        const int i = (pe + proc.rank) % proc.nranks;
+        const int i = SHIFT(pe);
 
         exchange_one_rkeys(rdp, r, i);
     }
@@ -257,7 +262,7 @@ exchange_one_rkeys_and_heaps(pmix_pdata_t *rdp,
     int pe;
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
-        const int i = (pe + proc.rank) % proc.nranks;
+        const int i = SHIFT(pe);
 
         exchange_one_rkeys(rdp, r, i);
 
