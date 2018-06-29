@@ -70,6 +70,7 @@ LT_INIT
 m4_include([config/m4/pmi.m4])
 m4_include([config/m4/pmix.m4])
 m4_include([config/m4/ucx.m4])
+m4_include([config/m4/shcoll.m4])
 
 m4_include([config/m4/confargs.m4])
 
