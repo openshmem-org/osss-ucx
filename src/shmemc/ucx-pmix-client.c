@@ -77,7 +77,7 @@ publish_one_rkeys(pmix_info_t *rip, size_t r)
                       proc.comms.regions[r].minfo[proc.rank].racc.mh,
                       &packed_rkey, &rkey_len
                       );
-    shmemu_assert(s == UCS_OK, "can't unpack rkey");
+    shmemu_assert(s == UCS_OK, "can't pack rkey");
 
     snprintf(rip->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
     rip->value.type = PMIX_BYTE_OBJECT;
