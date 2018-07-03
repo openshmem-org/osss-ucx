@@ -95,7 +95,9 @@ publish_one_rkeys(size_t r)
 
     snprintf(key, kvs_max_key_len, rkey_exch_fmt, proc.rank);
 
-    next = snprintf(val, kvs_max_value_len, "%8lu", rkey_len);
+    next = snprintf(val, kvs_max_value_len,
+                    "%8lu",
+                    (unsigned long) rkey_len);
     memcpy(val + next, packed_rkey, rkey_len);
 
     ps = PMI_KVS_Put(kvs_name, key, val);
@@ -187,7 +189,7 @@ exchange_one_rkeys(size_t r, int pe)
                   "fetch of rkey from PE %d failed (status %d)",
                   i, ps);
 
-    sscanf(val, "%8lu", &len);
+    sscanf(val, "%8lu", (unsigned long *) &len);
 
     proc.comms.regions[r].minfo[i].racc.rkey =
         (ucp_rkey_h) malloc(len);
