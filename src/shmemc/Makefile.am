@@ -7,6 +7,7 @@ LIBSHMEMC_SOURCES         = \
 				broadcast.c \
 				collalgo.c \
 				collect.c \
+				contexts.c \
 				fcollect.c \
 				globalexit.c \
 				locks.c \
