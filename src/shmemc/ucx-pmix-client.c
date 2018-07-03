@@ -186,13 +186,12 @@ shmemc_pmi_exchange_workers(void)
 inline static void
 exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 {
-    const int i = SHIFT(pe);
     pmix_status_t ps;
 
     snprintf(hdp[0].key, PMIX_MAX_KEYLEN,
-             region_base_fmt, r, i);
+             region_base_fmt, r, pe);
     snprintf(hdp[1].key, PMIX_MAX_KEYLEN,
-             region_size_fmt, r, i);
+             region_size_fmt, r, pe);
 
 #if PMIX_VERSION_MAJOR > 2
     ps = PMIx_Lookup(hdp, 2, &waiter, 1);
@@ -206,13 +205,13 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap size");
 #endif /* PMIX_VERSION_MAJOR */
-    proc.comms.regions[r].minfo[i].base =
+    proc.comms.regions[r].minfo[pe].base =
         hdp[0].value.data.uint64;
-    proc.comms.regions[r].minfo[i].len =
+    proc.comms.regions[r].minfo[pe].len =
         hdp[1].value.data.size;
     /* slightly redundant storage, but useful */
-    proc.comms.regions[r].minfo[i].end =
-        proc.comms.regions[r].minfo[i].base +
+    proc.comms.regions[r].minfo[pe].end =
+        proc.comms.regions[r].minfo[pe].base +
         hdp[1].value.data.size;
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
@@ -220,24 +219,23 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 inline static void
 exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
-    const int i = SHIFT(pe);
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
     ucs_status_t s;
 
-    snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, i);
+    snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
     ps = PMIx_Lookup(rdp, 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
 
-    proc.comms.regions[r].minfo[i].racc.rkey =
+    proc.comms.regions[r].minfo[pe].racc.rkey =
         (ucp_rkey_h) malloc(bop->size);
-    shmemu_assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL,
+    shmemu_assert(proc.comms.regions[r].minfo[pe].racc.rkey != NULL,
                   "can't allocate memory for remote rkey");
 
-    s = ucp_ep_rkey_unpack(proc.comms.eps[i],
+    s = ucp_ep_rkey_unpack(proc.comms.eps[pe],
                            bop->bytes,
-                           &proc.comms.regions[r].minfo[i].racc.rkey
+                           &proc.comms.regions[r].minfo[pe].racc.rkey
                            );
     shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
 }
