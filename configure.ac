@@ -70,6 +70,7 @@ LT_INIT
 m4_include([config/m4/pmi.m4])
 m4_include([config/m4/pmix.m4])
 m4_include([config/m4/ucx.m4])
+m4_include([config/m4/shcoll.m4])
 
 m4_include([config/m4/confargs.m4])
 
@@ -156,8 +157,6 @@ AC_DEFINE_UNQUOTED([SHMEM_DEFAULT_HEAP_SIZE],
 			["$shmem_heap_size"],
 			[Default size of symmetric heap])
 
-AC_MSG_NOTICE([Default symmetric heap size will be $shmem_heap_size])
-
 #
 # all the output files
 #
@@ -184,3 +183,33 @@ AC_CONFIG_FILES([
         ])
 
 AC_OUTPUT
+
+#
+# Courtesy info
+#
+
+echo
+echo "Summary"
+echo "-------"
+echo
+echo "                  UCX: version $UCX_VERSION_STRING in $UCX_DIR"
+echo "                 PMIx: version $PMIX_VERSION_STRING in $PMIX_DIR"
+
+case "$shcoll_happy" in
+    no)
+        ;;
+    *)
+        echo "               SHCOLL: in $SHCOLL_DIR"
+	;;
+esac
+case "$SHMEM_LAUNCHER" in
+    "")
+        ;;
+    *)
+        echo "             Launcher: $SHMEM_LAUNCHER"
+	;;
+esac
+
+echo "    Default heap size: $shmem_heap_size"
+echo
+echo

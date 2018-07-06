@@ -10,7 +10,7 @@ shmemu_cppflags        = -I$(top_srcdir)/src/$(shmemu_dir)
 shmemu_ldflags         = -L$(shmemu_dir)
 shmemu_libs            = -lshmemu
 
-SUBDIRS                = $(shmemc_dir) $(shmemu_dir) osh_info
+SUBDIRS                = $(shmemu_dir) $(shmemc_dir) osh_info
 
 MY_INCLUDE             = -I../include -I$(top_srcdir)/include
 

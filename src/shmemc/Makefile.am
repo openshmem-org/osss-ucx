@@ -7,13 +7,13 @@ LIBSHMEMC_SOURCES         = \
 				broadcast.c \
 				collalgo.c \
 				collect.c \
+				contexts.c \
 				fcollect.c \
 				globalexit.c \
 				locks.c \
 				readenv.c \
 				shmemc-init.c \
 				state.c
-
 #
 # -- begin: UCX sources --
 #
