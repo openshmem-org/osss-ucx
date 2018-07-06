@@ -14,6 +14,28 @@ LIBSHMEMC_SOURCES         = \
 				readenv.c \
 				shmemc-init.c \
 				state.c
+
+if HAVE_SHCOLL
+
+LIBSHMEMC_SOURCES        += collectives/shcoll-shim.c
+
+# TEMP TEMP TEMP
+LIBSHMEMC_SOURCES        += collectives/reductions.c
+# TEMP TEMP TEMP
+
+all_cppflags             += -I$(SHCOLL_DIR)/include
+
+else
+
+LIBSHMEMC_SOURCES        += \
+                                collectives/alltoall.c \
+                                collectives/barrier.c \
+                                collectives/broadcast.c \
+                                collectives/collect.c \
+                                collectives/fcollect.c \
+                                collectives/reductions.c
+endif
+
 #
 # -- begin: UCX sources --
 #

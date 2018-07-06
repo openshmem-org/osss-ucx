@@ -6,7 +6,7 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
-#include "shmem/defs.h"
+#include "shmem/api.h"
 
 #include "shmem_mutex.h"
 #include "allocator/memalloc.h"
@@ -45,7 +45,7 @@ shmem_malloc(size_t s)
 
     SHMEMT_MUTEX_PROTECT(addr = shmema_malloc(s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     logger(LOG_MEMORY,
            "%s(size=%lu) -> %p",
@@ -67,7 +67,7 @@ shmem_calloc(size_t n, size_t s)
 
     SHMEMT_MUTEX_PROTECT(addr = shmema_calloc(n, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     logger(LOG_MEMORY,
            "%s(count=%lu, size=%lu) -> %p",
@@ -81,7 +81,7 @@ shmem_calloc(size_t n, size_t s)
 void
 shmem_free(void *p)
 {
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(shmema_free(p));
 
@@ -106,11 +106,11 @@ shmem_realloc(void *p, size_t s)
         return NULL;
     }
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(addr = shmema_realloc(p, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     logger(LOG_MEMORY,
            "%s(addr=%p, size=%lu) -> %p",
@@ -132,7 +132,7 @@ shmem_align(size_t a, size_t s)
 
     SHMEMT_MUTEX_PROTECT(addr = shmema_align(a, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     logger(LOG_MEMORY,
            "%s(align=%lu, size=%lu) -> %p",
