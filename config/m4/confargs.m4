@@ -96,4 +96,4 @@ AS_IF([test "x$with_launcher" != "x"],
 	[AC_DEFINE([SHMEM_LAUNCHER], [$with_launcher], [OpenSHMEM launcher])
 	 AC_SUBST([SHMEM_LAUNCHER], [$with_launcher])]
 	 )
-AM_CONDITIONAL([SHEMM_LAUNCHER], [test "x$with_launcher" != "x"])
+AM_CONDITIONAL([SHMEM_LAUNCHER], [test "x$with_launcher" != "x"])
