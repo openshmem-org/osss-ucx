@@ -7,6 +7,7 @@ AC_ARG_WITH([shcoll],
 
 AS_IF([test "x$with_shcoll" != "x"],
       [
+          AC_MSG_NOTICE([CHecking for SHCOLL])
           shcoll_hdr="$with_shcoll/include/shcoll.h"
           AS_IF([test -r "$shcoll_hdr"],
           [
@@ -19,7 +20,7 @@ AS_IF([test "x$with_shcoll" != "x"],
 	      AC_SUBST([SHCOLL_DIR])
 	      AC_SUBST([SHCOLL_LIBS])
 	      shcoll_happy=yes
-	      AC_MSG_NOTICE([Using SHCOLL in $with_shcoll])
+	      AS_BOX([Using SHCOLL in $with_shcoll])
           ],
 	  [
 	    AC_MSG_ERROR([Unable to find SHCOLL header file in $shcoll_hdr])
