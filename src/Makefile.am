@@ -34,13 +34,23 @@ MY_SOURCES             = \
                                 version.c \
                                 waituntil.c
 
-MY_SOURCES             += \
-				collectives/alltoall.c \
-				collectives/barrier.c \
-				collectives/broadcast.c \
-				collectives/collect.c \
-				collectives/fcollect.c \
-				collectives/reductions.c
+#
+# -- begin: SHCOLL --
+#
+MY_SOURCES            += collectives/shcoll-shim.c
+
+all_cppflags          += -I$(SHCOLL_DIR)/include
+#
+# -- end: SHCOLL --
+#
+
+# MY_SOURCES             += \
+# 				collectives/alltoall.c \
+# 				collectives/barrier.c \
+# 				collectives/broadcast.c \
+# 				collectives/collect.c \
+# 				collectives/fcollect.c \
+# 				collectives/reductions.c
 
 if ENABLE_THREADS
 MY_SOURCES            += shmem_mutex.c
