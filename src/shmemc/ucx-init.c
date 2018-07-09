@@ -10,7 +10,6 @@
 #include "state.h"
 #include "globalexit.h"
 #include "readenv.h"
-#include "barrier.h"
 
 #include "allocator/memalloc.h"
 

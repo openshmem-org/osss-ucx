@@ -65,32 +65,36 @@
                                          pSync);                \
     }
 
-#define SHIM_BARRIER(_name)                             \
-    void                                                \
-    shmemc_barrier_all(void)                            \
-    {                                                   \
-        shcoll_barrier_all_##_name();                   \
-    }                                                   \
-    void                                                \
-    shmemc_barrier(int PE_start, int logPE_stride,      \
-                   int PE_size, long *pSync)            \
-    {                                                   \
-        shcoll_barrier_##_name(PE_start, logPE_stride,  \
-                               PE_size, pSync);         \
+extern long *shmemc_barrier_all_psync;
+
+#define SHIM_BARRIER(_name)                                     \
+    void                                                        \
+    shmemc_barrier_all(void)                                    \
+    {                                                           \
+        shcoll_barrier_all_##_name(shmemc_barrier_all_psync);   \
+    }                                                           \
+    void                                                        \
+    shmemc_barrier(int PE_start, int logPE_stride,              \
+                   int PE_size, long *pSync)                    \
+    {                                                           \
+        shcoll_barrier_##_name(PE_start, logPE_stride,          \
+                               PE_size, pSync);                 \
     }
 
-#define SHIM_SYNC(_name)                            \
-    void                                            \
-    shmemc_sync_all(void)                           \
-    {                                               \
-        shcoll_sync_all_##_name();                  \
-    }                                               \
-    void                                            \
-    shmemc_sync(int PE_start, int logPE_stride,     \
-                int PE_size, long *pSync)           \
-    {                                               \
-        shcoll_sync_##_name(PE_start, logPE_stride, \
-                            PE_size, pSync);        \
+extern long *shmemc_sync_all_psync;
+
+#define SHIM_SYNC(_name)                                \
+    void                                                \
+    shmemc_sync_all(void)                               \
+    {                                                   \
+        shcoll_sync_all_##_name(shmemc_sync_all_psync); \
+    }                                                   \
+    void                                                \
+    shmemc_sync(int PE_start, int logPE_stride,         \
+                int PE_size, long *pSync)               \
+    {                                                   \
+        shcoll_sync_##_name(PE_start, logPE_stride,     \
+                            PE_size, pSync);            \
     }
 
 #define SHIM_BROADCAST(_name, _size)                                \
