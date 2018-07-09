@@ -39,6 +39,10 @@ MY_SOURCES             = \
 #
 MY_SOURCES            += collectives/shcoll-shim.c
 
+# TEMP TEMP TEMP TEMP
+MY_SOURCES            += collectives/reductions.c
+# TEMP TEMP TEMP TEMP
+
 all_cppflags          += -I$(SHCOLL_DIR)/include
 #
 # -- end: SHCOLL --

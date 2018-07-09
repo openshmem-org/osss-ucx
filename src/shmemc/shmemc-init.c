@@ -41,9 +41,6 @@ shmemc_init(void)
 void
 shmemc_finalize(void)
 {
-    /* finalize has implicit global barrier */
-    shmemc_barrier_all();
-
     shmemc_pmi_client_finalize();
 
     shmemc_ucx_finalize();

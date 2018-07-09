@@ -357,27 +357,6 @@ shmemc_ucx_make_remote_endpoints(void)
     }
 }
 
-extern long *shmemc_barrier_all_psync;
-extern long *shmemc_sync_all_psync;
-
-#define ALLOC_INTERNAL_SYMM_VAR(_var)                                   \
-    do {                                                                \
-        int i;                                                          \
-        const size_t nbytes                                             \
-            = sizeof(*(_var)) * SHMEM_BARRIER_SYNC_SIZE;                \
-                                                                        \
-        (_var) = (long *) shmema_malloc(nbytes);                        \
-                                                                        \
-        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; i += 1) {              \
-            (_var)[i] = SHMEM_SYNC_VALUE;                               \
-        }                                                               \
-    } while (0)
-
-#define FREE_INTERNAL_SYMM_VAR(_var)                                    \
-    do {                                                                \
-        shmema_free(_var);                                              \
-    } while (0)
-
 /*
  * UCX config
  */
@@ -410,6 +389,27 @@ ucx_init_ready(void)
     shmemu_assert(s == UCS_OK, "can't initialize UCX");
 }
 
+long *shmemc_barrier_all_psync;
+long *shmemc_sync_all_psync;
+
+#define ALLOC_INTERNAL_SYMM_VAR(_var)                                   \
+    do {                                                                \
+        int i;                                                          \
+        const size_t nbytes                                             \
+            = sizeof(*(_var)) * SHMEM_BARRIER_SYNC_SIZE;                \
+                                                                        \
+        (_var) = (long *) shmema_malloc(nbytes);                        \
+                                                                        \
+        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; i += 1) {              \
+            (_var)[i] = SHMEM_SYNC_VALUE;                               \
+        }                                                               \
+    } while (0)
+
+#define FREE_INTERNAL_SYMM_VAR(_var)                                    \
+    do {                                                                \
+        shmema_free(_var);                                              \
+    } while (0)
+
 void
 shmemc_ucx_init(void)
 {
@@ -420,17 +420,9 @@ shmemc_ucx_init(void)
     /* user-supplied setup */
     shmemc_env_init();
 
-    /* collectives are go */
-    shmemc_barrier_init();
-    shmemc_broadcast_init();
-
     /* make remote memory usable */
     init_memory_regions();
     register_memory_regions();
-
-    /* pre-allocate internal sync variables */
-    ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
-    ALLOC_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
 
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
@@ -441,6 +433,10 @@ shmemc_ucx_init(void)
 
     n = shmemc_init_default_context();
     shmemu_assert(n == 0, "couldn't initialize default context");
+
+    /* pre-allocate internal sync variables */
+    ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
+    ALLOC_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
 
     /* don't need config info any more */
     ucp_config_release(proc.comms.ucx_cfg);
@@ -471,9 +467,6 @@ shmemc_ucx_finalize(void)
     FREE_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
 
     deregister_memory_regions();
-
-    shmemc_broadcast_finalize();
-    shmemc_barrier_finalize();
 
     shmemc_env_finalize();
 
