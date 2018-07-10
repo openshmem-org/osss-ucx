@@ -64,7 +64,7 @@ SHIM_COLLECT(bruck, 64)
  * bruck_no_rotate
  * bruck_signal
  * bruck_inplace
- * neighbour_exchange
+ * neighbor_exchange
  *
  */
 SHIM_FCOLLECT(bruck_inplace, 32)
