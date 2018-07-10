@@ -39,22 +39,10 @@ MY_SOURCES             = \
 #
 MY_SOURCES            += collectives/shcoll-shim.c
 
-# TEMP TEMP TEMP TEMP
-MY_SOURCES            += collectives/reductions.c
-# TEMP TEMP TEMP TEMP
-
 all_cppflags          += -I$(SHCOLL_DIR)/include
 #
 # -- end: SHCOLL --
 #
-
-# MY_SOURCES             += \
-# 				collectives/alltoall.c \
-# 				collectives/barrier.c \
-# 				collectives/broadcast.c \
-# 				collectives/collect.c \
-# 				collectives/fcollect.c \
-# 				collectives/reductions.c
 
 if ENABLE_THREADS
 MY_SOURCES            += shmem_mutex.c

@@ -17,3 +17,6 @@ SHIM_SYNC(binomial_tree)
 
 SHIM_BROADCAST(binomial_tree, 32)
 SHIM_BROADCAST(binomial_tree, 64)
+
+SHIM_REDUCE_ALL(rec_dbl)
+

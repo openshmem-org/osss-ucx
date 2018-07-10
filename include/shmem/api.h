@@ -2171,13 +2171,13 @@ extern "C"
      * reductions
      */
 
-    void shmem_long_sum_to_all(long *target, long *source, int nreduce,
+    void shmem_long_sum_to_all(long *target, const long *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, long *pWrk, long *pSync);
 
     /* see \ref shmem_long_sum_to_all() */
     void shmem_complexd_sum_to_all(COMPLEXIFY(double) * target,
-                                   COMPLEXIFY(double) * source,
+                                   const COMPLEXIFY(double) * source,
                                    int nreduce,
                                    int PE_start, int logPE_stride,
                                    int PE_size,
@@ -2185,45 +2185,45 @@ extern "C"
                                    long *pSync);
     /* see \ref shmem_long_sum_to_all() */
     void shmem_complexf_sum_to_all(COMPLEXIFY(float) * target,
-                                   COMPLEXIFY(float) * source,
+                                   const COMPLEXIFY(float) * source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    COMPLEXIFY(float) * pWrk,
                                    long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_double_sum_to_all(double *target, double *source,
+    void shmem_double_sum_to_all(double *target, const double *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  double *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_float_sum_to_all(float *target, float *source,
+    void shmem_float_sum_to_all(float *target, const float *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 float *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_int_sum_to_all(int *target, int *source, int nreduce,
+    void shmem_int_sum_to_all(int *target, const int *source, int nreduce,
                               int PE_start, int logPE_stride,
                               int PE_size, int *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
     void shmem_longdouble_sum_to_all(long double *target,
-                                     long double *source, int nreduce,
+                                     const long double *source, int nreduce,
                                      int PE_start, int logPE_stride,
                                      int PE_size, long double *pWrk,
                                      long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_longlong_sum_to_all(long long *target, long long *source,
+    void shmem_longlong_sum_to_all(long long *target, const long long *source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    long long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_short_sum_to_all(short *target, short *source,
+    void shmem_short_sum_to_all(short *target, const short *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 short *pWrk, long *pSync);
 
     /* see \ref shmem_long_sum_to_all() */
     void shmem_complexd_prod_to_all(COMPLEXIFY(double) * target,
-                                    COMPLEXIFY(double) * source,
+                                    const COMPLEXIFY(double) * source,
                                     int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size,
@@ -2231,180 +2231,180 @@ extern "C"
                                     long *pSync);
     /* see \ref shmem_long_sum_to_all() */
     void shmem_complexf_prod_to_all(COMPLEXIFY(float) * target,
-                                    COMPLEXIFY(float) * source,
+                                    const COMPLEXIFY(float) * source,
                                     int nreduce, int PE_start,
                                     int logPE_stride, int PE_size,
                                     COMPLEXIFY(float) * pWrk,
                                     long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_double_prod_to_all(double *target, double *source,
+    void shmem_double_prod_to_all(double *target, const double *source,
                                   int nreduce, int PE_start,
                                   int logPE_stride, int PE_size,
                                   double *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_float_prod_to_all(float *target, float *source,
+    void shmem_float_prod_to_all(float *target, const float *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  float *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_int_prod_to_all(int *target, int *source, int nreduce,
+    void shmem_int_prod_to_all(int *target, const int *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_long_prod_to_all(long *target, long *source, int nreduce,
+    void shmem_long_prod_to_all(long *target, const long *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
     void shmem_longdouble_prod_to_all(long double *target,
-                                      long double *source, int nreduce,
+                                      const long double *source, int nreduce,
                                       int PE_start, int logPE_stride,
                                       int PE_size, long double *pWrk,
                                       long *pSync);
     /* see \ref shmem_long_sum_to_all() */
     void shmem_longlong_prod_to_all(long long *target,
-                                    long long *source, int nreduce,
+                                    const long long *source, int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size, long long *pWrk,
                                     long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_short_prod_to_all(short *target, short *source,
-                                 int nreduce, int PE_start,
+    void shmem_short_prod_to_all(short *target, const short *source,
+                                 const int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  short *pWrk, long *pSync);
 
     /* see \ref shmem_long_sum_to_all() */
     void shmem_int_and_to_all(int *target,
-                              int *source,
+                              const int *source,
                               int nreduce,
                               int PE_start, int logPE_stride,
                               int PE_size, int *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_long_and_to_all(long *target, long *source, int nreduce,
+    void shmem_long_and_to_all(long *target, const long *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_longlong_and_to_all(long long *target, long long *source,
+    void shmem_longlong_and_to_all(long long *target, const long long *source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    long long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_short_and_to_all(short *target, short *source,
+    void shmem_short_and_to_all(short *target, const short *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 short *pWrk, long *pSync);
 
     /* see \ref shmem_long_sum_to_all() */
     void shmem_int_or_to_all(int *target,
-                             int *source,
+                             const int *source,
                              int nreduce,
                              int PE_start, int logPE_stride,
                              int PE_size, int *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_long_or_to_all(long *target, long *source, int nreduce,
+    void shmem_long_or_to_all(long *target, const long *source, int nreduce,
                               int PE_start, int logPE_stride,
                               int PE_size, long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_longlong_or_to_all(long long *target, long long *source,
+    void shmem_longlong_or_to_all(long long *target, const long long *source,
                                   int nreduce, int PE_start,
                                   int logPE_stride, int PE_size,
                                   long long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_short_or_to_all(short *target, short *source,
+    void shmem_short_or_to_all(short *target, const short *source,
                                int nreduce, int PE_start,
                                int logPE_stride, int PE_size,
                                short *pWrk, long *pSync);
 
     /* see \ref shmem_long_sum_to_all() */
     void shmem_int_xor_to_all(int *target,
-                              int *source,
+                              const int *source,
                               int nreduce,
                               int PE_start, int logPE_stride,
                               int PE_size, int *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_long_xor_to_all(long *target, long *source, int nreduce,
+    void shmem_long_xor_to_all(long *target, const long *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_longlong_xor_to_all(long long *target, long long *source,
+    void shmem_longlong_xor_to_all(long long *target, const long long *source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    long long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_short_xor_to_all(short *target, short *source,
+    void shmem_short_xor_to_all(short *target, const short *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 short *pWrk, long *pSync);
 
     /* see \ref shmem_long_sum_to_all() */
     void shmem_int_max_to_all(int *target,
-                              int *source,
+                              const int *source,
                               int nreduce,
                               int PE_start, int logPE_stride,
                               int PE_size, int *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_long_max_to_all(long *target, long *source, int nreduce,
+    void shmem_long_max_to_all(long *target, const long *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_longlong_max_to_all(long long *target, long long *source,
+    void shmem_longlong_max_to_all(long long *target, const long long *source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    long long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_short_max_to_all(short *target, short *source,
+    void shmem_short_max_to_all(short *target, const short *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 short *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
     void shmem_longdouble_max_to_all(long double *target,
-                                     long double *source, int nreduce,
+                                     const long double *source, int nreduce,
                                      int PE_start, int logPE_stride,
                                      int PE_size, long double *pWrk,
                                      long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_float_max_to_all(float *target, float *source,
+    void shmem_float_max_to_all(float *target, const float *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 float *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_double_max_to_all(double *target, double *source,
+    void shmem_double_max_to_all(double *target, const double *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  double *pWrk, long *pSync);
 
     /* see \ref shmem_long_sum_to_all() */
     void shmem_int_min_to_all(int *target,
-                              int *source,
+                              const int *source,
                               int nreduce,
                               int PE_start, int logPE_stride,
                               int PE_size, int *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_long_min_to_all(long *target, long *source, int nreduce,
+    void shmem_long_min_to_all(long *target, const long *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_longlong_min_to_all(long long *target, long long *source,
+    void shmem_longlong_min_to_all(long long *target, const long long *source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    long long *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_short_min_to_all(short *target, short *source,
+    void shmem_short_min_to_all(short *target, const short *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 short *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
     void shmem_longdouble_min_to_all(long double *target,
-                                     long double *source, int nreduce,
+                                     const long double *source, int nreduce,
                                      int PE_start, int logPE_stride,
                                      int PE_size, long double *pWrk,
                                      long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_float_min_to_all(float *target, float *source,
+    void shmem_float_min_to_all(float *target, const float *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 float *pWrk, long *pSync);
     /* see \ref shmem_long_sum_to_all() */
-    void shmem_double_min_to_all(double *target, double *source,
+    void shmem_double_min_to_all(double *target, const double *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  double *pWrk, long *pSync);
