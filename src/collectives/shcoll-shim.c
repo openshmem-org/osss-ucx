@@ -80,7 +80,7 @@ SHIM_FCOLLECT(bruck_inplace, 64)
  * dissemination
  *
  */
-SHIM_BARRIER(linear)
+SHIM_BARRIER(binomial_tree)
 SHIM_SYNC(binomial_tree)
 
 /*
