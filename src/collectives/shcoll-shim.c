@@ -32,7 +32,7 @@ SHIM_ALLTOALL(xor_pairwise_exchange_barrier, 64)
  * color_pairwise_exchange_counter_nbi
  *
  */
-SHIM_ALLTOALLS(xor_pairwise_xchange_barrier, 32)
+SHIM_ALLTOALLS(xor_pairwise_exchange_barrier, 32)
 SHIM_ALLTOALLS(xor_pairwise_exchange_barrier, 64)
 
 /*
