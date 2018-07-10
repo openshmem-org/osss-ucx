@@ -3,7 +3,7 @@
 
 # For license: see LICENSE file at top-level
 
-m4_define([pkg_name],       [OSSS/SBU Reference Implementation])
+m4_define([pkg_name],       [osss-ucx])
 m4_define([pkg_major],      [1])
 m4_define([pkg_minor],      [0])
 m4_define([pkg_version],    [pkg_major.pkg_minor])
