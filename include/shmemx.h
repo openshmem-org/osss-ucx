@@ -214,6 +214,125 @@ extern "C"
 
 #endif /* SHMEM_HAS_C11 */
 
+#define APIX_DECL_CTX_PUTGET_SIGNAL(_opname, _name, _type)           \
+    void                                                             \
+    shmemx_ctx_##_name##_##_opname##_signal(shmem_ctx_t ctx,         \
+                                            _type *dest,             \
+                                            const _type *src,        \
+                                            size_t nelems,           \
+                                            uint64_t *sig,           \
+                                            uint64_t sigval,         \
+                                            int pe);
+
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, float, float)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, double, double)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, longdouble, long double)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, schar, signed char)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, char, char)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, short, short)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, int, int)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, long, long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, longlong, long long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, uchar, unsigned char)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, ushort, unsigned short)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, uint, unsigned int)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, ulong, unsigned long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, ulonglong, unsigned long long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, int8, int8_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, int16, int16_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, int32, int32_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, int64, int64_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, uint8, uint8_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, uint16, uint16_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, uint32, uint32_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, uint64, uint64_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, size, size_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(put, ptrdiff, ptrdiff_t)
+
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, float, float)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, double, double)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, longdouble, long double)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, schar, signed char)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, char, char)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, short, short)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, int, int)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, long, long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, longlong, long long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, uchar, unsigned char)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, ushort, unsigned short)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, uint, unsigned int)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, ulong, unsigned long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, ulonglong, unsigned long long)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, int8, int8_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, int16, int16_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, int32, int32_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, int64, int64_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, uint8, uint8_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, uint16, uint16_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, uint32, uint32_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, uint64, uint64_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, size, size_t)
+    APIX_DECL_CTX_PUTGET_SIGNAL(get, ptrdiff, ptrdiff_t)
+
+#define APIX_DECL_PUTGET_SIGNAL(_opname, _name, _type)              \
+        void                                                        \
+        shmemx_##_name##_##_opname##_signal(_type *dest,            \
+                                            const _type *src,       \
+                                            size_t nelems,          \
+                                            uint64_t *sig,          \
+                                            uint64_t sigval,        \
+                                            int pe);
+
+    APIX_DECL_PUTGET_SIGNAL(put, float, float)
+    APIX_DECL_PUTGET_SIGNAL(put, double, double)
+    APIX_DECL_PUTGET_SIGNAL(put, longdouble, long double)
+    APIX_DECL_PUTGET_SIGNAL(put, schar, signed char)
+    APIX_DECL_PUTGET_SIGNAL(put, char, char)
+    APIX_DECL_PUTGET_SIGNAL(put, short, short)
+    APIX_DECL_PUTGET_SIGNAL(put, int, int)
+    APIX_DECL_PUTGET_SIGNAL(put, long, long)
+    APIX_DECL_PUTGET_SIGNAL(put, longlong, long long)
+    APIX_DECL_PUTGET_SIGNAL(put, uchar, unsigned char)
+    APIX_DECL_PUTGET_SIGNAL(put, ushort, unsigned short)
+    APIX_DECL_PUTGET_SIGNAL(put, uint, unsigned int)
+    APIX_DECL_PUTGET_SIGNAL(put, ulong, unsigned long)
+    APIX_DECL_PUTGET_SIGNAL(put, ulonglong, unsigned long long)
+    APIX_DECL_PUTGET_SIGNAL(put, int8, int8_t)
+    APIX_DECL_PUTGET_SIGNAL(put, int16, int16_t)
+    APIX_DECL_PUTGET_SIGNAL(put, int32, int32_t)
+    APIX_DECL_PUTGET_SIGNAL(put, int64, int64_t)
+    APIX_DECL_PUTGET_SIGNAL(put, uint8, uint8_t)
+    APIX_DECL_PUTGET_SIGNAL(put, uint16, uint16_t)
+    APIX_DECL_PUTGET_SIGNAL(put, uint32, uint32_t)
+    APIX_DECL_PUTGET_SIGNAL(put, uint64, uint64_t)
+    APIX_DECL_PUTGET_SIGNAL(put, size, size_t)
+    APIX_DECL_PUTGET_SIGNAL(put, ptrdiff, ptrdiff_t)
+
+    APIX_DECL_PUTGET_SIGNAL(get, float, float)
+    APIX_DECL_PUTGET_SIGNAL(get, double, double)
+    APIX_DECL_PUTGET_SIGNAL(get, longdouble, long double)
+    APIX_DECL_PUTGET_SIGNAL(get, schar, signed char)
+    APIX_DECL_PUTGET_SIGNAL(get, char, char)
+    APIX_DECL_PUTGET_SIGNAL(get, short, short)
+    APIX_DECL_PUTGET_SIGNAL(get, int, int)
+    APIX_DECL_PUTGET_SIGNAL(get, long, long)
+    APIX_DECL_PUTGET_SIGNAL(get, longlong, long long)
+    APIX_DECL_PUTGET_SIGNAL(get, uchar, unsigned char)
+    APIX_DECL_PUTGET_SIGNAL(get, ushort, unsigned short)
+    APIX_DECL_PUTGET_SIGNAL(get, uint, unsigned int)
+    APIX_DECL_PUTGET_SIGNAL(get, ulong, unsigned long)
+    APIX_DECL_PUTGET_SIGNAL(get, ulonglong, unsigned long long)
+    APIX_DECL_PUTGET_SIGNAL(get, int8, int8_t)
+    APIX_DECL_PUTGET_SIGNAL(get, int16, int16_t)
+    APIX_DECL_PUTGET_SIGNAL(get, int32, int32_t)
+    APIX_DECL_PUTGET_SIGNAL(get, int64, int64_t)
+    APIX_DECL_PUTGET_SIGNAL(get, uint8, uint8_t)
+    APIX_DECL_PUTGET_SIGNAL(get, uint16, uint16_t)
+    APIX_DECL_PUTGET_SIGNAL(get, uint32, uint32_t)
+    APIX_DECL_PUTGET_SIGNAL(get, uint64, uint64_t)
+    APIX_DECL_PUTGET_SIGNAL(get, size, size_t)
+    APIX_DECL_PUTGET_SIGNAL(get, ptrdiff, ptrdiff_t)
+
 #ifdef __cplusplus
 }
 #endif  /* __cplusplus */

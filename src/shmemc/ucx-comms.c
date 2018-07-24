@@ -709,6 +709,28 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                   "non-blocking get failed");
  }
 
+void
+shmemc_ctx_put_signal(shmem_ctx_t ctx,
+                      void *dest, const void *src, size_t nbytes,
+                      uint64_t *sig_target, uint64_t sig_val,
+                      int pe)
+{
+    shmemc_ctx_put(ctx, dest, src, nbytes, pe);
+    shmemc_ctx_fence(ctx);
+    shmemc_ctx_put(ctx, sig_target, &sig_val, sizeof(sig_val), pe);
+}
+
+void
+shmemc_ctx_get_signal(shmem_ctx_t ctx,
+                      void *dest, const void *src, size_t nbytes,
+                      uint64_t *sig_target, uint64_t sig_val,
+                      int pe)
+{
+    shmemc_ctx_get(ctx, dest, src, nbytes, pe);
+    shmemc_ctx_fence(ctx);
+    shmemc_ctx_get(ctx, sig_target, &sig_val, sizeof(sig_val), pe);
+}
+
 /*
  * -- atomics ------------------------------------------------------------
  */
