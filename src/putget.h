@@ -482,9 +482,12 @@
         SHMEMU_CHECK_SYMMETRIC(sig, 5);                                 \
                                                                         \
         logger(LOG_RMA,                                                 \
-               "%s(ctx=%lu, dest=%p, src=%p, nelems=%lu, pe=%d)",       \
+               "%s(ctx=%lu, dest=%p, src=%p, nelems=%lu, "              \
+               "sig=%p, sig_val=%lu, pe=%d)",                           \
                __func__,                                                \
-               shmemc_context_id(ctx), dest, src, nelems, pe            \
+               shmemc_context_id(ctx), dest, src, nelems,               \
+               sig, sig_val,                                            \
+               pe                                                       \
                );                                                       \
                                                                         \
         SHMEMT_MUTEX_PROTECT(shmemc_ctx_put_signal(ctx,                 \
@@ -508,9 +511,12 @@
         SHMEMU_CHECK_SYMMETRIC(sig, 5);                                 \
                                                                         \
         logger(LOG_RMA,                                                 \
-               "%s(ctx=%lu, dest=%p, src=%p, nelems=%lu, pe=%d)",       \
+               "%s(ctx=%lu, dest=%p, src=%p, nelems=%lu, "              \
+               "sig=%p, sig_val=%lu, pe=%d)",                           \
                __func__,                                                \
-               shmemc_context_id(ctx), dest, src, nelems, pe            \
+               shmemc_context_id(ctx), dest, src, nelems,               \
+               sig, sig_val,                                            \
+               pe                                                       \
                );                                                       \
                                                                         \
         SHMEMT_MUTEX_PROTECT(shmemc_ctx_get_signal(ctx,                 \
