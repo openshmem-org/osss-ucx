@@ -25,4 +25,4 @@ void shmemc_pmi_publish_rkeys_and_heaps(void);
 void shmemc_pmi_exchange_workers(void);
 void shmemc_pmi_exchange_rkeys_and_heaps(void);
 
-#endif /* ! _SHMEMC_PMIX_CLIENT_H */
+#endif /* ! _SHMEMC_PMI_CLIENT_H */
