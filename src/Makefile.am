@@ -48,10 +48,6 @@ if ENABLE_THREADS
 MY_SOURCES            += shmem_mutex.c
 endif # threads
 
-if ENABLE_EXPERIMENTAL
-MY_SOURCES            += putget-signal.c
-endif # experimental
-
 #
 # separate out the memory allocation routines
 #
@@ -78,8 +74,9 @@ endif # fortran
 
 if ENABLE_EXPERIMENTAL
 
-MY_SOURCES            += xwtime.c
+MY_SOURCES            += putget-signal.c
 MY_SOURCES            += xshmalloc.c
+MY_SOURCES            += xwtime.c
 
 endif # experimental
 
