@@ -3,12 +3,8 @@
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 				-I../../include -I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \
-				barrier.c \
-				broadcast.c \
 				collalgo.c \
-				collect.c \
 				contexts.c \
-				fcollect.c \
 				globalexit.c \
 				locks.c \
 				readenv.c \

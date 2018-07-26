@@ -34,13 +34,15 @@ MY_SOURCES             = \
                                 version.c \
                                 waituntil.c
 
-MY_SOURCES             += \
-				collectives/alltoall.c \
-				collectives/barrier.c \
-				collectives/broadcast.c \
-				collectives/collect.c \
-				collectives/fcollect.c \
-				collectives/reductions.c
+#
+# -- begin: SHCOLL --
+#
+MY_SOURCES            += collectives/shcoll-shim.c
+
+all_cppflags          += -I$(SHCOLL_DIR)/include
+#
+# -- end: SHCOLL --
+#
 
 if ENABLE_THREADS
 MY_SOURCES            += shmem_mutex.c
@@ -72,8 +74,9 @@ endif # fortran
 
 if ENABLE_EXPERIMENTAL
 
-MY_SOURCES            += xwtime.c
+MY_SOURCES            += putget-signal.c
 MY_SOURCES            += xshmalloc.c
+MY_SOURCES            += xwtime.c
 
 endif # experimental
 

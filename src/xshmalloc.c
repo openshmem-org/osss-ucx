@@ -6,7 +6,7 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
-#include "shmem/defs.h"
+#include "shmem/api.h"
 
 #include "shmem_mutex.h"
 #include "allocator/xmemalloc.h"
@@ -65,7 +65,7 @@ shmemx_malloc_by_index(shmemx_heap_index_t index, size_t s)
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_malloc_by_index(index, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     return addr;
 }
@@ -80,7 +80,7 @@ shmemx_calloc_by_index(shmemx_heap_index_t index, size_t n, size_t s)
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_calloc_by_index(index, n, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     return addr;
 }
@@ -92,7 +92,7 @@ shmemx_free_by_index(shmemx_heap_index_t index, void *p)
     SHMEMU_CHECK_HEAP_INDEX(index);
     SHMEMU_CHECK_SYMMETRIC(p, 2);
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(shmemxa_free_by_index(index, p));
 }
@@ -111,11 +111,11 @@ shmemx_realloc_by_index(shmemx_heap_index_t index, void *p, size_t s)
     SHMEMU_CHECK_HEAP_INDEX(index);
     SHMEMU_CHECK_SYMMETRIC(p, 2);
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_realloc_by_index(index, p, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     return addr;
 }
@@ -130,7 +130,7 @@ shmemx_align_by_index(shmemx_heap_index_t index, size_t a, size_t s)
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_align_by_index(index, a, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     return addr;
 }
@@ -189,7 +189,7 @@ shmemx_free_by_name(const char *name, void *p)
     SHMEMU_CHECK_HEAP_INDEX(index);
     SHMEMU_CHECK_SYMMETRIC(p, 2);
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(shmemxa_free_by_index(index, p));
 }
@@ -204,11 +204,11 @@ shmemx_realloc_by_name(const char *name, void *p, size_t s)
     SHMEMU_CHECK_HEAP_INDEX(index);
     SHMEMU_CHECK_SYMMETRIC(p, 2);
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_realloc_by_index(index, p, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     return addr;
 }
@@ -224,7 +224,7 @@ shmemx_align_by_name(const char *name, size_t a, size_t s)
 
     SHMEMT_MUTEX_PROTECT(addr = shmemxa_align_by_index(index, a, s));
 
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     return addr;
 }

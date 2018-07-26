@@ -14,6 +14,8 @@
 #include "allocator/xmemalloc.h"
 #endif  /* ENABLE_EXPERIMENTAL */
 
+#include "shmem/api.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,25 +37,37 @@
 static void
 finalize_helper(void)
 {
-    /* do nothing if multiple finalizes */
-    if (proc.refcount > 0) {
-        const shmemc_thread_t this = shmemc_thread_id();
+    shmemc_thread_t this;
 
-        if (this != proc.td.invoking_thread) {
-            logger(LOG_FINALIZE,
-                   "mis-match: thread %lu initialized, but %lu finalized",
-                   proc.td.invoking_thread, this);
-        }
+    /* do nothing if multiple finalizes */
+    if (proc.refcount < 1) {
+        return;
+    }
+
+    logger(LOG_FINALIZE,
+           "%s()",
+           __func__
+           );
+
+    /* implicit barrier on finalize */
+    shmem_barrier_all();
+
+    this = shmemc_thread_id();
+    if (this != proc.td.invoking_thread) {
+        logger(LOG_FINALIZE,
+               "mis-match: thread %lu initialized, but %lu finalized",
+               proc.td.invoking_thread, this);
+    }
+
+    shmemc_finalize();
+    shmemu_finalize();
 
 #ifdef ENABLE_EXPERIMENTAL
-        shmemxa_finalize();
+    shmemxa_finalize();
 #endif  /* ENABLE_EXPERIMENTAL */
-        shmemu_finalize();
-        shmemc_finalize();
 
-        proc.refcount = 0;      /* finalized is finalized */
-        proc.status = SHMEMC_PE_SHUTDOWN;
-    }
+    proc.refcount = 0;      /* finalized is finalized */
+    proc.status = SHMEMC_PE_SHUTDOWN;
 }
 
 inline static int
@@ -63,8 +77,9 @@ init_thread_helper(int requested, int *provided)
     if (proc.refcount == 0) {
         int s;
 
-        shmemc_init();
         shmemu_init();
+        shmemc_init();
+
 #ifdef ENABLE_EXPERIMENTAL
         shmemxa_init(proc.env.heaps.nheaps);
 #endif  /* ENABLE_EXPERIMENTAL */
@@ -124,17 +139,22 @@ init_thread_helper(int requested, int *provided)
            requested, proc.td.osh_tl
            );
 
+    /* make sure all symmetric memory ready */
+    shmem_barrier_all();
+
     /* just declare success */
     return 0;
 }
 
 /*
- * -- API --------------------------------------------------------------------
+ * initialize/finalize SHMEM portion of program with threading model
  */
 
-/*
- * initialize SHMEM portion of program with threading model
- */
+void
+shmem_finalize(void)
+{
+    finalize_helper();
+}
 
 int
 shmem_init_thread(int requested, int *provided)
@@ -146,23 +166,6 @@ void
 shmem_init(void)
 {
     (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
-}
-
-/*
- * finish SHMEM portion of program, release resources
- */
-
-void
-shmem_finalize(void)
-{
-    SHMEMU_CHECK_INIT();
-
-    logger(LOG_FINALIZE,
-           "%s()",
-           __func__
-           );
-
-    finalize_helper();
 }
 
 /*
