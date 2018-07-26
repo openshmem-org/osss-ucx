@@ -138,29 +138,22 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
  * fence and quiet only do something on storable contexts
  */
 
-void
-shmemc_ctx_fence(shmem_ctx_t ctx)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    if (! ch->attr.nostore) {
-        const ucs_status_t s = ucp_worker_fence(ch->w);
-
-        shmemu_assert(s == UCS_OK, "fence failed (status %d)", s);
+#define SHMEMC_FENCE_QUIET(_op, _ucp_op)                                \
+    void                                                                \
+    shmemc_ctx_##_op(shmem_ctx_t ctx)                                   \
+    {                                                                   \
+        shmemc_context_h ch = (shmemc_context_h) ctx;                   \
+                                                                        \
+        if (! ch->attr.nostore) {                                       \
+            const ucs_status_t s = ucp_worker_##_ucp_op(ch->w);         \
+                                                                        \
+            shmemu_assert(s == UCS_OK,                                  \
+                          "%s() failed (status %d)", #_op, s);          \
+        }                                                               \
     }
-}
 
-void
-shmemc_ctx_quiet(shmem_ctx_t ctx)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    if (! ch->attr.nostore) {
-        const ucs_status_t s = ucp_worker_flush(ch->w);
-
-        shmemu_assert(s == UCS_OK, "quiet/flush failed (status %d)", s);
-    }
-}
+SHMEMC_FENCE_QUIET(fence, fence)
+SHMEMC_FENCE_QUIET(quiet, flush)
 
 #ifdef ENABLE_EXPERIMENTAL
 
@@ -297,8 +290,6 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
 
     return check_wait_for_request(ch, sp);
 }
-
-/* TODO: repeated patterns here, maybe some kind of template? */
 
 /*
  * adds
@@ -709,27 +700,21 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                   "non-blocking get failed");
  }
 
-void
-shmemc_ctx_put_signal(shmem_ctx_t ctx,
-                      void *dest, const void *src, size_t nbytes,
-                      uint64_t *sig_target, uint64_t sig_val,
-                      int pe)
-{
-    shmemc_ctx_put(ctx, dest, src, nbytes, pe);
-    shmemc_ctx_fence(ctx);
-    shmemc_ctx_put(ctx, sig_target, &sig_val, sizeof(sig_val), pe);
-}
+#define SHMEMC_PUTGET_SIGNAL(_op)                                       \
+    void                                                                \
+    shmemc_ctx_##_op##_signal(shmem_ctx_t ctx,                          \
+                              void *dest, const void *src,              \
+                              size_t nbytes,                            \
+                              uint64_t *s_target, uint64_t s_val,       \
+                              int pe)                                   \
+    {                                                                   \
+        shmemc_ctx_##_op(ctx, dest, src, nbytes, pe);                   \
+        shmemc_ctx_fence(ctx);                                          \
+        shmemc_ctx_##_op(ctx, s_target, &s_val, sizeof(s_val), pe);     \
+    }
 
-void
-shmemc_ctx_get_signal(shmem_ctx_t ctx,
-                      void *dest, const void *src, size_t nbytes,
-                      uint64_t *sig_target, uint64_t sig_val,
-                      int pe)
-{
-    shmemc_ctx_get(ctx, dest, src, nbytes, pe);
-    shmemc_ctx_fence(ctx);
-    shmemc_ctx_get(ctx, sig_target, &sig_val, sizeof(sig_val), pe);
-}
+SHMEMC_PUTGET_SIGNAL(put)
+SHMEMC_PUTGET_SIGNAL(get)
 
 /*
  * -- atomics ------------------------------------------------------------
