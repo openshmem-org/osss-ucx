@@ -815,9 +815,6 @@ SHMEMC_CTX_CSWAP(64)
 /*
  * fetch & set
  *
- * TODO: UCX really does have a fetch_nb, but for now do something
- * simple
- *
  */
 
 #define SHMEMC_CTX_FETCH(_size)                                     \

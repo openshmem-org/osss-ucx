@@ -86,7 +86,7 @@ shmemc_env_init(void)
      * heaps need a bit more handling
      */
 
-    proc.env.heaps.nheaps = 1;  /* TODO */
+    proc.env.heaps.nheaps = 1;  /* TODO: will be parsed out of env */
     proc.env.heaps.heapsize =
         (size_t *) malloc(proc.env.heaps.nheaps *
                           sizeof(*proc.env.heaps.heapsize));
