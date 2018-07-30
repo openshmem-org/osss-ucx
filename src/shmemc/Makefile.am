@@ -8,24 +8,24 @@ LIBSHMEMC_SOURCES         = \
 				globalexit.c \
 				locks.c \
 				readenv.c \
-				shmemc-init.c \
+				shmemc_init.c \
 				state.c
 #
 # -- begin: UCX sources --
 #
 LIBSHMEMC_SOURCES        += \
-				ucx-comms.c \
-				ucx-contexts.c \
-				ucx-init.c \
-				ucx-waituntil.c
+				ucx_comms.c \
+				ucx_contexts.c \
+				ucx_init.c \
+				ucx_waituntil.c
 
 if HAVE_PMI
-LIBSHMEMC_SOURCES         += ucx-pmi1-client.c
-EXTRA_CFLAGS                 = @PMI_CFLAGS@
+LIBSHMEMC_SOURCES        += ucx_pmi1_client.c
+EXTRA_CFLAGS              = @PMI_CFLAGS@
 endif
 if HAVE_PMIX
-LIBSHMEMC_SOURCES         += ucx-pmix-client.c
-EXTRA_CFLAGS                 = @PMIX_CFLAGS@
+LIBSHMEMC_SOURCES        += ucx_pmix_client.c
+EXTRA_CFLAGS              = @PMIX_CFLAGS@
 endif
 #
 # -- end: UCX sources --

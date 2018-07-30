@@ -950,7 +950,6 @@ FORTRANIFY(shmem_info_get_name)(char *name)
     /* get the C string */
     shmem_info_get_name(name);
 
-    /* pad with spaces for Fortran(TODO: memset better?) */
     len = strlen(name);
     while(len < max_f_len) {
         name[len] = ' ';

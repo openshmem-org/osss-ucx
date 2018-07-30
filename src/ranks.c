@@ -23,11 +23,7 @@ shmem_my_pe(void)
 
     my = shmemc_my_pe();
 
-    logger(LOG_RANKS,
-           "%s() -> %d",
-           __func__,
-           my
-           );
+    logger(LOG_RANKS, "%s() -> %d", __func__, my);
 
     return my;
 }
@@ -41,11 +37,7 @@ shmem_n_pes(void)
 
     n = shmemc_n_pes();
 
-    logger(LOG_RANKS,
-           "%s() -> %d",
-           __func__,
-           n
-           );
+    logger(LOG_RANKS, "%s() -> %d", __func__, n);
 
     return n;
 }
