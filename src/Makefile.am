@@ -30,7 +30,7 @@ MY_SOURCES             = \
                                 quiet.c \
 				ranks.c  \
                                 shmalloc.c \
-				tl-query.c \
+				tl_query.c \
                                 version.c \
                                 waituntil.c
 
@@ -74,7 +74,7 @@ endif # fortran
 
 if ENABLE_EXPERIMENTAL
 
-MY_SOURCES            += putget-signal.c
+MY_SOURCES            += putget_signal.c
 MY_SOURCES            += xshmalloc.c
 MY_SOURCES            += xwtime.c
 

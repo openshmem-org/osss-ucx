@@ -10,7 +10,7 @@
 #include "boolean.h"
 #include "threading.h"
 
-#include "ucx-pe.h"
+#include "ucx_pe.h"
 
 #include <sys/types.h>
 

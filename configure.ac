@@ -175,9 +175,9 @@ AC_CONFIG_FILES([
 	src/Makefile
 	src/osh_info/Makefile
 	src/shmemc/Makefile
-	src/shmemc/oshcc:src/shmemc/oshcc.in:src/shmemc/osh-bot.common
-	src/shmemc/oshcxx:src/shmemc/oshcxx.in:src/shmemc/osh-bot.common
-	src/shmemc/oshfort:src/shmemc/oshfort.in:src/shmemc/osh-bot.common
+	src/shmemc/oshcc:src/shmemc/oshcc.in:src/shmemc/osh_bot.common
+	src/shmemc/oshcxx:src/shmemc/oshcxx.in:src/shmemc/osh_bot.common
+	src/shmemc/oshfort:src/shmemc/oshfort.in:src/shmemc/osh_bot.common
 	src/shmemc/oshrun
 	src/shmemu/Makefile
         ])

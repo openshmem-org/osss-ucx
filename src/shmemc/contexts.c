@@ -8,7 +8,8 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "boolean.h"
-#include "ucx-contexts.h"
+
+#include "ucx_contexts.h"
 
 #include "shmem/defs.h"
 
