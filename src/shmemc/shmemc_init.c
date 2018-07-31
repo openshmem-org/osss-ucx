@@ -4,7 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "ucx_shmemc.h"
+#include "ucx/shmemc.h"
 #include "shmemc.h"
 
 #include "pmi_client.h"

@@ -14,17 +14,17 @@ LIBSHMEMC_SOURCES         = \
 # -- begin: UCX sources --
 #
 LIBSHMEMC_SOURCES        += \
-				ucx_comms.c \
-				ucx_contexts.c \
-				ucx_init.c \
-				ucx_waituntil.c
+				ucx/comms.c \
+				ucx/contexts.c \
+				ucx/init.c \
+				ucx/waituntil.c
 
 if HAVE_PMI
-LIBSHMEMC_SOURCES        += ucx_pmi1_client.c
+LIBSHMEMC_SOURCES        += ucx/pmi1_client.c
 EXTRA_CFLAGS              = @PMI_CFLAGS@
 endif
 if HAVE_PMIX
-LIBSHMEMC_SOURCES        += ucx_pmix_client.c
+LIBSHMEMC_SOURCES        += ucx/pmix_client.c
 EXTRA_CFLAGS              = @PMIX_CFLAGS@
 endif
 #
