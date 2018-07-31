@@ -170,12 +170,6 @@ shmemu_logger_finalize(void)
 static char tmp1[TRACE_MSG_BUF_SIZE_1];
 static char tmp2[TRACE_MSG_BUF_SIZE_2];
 
-#ifdef HAVE_STRLCAT
-# define STRCAT_SAFE strlcat
-#else
-# define STRCAT_SAFE strncat
-#endif /* HAVE_STRLCAT */
-
 void
 shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
 {
@@ -204,8 +198,8 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
         vsnprintf(tmp1, TRACE_MSG_BUF_SIZE_1, fmt, ap);
         va_end(ap);
 
-        STRCAT_SAFE(tmp2, tmp1, TRACE_MSG_BUF_SIZE_1);
-        STRCAT_SAFE(tmp2, "\n", 1);
+        STRNCAT_SAFE(tmp2, tmp1, TRACE_MSG_BUF_SIZE_1);
+        STRNCAT_SAFE(tmp2, "\n", 1);
 
         fputs(tmp2, log_stream);
         /* make sure this all goes out in 1 burst */

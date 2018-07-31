@@ -14,6 +14,9 @@
 
 #include <sys/types.h>
 #include <stdarg.h>
+#include <string.h>
+
+/* ------------------------------------------------------------------ */
 
 /*
  * for branch prediction optimization
@@ -26,6 +29,21 @@
 # define shmemu_likely(_expr)   (_expr)
 # define shmemu_unlikely(_expr) (_expr)
 #endif  /* HAVE___BUILTIN_EXPECT */
+
+/*
+ * safer string handling
+ */
+#ifdef HAVE_STRLCPY
+# define STRNCPY_SAFE (void) strlcpy
+#else
+# define STRNCPY_SAFE (void) strncpy
+#endif /* HAVE_STRLCPY */
+
+#ifdef HAVE_STRLCAT
+# define STRNCAT_SAFE (void) strlcat
+#else
+# define STRNCAT_SAFE (void) strncat
+#endif /* HAVE_STRLCAT */
 
 /*
  * Return non-zero if PE is a valid rank, 0 otherwise
