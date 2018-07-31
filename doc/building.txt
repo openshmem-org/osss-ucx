@@ -26,13 +26,23 @@ If you want to build threading support, UCX should be installed with
 
     --enable-mt
 
+SHCOLL
+======
+
+The OpenSHMEM Collectives Library.
+
+Tested with github master:
+
+    SHCOLL    : https://github.com/tonycurtis/OpenSHMEM-Collective-Routines
+
+SHCOLL will eventually be bundled with the OSSS-UCX distribution to
+avoid requiring an installation extenral.
+
 Sample author config
 --------------------
 
     .../configure \
-        --prefix=/path/to/install/ucx \
-        --enable-mt \
-        --with-knem
+        --prefix=/path/to/install/shcoll
 
 OpenMPI
 =======
@@ -85,6 +95,7 @@ Building Sequence
        --prefix=/path/to/install/osss-ucx \
        --with-pmix=/path/to/install/pmix \
        --with-ucx=/path/to/install/ucx \
+       --with-shcoll=/path/to/install/shcoll \
        --enable-debug \
        --enable-logging \
        --enable-threads
