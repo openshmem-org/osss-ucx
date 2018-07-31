@@ -4,7 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <string.h>
+#include "shmemu.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_info_get_version = pshmem_info_get_version
@@ -23,5 +23,5 @@ shmem_info_get_version(int *major, int *minor)
 void
 shmem_info_get_name(char *name)
 {
-    strncpy(name, SHMEM_VENDOR_STRING, SHMEM_MAX_NAME_LEN);
+    STRNCPY_SAFE(name, SHMEM_VENDOR_STRING, SHMEM_MAX_NAME_LEN);
 }

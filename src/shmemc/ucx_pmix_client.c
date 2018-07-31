@@ -410,7 +410,7 @@ shmemc_pmi_client_init(void)
 
     /* make a new proc to query things not linked to a specific rank */
     PMIX_PROC_CONSTRUCT(&wc_proc);
-    strncpy(wc_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
+    STRNCPY_SAFE(wc_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
     wc_proc.rank = PMIX_RANK_WILDCARD;
 
     ps = PMIx_Get(&wc_proc, PMIX_JOB_SIZE, NULL, 0, &vp);

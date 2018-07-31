@@ -29,7 +29,7 @@ shmemu_gethostname(void)
         const int s = uname(&u);
 
         if (s == 0) {
-            strncpy(hostname, MAXHOSTNAMELEN, u.nodename);
+            STRNCPY_SAFE(hostname, MAXHOSTNAMELEN, u.nodename);
             return (char *) hostname;
             /* NOT REACHED */
         }
