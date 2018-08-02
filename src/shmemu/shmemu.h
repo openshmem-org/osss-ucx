@@ -46,6 +46,11 @@
 #endif /* HAVE_STRLCAT */
 
 /*
+ * rotate/spread PE communications
+ */
+#define SHIFT(_pe) ( ((_pe) + proc.rank) % proc.nranks )
+
+/*
  * Return non-zero if PE is a valid rank, 0 otherwise
  */
 #define IS_VALID_PE_NUMBER(_pe)                 \

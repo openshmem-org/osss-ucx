@@ -251,7 +251,7 @@ disconnect_all_endpoints(void)
     int i;
 
     for (i = 0; i < proc.nranks; i += 1) {
-        const int pe = (i + proc.rank) % proc.nranks;
+        const int pe = SHIFT(i);
 
         blocking_ep_disconnect(proc.comms.eps[pe]);
     }
@@ -337,7 +337,7 @@ shmemc_ucx_make_remote_endpoints(void)
     int i;
 
     for (i = 0; i < proc.nranks; i += 1) {
-        const int pe = (i + proc.rank) % proc.nranks;
+        const int pe = SHIFT(i);
 
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
