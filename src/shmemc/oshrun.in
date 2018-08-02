@@ -144,6 +144,10 @@ if ($launcher eq '') {
   die "$progname: unable to find launcher";
 }
 
+# This will later tell us how to launch the app
+
+my $is_prrte = basename($launcher) eq 'prun';
+
 #
 # -- do the underlying launch of app -------------------------------------
 #
@@ -151,7 +155,18 @@ if ($launcher eq '') {
 sub run_app {
   debug("launch: \"$launcher @ARGV\"");
   debug("-" x 70);
-  return system $launcher, @ARGV;
+  my $pid = fork();
+  die "$progname:launch: fork failed: $!" unless defined $pid;
+  my $rc = 0;
+  if ($pid == 0) {              # child
+    exec $launcher, @ARGV;
+  }
+  else {                        # parent
+    waitpid($pid, 0);
+    $rc = $? >> 8;
+    # debug("rc = $rc\n");
+  }
+  return $rc;
 }
 
 #
@@ -217,17 +232,19 @@ sub prrte_launch {
     die "$progname: failed to run starter: $!";
   }
 
-  my $expected_response = 'DVM ready';
-
   #
   # parent waits for starter to be ready, then launches user app
   #
   if ($prte_pid) {
+    my $expected_response = 'DVM ready';
+    my $got;
     my $ready = 0;
 
     # TODO: timeout?
     while (<$chout>) {
       if (/^$expected_response/) {
+        chomp;
+        $got = $_;
         $ready = 1;
         last;
       }
@@ -235,7 +252,7 @@ sub prrte_launch {
 
     # off we go!
     if ($ready) {
-      debug("prrte: pid $prte_pid says \"$expected_response\"");
+      debug("prrte: pid $prte_pid says \"$got\"");
       return 0;
     }
 
@@ -243,7 +260,7 @@ sub prrte_launch {
     warn "$progname: internal error at line " .
       __LINE__ .
       ", should not be here";
-    return 1;
+    return 11;
   }
 }
 
@@ -251,21 +268,14 @@ sub prrte_launch {
 # -- let's do it! --------------------------------------------------------
 #
 
-#
 # If we're using PRRTE, fire up support; otherwise just launch
-#
-
-my $is_prrte = basename($launcher) eq 'prun';
-
-my $err = 0;
 
 if ($is_prrte) {
-  $err = prrte_launch();
+  my $err = prrte_launch();
+  die "$progname:launch: failed: $!" if $err != 0;
 }
 
-unless ($err) {
-  $err = run_app();
-}
+my $app_err = run_app();
 
 if ($is_prrte) {
   prrte_shutdown();
@@ -274,4 +284,4 @@ else {
   debug("launch: done");
 }
 
-exit $err;
+exit $app_err;
