@@ -25,21 +25,6 @@ typedef enum shmemc_status {
     SHMEMC_PE_UNKNOWN
 } shmemc_status_t;
 
-/*
- * which collectives we're using.  might want to move this per-team at
- * some point so we can optimize through locality-awareness
- */
-typedef enum shmemc_coll {
-    SHMEMC_COLL_LINEAR = 0,
-    SHMEMC_COLL_TREE,
-    SHMEMC_COLL_DISSEM,
-    SHMEMC_COLL_BINOMIAL,
-    SHMEMC_COLL_BINOMIAL2,
-    SHMEMC_COLL_UNKNOWN
-} shmemc_coll_t;
-
-#define SHMEMC_COLL_DEFAULT SHMEMC_COLL_TREE
-
 typedef struct heapinfo {
     size_t nheaps;              /* how many heaps reuqested */
     size_t *heapsize;           /* array of their sizes */
@@ -64,8 +49,6 @@ typedef struct env_info {
     char *logging_file;      /* where does logging output go? */
     char *logging_events;    /* show only these types of messages */
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
-    shmemc_coll_t barrier_algo;   /* algorithms to use ... */
-    shmemc_coll_t broadcast_algo; /* ... for these collectives */
 } env_info_t;
 
 /*

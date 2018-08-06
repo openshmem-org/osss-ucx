@@ -108,8 +108,6 @@ shmemc_env_init(void)
     proc.env.logging_events = NULL;
     proc.env.logging_file   = NULL;
     proc.env.xpmem_kludge   = false;
-    proc.env.barrier_algo   = SHMEMC_COLL_DEFAULT;
-    proc.env.broadcast_algo = SHMEMC_COLL_DEFAULT;
 
     CHECK_ENV(e, LOGGING);
     if (e != NULL) {
@@ -126,24 +124,6 @@ shmemc_env_init(void)
     CHECK_ENV(e, XPMEM_KLUDGE);
     if (e != NULL) {
         proc.env.xpmem_kludge = option_enabled_test(e);
-    }
-    CHECK_ENV(e, BARRIER_ALGO);
-    if (e != NULL) {
-        shmemc_coll_t c = shmemc_parse_algo(e);
-
-        if (c == SHMEMC_COLL_UNKNOWN) {
-            c = SHMEMC_COLL_DEFAULT;
-        }
-        proc.env.barrier_algo = c;
-    }
-    CHECK_ENV(e, BROADCAST_ALGO);
-    if (e != NULL) {
-        shmemc_coll_t c = shmemc_parse_algo(e);
-
-        if (c == SHMEMC_COLL_UNKNOWN) {
-            c = SHMEMC_COLL_DEFAULT;
-        }
-        proc.env.broadcast_algo = c;
     }
 }
 
@@ -241,16 +221,6 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "SHMEM_XPMEM_KLUDGE",
             val_width, shmemu_human_option(proc.env.xpmem_kludge),
             "avoid XPMEM tear-down bug (temporary)");
-    fprintf(stream, "%s%-*s %-*s %s\n",
-            prefix,
-            var_width, "SHMEM_BARRIER_ALGO",
-            val_width, shmemc_unparse_algo(proc.env.barrier_algo),
-            "algorithm to use for barrier");
-    fprintf(stream, "%s%-*s %-*s %s\n",
-            prefix,
-            var_width, "SHMEM_BROADCAST_ALGO",
-            val_width, shmemc_unparse_algo(proc.env.broadcast_algo),
-            "algorithm to use for broadcast");
 
     fprintf(stream, "%s\n", prefix);
     hr(stream, prefix);
