@@ -240,12 +240,11 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "SHMEM_DEBUG",
             val_width, shmemu_human_option(proc.env.debug),
             "enable sanity checking ("
-#ifdef ENABLE_DEBUG
-            "enabled"
-#else
-            "disabled"
-#endif /* ENABLE_DEBUG */
-            ")");
+#if ! defined(ENABLE_DEBUG)
+            "not "
+#endif /* ! ENABLE_DEBUG */
+            "configured)"
+            );
 
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%s\n",
@@ -257,12 +256,11 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "SHMEM_LOGGING",
             val_width, shmemu_human_option(proc.env.logging),
             "enable logging messages ("
-#ifdef ENABLE_LOGGING
-            "enabled"
-#else
-            "disabled"
-#endif /* ENABLE_LOGGING */
-            ")");
+#if ! defined(ENABLE_LOGGING)
+            "not "
+#endif /* ! ENABLE_LOGGING */
+            "configured)"
+            );
 
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
@@ -287,7 +285,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
                 var_width, "SHMEM_" #_envvar "_ALGO",                   \
                 val_width,                                              \
                 proc.env.coll._name ? proc.env.coll._name : "unset",    \
-                "Algorithm to use for \"" #_name "\" routine");         \
+                "Algorithm for \"" #_name "\" routine");                \
     } while (0)
 
     DESCRIBE_COLLECTIVE(barrier, BARRIER);
