@@ -115,15 +115,52 @@ shmemc_env_init(void)
     }
     CHECK_ENV(e, LOGGING_FILE);
     if (e != NULL) {
-        proc.env.logging_file = strdup(e); /* free at end */
+        proc.env.logging_file = strdup(e);
     }
     CHECK_ENV(e, LOGGING_EVENTS);
     if (e != NULL) {
-        proc.env.logging_events = strdup(e); /* free at end */
+        proc.env.logging_events = strdup(e);
     }
     CHECK_ENV(e, XPMEM_KLUDGE);
     if (e != NULL) {
         proc.env.xpmem_kludge = option_enabled_test(e);
+    }
+
+    proc.env.coll.barrier   = NULL;
+    proc.env.coll.broadcast = NULL;
+    proc.env.coll.collect   = NULL;
+    proc.env.coll.fcollect  = NULL;
+    proc.env.coll.alltoall  = NULL;
+    proc.env.coll.alltoalls = NULL;
+    proc.env.coll.reduce    = NULL;
+
+    CHECK_ENV(e, BARRIER_ALGO);
+    if (e != NULL) {
+        proc.env.coll.barrier = strdup(e);
+    }
+    CHECK_ENV(e, BROADCAST_ALGO);
+    if (e != NULL) {
+        proc.env.coll.broadcast = strdup(e);
+    }
+    CHECK_ENV(e, COLLLECT_ALGO);
+    if (e != NULL) {
+        proc.env.coll.collect = strdup(e);
+    }
+    CHECK_ENV(e, FCOLLLECT_ALGO);
+    if (e != NULL) {
+        proc.env.coll.fcollect = strdup(e);
+    }
+    CHECK_ENV(e, ALLTOALL_ALGO);
+    if (e != NULL) {
+        proc.env.coll.alltoall = strdup(e);
+    }
+    CHECK_ENV(e, ALLTOALLS_ALGO);
+    if (e != NULL) {
+        proc.env.coll.alltoalls = strdup(e);
+    }
+    CHECK_ENV(e, REDUCE_ALGO);
+    if (e != NULL) {
+        proc.env.coll.reduce = strdup(e);
     }
 }
 
@@ -134,6 +171,14 @@ shmemc_env_finalize(void)
 {
     free(proc.env.logging_file);
     free(proc.env.logging_events);
+
+    free(proc.env.coll.reduce);
+    free(proc.env.coll.alltoalls);
+    free(proc.env.coll.alltoall);
+    free(proc.env.coll.fcollect);
+    free(proc.env.coll.collect);
+    free(proc.env.coll.barrier);
+    free(proc.env.coll.broadcast);
 }
 
 static const int var_width = 22;
@@ -194,7 +239,13 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             prefix,
             var_width, "SHMEM_DEBUG",
             val_width, shmemu_human_option(proc.env.debug),
-            "enable sanity checking (if configured)");
+            "enable sanity checking ("
+#ifdef ENABLE_DEBUG
+            "enabled"
+#else
+            "disabled"
+#endif /* ENABLE_DEBUG */
+            ")");
 
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%s\n",
@@ -205,7 +256,14 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             prefix,
             var_width, "SHMEM_LOGGING",
             val_width, shmemu_human_option(proc.env.logging),
-            "enable logging messages (if configured)");
+            "enable logging messages ("
+#ifdef ENABLE_LOGGING
+            "enabled"
+#else
+            "disabled"
+#endif /* ENABLE_LOGGING */
+            ")");
+
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_LOGGING_EVENTS",
@@ -214,13 +272,31 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_LOGGING_FILE",
-            val_width, proc.env.logging_file ? proc.env.logging_file : "none",
-            "file for logging information (if configured)");
+            val_width, proc.env.logging_file ? proc.env.logging_file : "unset",
+            "file for logging information");
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_XPMEM_KLUDGE",
             val_width, shmemu_human_option(proc.env.xpmem_kludge),
             "avoid XPMEM tear-down bug (temporary)");
+
+#define DESCRIBE_COLLECTIVE(_name, _envvar)                             \
+    do {                                                                \
+        fprintf(stream, "%s%-*s %-*s %s\n",                             \
+                prefix,                                                 \
+                var_width, "SHMEM_" #_envvar "_ALGO",                   \
+                val_width,                                              \
+                proc.env.coll._name ? proc.env.coll._name : "unset",    \
+                "Algorithm to use for \"" #_name "\" routine");         \
+    } while (0)
+
+    DESCRIBE_COLLECTIVE(barrier, BARRIER);
+    DESCRIBE_COLLECTIVE(broadcast, BROADCAST);
+    DESCRIBE_COLLECTIVE(collect, COLLECT);
+    DESCRIBE_COLLECTIVE(fcollect, FCOLLECT);
+    DESCRIBE_COLLECTIVE(alltoall, ALLTOALL);
+    DESCRIBE_COLLECTIVE(alltoalls, ALLTOALLS);
+    DESCRIBE_COLLECTIVE(reduce, REDUCE);
 
     fprintf(stream, "%s\n", prefix);
     hr(stream, prefix);

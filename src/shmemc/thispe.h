@@ -18,6 +18,25 @@
  * -- General --------------------------------------------------------
  */
 
+/*
+ * Collectives.  Hold these as strings so we can delegate
+ * understanding them to the upper collectives shim.
+ */
+
+typedef struct collectives {
+    char *barrier;
+    char *broadcast;
+    char *collect;
+    char *fcollect;
+    char *alltoall;
+    char *alltoalls;
+    char *reduce;
+} shmemc_coll_t;
+
+/*
+ * PE status
+ */
+
 typedef enum shmemc_status {
     SHMEMC_PE_SHUTDOWN = 0,
     SHMEMC_PE_RUNNING,
@@ -25,8 +44,12 @@ typedef enum shmemc_status {
     SHMEMC_PE_UNKNOWN
 } shmemc_status_t;
 
+/*
+ * Describe a heap
+ */
+
 typedef struct heapinfo {
-    size_t nheaps;              /* how many heaps requested */
+    size_t nheaps;              /* how many heaps reuqested */
     size_t *heapsize;           /* array of their sizes */
 } heapinfo_t;
 
@@ -49,6 +72,8 @@ typedef struct env_info {
     char *logging_file;      /* where does logging output go? */
     char *logging_events;    /* show only these types of messages */
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
+
+    shmemc_coll_t coll;         /* collectives */
 } env_info_t;
 
 /*
