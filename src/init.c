@@ -130,17 +130,17 @@ init_thread_helper(int requested, int *provided)
                 shmemc_print_env_vars(stdout, "# ");
             }
         }
+
+        logger(LOG_INIT,
+               "%s(requested=%d, provided->%d)",
+               __func__,
+               requested, proc.td.osh_tl
+               );
+
+        /* make sure all symmetric memory ready */
+        shmem_barrier_all();
     }
     proc.refcount += 1;
-
-    logger(LOG_INIT,
-           "%s(requested=%d, provided->%d)",
-           __func__,
-           requested, proc.td.osh_tl
-           );
-
-    /* make sure all symmetric memory ready */
-    shmem_barrier_all();
 
     /* just declare success */
     return 0;
