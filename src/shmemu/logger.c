@@ -42,9 +42,9 @@ static int mypid;
  * keep track of trace events
  */
 
-KHASH_MAP_INIT_STR(events, bool)
+KHASH_MAP_INIT_STR(events_hash, bool)
 
-static khash_t(events) *events;
+static khash_t(events_hash) *events;
 
 inline static void
 event_set(shmemu_log_t name, bool state)
@@ -52,14 +52,14 @@ event_set(shmemu_log_t name, bool state)
     int nocheck;
     khiter_t k;
 
-    k = kh_put(events, events, name, &nocheck);
+    k = kh_put(events_hash, events, name, &nocheck);
     kh_value(events, k) = state;
 }
 
 inline static bool
 event_enabled(shmemu_log_t name)
 {
-    const khiter_t k = kh_get(events, events, name);
+    const khiter_t k = kh_get(events_hash, events, name);
 
     return (k != kh_end(events)) ? kh_value(events, k) : false;
 }
@@ -127,7 +127,7 @@ shmemu_logger_init(void)
         stamp_width = 1;
     }
 
-    events = kh_init(events);
+    events = kh_init(events_hash);
 
     event_set(LOG_FATAL,      true);
     event_set(LOG_INIT,       false);
@@ -159,9 +159,9 @@ shmemu_logger_finalize(void)
         return;
     }
 
-    if (log_stream != NULL) {
-        fclose(log_stream);
-    }
+    fclose(log_stream);
+
+    kh_destroy(events_hash, events);
 }
 
 #define TRACE_MSG_BUF_SIZE_1 256
