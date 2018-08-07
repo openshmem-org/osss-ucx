@@ -6,9 +6,6 @@
 
 #include "shmemu.h"
 
-#include <stdio.h>
-#include <sys/time.h>
-
 #ifdef ENABLE_PSHMEM
 #pragma weak shmemx_wtime = pshmemx_wtime
 #define shmemx_wtime pshmemx_wtime
