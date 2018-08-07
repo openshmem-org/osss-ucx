@@ -121,9 +121,7 @@ context_deregister(shmemc_context_h ch)
     /* this one is re-usable */
     *kl_pushp(freelist, fl) = ch->id;
 
-    logger(LOG_CONTEXTS,
-           "context #%lu can be reused",
-           ch->id);
+    logger(LOG_CONTEXTS, "context #%lu can be reused", ch->id);
 }
 
 /*
@@ -179,15 +177,11 @@ shmemc_context_destroy(shmem_ctx_t ctx)
             context_deregister(ch);
         }
         else {
-            logger(LOG_FATAL,
-                   "cannot destroy the default context"
-                   );
+            logger(LOG_FATAL, "cannot destroy the default context");
         }
     }
     else {
-        logger(LOG_FATAL,
-               "attempt to destroy a null context"
-               );
+        logger(LOG_FATAL, "attempt to destroy a null context");
     }
 }
 
