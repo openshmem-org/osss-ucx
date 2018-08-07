@@ -50,8 +50,7 @@ shmemc_context_fill(long options, shmemc_context_h ch)
 }
 
 /*
- * zap existing context.  Illegal to zap default context, so I will
- * interpret that as "to be avoided" and continue
+ * zap an existing context
  */
 
 void
