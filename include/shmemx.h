@@ -333,6 +333,16 @@ extern "C"
     APIX_DECL_PUTGET_SIGNAL(get, size, size_t)
     APIX_DECL_PUTGET_SIGNAL(get, ptrdiff, ptrdiff_t)
 
+    enum interoperability {
+        UPC_THREADS_ARE_PES = 0,
+        FORTRAN_IMAGES_ARE_PES,
+        MPI_PROCESSES_ARE_PES,
+        SHMEM_INITIALIZES_MPI,
+        MPI_INITIALIZES_SHMEM
+    };
+
+    int shmemx_query_interoperability(int property);
+
 #ifdef __cplusplus
 }
 #endif  /* __cplusplus */
