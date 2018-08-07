@@ -7,7 +7,6 @@
 #include "state.h"
 #include "shmemu.h"
 #include "boolean.h"
-#include "collalgo.h"
 
 #include <stdio.h>
 #include <stdlib.h>             /* getenv */
