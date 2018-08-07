@@ -251,7 +251,7 @@ disconnect_all_endpoints(void)
     int i;
 
     for (i = 0; i < proc.nranks; i += 1) {
-        const int pe = (i + proc.rank) % proc.nranks;
+        const int pe = SHIFT(i);
 
         blocking_ep_disconnect(proc.comms.eps[pe]);
     }
@@ -337,7 +337,7 @@ shmemc_ucx_make_remote_endpoints(void)
     int i;
 
     for (i = 0; i < proc.nranks; i += 1) {
-        const int pe = (i + proc.rank) % proc.nranks;
+        const int pe = SHIFT(i);
 
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
@@ -358,7 +358,32 @@ shmemc_ucx_make_remote_endpoints(void)
 }
 
 /*
- * UCX config
+ * Barrier config
+ */
+
+long *shmemc_barrier_all_psync;
+long *shmemc_sync_all_psync;
+
+#define ALLOC_INTERNAL_SYMM_VAR(_var)                                   \
+    do {                                                                \
+        int i;                                                          \
+        const size_t nbytes                                             \
+            = sizeof(*(_var)) * SHMEM_BARRIER_SYNC_SIZE;                \
+                                                                        \
+        (_var) = (long *) shmema_malloc(nbytes);                        \
+                                                                        \
+        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; i += 1) {              \
+            (_var)[i] = SHMEM_SYNC_VALUE;                               \
+        }                                                               \
+    } while (0)
+
+#define FREE_INTERNAL_SYMM_VAR(_var)                                    \
+    do {                                                                \
+        shmema_free(_var);                                              \
+    } while (0)
+
+/*
+ * UCX initialize and finalize
  */
 
 inline static void
@@ -389,26 +414,18 @@ ucx_init_ready(void)
     shmemu_assert(s == UCS_OK, "can't initialize UCX");
 }
 
-long *shmemc_barrier_all_psync;
-long *shmemc_sync_all_psync;
+inline static void
+ucx_ready(void)
+{
+    /* don't need config info any more */
+    ucp_config_release(proc.comms.ucx_cfg);
+}
 
-#define ALLOC_INTERNAL_SYMM_VAR(_var)                                   \
-    do {                                                                \
-        int i;                                                          \
-        const size_t nbytes                                             \
-            = sizeof(*(_var)) * SHMEM_BARRIER_SYNC_SIZE;                \
-                                                                        \
-        (_var) = (long *) shmema_malloc(nbytes);                        \
-                                                                        \
-        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; i += 1) {              \
-            (_var)[i] = SHMEM_SYNC_VALUE;                               \
-        }                                                               \
-    } while (0)
-
-#define FREE_INTERNAL_SYMM_VAR(_var)                                    \
-    do {                                                                \
-        shmema_free(_var);                                              \
-    } while (0)
+inline static void
+ucx_cleanup(void)
+{
+    ucp_cleanup(proc.comms.ucx_ctxt);
+}
 
 void
 shmemc_ucx_init(void)
@@ -438,8 +455,7 @@ shmemc_ucx_init(void)
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
     ALLOC_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
 
-    /* don't need config info any more */
-    ucp_config_release(proc.comms.ucx_cfg);
+    ucx_ready();
 
     /* set up globalexit handler */
     shmemc_globalexit_init();
@@ -470,5 +486,5 @@ shmemc_ucx_finalize(void)
 
     shmemc_env_finalize();
 
-    ucp_cleanup(proc.comms.ucx_ctxt);
+    ucx_cleanup();
 }

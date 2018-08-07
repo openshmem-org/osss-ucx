@@ -73,65 +73,68 @@ finalize_helper(void)
 inline static int
 init_thread_helper(int requested, int *provided)
 {
-    /* do nothing if multiple inits */
-    if (proc.refcount == 0) {
-        int s;
+    int s;
 
-        shmemu_init();
-        shmemc_init();
+    /* do nothing if multiple inits */
+    if (proc.refcount > 0) {
+        return 0;
+    }
+
+    shmemc_init();
+    shmemu_init();
 
 #ifdef ENABLE_EXPERIMENTAL
-        shmemxa_init(proc.env.heaps.nheaps);
+    shmemxa_init(proc.env.heaps.nheaps);
 #endif  /* ENABLE_EXPERIMENTAL */
 
-        s = atexit(finalize_helper);
-        if (s != 0) {
-            logger(LOG_FATAL,
-                   "unable to register atexit() handler: %s",
-                   strerror(errno)
-                   );
-            /* NOT REACHED */
+    s = atexit(finalize_helper);
+    if (s != 0) {
+        logger(LOG_FATAL,
+               "unable to register atexit() handler: %s",
+               strerror(errno)
+               );
+        /* NOT REACHED */
+    }
+
+    proc.status = SHMEMC_PE_RUNNING;
+
+    proc.refcount += 1;
+
+    /* for now */
+    switch(requested) {
+    case SHMEM_THREAD_SINGLE:
+        break;
+    case SHMEM_THREAD_FUNNELED:
+        break;
+    case SHMEM_THREAD_SERIALIZED:
+        break;
+    case SHMEM_THREAD_MULTIPLE:
+        break;
+    default:
+        logger(LOG_FATAL,
+               "unknown thread level %d requested",
+               requested
+               );
+        /* NOT REACHED */
+        break;
+    }
+
+    /* save and return */
+    proc.td.osh_tl = requested;
+    if (provided != NULL) {
+        *provided = proc.td.osh_tl;
+    }
+
+    proc.td.invoking_thread = shmemc_thread_id();
+
+    if (proc.rank == 0) {
+        if (proc.env.print_version) {
+            info_output_package_version(stdout, 0);
         }
-
-        proc.status = SHMEMC_PE_RUNNING;
-
-        /* for now */
-        switch(requested) {
-        case SHMEM_THREAD_SINGLE:
-            break;
-        case SHMEM_THREAD_FUNNELED:
-            break;
-        case SHMEM_THREAD_SERIALIZED:
-            break;
-        case SHMEM_THREAD_MULTIPLE:
-            break;
-        default:
-            logger(LOG_FATAL,
-                   "unknown thread level %d requested",
-                   requested
-                   );
-            /* NOT REACHED */
-            break;
-        }
-
-        /* save and return */
-        proc.td.osh_tl = requested;
-        if (provided != NULL) {
-            *provided = proc.td.osh_tl;
-        }
-
-        proc.td.invoking_thread = shmemc_thread_id();
-
-        if (proc.rank == 0) {
-            if (proc.env.print_version) {
-                info_output_package_version(stdout, 0);
-            }
-            if (proc.env.print_info) {
-                shmemc_print_env_vars(stdout, "# ");
-            }
+        if (proc.env.print_info) {
+            shmemc_print_env_vars(stdout, "# ");
         }
     }
-    proc.refcount += 1;
 
     logger(LOG_INIT,
            "%s(requested=%d, provided->%d)",

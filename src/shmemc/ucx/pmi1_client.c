@@ -20,11 +20,6 @@
 /* -------------------------------------------------------------- */
 
 /*
- * rotate/spread PE communications
- */
-#define SHIFT(_pe) ( ((_pe) + proc.rank) % proc.nranks )
-
-/*
  * Persistent local state
  */
 

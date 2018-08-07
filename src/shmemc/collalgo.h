@@ -9,8 +9,6 @@
 
 #include "thispe.h"
 
-shmemc_coll_t shmemc_parse_algo(char *str);
-char *shmemc_unparse_algo(shmemc_coll_t algo);
 int shmemc_get_children_info(int tree_size, int tree_degree, int node,
                              int *children_begin, int *children_end);
 int shmemc_get_children_info_binomial(int tree_size, int node, int *children);

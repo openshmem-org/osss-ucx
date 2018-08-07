@@ -22,9 +22,17 @@ shmemc_globalexit_finalize(void)
 {
 }
 
+#ifdef HAVE__EXIT
+# define EXIT _exit
+#elif defined(HAVE_EXIT)
+# define EXIT exit
+#else
+# error "no exit() routine found"
+#endif
+
 void
 shmemc_global_exit(int status)
 {
     /* just forcing an exit locally should abort the PMIx launcher */
-    _exit(status);
+    EXIT(status);
 }

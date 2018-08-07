@@ -20,11 +20,6 @@
 /* -------------------------------------------------------------- */
 
 /*
- * rotate/spread PE communications
- */
-#define SHIFT(_pe) ( ((_pe) + proc.rank) % proc.nranks )
-
-/*
  * Persistent local state
  */
 
@@ -43,11 +38,9 @@ shmemc_pmi_publish_worker(void)
 {
     pmix_status_t ps;
     pmix_info_t pi;
-    pmix_byte_object_t *bop;    /* shortcut */
+    pmix_byte_object_t *bop = & pi.value.data.bo; /* shortcut */
 
     PMIX_INFO_CONSTRUCT(&pi);
-
-    bop = & pi.value.data.bo;
 
     /* everyone publishes their info */
     snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
@@ -160,12 +153,10 @@ shmemc_pmi_exchange_workers(void)
 {
     pmix_status_t ps;
     pmix_pdata_t fetch;
-    pmix_byte_object_t *bop;
+    pmix_byte_object_t *bop = & fetch.value.data.bo;
     int pe;
 
     PMIX_PDATA_CONSTRUCT(&fetch);
-
-    bop = & fetch.value.data.bo;
 
     for (pe = 0; pe < proc.nranks; pe += 1) {
         const int i = SHIFT(pe);
