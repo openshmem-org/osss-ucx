@@ -13,9 +13,8 @@
 void
 shmemu_fatal(const char *fmt, ...)
 {
-    const int complain = (proc.rank < 1);
-
-    if (complain) {
+    /* this test also handles an uninitialized state */
+    if (proc.rank < 1) {
         va_list ap;
 
         va_start(ap, fmt);
