@@ -85,11 +85,7 @@ shmem_free(void *p)
 
     SHMEMT_MUTEX_PROTECT(shmema_free(p));
 
-    logger(LOG_MEMORY,
-           "%s(addr=%p)",
-           __func__,
-           p
-           );
+    logger(LOG_MEMORY, "%s(addr=%p)", __func__, p);
 }
 
 /*
