@@ -1,8 +1,0 @@
-/* For license: see LICENSE file at top-level */
-
-  ! incomplete
-
-  double precision :: pshmemx_wtime
-
-  logical :: pshmemx_fence_test
-  logical :: pshmemx_quiet_test
