@@ -127,6 +127,8 @@ typedef void *shmem_ctx_t;
 
 extern shmem_ctx_t SHMEM_CTX_DEFAULT;
 
+#define SHMEM_CTX_INVALID NULL
+
 /*
  * to declare AMOs
  */

@@ -138,18 +138,20 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
  * fence and quiet only do something on storable contexts
  */
 
-#define SHMEMC_FENCE_QUIET(_op, _ucp_op)                                \
-    void                                                                \
-    shmemc_ctx_##_op(shmem_ctx_t ctx)                                   \
-    {                                                                   \
-        shmemc_context_h ch = (shmemc_context_h) ctx;                   \
-                                                                        \
-        if (! ch->attr.nostore) {                                       \
-            const ucs_status_t s = ucp_worker_##_ucp_op(ch->w);         \
-                                                                        \
-            shmemu_assert(s == UCS_OK,                                  \
-                          "%s() failed (status %d)", #_op, s);          \
-        }                                                               \
+#define SHMEMC_FENCE_QUIET(_op, _ucp_op)                            \
+    void                                                            \
+    shmemc_ctx_##_op(shmem_ctx_t ctx)                               \
+    {                                                               \
+        if (ctx != SHMEM_CTX_INVALID) {                             \
+            shmemc_context_h ch = (shmemc_context_h) ctx;           \
+                                                                    \
+            if (! ch->attr.nostore) {                               \
+                const ucs_status_t s = ucp_worker_##_ucp_op(ch->w); \
+                                                                    \
+                shmemu_assert(s == UCS_OK,                          \
+                              "%s() failed (status %d)", #_op, s);  \
+            }                                                       \
+        }                                                           \
     }
 
 SHMEMC_FENCE_QUIET(fence, fence)
