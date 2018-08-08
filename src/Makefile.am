@@ -74,7 +74,7 @@ endif # fortran
 
 if ENABLE_EXPERIMENTAL
 
-MY_SOURCES            += putget_signal.c
+MY_SOURCES            += xputget_signal.c
 MY_SOURCES            += xshmalloc.c
 MY_SOURCES            += xwtime.c
 MY_SOURCES            += xinterop.c
