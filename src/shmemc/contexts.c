@@ -121,9 +121,7 @@ context_deregister(shmemc_context_h ch)
     /* this one is re-usable */
     *kl_pushp(freelist, fl) = ch->id;
 
-    logger(LOG_CONTEXTS,
-           "context #%lu can be reused",
-           ch->id);
+    logger(LOG_CONTEXTS, "context #%lu can be reused", ch->id);
 }
 
 /*
@@ -167,27 +165,27 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 void
 shmemc_context_destroy(shmem_ctx_t ctx)
 {
-    if (shmemu_likely(ctx != NULL)) {
-        if (shmemu_likely(ctx != SHMEM_CTX_DEFAULT)) {
-            shmemc_context_h ch = (shmemc_context_h) ctx;
-
-            /* spec 1.4 ++ has implicit quiet for storable contexts */
-            shmemc_ctx_quiet(ch);
-
-            shmemc_context_cleanup(ch);
-
-            context_deregister(ch);
-        }
-        else {
-            logger(LOG_FATAL,
-                   "cannot destroy the default context"
-                   );
-        }
+    if (shmemu_unlikely(ctx == SHMEM_CTX_INVALID)) {
+        logger(LOG_CONTEXTS,
+               "ignoring attempt to destroy invalid context");
+        return;
+        /* NOT REACHED */
+    }
+    else if (shmemu_unlikely(ctx == SHMEM_CTX_DEFAULT)) {
+        logger(LOG_FATAL,
+               "cannot destroy the default context"
+               );
+        /* NOT REACHED */
     }
     else {
-        logger(LOG_FATAL,
-               "attempt to destroy a null context"
-               );
+        shmemc_context_h ch = (shmemc_context_h) ctx;
+
+        /* spec 1.4 ++ has implicit quiet for storable contexts */
+        shmemc_ctx_quiet(ch);
+
+        shmemc_context_cleanup(ch);
+
+        context_deregister(ch);
     }
 }
 

@@ -1,11 +1,10 @@
 /* For license: see LICENSE file at top-level */
 
-#ifndef _SHMEM_PUTGET_SIGNAL_H
-#define _SHMEM_PUTGET_SIGNAL_H 1
+#ifndef _SHMEM_XPUTGET_SIGNAL_H
+#define _SHMEM_XPUTGET_SIGNAL_H 1
 
 #include "shmemu.h"
 #include "shmemc.h"
-
 #include "shmem_mutex.h"
 
 #define SHMEMX_CTX_TYPED_PUT_SIGNAL(_name, _type)                       \
@@ -108,4 +107,4 @@
                                         pe);                        \
         }
 
-#endif  /* ! _SHMEM_PUTGET_SIGNAL_H */
+#endif  /* ! _SHMEM_XPUTGET_SIGNAL_H */

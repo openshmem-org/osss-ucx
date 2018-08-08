@@ -15,11 +15,7 @@
 void
 shmem_global_exit(int status)
 {
-    logger(LOG_FINALIZE,
-           "%s(status=%d)",
-           __func__,
-           status
-           );
+    logger(LOG_FINALIZE, "%s(status=%d)", __func__, status);
 
     shmemc_global_exit(status);
 }

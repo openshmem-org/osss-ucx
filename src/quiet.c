@@ -20,11 +20,7 @@
 void
 shmem_ctx_quiet(shmem_ctx_t ctx)
 {
-    logger(LOG_FENCE,
-           "%s(ctx=%lu)",
-           __func__,
-           shmemc_context_id(ctx)
-           );
+    logger(LOG_FENCE, "%s(ctx=%lu)", __func__, shmemc_context_id(ctx));
 
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_quiet(ctx));
 }
@@ -32,11 +28,7 @@ shmem_ctx_quiet(shmem_ctx_t ctx)
 void
 shmem_ctx_fence(shmem_ctx_t ctx)
 {
-    logger(LOG_FENCE,
-           "%s(ctx=%lu)",
-           __func__,
-           shmemc_context_id(ctx)
-           );
+    logger(LOG_FENCE, "%s(ctx=%lu)", __func__, shmemc_context_id(ctx));
 
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(ctx));
 }
@@ -52,10 +44,7 @@ shmem_ctx_fence(shmem_ctx_t ctx)
 void
 shmem_quiet(void)
 {
-    logger(LOG_FENCE,
-           "%s()",
-           __func__
-           );
+    logger(LOG_FENCE, "%s()", __func__);
 
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_quiet(SHMEM_CTX_DEFAULT));
 }
@@ -63,10 +52,7 @@ shmem_quiet(void)
 void
 shmem_fence(void)
 {
-    logger(LOG_FENCE,
-           "%s()",
-           __func__
-           );
+    logger(LOG_FENCE, "%s()", __func__);
 
     SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(SHMEM_CTX_DEFAULT));
 }
