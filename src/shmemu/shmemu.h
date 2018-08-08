@@ -196,21 +196,23 @@ void shmemu_deprecate_finalize(void);
 
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)                                 \
     do {                                                                \
-        shmemc_context_h ch = (shmemc_context_h) (_ctx);                \
+        if (shmemu_likely(ctx != SHMEM_CTX_INVALID)) {                  \
+            shmemc_context_h ch = (shmemc_context_h) (_ctx);            \
                                                                         \
-        if (ch->attr.private) {                                         \
-            const shmemc_thread_t me = shmemc_thread_id();              \
-            const shmemc_thread_t cr = ch->creator_thread;              \
+            if (ch->attr.private) {                                     \
+                const shmemc_thread_t me = shmemc_thread_id();          \
+                const shmemc_thread_t cr = ch->creator_thread;          \
                                                                         \
-            if (! shmemc_thread_equal(cr,  me)) {                       \
-                shmemu_fatal("In %s(), invoking thread #%d"             \
-                             " not owner thread #%d"                    \
-                             "in private context #%lu",                 \
-                             __func__,                                  \
-                             me, cr,                                    \
-                             ch->id                                     \
-                             );                                         \
-                /* NOT REACHED */                                       \
+                if (! shmemc_thread_equal(cr,  me)) {                   \
+                    shmemu_fatal("In %s(), invoking thread #%d"         \
+                                 " not owner thread #%d"                \
+                                 "in private context #%lu",             \
+                                 __func__,                              \
+                                 me, cr,                                \
+                                 ch->id                                 \
+                                 );                                     \
+                    /* NOT REACHED */                                   \
+                }                                                       \
             }                                                           \
         }                                                               \
     } while (0)
