@@ -7,7 +7,7 @@ AC_ARG_WITH([shcoll],
 
 AS_IF([test "x$with_shcoll" != "x"],
       [
-          AC_MSG_NOTICE([CHecking for SHCOLL])
+          AC_MSG_NOTICE([Checking for SHCOLL])
           shcoll_hdr="$with_shcoll/include/shcoll.h"
           AS_IF([test -r "$shcoll_hdr"],
           [
