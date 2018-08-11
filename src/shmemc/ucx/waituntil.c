@@ -58,11 +58,12 @@ COMMS_CTX_TEST_SIZE(16, ge, >=)
 COMMS_CTX_TEST_SIZE(32, ge, >=)
 COMMS_CTX_TEST_SIZE(64, ge, >=)
 
+inline static void yield(void)
+{
 #ifdef HAVE_SCHED_YIELD
-# define YIELD sched_yield
-#else
-# define YIELD
+    sched_yield();
 #endif  /* HAVE_SCHED_YIELD */
+}
 
 #define COMMS_CTX_WAIT_SIZE(_size, _opname)                             \
     void                                                                \
@@ -74,7 +75,7 @@ COMMS_CTX_TEST_SIZE(64, ge, >=)
                                                                         \
         do {                                                            \
             shmemc_progress();                                          \
-            YIELD();                                                    \
+            yield();                                                    \
             ucp_worker_wait_mem(ch->w, var);                            \
         } while (shmemc_ctx_test_##_opname##_size(ctx, var, value) == 0); \
     }
