@@ -19,7 +19,7 @@ shmem_pe_accessible(int pe)
 {
     int s = shmemc_pe_accessible(pe);
 
-    logger(LOG_INFO, "%s(pe=%d)", __func__, pe);
+    logger(LOG_INFO, "%s(pe=%d) -> %d", __func__, pe, s);
 
     return s;
 }
@@ -29,7 +29,7 @@ shmem_addr_accessible(const void *addr, int pe)
 {
     int s = shmemc_addr_accessible(addr, pe);
 
-    logger(LOG_INFO, "%s(addr=%p, pe=%d)", __func__, addr, pe);
+    logger(LOG_INFO, "%s(addr=%p, pe=%d) -> %d", __func__, addr, pe, s);
 
     return s;
 }
