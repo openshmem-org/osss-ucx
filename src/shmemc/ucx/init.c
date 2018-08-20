@@ -55,6 +55,9 @@ deallocate_endpoints_table(void)
     free(proc.comms.eps);
 }
 
+/*
+ * Context management
+ */
 inline static void
 allocate_contexts_table(void)
 {
