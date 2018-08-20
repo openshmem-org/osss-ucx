@@ -611,7 +611,12 @@ shmemc_addr_accessible(const void *addr, int pe)
 }
 
 /*
- * Return non-zero if a valid PE #, 0 otherwise
+ * Return non-zero if a valid PE #, 0 otherwise.
+ *
+ * N.B. this function was originally meant to test which ranks were
+ * SHMEM in mixed SHMEM/MPI programs.  Here we just check the rank
+ * number is valid and assume reachability, although might want to
+ * revisit for FT/resilience purposes.
  */
 int
 shmemc_pe_accessible(int pe)
@@ -832,9 +837,7 @@ SHMEMC_CTX_FETCH(32)
 SHMEMC_CTX_FETCH(64)
 
 /*
- * TODO: 3/27/18:
- *
- * set/fetch will likely turn into UCP no-op post operations
+ * set/fetch
  */
 #define SHMEMC_CTX_SET(_size)                                       \
     void                                                            \
