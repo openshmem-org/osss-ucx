@@ -208,13 +208,17 @@ deregister_symmetric_heap(mem_info_t *mip)
                   hn);
 }
 
-inline static void
-blocking_ep_disconnect(ucp_ep_h ep)
+/*
+ * Fire off the EP disconnect process
+ */
+
+inline static ucs_status_ptr_t
+ep_disconnect_nb(ucp_ep_h ep)
 {
     ucs_status_ptr_t req;
 
     if (ep == NULL) {
-        return;
+        return NULL;
         /* NOT REACHED */
     }
 
@@ -224,40 +228,59 @@ blocking_ep_disconnect(ucp_ep_h ep)
     req = ucp_disconnect_nb(ep);
 #endif  /* HAVE_UCP_EP_CLOSE_NB */
 
-    if (req == UCS_OK) {
-        return;
-        /* NOT REACHED */
-    }
-    else if (UCS_PTR_IS_ERR(req)) {
-        return;
-        /* NOT REACHED */
-    }
-    else {
-        ucs_status_t s;
+    return req;
+}
 
-        do {
-            shmemc_progress();
+/*
+ * Complete the EP disconnect process
+ */
+
+inline static void
+ep_wait(ucs_status_ptr_t req)
+{
+    ucs_status_t s;
+
+    if (req == UCS_OK || UCS_PTR_IS_ERR(req)) {
+        return;
+        /* NOT REACHED */
+    }
+
+    do {
+        shmemc_progress();
 
 #ifdef HAVE_UCP_REQUEST_CHECK_STATUS
-            s = ucp_request_check_status(req);
+        s = ucp_request_check_status(req);
 #else
-            s = ucp_request_test(req, NULL);
+        s = ucp_request_test(req, NULL);
 #endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
-        } while (s == UCS_INPROGRESS);
-        ucp_request_free(req);
-    }
+    } while (s == UCS_INPROGRESS);
+
+    ucp_request_free(req);
 }
+
+/*
+ * Start the disconnects for all PEs, and then wait for completion
+ */
 
 inline static void
 disconnect_all_endpoints(void)
 {
+    ucs_status_ptr_t *req;
     int i;
 
-    for (i = 0; i < proc.nranks; i += 1) {
-        const int pe = SHIFT(i);
+    req = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*req));
+    shmemu_assert(req != NULL,
+                  "failed to allocate memory for UCP endpoint disconnect");
 
-        blocking_ep_disconnect(proc.comms.eps[pe]);
+    for (i = 0; i < proc.nranks; i += 1) {
+        req[i] = ep_disconnect_nb(proc.comms.eps[i]);
     }
+
+    for (i = 0; i < proc.nranks; i += 1) {
+        ep_wait(req[i]);
+    }
+
+    free(req);
 }
 
 /*
