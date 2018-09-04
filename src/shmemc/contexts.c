@@ -9,7 +9,7 @@
 #include "shmemu.h"
 #include "boolean.h"
 
-#include "ucx/contexts.h"
+#include "ucx/api.h"
 
 #include "shmem/defs.h"
 
