@@ -192,24 +192,6 @@ noop_callback(void *request, ucs_status_t status)
 }
 
 /*
- * make progress
- */
-
-inline static void
-helper_ctx_progress(shmem_ctx_t ctx)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    (void) ucp_worker_progress(ch->w);
-}
-
-inline static void
-helper_progress(void)
-{
-    helper_ctx_progress(SHMEM_CTX_DEFAULT);
-}
-
-/*
  * wait for some non-blocking request to complete on a worker
  *
  * TODO: possible consolidation with EP disconnect code
@@ -563,6 +545,24 @@ HELPER_BITWISE_ATOMIC(^, xor, 64)
  *
  **/
 
+/*
+ * make progress on a context
+ */
+
+inline static void
+helper_ctx_progress(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    (void) ucp_worker_progress(ch->w);
+}
+
+inline static void
+helper_progress(void)
+{
+    helper_ctx_progress(SHMEM_CTX_DEFAULT);
+}
+
 void
 shmemc_ctx_progress(shmem_ctx_t ctx)
 {
@@ -572,7 +572,7 @@ shmemc_ctx_progress(shmem_ctx_t ctx)
 void
 shmemc_progress(void)
 {
-    helper_progress();
+    helper_ctx_progress(SHMEM_CTX_DEFAULT);
 }
 
 /*
