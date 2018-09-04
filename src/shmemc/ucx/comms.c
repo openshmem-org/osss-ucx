@@ -149,7 +149,8 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
                 const ucs_status_t s = ucp_worker_##_ucp_op(ch->w); \
                                                                     \
                 shmemu_assert(s == UCS_OK,                          \
-                              "%s() failed (status %d)", #_op, s);  \
+                              "%s() failed (status: %s)", #_op,     \
+                              ucs_status_string(s));                \
             }                                                       \
         }                                                           \
     }
@@ -314,7 +315,9 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
                                                                     \
         s = ucp_atomic_fadd##_size(ep, v, r_t, r_key, &ret);        \
         /* value came back? */                                      \
-        shmemu_assert(s == UCS_OK, "fetch-add failed");             \
+        shmemu_assert(s == UCS_OK,                                  \
+                      "AMO fetch-add failed (status: %s)",          \
+                      ucs_status_string(s));                        \
                                                                     \
         return ret;                                                 \
     }
@@ -339,7 +342,8 @@ HELPER_FADD(64)
         s = ucp_atomic_add##_size(ep, v, r_t, r_key);           \
         /* could still be in flight */                          \
         shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),   \
-                      "add op failed");                         \
+                      "AMO add op failed (status: %s)",         \
+                      ucs_status_string(s));                    \
     }
 
 HELPER_ADD(32)
@@ -391,7 +395,9 @@ HELPER_INC(64)
         ep = lookup_ucp_ep(ch, pe);                             \
                                                                 \
         s = ucp_atomic_swap##_size(ep, v, r_t, r_key, &ret);    \
-        shmemu_assert(s == UCS_OK, "swap failed");              \
+        shmemu_assert(s == UCS_OK,                              \
+                      "AMO swap failed (status: %s)",           \
+                      ucs_status_string(s));                    \
                                                                 \
         return ret;                                             \
     }
@@ -416,7 +422,9 @@ HELPER_SWAP(64)
         ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
         s = ucp_atomic_cswap##_size(ep, c, v, r_t, r_key, &ret);        \
-        shmemu_assert(s == UCS_OK, "condtional swap failed");           \
+        shmemu_assert(s == UCS_OK,                                      \
+                      "AMO conditional swap failed (status: %s)",       \
+                      ucs_status_string(s));                            \
                                                                         \
         return ret;                                                     \
     }
@@ -454,8 +462,8 @@ HELPER_CSWAP(64)
                                                                         \
         /* value came back? */                                          \
         shmemu_assert(s == UCS_OK,                                      \
-                      "fetch op \"%s\" failed (status %d)",             \
-                      #_opname, s);                                     \
+                      "AMO fetch op \"%s\" failed (status: %s)",        \
+                      #_opname, ucs_status_string(s));                  \
                                                                         \
         return (uint##_size##_t) ret;                                   \
     }
@@ -481,16 +489,16 @@ HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 64)
                                pe);                                 \
                                                                     \
         shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),       \
-                      "post op \"%s\" failed (status %d)",          \
-                      #_opname, s);                                 \
+                      "AMO post op \"%s\" failed (status: %s)",     \
+                      #_opname, ucs_status_string(s));              \
     }
 
 HELPER_BITWISE_ATOMIC(AND, and, 32)
-HELPER_BITWISE_ATOMIC(AND, and, 64)
-HELPER_BITWISE_ATOMIC(OR,  or,  32)
-HELPER_BITWISE_ATOMIC(OR,  or,  64)
-HELPER_BITWISE_ATOMIC(XOR, xor, 32)
-HELPER_BITWISE_ATOMIC(XOR, xor, 64)
+    HELPER_BITWISE_ATOMIC(AND, and, 64)
+    HELPER_BITWISE_ATOMIC(OR,  or,  32)
+    HELPER_BITWISE_ATOMIC(OR,  or,  64)
+    HELPER_BITWISE_ATOMIC(XOR, xor, 32)
+    HELPER_BITWISE_ATOMIC(XOR, xor, 64)
 
 #else  /* ! HAVE_UCP_BITWISE_ATOMICS */
 
@@ -513,7 +521,9 @@ HELPER_BITWISE_ATOMIC(XOR, xor, 64)
         do {                                                            \
             s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
                         r_t, r_key);                                    \
-            shmemu_assert(s == UCS_OK, "get failed in CAS");            \
+            shmemu_assert(s == UCS_OK,                                  \
+                          "AMO fetch failed in CAS (status: %s)",       \
+                          ucs_status_string(s));                        \
             rval = (rval_orig) _op v;                                   \
                                                                         \
             s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
@@ -646,7 +656,9 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
                     noop_callback);
     s = check_wait_for_request(ch, sp);
-    shmemu_assert(s == UCS_OK, "put failed");
+    shmemu_assert(s == UCS_OK,
+                  "put failed (status: %s)",
+                  ucs_status_string(s));
 }
 
 void
@@ -667,7 +679,9 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
                     noop_callback);
     s = check_wait_for_request(ch, sp);
-    shmemu_assert(s == UCS_OK, "get failed");
+    shmemu_assert(s == UCS_OK,
+                  "get failed (status: %s)",
+                  ucs_status_string(s));
 }
 
 /*
@@ -695,7 +709,8 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
     shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking put failed");
+                  "non-blocking put failed (status: %s)",
+                  ucs_status_string(s));
 }
 
 void
@@ -714,7 +729,8 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
     shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking get failed");
+                  "non-blocking get failed (status: %s)",
+                  ucs_status_string(s));
  }
 
 #define SHMEMC_PUTGET_SIGNAL(_op)                                       \
