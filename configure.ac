@@ -177,7 +177,8 @@ AC_CONFIG_FILES([
 	pkgconfig/osss-ucx.pc
 	src/Makefile
 	src/osh_info/Makefile
-	src/shcoll/Makefile src/shcoll/src/Makefile
+	src/collectives/shcoll/Makefile
+	src/collectives/shcoll/src/Makefile
 	src/shmemc/Makefile
 	src/shmemc/oshcc:src/shmemc/oshcc.in:src/shmemc/osh_bot.common
 	src/shmemc/oshcxx:src/shmemc/oshcxx.in:src/shmemc/osh_bot.common

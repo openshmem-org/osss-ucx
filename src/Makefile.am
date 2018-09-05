@@ -42,7 +42,8 @@ SUBDIRS                = $(shmemu_dir) $(shmemc_dir) osh_info
 #
 
 if HAVE_SHCOLL_INTERNAL
-SUBDIRS               += shcoll
+SUBDIRS               += collectives/shcoll
+
 all_cppflags          += -I@SHCOLL_DIR@
 else
 all_cppflags          += -I@SHCOLL_DIR@/include

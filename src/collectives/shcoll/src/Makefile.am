@@ -13,7 +13,7 @@ SOURCES                += util/bithacks.c \
 				util/scan.c \
 				util/trees.c
 
-FIND_SHMEM_H            = -I$(top_srcdir)/include -I../../../include
+FIND_SHMEM_H            = -I$(top_srcdir)/include -I../../../../include
 
 BUILD_CFLAGS            = $(AM_CFLAGS) -I.. $(FIND_SHMEM_H)
 

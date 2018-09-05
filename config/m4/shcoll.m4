@@ -28,7 +28,7 @@ AS_IF([test "x$with_shcoll" != "x" -a "x$with_shcoll" != "xinternal"],
       [
           AC_DEFINE([HAVE_SHCOLL_INTERNAL], [1], [Internal SHCOLL support])
 	  shcoll_type="internal"
-	  SHCOLL_DIR="$srcdir/src/shcoll/src"
+	  SHCOLL_DIR="$srcdir/src/collectives/shcoll/src"
 	  AC_SUBST([HAVE_SHCOLL_INTERNAL], [1])
 	  AS_BOX([Using $shcoll_type SHCOLL])
       ]
