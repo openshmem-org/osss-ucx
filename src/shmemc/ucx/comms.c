@@ -647,15 +647,22 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     uint64_t r_dest;            /* address on other PE */
     ucp_rkey_h r_key;            /* rkey for remote address */
     ucp_ep_h ep;
+#ifdef HAVE_UCP_PUT_NB
     ucs_status_ptr_t sp;
+#endif /* HAVE_UCP_PUT_NB */
     ucs_status_t s;
 
     get_remote_key_and_addr((uint64_t) dest, pe, &r_key, &r_dest);
     ep = lookup_ucp_ep(ch, pe);
 
+#ifdef HAVE_UCP_PUT_NB
     sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
                     noop_callback);
     s = check_wait_for_request(ch, sp);
+#else
+    s = ucp_put(ep, src, nbytes, r_dest, r_key);
+#endif /* HAVE_UCP_PUT_NB */
+
     shmemu_assert(s == UCS_OK,
                   "put failed (status: %s)",
                   ucs_status_string(s));
@@ -670,15 +677,22 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     uint64_t r_src;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
+#ifdef HAVE_UCP_GET_NB
     ucs_status_ptr_t sp;
+#endif /* HAVE_UCP_GET_NB */
     ucs_status_t s;
 
     get_remote_key_and_addr((uint64_t) src, pe, &r_key, &r_src);
     ep = lookup_ucp_ep(ch, pe);
 
+#ifdef HAVE_UCP_GET_NB
     sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
                     noop_callback);
     s = check_wait_for_request(ch, sp);
+#else
+    s = ucp_get(ep, dest, nbytes, r_src, r_key);
+#endif /* HAVE_UCP_GET_NB */
+
     shmemu_assert(s == UCS_OK,
                   "get failed (status: %s)",
                   ucs_status_string(s));
