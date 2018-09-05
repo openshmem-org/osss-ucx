@@ -10,8 +10,6 @@ shmemu_cppflags        = -I$(top_srcdir)/src/$(shmemu_dir)
 shmemu_ldflags         = -L$(shmemu_dir)
 shmemu_libs            = -lshmemu
 
-SUBDIRS                = $(shmemu_dir) $(shmemc_dir) osh_info
-
 MY_INCLUDE             = -I../include -I$(top_srcdir)/include
 
 all_cppflags           = $(shmemc_cppflags) $(shmemu_cppflags) $(MY_INCLUDE)
@@ -34,15 +32,28 @@ MY_SOURCES             = \
                                 version.c \
                                 waituntil.c
 
+SUBDIRS                = $(shmemu_dir) $(shmemc_dir) osh_info
+
 #
 # -- begin: SHCOLL --
 #
-MY_SOURCES            += collectives/shcoll-shim.c
+# shcoll is bundled with package, but handled differently if pulled in
+# from somewhere else.
+#
 
-all_cppflags          += -I$(SHCOLL_DIR)/include
+if HAVE_SHCOLL_INTERNAL
+SUBDIRS               += shcoll
+all_cppflags          += -I@SHCOLL_DIR@
+else
+all_cppflags          += -I@SHCOLL_DIR@/include
+endif
+
 #
 # -- end: SHCOLL --
 #
+# But we need the shim no matter what
+
+MY_SOURCES            += collectives/shcoll-shim.c
 
 if ENABLE_THREADS
 MY_SOURCES            += shmem_mutex.c

@@ -52,7 +52,8 @@ AC_CONFIG_HEADERS([config.h])
 # AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_MACRO_DIR([m4])
 # for multiple levels of autoconf packages (embedding)
-AC_CONFIG_AUX_DIR([.])
+# AC_CONFIG_AUX_DIR([.])
+# AC_CONFIG_SUBDIRS([src/shcoll])
 AM_INIT_AUTOMAKE([subdir-objects tar-pax])
 
 AM_SILENT_RULES([yes])
@@ -176,6 +177,7 @@ AC_CONFIG_FILES([
 	pkgconfig/osss-ucx.pc
 	src/Makefile
 	src/osh_info/Makefile
+	src/shcoll/Makefile src/shcoll/src/Makefile
 	src/shmemc/Makefile
 	src/shmemc/oshcc:src/shmemc/oshcc.in:src/shmemc/osh_bot.common
 	src/shmemc/oshcxx:src/shmemc/oshcxx.in:src/shmemc/osh_bot.common
