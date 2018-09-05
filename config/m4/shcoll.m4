@@ -1,7 +1,7 @@
 # For license: see LICENSE file at top-level
 
 AC_ARG_WITH([shcoll],
-            [AS_HELP_STRING([--with-shcoll@<:@=DIR@:>@], [Use SHCOLL library])])
+            [AS_HELP_STRING([--with-shcoll@<:@=DIR@:>@], [Use SHCOLL library from DIR, or "internal" to use bundled version])])
 
 shcoll_type="external"
 
