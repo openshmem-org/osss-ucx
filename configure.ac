@@ -51,6 +51,9 @@ AC_CONFIG_SRCDIR([autogen.sh])
 AC_CONFIG_HEADERS([config.h])
 # AC_CONFIG_MACRO_DIRS([m4])
 AC_CONFIG_MACRO_DIR([m4])
+# for multiple levels of autoconf packages (embedding)
+# AC_CONFIG_AUX_DIR([.])
+# AC_CONFIG_SUBDIRS([src/shcoll])
 AM_INIT_AUTOMAKE([subdir-objects tar-pax])
 
 AM_SILENT_RULES([yes])
@@ -110,7 +113,7 @@ AC_CHECK_TYPES([ptrdiff_t])
 # AC_FUNC_MALLOC
 # AC_FUNC_REALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([atexit _exit exit gettimeofday gethostname uname memset strlcat strlcpy sched_yield])
+AC_CHECK_FUNCS([atexit _exit exit gettimeofday gethostname uname memset strlcat strlcpy sched_yield nanosleep])
 AC_CHECK_LIB([m], [log10])
 
 AM_INIT_AUTOMAKE
@@ -174,6 +177,8 @@ AC_CONFIG_FILES([
 	pkgconfig/osss-ucx.pc
 	src/Makefile
 	src/osh_info/Makefile
+	src/collectives/shcoll/Makefile
+	src/collectives/shcoll/src/Makefile
 	src/shmemc/Makefile
 	src/shmemc/oshcc:src/shmemc/oshcc.in:src/shmemc/osh_bot.common
 	src/shmemc/oshcxx:src/shmemc/oshcxx.in:src/shmemc/osh_bot.common

@@ -47,6 +47,21 @@ AS_IF([test -d "$with_ucx"],
 		],
 		[AC_MSG_NOTICE([UCX: native bit-wise atomics NOT found])
 		])
+	      # check for non-blocking put/get
+	      AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nb])],
+		[AC_MSG_NOTICE([UCX: ucp_put_nb found])
+ 	         AC_DEFINE([HAVE_UCP_PUT_NB], [1], [UCX has ucp_put_nb])
+		],
+		[AC_MSG_NOTICE([UCX: ucp_put_nb NOT found])
+		])
+	      AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nb])],
+		[AC_MSG_NOTICE([UCX: ucp_get_nb found])
+ 	         AC_DEFINE([HAVE_UCP_GET_NB], [1], [UCX has ucp_get_nb])
+		],
+		[AC_MSG_NOTICE([UCX: ucp_get_nb NOT found])
+		])
 	      AC_LANG_POP([C])
 	      UCX_DIR="$with_ucx"
 	      AC_DEFINE_UNQUOTED([UCX_DIR], ["$UCX_DIR"], [UCX installation directory])

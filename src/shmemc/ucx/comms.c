@@ -149,7 +149,8 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
                 const ucs_status_t s = ucp_worker_##_ucp_op(ch->w); \
                                                                     \
                 shmemu_assert(s == UCS_OK,                          \
-                              "%s() failed (status %d)", #_op, s);  \
+                              "%s() failed (status: %s)", #_op,     \
+                              ucs_status_string(s));                \
             }                                                       \
         }                                                           \
     }
@@ -188,24 +189,6 @@ noop_callback(void *request, ucs_status_t status)
 {
     NO_WARN_UNUSED(request);
     NO_WARN_UNUSED(status);
-}
-
-/*
- * make progress
- */
-
-inline static void
-helper_ctx_progress(shmem_ctx_t ctx)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-
-    (void) ucp_worker_progress(ch->w);
-}
-
-inline static void
-helper_progress(void)
-{
-    helper_ctx_progress(SHMEM_CTX_DEFAULT);
 }
 
 /*
@@ -261,13 +244,13 @@ ucx_atomic_post_op(ucp_atomic_post_op_t uapo,
                    int pe)
 {
     uint64_t r_t;
-    ucp_rkey_h rkey;
+    ucp_rkey_h r_key;
     ucp_ep_h ep;
 
-    get_remote_key_and_addr(t, pe, &rkey, &r_t);
+    get_remote_key_and_addr(t, pe, &r_key, &r_t);
     ep = lookup_ucp_ep(ch, pe);
 
-    return ucp_atomic_post(ep, uapo, v, vs, r_t, rkey);
+    return ucp_atomic_post(ep, uapo, v, vs, r_t, r_key);
 }
 
 inline static ucs_status_t
@@ -280,14 +263,14 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
                     uint64_t *result)
 {
     uint64_t r_t;
-    ucp_rkey_h rkey;
+    ucp_rkey_h r_key;
     ucp_ep_h ep;
     ucs_status_ptr_t sp;
 
-    get_remote_key_and_addr(t, pe, &rkey, &r_t);
+    get_remote_key_and_addr(t, pe, &r_key, &r_t);
     ep = lookup_ucp_ep(ch, pe);
 
-    sp = ucp_atomic_fetch_nb(ep, uafo, v, result, vs, r_t, rkey,
+    sp = ucp_atomic_fetch_nb(ep, uafo, v, result, vs, r_t, r_key,
                              noop_callback);
 
     return check_wait_for_request(ch, sp);
@@ -306,15 +289,17 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
         uint##_size##_t ret = 0;                                    \
         ucs_status_t s;                                             \
         uint64_t r_t;                                               \
-        ucp_rkey_h rkey;                                            \
+        ucp_rkey_h r_key;                                           \
         ucp_ep_h ep;                                                \
                                                                     \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                \
+        get_remote_key_and_addr(t, pe, &r_key, &r_t);               \
         ep = lookup_ucp_ep(ch, pe);                                 \
                                                                     \
-        s = ucp_atomic_fadd##_size(ep, v, r_t, rkey, &ret);         \
+        s = ucp_atomic_fadd##_size(ep, v, r_t, r_key, &ret);        \
         /* value came back? */                                      \
-        shmemu_assert(s == UCS_OK, "fetch-add failed");             \
+        shmemu_assert(s == UCS_OK,                                  \
+                      "AMO fetch-add failed (status: %s)",          \
+                      ucs_status_string(s));                        \
                                                                     \
         return ret;                                                 \
     }
@@ -330,16 +315,17 @@ HELPER_FADD(64)
     {                                                           \
         ucs_status_t s;                                         \
         uint64_t r_t;                                           \
-        ucp_rkey_h rkey;                                        \
+        ucp_rkey_h r_key;                                       \
         ucp_ep_h ep;                                            \
                                                                 \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);            \
+        get_remote_key_and_addr(t, pe, &r_key, &r_t);           \
         ep = lookup_ucp_ep(ch, pe);                             \
                                                                 \
-        s = ucp_atomic_add##_size(ep, v, r_t, rkey);            \
+        s = ucp_atomic_add##_size(ep, v, r_t, r_key);           \
         /* could still be in flight */                          \
         shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),   \
-                      "add op failed");                         \
+                      "AMO add op failed (status: %s)",         \
+                      ucs_status_string(s));                    \
     }
 
 HELPER_ADD(32)
@@ -382,16 +368,18 @@ HELPER_INC(64)
                               int pe)                           \
     {                                                           \
         uint64_t r_t;                                           \
-        ucp_rkey_h rkey;                                        \
+        ucp_rkey_h r_key;                                       \
         uint##_size##_t ret = 0;                                \
         ucp_ep_h ep;                                            \
         ucs_status_t s;                                         \
                                                                 \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);            \
+        get_remote_key_and_addr(t, pe, &r_key, &r_t);           \
         ep = lookup_ucp_ep(ch, pe);                             \
                                                                 \
-        s = ucp_atomic_swap##_size(ep, v, r_t, rkey, &ret);     \
-        shmemu_assert(s == UCS_OK, "swap failed");              \
+        s = ucp_atomic_swap##_size(ep, v, r_t, r_key, &ret);    \
+        shmemu_assert(s == UCS_OK,                              \
+                      "AMO swap failed (status: %s)",           \
+                      ucs_status_string(s));                    \
                                                                 \
         return ret;                                             \
     }
@@ -407,16 +395,18 @@ HELPER_SWAP(64)
                                int pe)                                  \
     {                                                                   \
         uint64_t r_t;                                                   \
-        ucp_rkey_h rkey;                                                \
+        ucp_rkey_h r_key;                                               \
         uint##_size##_t ret = 0;                                        \
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
                                                                         \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
+        get_remote_key_and_addr(t, pe, &r_key, &r_t);                   \
         ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
-        s = ucp_atomic_cswap##_size(ep, c, v, r_t, rkey, &ret);         \
-        shmemu_assert(s == UCS_OK, "condtional swap failed");           \
+        s = ucp_atomic_cswap##_size(ep, c, v, r_t, r_key, &ret);        \
+        shmemu_assert(s == UCS_OK,                                      \
+                      "AMO conditional swap failed (status: %s)",       \
+                      ucs_status_string(s));                            \
                                                                         \
         return ret;                                                     \
     }
@@ -454,8 +444,8 @@ HELPER_CSWAP(64)
                                                                         \
         /* value came back? */                                          \
         shmemu_assert(s == UCS_OK,                                      \
-                      "fetch op \"%s\" failed (status %d)",             \
-                      #_opname, s);                                     \
+                      "AMO fetch op \"%s\" failed (status: %s)",        \
+                      #_opname, ucs_status_string(s));                  \
                                                                         \
         return (uint##_size##_t) ret;                                   \
     }
@@ -481,8 +471,8 @@ HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 64)
                                pe);                                 \
                                                                     \
         shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),       \
-                      "post op \"%s\" failed (status %d)",          \
-                      #_opname, s);                                 \
+                      "AMO post op \"%s\" failed (status: %s)",     \
+                      #_opname, ucs_status_string(s));              \
     }
 
 HELPER_BITWISE_ATOMIC(AND, and, 32)
@@ -504,20 +494,22 @@ HELPER_BITWISE_ATOMIC(XOR, xor, 64)
         uint##_size##_t rval, rval_orig;                                \
         ucs_status_t s;                                                 \
         uint64_t r_t;                                                   \
-        ucp_rkey_h rkey;                                                \
+        ucp_rkey_h r_key;                                               \
         ucp_ep_h ep;                                                    \
                                                                         \
-        get_remote_key_and_addr(t, pe, &rkey, &r_t);                    \
+        get_remote_key_and_addr(t, pe, &r_key, &r_t);                   \
         ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
         do {                                                            \
             s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
-                        r_t, rkey);                                     \
-            shmemu_assert(s == UCS_OK, "get failed in CAS");            \
+                        r_t, r_key);                                    \
+            shmemu_assert(s == UCS_OK,                                  \
+                          "AMO fetch failed in CAS (status: %s)",       \
+                          ucs_status_string(s));                        \
             rval = (rval_orig) _op v;                                   \
                                                                         \
             s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
-                                        r_t, rkey, &ret);               \
+                                        r_t, r_key, &ret);              \
         } while (ret != rval_orig);                                     \
                                                                         \
         return ret;                                                     \
@@ -553,6 +545,24 @@ HELPER_BITWISE_ATOMIC(^, xor, 64)
  *
  **/
 
+/*
+ * make progress on a context
+ */
+
+inline static void
+helper_ctx_progress(shmem_ctx_t ctx)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+
+    (void) ucp_worker_progress(ch->w);
+}
+
+inline static void
+helper_progress(void)
+{
+    helper_ctx_progress(SHMEM_CTX_DEFAULT);
+}
+
 void
 shmemc_ctx_progress(shmem_ctx_t ctx)
 {
@@ -562,7 +572,7 @@ shmemc_ctx_progress(shmem_ctx_t ctx)
 void
 shmemc_progress(void)
 {
-    helper_progress();
+    helper_ctx_progress(SHMEM_CTX_DEFAULT);
 }
 
 /*
@@ -582,13 +592,13 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
     /* check to see if UCX is new enough */
 #ifdef HAVE_UCP_RKEY_PTR
     uint64_t r_addr;            /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for remote address */
+    ucp_rkey_h r_key;            /* rkey for remote address */
     void *usable_addr = NULL;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) addr, pe, &rkey, &r_addr);
+    get_remote_key_and_addr((uint64_t) addr, pe, &r_key, &r_addr);
 
-    s = ucp_rkey_ptr(rkey, r_addr, &usable_addr);
+    s = ucp_rkey_ptr(r_key, r_addr, &usable_addr);
     if (s == UCS_OK) {
         return usable_addr;
         /* NOT REACHED */
@@ -611,7 +621,12 @@ shmemc_addr_accessible(const void *addr, int pe)
 }
 
 /*
- * Return non-zero if a valid PE #, 0 otherwise
+ * Return non-zero if a valid PE #, 0 otherwise.
+ *
+ * N.B. this function was originally meant to test which ranks were
+ * SHMEM in mixed SHMEM/MPI programs.  Here we just check the rank
+ * number is valid and assume reachability, although might want to
+ * revisit for FT/resilience purposes.
  */
 int
 shmemc_pe_accessible(int pe)
@@ -628,16 +643,29 @@ shmemc_ctx_put(shmem_ctx_t ctx,
                void *dest, const void *src,
                size_t nbytes, int pe)
 {
-    uint64_t rdest;             /* address on other PE */
-    ucp_rkey_h rkey;            /* rkey for remote address */
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    uint64_t r_dest;            /* address on other PE */
+    ucp_rkey_h r_key;            /* rkey for remote address */
     ucp_ep_h ep;
+#ifdef HAVE_UCP_PUT_NB
+    ucs_status_ptr_t sp;
+#endif /* HAVE_UCP_PUT_NB */
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) dest, pe, &rkey, &rdest);
-    ep = lookup_ucp_ep(ctx, pe);
+    get_remote_key_and_addr((uint64_t) dest, pe, &r_key, &r_dest);
+    ep = lookup_ucp_ep(ch, pe);
 
-    s = ucp_put(ep, src, nbytes, rdest, rkey);
-    shmemu_assert(s == UCS_OK, "put failed");
+#ifdef HAVE_UCP_PUT_NB
+    sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
+                    noop_callback);
+    s = check_wait_for_request(ch, sp);
+#else
+    s = ucp_put(ep, src, nbytes, r_dest, r_key);
+#endif /* HAVE_UCP_PUT_NB */
+
+    shmemu_assert(s == UCS_OK,
+                  "put failed (status: %s)",
+                  ucs_status_string(s));
 }
 
 void
@@ -645,16 +673,29 @@ shmemc_ctx_get(shmem_ctx_t ctx,
                void *dest, const void *src,
                size_t nbytes, int pe)
 {
+    shmemc_context_h ch = (shmemc_context_h) ctx;
     uint64_t r_src;
-    ucp_rkey_h rkey;
+    ucp_rkey_h r_key;
     ucp_ep_h ep;
+#ifdef HAVE_UCP_GET_NB
+    ucs_status_ptr_t sp;
+#endif /* HAVE_UCP_GET_NB */
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) src, pe, &rkey, &r_src);
-    ep = lookup_ucp_ep(ctx, pe);
+    get_remote_key_and_addr((uint64_t) src, pe, &r_key, &r_src);
+    ep = lookup_ucp_ep(ch, pe);
 
-    s = ucp_get(ep, dest, nbytes, r_src, rkey);
-    shmemu_assert(s == UCS_OK, "get failed");
+#ifdef HAVE_UCP_GET_NB
+    sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
+                    noop_callback);
+    s = check_wait_for_request(ch, sp);
+#else
+    s = ucp_get(ep, dest, nbytes, r_src, r_key);
+#endif /* HAVE_UCP_GET_NB */
+
+    shmemu_assert(s == UCS_OK,
+                  "get failed (status: %s)",
+                  ucs_status_string(s));
 }
 
 /*
@@ -671,17 +712,19 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
                    void *dest, const void *src,
                    size_t nbytes, int pe)
 {
-    uint64_t rdest;
-    ucp_rkey_h rkey;
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    uint64_t r_dest;
+    ucp_rkey_h r_key;
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) dest, pe, &rkey, &rdest);
-    ep = lookup_ucp_ep(ctx, pe);
+    get_remote_key_and_addr((uint64_t) dest, pe, &r_key, &r_dest);
+    ep = lookup_ucp_ep(ch, pe);
 
-    s = ucp_put_nbi(ep, src, nbytes, rdest, rkey);
+    s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
     shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking put failed");
+                  "non-blocking put failed (status: %s)",
+                  ucs_status_string(s));
 }
 
 void
@@ -689,17 +732,19 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                    void *dest, const void *src,
                    size_t nbytes, int pe)
 {
+    shmemc_context_h ch = (shmemc_context_h) ctx;
     uint64_t r_src;
-    ucp_rkey_h rkey;
+    ucp_rkey_h r_key;
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) src, pe, &rkey, &r_src);
-    ep = lookup_ucp_ep(ctx, pe);
+    get_remote_key_and_addr((uint64_t) src, pe, &r_key, &r_src);
+    ep = lookup_ucp_ep(ch, pe);
 
-    s = ucp_get_nbi(ep, dest, nbytes, r_src, rkey);
+    s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
     shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking get failed");
+                  "non-blocking get failed (status: %s)",
+                  ucs_status_string(s));
  }
 
 #define SHMEMC_PUTGET_SIGNAL(_op)                                       \
@@ -832,9 +877,7 @@ SHMEMC_CTX_FETCH(32)
 SHMEMC_CTX_FETCH(64)
 
 /*
- * TODO: 3/27/18:
- *
- * set/fetch will likely turn into UCP no-op post operations
+ * set/fetch
  */
 #define SHMEMC_CTX_SET(_size)                                       \
     void                                                            \
