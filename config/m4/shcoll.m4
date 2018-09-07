@@ -1,7 +1,10 @@
 # For license: see LICENSE file at top-level
 
+AC_MSG_NOTICE([Checking for how we handle collectives])
+
 AC_ARG_WITH([shcoll],
-            [AS_HELP_STRING([--with-shcoll@<:@=DIR@:>@], [Use SHCOLL library from DIR, or "internal" to use bundled version])])
+            [AS_HELP_STRING([--with-shcoll@<:@=DIR@:>@],
+	    [Use SHCOLL library from DIR, or "internal" to use bundled version])])
 
 shcoll_type="external"
 
@@ -32,14 +35,28 @@ AS_IF([test "x$with_shcoll" != "x" -a "x$with_shcoll" != "xinternal"],
 	  AC_SUBST([HAVE_SHCOLL_INTERNAL], [1])
 	  AS_BOX([Using $shcoll_type SHCOLL])
       ]
+)
+
+#
+# make sure we can find shcoll, wherever it is
+#
+SHCOLL_LIBS=""
+AS_IF([test "$shcoll_type" = "external"],
+      [
+          SHCOLL_LIBS="$SHCOLL_LIBS -L$with_shcoll/lib64"
+          SHCOLL_LIBS="$SHCOLL_LIBS -Wl,-rpath -Wl,$with_shcoll/lib64"
+          SHCOLL_LIBS="$SHCOLL_LIBS -L$with_shcoll/lib"
+          SHCOLL_LIBS="$SHCOLL_LIBS -Wl,-rpath -Wl,$with_shcoll/lib"
+      ]
       )
-
-SHCOLL_LIBS="-L$with_shcoll/lib64 -Wl,-rpath -Wl,$with_shcoll/lib64"
-SHCOLL_LIBS="$SHCOLL_LIBS -L$with_shcoll/lib -Wl,-rpath -Wl,$with_shcoll/lib"
 SHCOLL_LIBS="$SHCOLL_LIBS -lshcoll"
-
-AC_DEFINE([HAVE_SHCOLL], [1], [SHCOLL support])
-AC_SUBST([SHCOLL_DIR])
 AC_SUBST([SHCOLL_LIBS])
 
+AC_DEFINE([HAVE_SHCOLL], [1], [SHCOLL support])
+
+AC_SUBST([SHCOLL_DIR])
+
+#
+# need to compile differently if we have our own shcoll
+#
 AM_CONDITIONAL([HAVE_SHCOLL_INTERNAL], [test "$shcoll_type" = "internal"])
