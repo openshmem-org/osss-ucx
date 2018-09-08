@@ -1,3 +1,4 @@
+
 # For license: see LICENSE file at top-level
 
 AC_MSG_NOTICE([Checking for how we handle collectives])
@@ -6,7 +7,8 @@ AC_ARG_WITH([shcoll],
             [AS_HELP_STRING([--with-shcoll@<:@=DIR@:>@],
 	    [Use SHCOLL library from DIR, or "internal" to use bundled version])])
 
-shcoll_type="external"
+SHCOLL_TYPE="internal"
+SHCOLL_DIR="$srcdir/src/collectives/shcoll/src"
 
 AS_IF([test "x$with_shcoll" != "x" -a "x$with_shcoll" != "xinternal"],
       [
@@ -14,13 +16,10 @@ AS_IF([test "x$with_shcoll" != "x" -a "x$with_shcoll" != "xinternal"],
           shcoll_hdr="$with_shcoll/include/shcoll.h"
           AS_IF([test -r "$shcoll_hdr"],
           [
+	      SHCOLL_TYPE="external"
               SHCOLL_DIR="$with_shcoll"
-              AC_DEFINE_UNQUOTED([SHCOLL_DIR],
-				 ["$SHCOLL_DIR"],
-				 [SHCOLL installation directory])
               AC_DEFINE([HAVE_SHCOLL_EXTERNAL], [1], [External SHCOLL support])
 	      AC_SUBST([HAVE_SHCOLL_EXTERNAL], [1])
-	      SHCOLL_DIR="$with_shcoll"
 	      AS_BOX([Using SHCOLL in $with_shcoll])
           ],
           [
@@ -30,10 +29,8 @@ AS_IF([test "x$with_shcoll" != "x" -a "x$with_shcoll" != "xinternal"],
       ],
       [
           AC_DEFINE([HAVE_SHCOLL_INTERNAL], [1], [Internal SHCOLL support])
-	  shcoll_type="internal"
-	  SHCOLL_DIR="$srcdir/src/collectives/shcoll/src"
 	  AC_SUBST([HAVE_SHCOLL_INTERNAL], [1])
-	  AS_BOX([Using $shcoll_type SHCOLL])
+	  AS_BOX([Using $SHCOLL_TYPE SHCOLL])
       ]
 )
 
@@ -41,7 +38,7 @@ AS_IF([test "x$with_shcoll" != "x" -a "x$with_shcoll" != "xinternal"],
 # make sure we can find shcoll, wherever it is
 #
 SHCOLL_LIBS=""
-AS_IF([test "$shcoll_type" = "external"],
+AS_IF([test "$SHCOLL_TYPE" = "external"],
       [
           SHCOLL_LIBS="$SHCOLL_LIBS -L$with_shcoll/lib64"
           SHCOLL_LIBS="$SHCOLL_LIBS -Wl,-rpath -Wl,$with_shcoll/lib64"
@@ -54,9 +51,14 @@ AC_SUBST([SHCOLL_LIBS])
 
 AC_DEFINE([HAVE_SHCOLL], [1], [SHCOLL support])
 
+AC_DEFINE_UNQUOTED([SHCOLL_DIR],
+		   ["$SHCOLL_DIR"],
+		   [SHCOLL installation directory])
+
 AC_SUBST([SHCOLL_DIR])
+AC_SUBST([SHCOLL_TYPE])
 
 #
 # need to compile differently if we have our own shcoll
 #
-AM_CONDITIONAL([HAVE_SHCOLL_INTERNAL], [test "$shcoll_type" = "internal"])
+AM_CONDITIONAL([HAVE_SHCOLL_INTERNAL], [test "$SHCOLL_TYPE" = "internal"])
