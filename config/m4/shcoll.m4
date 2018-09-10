@@ -8,7 +8,8 @@ AC_ARG_WITH([shcoll],
 	    [Use SHCOLL library from DIR, or "internal" to use bundled version])])
 
 SHCOLL_TYPE="internal"
-SHCOLL_DIR="$srcdir/src/collectives/shcoll/src"
+# don't evaluate top_srcdir until we're compiling
+SHCOLL_DIR='$(top_srcdir)/src/collectives/shcoll/src'
 
 AS_IF([test "x$with_shcoll" != "x" -a "x$with_shcoll" != "xinternal"],
       [
