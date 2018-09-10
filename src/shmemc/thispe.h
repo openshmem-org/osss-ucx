@@ -49,7 +49,7 @@ typedef enum shmemc_status {
  */
 
 typedef struct heapinfo {
-    size_t nheaps;              /* how many heaps reuqested */
+    size_t nheaps;              /* how many heaps requested */
     size_t *heapsize;           /* array of their sizes */
 } heapinfo_t;
 
