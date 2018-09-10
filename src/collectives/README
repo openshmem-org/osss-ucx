@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 Our OpenSHMEM collectives are implemented as a thin layer on top of
 the the SHCOLL Collectives library, currently the version in:
 

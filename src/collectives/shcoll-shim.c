@@ -1,3 +1,5 @@
+# For license: see LICENSE file at top-level
+
 #include "collectives/shcoll-shim.h"
 
 /*
