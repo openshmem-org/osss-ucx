@@ -35,8 +35,8 @@ Tested with github master:
 
     SHCOLL    : https://github.com/tonycurtis/OpenSHMEM-Collective-Routines
 
-SHCOLL will eventually be bundled with the OSSS-UCX distribution to
-avoid requiring an installation extenral.
+SHCOLL is also bundled with the OSSS-UCX distribution to avoid
+requiring an external installation, and will be used by default.
 
 Sample author config
 --------------------
