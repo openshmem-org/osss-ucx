@@ -1,4 +1,4 @@
-# For license: see LICENSE file at top-level
+/* For license: see LICENSE file at top-level */
 
 #ifndef _SHMEM_SHCOLL_SHIM_H
 #define _SHMEM_SHCOLL_SHIM_H 1
