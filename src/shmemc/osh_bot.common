@@ -26,6 +26,10 @@ shmemlib_ldflags="-L$shmem_lib -Wl,-rpath -Wl,$shmem_lib"
 shmemlib_libs="-lshmem -lshmemc-ucx -lshmemu -lm"
 shmemlib_stanza="$shmemlib_ldflags $shmemlib_libs $pmixlib_stanza"
 
+#
+# find collectives library.  will either be picked up inside OSSS-UCX,
+# or require linking to external directory
+#
 shcoll_stanza="@SHCOLL_LIBS@"
 
 comms_stanza="@UCX_LIBS@"
