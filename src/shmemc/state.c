@@ -4,7 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "state.h"
+#include "thispe.h"
 
 /*
  * the PE's initial state
