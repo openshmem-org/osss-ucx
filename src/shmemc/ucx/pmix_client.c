@@ -250,6 +250,8 @@ exchange_one_rkeys_and_heaps(pmix_pdata_t *rdp,
 {
     int pe;
 
+    NO_WARN_UNUSED(hdp);
+
     for (pe = 0; pe < proc.nranks; pe += 1) {
         const int i = SHIFT(pe);
 
@@ -266,14 +268,10 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
 {
     size_t r;
     pmix_pdata_t rd;
-#ifndef ENABLE_ALIGNED_ADDRESSES
     pmix_pdata_t *hdp;
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
     PMIX_PDATA_CONSTRUCT(&rd);
-#ifndef ENABLE_ALIGNED_ADDRESSES
     PMIX_PDATA_CREATE(hdp, 2);
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
     /* global rkeys */
     exchange_all_rkeys(&rd, 0);
