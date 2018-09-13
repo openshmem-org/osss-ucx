@@ -86,10 +86,13 @@ endif # fortran
 
 if ENABLE_EXPERIMENTAL
 
-MY_SOURCES            += xputget_signal.c
-MY_SOURCES            += xshmalloc.c
-MY_SOURCES            += xwtime.c
-MY_SOURCES            += xinterop.c
+MY_SOURCES            += \
+			extensions/putget_signal.c \
+			extensions/shmalloc.c \
+			extensions/wtime.c \
+			extensions/interop.c
+
+all_cppflags          += -I$(srcdir)/extensions
 
 endif # experimental
 

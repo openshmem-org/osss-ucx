@@ -7,7 +7,7 @@
 #include "shmemc.h"
 #include "shmem/api.h"
 
-#include "xputget_signal.h"
+#include "putget_signal.h"
 
 /*
  * Extension: put/get with signal
