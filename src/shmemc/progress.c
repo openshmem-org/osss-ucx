@@ -19,14 +19,15 @@
  * new thread for progress-o-matic
  */
 
-static pthread_t thr;
+static pthread_t progress_thread;
 
 /*
- * for refractory back-off
+ * for refractory back-off (nanoseconds)
+ *
+ * N.B. mutable in case we want to look at adaptive polling
  */
 
-static long delay = 1000;      /* ns */
-static struct timespec delayspec;
+static long delay_ns = 1000;
 
 /*
  * polling sentinel
@@ -39,13 +40,13 @@ static volatile bool done = false;
  */
 
 static void *
-start_progress(void *unused)
+start_progress(void *args)
 {
-    NO_WARN_UNUSED(unused);
+    const struct timespec *tsp = (const struct timespec *) args;
 
     do {
         shmemc_progress();
-        nanosleep(&delayspec, NULL);   /* back off */
+        nanosleep(tsp, NULL);   /* back off */
     }
     while (! done);
 
@@ -60,13 +61,17 @@ void
 progress_init(void)
 {
     if (proc.env.progress_thread) {
-        delayspec.tv_sec = (time_t) 0;
-        delayspec.tv_nsec = delay;
+        struct timespec ts;
+        int s;
 
-        const int s = pthread_create(&thr, NULL,
-                                     start_progress, (void *) 0);
-        NO_WARN_UNUSED(s);
+        ts.tv_sec  = (time_t) 0;
+        ts.tv_nsec = delay_ns;
 
+        s = pthread_create(&progress_thread, NULL,
+                           start_progress, (void *) &ts);
+        shmemu_assert(s == 0,
+                      "Could not create progress thread (status = %d)",
+                      s);
     }
 }
 
@@ -78,10 +83,13 @@ void
 progress_finalize(void)
 {
     if (proc.env.progress_thread) {
+        int s;
+
         done = true;
 
-        const int s = pthread_join(thr, NULL);
-        NO_WARN_UNUSED(s);
-
+        s = pthread_join(progress_thread, NULL);
+        shmemu_assert(s == 0,
+                      "Could not terminate progress thread (status = %d)",
+                      s);
     }
 }
