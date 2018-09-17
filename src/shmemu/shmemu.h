@@ -66,10 +66,14 @@ void shmemu_timer_init(void);
 void shmemu_timer_finalize(void);
 double shmemu_timer(void);
 
+/*
+ * number manipulators
+ */
 char *shmemu_gethostname(void);
 int shmemu_parse_size(char *size_str, size_t *bytes_p);
 int shmemu_human_number(double bytes, char *buf, size_t buflen);
 char *shmemu_human_option(int v);
+int shmemu_parse_csv(char *str, size_t n, int **out);
 
 /*
  * message logging (cf. logger.c to init these)

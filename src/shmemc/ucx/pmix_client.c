@@ -288,32 +288,6 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
 
 /* -------------------------------------------------------------- */
 
-/*
- * read out the peer PE numbers
- */
-inline static void
-parse_peers(char *peerstr)
-{
-    size_t i = 0;
-    char *next;
-    const char *sep = ",";
-
-    /* parse the PE #s out of the string */
-    proc.peers = (int *) calloc(proc.npeers,
-                                sizeof(*proc.peers)); /* free at end */
-    shmemu_assert(proc.peers != NULL,
-                  "can't allocate memory for peer list");
-
-    next = strtok(peerstr, sep);
-    while (next != NULL) {
-        proc.peers[i] = (int) strtol(next, NULL, 10);
-        i += 1;
-        next = strtok(NULL, sep);
-    }
-}
-
-/* -------------------------------------------------------------- */
-
 inline static void
 make_waiter(void)
 {
@@ -442,12 +416,13 @@ shmemc_pmi_client_init(void)
                   "PMIx PE's peer count %d bigger than program %d",
                   proc.npeers, proc.nranks);
 
+    /* look for peers; leave empty if can't find them */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't find PE's peer list (s)",
-                  PMIx_Error_string(ps));
-
-    parse_peers(vp->data.string);
+    if (ps == PMIX_SUCCESS) {
+        const int s =
+            shmemu_parse_csv(vp->data.string, proc.npeers, &proc.peers);
+        shmemu_assert(s == 0, "Unable to parse peer PE numbers");
+    }
 
     make_waiter();
 }
@@ -478,10 +453,9 @@ shmemc_pmi_client_finalize(void)
         }
     }
 
-    /* clean up memory recording peer PEs */
-
     release_waiter();
 
+    /* clean up memory recording peer PEs */
     free(proc.peers);
 }
 
