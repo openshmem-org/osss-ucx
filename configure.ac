@@ -76,6 +76,7 @@ m4_include([config/m4/ucx.m4])
 m4_include([config/m4/shcoll.m4])
 
 m4_include([config/m4/confargs.m4])
+# m4_include([config/m4/progress.m4])
 
 m4_include([config/m4/ax_gcc_func_attribute.m4])
 m4_include([config/m4/attribute_checks.m4])

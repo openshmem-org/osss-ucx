@@ -9,6 +9,10 @@
 
 #include "pmi_client.h"
 
+/* TEMP */
+void progress_init(void);
+void progress_finalize(void);
+
 void
 shmemc_init(void)
 {
@@ -31,6 +35,8 @@ shmemc_init(void)
 
     shmemc_pmi_exchange_rkeys_and_heaps();
 
+    progress_init();
+
     /*
      * TODO: 2018-04-27: newest UCX has revamped AMOs, getting hangs
      * without flush here
@@ -41,6 +47,8 @@ shmemc_init(void)
 void
 shmemc_finalize(void)
 {
+    progress_finalize();
+
     shmemc_pmi_client_finalize();
 
     shmemc_ucx_finalize();

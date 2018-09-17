@@ -74,6 +74,8 @@ typedef struct env_info {
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
 
     shmemc_coll_t coll;         /* collectives */
+
+    bool progress_thread;       /* do we need to start our own? */
 } env_info_t;
 
 /*

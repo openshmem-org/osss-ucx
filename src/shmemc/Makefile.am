@@ -6,6 +6,7 @@ LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				globalexit.c \
 				locks.c \
+				progress.c \
 				readenv.c \
 				shmemc_init.c \
 				state.c

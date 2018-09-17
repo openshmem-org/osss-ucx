@@ -161,6 +161,13 @@ shmemc_env_init(void)
     if (e != NULL) {
         proc.env.coll.reduce = strdup(e);
     }
+
+    proc.env.progress_thread = false;
+
+    CHECK_ENV(e, PROGRESS_THREAD);
+    if (e != NULL) {
+        proc.env.progress_thread = option_enabled_test(e);
+    }
 }
 
 #undef CHECK_ENV
@@ -294,6 +301,12 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     DESCRIBE_COLLECTIVE(alltoall, ALLTOALL);
     DESCRIBE_COLLECTIVE(alltoalls, ALLTOALLS);
     DESCRIBE_COLLECTIVE(reduce, REDUCE);
+
+    fprintf(stream, "%s%-*s %-*s %s\n",
+            prefix,
+            var_width, "SHMEM_PROGRESS_THREAD",
+            val_width, shmemu_human_option(proc.env.progress_thread),
+            "Do we manage our own progress?");
 
     fprintf(stream, "%s\n", prefix);
     hr(stream, prefix);
