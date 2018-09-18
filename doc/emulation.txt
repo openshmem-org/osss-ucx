@@ -1,3 +1,4 @@
+
 # For license: see LICENSE file at top-level
 
 UCX Emulation
@@ -19,9 +20,8 @@ at all, will require a progress thread to service the active messages.
 
 OSSS-UCX will start its own progress threads to handle this situation
 if the environment variable SHMEM_PROGRESS_THREADS is set to either a
-list of PEs, or the case-insensitive value "all", e.g.
+list of (ranges of) PEs, or the case-insensitive value "all", e.g.
 
     $ export SHMEM_PROGRESS_THREAD=all
     $ export SHMEM_PROGRESS_THREAD=0,1,6,7
-
-(Also plan to support PE ranges.)
+    $ export SHMEM_PROGRESS_THREAD=0-3,7

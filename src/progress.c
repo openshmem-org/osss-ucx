@@ -87,11 +87,13 @@ check_if_progress_required(void)
 
     if (proc.env.progress_threads == NULL) {
         goto out;
+        /* NOT REACHED */
     }
 
     if (strncasecmp(proc.env.progress_threads, "all", 3) == 0) {
         ret = 1;
         goto out;
+        /* NOT REACHED */
     }
 
     /* strtok zaps the input string */
@@ -112,11 +114,13 @@ check_if_progress_required(void)
             if (res[i] == proc.rank) {
                 ret = 1;
                 goto out_free;
+                /* NOT REACHED */
             }
         }
     }
 
  out_free:
+    free(res);
     free(copy);
  out:
     return ret;
