@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 199309
@@ -84,7 +86,11 @@ check_if_progress_required(void)
     /* strtok zaps the input string */
     copy = strdup(proc.env.progress_threads);
     if (copy == NULL) {
-        goto out;
+        logger(LOG_FATAL,
+               "Unable to allocate memory during progress thread check: %s",
+               strerror(errno)
+               );
+        /* NOT REACHED */
     }
 
     s = shmemu_parse_csv(copy, &res, &nres);
