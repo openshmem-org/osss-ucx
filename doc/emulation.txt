@@ -3,7 +3,7 @@
 UCX Emulation
 =============
 
-Applies to: github master as of 09/17/2018.
+Applies to: UCX github master on or after 09/17/2018.
 
 When UCX is used in environments such as
 
@@ -17,8 +17,11 @@ Programs that rely on passive progress, in which PEs do not engage in
 blocking/synchronization OpenSHMEM calls for a long time, or even not
 at all, will require a progress thread to service the active messages.
 
-OSSS-UCX will start its own progress thread to handle this situation
-if the environment variable SHMEM_PROGRESS_THREAD is set to a "true"
-value, e.g.
+OSSS-UCX will start its own progress threads to handle this situation
+if the environment variable SHMEM_PROGRESS_THREADS is set to either a
+list of PEs, or the case-insensitive value "all", e.g.
 
-    $ export SHMEM_PROGRESS_THREAD=yes
+    $ export SHMEM_PROGRESS_THREAD=all
+    $ export SHMEM_PROGRESS_THREAD=0,1,6,7
+
+(Also plan to support PE ranges.)

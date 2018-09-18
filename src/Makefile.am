@@ -23,6 +23,7 @@ MY_SOURCES             = \
 				info.c \
                                 init.c \
                                 lock.c \
+				progress.c \
                                 ptr.c \
                                 putget.c \
                                 quiet.c \

@@ -419,8 +419,10 @@ shmemc_pmi_client_init(void)
     /* look for peers; leave empty if can't find them */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
     if (ps == PMIX_SUCCESS) {
+        size_t n;
         const int s =
-            shmemu_parse_csv(vp->data.string, proc.npeers, &proc.peers);
+            shmemu_parse_csv(vp->data.string, &proc.peers, &n);
+        NO_WARN_UNUSED(n);
         shmemu_assert(s == 0, "Unable to parse peer PE numbers");
     }
 

@@ -44,7 +44,7 @@ shmemc_context_fill(long options, shmemc_context_h ch)
         /* NOT REACHED */
     }
 
-    ch->creator_thread = shmemc_thread_id();
+    ch->creator_thread = threadwrap_thread_id();
 
     return 0;
 }
