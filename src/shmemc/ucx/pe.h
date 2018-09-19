@@ -1,3 +1,4 @@
+
 /* For license: see LICENSE file at top-level */
 
 #ifndef _UCP_PE_H
@@ -70,7 +71,7 @@ typedef struct shmemc_context {
 
     unsigned long id;           /* internal tracking */
 
-    shmemc_thread_t creator_thread; /* thread ID that created me */
+    threadwrap_thread_t creator_thread; /* thread ID that created me */
 
     /*
      * parsed options during creation (defaults: no)
@@ -104,7 +105,7 @@ typedef struct comms_info {
 typedef struct thread_desc {
     ucs_thread_mode_t ucx_tl;   /* UCX thread level */
     int osh_tl;                 /* corresponding OpenSHMEM thread level */
-    shmemc_thread_t invoking_thread; /* thread that called shmem_init*() */
+    threadwrap_thread_t invoking_thread; /* thread that called shmem_init*() */
 } thread_desc_t;
 
 #endif /* ! _UCP_PE_H */

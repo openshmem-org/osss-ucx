@@ -9,6 +9,7 @@
 #include "state.h"
 #include "info.h"
 #include "threading.h"
+#include "progress.h"
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
@@ -37,7 +38,7 @@
 static void
 finalize_helper(void)
 {
-    shmemc_thread_t this;
+    threadwrap_thread_t this;
 
     /* do nothing if multiple finalizes */
     if (proc.refcount < 1) {
@@ -52,13 +53,14 @@ finalize_helper(void)
     /* implicit barrier on finalize */
     shmem_barrier_all();
 
-    this = shmemc_thread_id();
+    this = threadwrap_thread_id();
     if (this != proc.td.invoking_thread) {
         logger(LOG_FINALIZE,
                "mis-match: thread %lu initialized, but %lu finalized",
                proc.td.invoking_thread, this);
     }
 
+    progress_finalize();
     shmemc_finalize();
     shmemu_finalize();
 
@@ -82,6 +84,7 @@ init_thread_helper(int requested, int *provided)
 
     shmemc_init();
     shmemu_init();
+    progress_init();
 
 #ifdef ENABLE_EXPERIMENTAL
     shmemxa_init(proc.env.heaps.nheaps);
@@ -125,7 +128,7 @@ init_thread_helper(int requested, int *provided)
         *provided = proc.td.osh_tl;
     }
 
-    proc.td.invoking_thread = shmemc_thread_id();
+    proc.td.invoking_thread = threadwrap_thread_id();
 
     if (shmemc_my_pe() == 0) {
         if (proc.env.print_version) {

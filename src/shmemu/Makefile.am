@@ -6,8 +6,11 @@ OTHER_CPPFLAGS            = -I../../include \
 				-I$(srcdir)/uthash
 
 LIBSHMEMU_SOURCES         = shmemu_init.c \
-				hostname.c fatal.c \
-				timer.c unitparse.c
+				hostname.c \
+				fatal.c \
+				parse_csv.c \
+				timer.c \
+				unitparse.c
 
 if ENABLE_LOGGING
 LIBSHMEMU_SOURCES        += deprecate.c logger.c

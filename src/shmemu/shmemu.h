@@ -66,10 +66,14 @@ void shmemu_timer_init(void);
 void shmemu_timer_finalize(void);
 double shmemu_timer(void);
 
+/*
+ * number manipulators
+ */
 char *shmemu_gethostname(void);
 int shmemu_parse_size(char *size_str, size_t *bytes_p);
 int shmemu_human_number(double bytes, char *buf, size_t buflen);
 char *shmemu_human_option(int v);
+int shmemu_parse_csv(char *str, int **out, size_t *nout);
 
 /*
  * message logging (cf. logger.c to init these)
@@ -199,10 +203,10 @@ void shmemu_deprecate_finalize(void);
             shmemc_context_h ch = (shmemc_context_h) (_ctx);            \
                                                                         \
             if (ch->attr.private) {                                     \
-                const shmemc_thread_t me = shmemc_thread_id();          \
-                const shmemc_thread_t cr = ch->creator_thread;          \
+                const threadwrap_thread_t me = threadwrap_thread_id();  \
+                const threadwrap_thread_t cr = ch->creator_thread;      \
                                                                         \
-                if (! shmemc_thread_equal(cr,  me)) {                   \
+                if (! threadwrap_thread_equal(cr,  me)) {               \
                     shmemu_fatal("In %s(), invoking thread #%d"         \
                                  " not owner thread #%d"                \
                                  "in private context #%lu",             \

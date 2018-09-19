@@ -8,6 +8,6 @@
  * This only gets used if threading enabled
  */
 
-#include "threading.h"
+#include "shmem_mutex.h"
 
-shmemc_mutex_t comms_mutex = SHMEMC_MUTEX_INITIALIZER;
+threadwrap_mutex_t comms_mutex = THREADWRAP_MUTEX_INITIALIZER;

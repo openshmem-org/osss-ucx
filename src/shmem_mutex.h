@@ -14,13 +14,13 @@
 #include "shmem/defs.h"
 #include "threading.h"
 
-extern shmemc_mutex_t comms_mutex;
+extern threadwrap_mutex_t comms_mutex;
 
 inline static void
 shmemt_mutex_init(void)
 {
     if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
-        shmemc_mutex_init(&comms_mutex);
+        threadwrap_mutex_init(&comms_mutex);
     }
 }
 
@@ -28,7 +28,7 @@ inline static void
 shmemt_mutex_destroy(void)
 {
     if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
-        shmemc_mutex_destroy(&comms_mutex);
+        threadwrap_mutex_destroy(&comms_mutex);
     }
 }
 
@@ -36,7 +36,7 @@ inline static void
 shmemt_mutex_lock(void)
 {
     if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
-        shmemc_mutex_lock(&comms_mutex);
+        threadwrap_mutex_lock(&comms_mutex);
     }
 }
 
@@ -44,15 +44,15 @@ inline static void
 shmemt_mutex_unlock(void)
 {
     if (proc.td.osh_tl == SHMEM_THREAD_MULTIPLE) {
-        shmemc_mutex_unlock(&comms_mutex);
+        threadwrap_mutex_unlock(&comms_mutex);
     }
 }
 
-#define SHMEMT_MUTEX_PROTECT(_fn)                 \
-    do {                                          \
-        shmemt_mutex_lock();                      \
-        _fn;                                      \
-        shmemt_mutex_unlock();                    \
+#define SHMEMT_MUTEX_PROTECT(_fn)               \
+    do {                                        \
+        shmemt_mutex_lock();                    \
+        _fn;                                    \
+        shmemt_mutex_unlock();                  \
     } while (0)
 
 #else

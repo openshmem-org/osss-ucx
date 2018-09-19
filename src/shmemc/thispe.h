@@ -74,6 +74,8 @@ typedef struct env_info {
     bool xpmem_kludge;       /* protect against UCX bug temporarily */
 
     shmemc_coll_t coll;         /* collectives */
+
+    char *progress_threads;     /* do we need to start our own? */
 } env_info_t;
 
 /*
@@ -101,6 +103,7 @@ typedef struct thispe_info {
     int npeers;                 /* how many peers */
     shmemc_team_t *teams;       /* PE teams we belong to */
     size_t nteams;              /* how many teams */
+    bool progress_thread;       /* PE requests progress thread */
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */
