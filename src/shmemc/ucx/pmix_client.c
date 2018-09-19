@@ -423,7 +423,7 @@ shmemc_pmi_client_init(void)
         const int s =
             shmemu_parse_csv(vp->data.string, &proc.peers, &n);
         NO_WARN_UNUSED(n);
-        shmemu_assert(s == 0, "Unable to parse peer PE numbers");
+        shmemu_assert(s > 0, "Unable to parse peer PE numbers");
     }
 
     make_waiter();

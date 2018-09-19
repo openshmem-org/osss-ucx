@@ -107,7 +107,7 @@ check_if_progress_required(void)
     }
 
     s = shmemu_parse_csv(copy, &res, &nres);
-    if (s == 0) {
+    if (s > 0) {
         size_t i;
 
         for (i = 0; i < nres; i += 1) {

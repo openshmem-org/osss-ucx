@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,18 +22,26 @@
     do {                                                            \
         (*out)[i] = _n;                                             \
         i += 1;                                                     \
-        if (i >= nnums) {                                           \
+        if (shmemu_unlikely(i >= nnums)) {                          \
             nnums += 8;                                             \
             *out = (int *) realloc(*out, nnums * sizeof(**out));    \
+            if (shmemu_unlikely(*out == NULL)) {                    \
+                return -1;                                          \
+                /* NOT REACHED */                                   \
+            }                                                       \
         }                                                           \
     } while (0)
 
-#define INTIFY(_s) (const int) strtol(_s, NULL, 10)
+inline static int
+intify(const char *s)
+{
+    return (int) strtol(s, NULL, 10);
+}
 
 /*
  * read out a comma-separated number list.
  *
- * return 0 if ok, non-0 if error
+ * return 1 if ok, 0 if error
  */
 int
 shmemu_parse_csv(char *str, int **out, size_t *nout)
@@ -44,21 +54,23 @@ shmemu_parse_csv(char *str, int **out, size_t *nout)
     regex_t range;
     regmatch_t matches[NMATCH];
 
-    if (str == NULL) {
-        return -1;
+    if (shmemu_unlikely(str == NULL)) {
+        return 0;
+        /* NOT REACHED */
+
     }
 
     s = regcomp(&range,
                 "([0-9]*)-([0-9]*)",
                 REG_EXTENDED);
-    if (s != 0) {
-        return -1;
+    if (shmemu_unlikely(s != 0)) {
+        return 0;
         /* NOT REACHED */
     }
 
     *out = (int *) malloc(nnums * sizeof(**out)); /* freed by caller */
-    if (*out == NULL) {
-        return -1;
+    if (shmemu_unlikely(*out == NULL)) {
+        return 0;
         /* NOT REACHED */
     }
 
@@ -67,15 +79,15 @@ shmemu_parse_csv(char *str, int **out, size_t *nout)
         const int s = regexec(&range, next, NMATCH, matches, 0);
 
         if (s == REG_NOMATCH) {
-            const int v = INTIFY(next);
+            const int v = intify(next);
 
             ASSIGN(v);
         }
         else {
             const int s1 = matches[1].rm_so;
             const int s2 = matches[2].rm_so;
-            const int v1 = INTIFY(&next[s1]);
-            const int v2 = INTIFY(&next[s2]);
+            const int v1 = intify(&next[s1]);
+            const int v2 = intify(&next[s2]);
             int j;
 
             for (j = v1; j <= v2; j += 1) {
@@ -89,5 +101,5 @@ shmemu_parse_csv(char *str, int **out, size_t *nout)
 
     regfree(&range);
 
-    return 0;
+    return 1;
 }
