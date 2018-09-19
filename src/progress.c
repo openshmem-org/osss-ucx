@@ -42,7 +42,7 @@ static threadwrap_thread_t thr;
  * N.B. mutable in case we want to look at adaptive polling
  */
 
-static long delay_ns = 1000;
+static volatile long delay_ns = 1000;
 
 /*
  * polling sentinel
@@ -60,12 +60,13 @@ start_progress(void *args)
     NO_WARN_UNUSED(args);
 
     do {
-        struct timespec ts;
+        const struct timespec ts = {
+            .tv_sec  = (time_t) 0,
+            .tv_nsec = delay_ns
+        };
 
         shmemc_progress();
 
-        ts.tv_sec  = (time_t) 0;
-        ts.tv_nsec = delay_ns;
         nanosleep(&ts, NULL);   /* back off */
     }
     while (! done);
@@ -96,7 +97,7 @@ check_if_progress_required(void)
         /* NOT REACHED */
     }
 
-    /* strtok zaps the input string */
+    /* shmemu_parse_csv zaps the input string */
     copy = strdup(proc.env.progress_threads);
     if (copy == NULL) {
         logger(LOG_FATAL,
@@ -140,8 +141,8 @@ progress_init(void)
 
         s = threadwrap_thread_create(&thr, start_progress, NULL);
         shmemu_assert(s == 0,
-                      "Could not create progress thread (status = %d)",
-                      s);
+                      "Could not create progress thread (%s)",
+                      strerror(s));
     }
 }
 
@@ -158,10 +159,9 @@ progress_finalize(void)
         done = true;
 
         s = threadwrap_thread_join(thr, NULL);
-
         shmemu_assert(s == 0,
-                      "Could not terminate progress thread (status = %d)",
-                      s);
+                      "Could not terminate progress thread (%s)",
+                      strerror(s));
 
     }
 }
