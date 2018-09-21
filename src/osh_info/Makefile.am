@@ -10,6 +10,3 @@ osh_info_SOURCES       = osh_info.c ../info.c
 osh_info_CPPFLAGS      = -I$(top_srcdir)/src
 osh_info_LDFLAGS       =
 osh_info_LDADD         =
-
-banana:
-	@echo CFLAGS=$(CFLAGS) LDFLAGS=$(LDFLAGS)
