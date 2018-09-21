@@ -160,17 +160,20 @@ sub zap {                       # clean up after signal
     kill TERM => $pid;
 
     $s = kill 0 => $pid;
-    return if $s != 1;
+    if ($s != 1) {
+      goto zap_out;
+    }
 
     sleep 1;
   }
   kill KILL => $pid if $s == 1;
   # maybe add extra existence check here
+ zap_out:
+  debug("launch: cleaned up process $pid");
 };
 
 sub run_app {
   debug("launch: \"$launcher @ARGV\"");
-  debug("-" x 70);
   my $pid = fork();
   die "$progname:launch: fork failed: $!" unless defined $pid;
 
@@ -183,6 +186,8 @@ sub run_app {
     exec $launcher, @ARGV;
   }
   else {                        # parent
+    debug("launch: application in process $pid");
+    debug("-" x 70);
     waitpid($pid, 0);
     $rc = $? >> 8;
     # debug("rc = $rc\n");
