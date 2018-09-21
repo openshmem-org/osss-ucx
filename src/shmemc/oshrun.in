@@ -152,11 +152,32 @@ my $is_prrte = basename($launcher) eq 'prun';
 # -- do the underlying launch of app -------------------------------------
 #
 
+sub zap {                       # clean up after signal
+  my $pid = shift;
+  my $s;
+
+  for (1 .. 2) {
+    kill TERM => $pid;
+
+    $s = kill 0 => $pid;
+    return if $s != 1;
+
+    sleep 1;
+  }
+  kill KILL => $pid if $s == 1;
+  # maybe add extra existence check here
+};
+
 sub run_app {
   debug("launch: \"$launcher @ARGV\"");
   debug("-" x 70);
   my $pid = fork();
   die "$progname:launch: fork failed: $!" unless defined $pid;
+
+  for my $sig (qw(INT QUIT)) {
+    $SIG{$sig} = sub { zap $pid; };
+  }
+
   my $rc = 0;
   if ($pid == 0) {              # child
     exec $launcher, @ARGV;
