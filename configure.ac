@@ -181,10 +181,7 @@ AC_CONFIG_FILES([
 	src/collectives/shcoll/Makefile
 	src/collectives/shcoll/src/Makefile
 	src/shmemc/Makefile
-	src/shmemc/oshcc:src/shmemc/oshcc.in:src/shmemc/osh_bot.common
-	src/shmemc/oshcxx:src/shmemc/oshcxx.in:src/shmemc/osh_bot.common
-	src/shmemc/oshfort:src/shmemc/oshfort.in:src/shmemc/osh_bot.common
-	src/shmemc/oshrun
+	src/shmemc/osh_common
 	src/shmemu/Makefile
         ])
 

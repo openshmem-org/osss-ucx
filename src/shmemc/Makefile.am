@@ -91,3 +91,25 @@ uninstall-local:	uninstall-cxx-alt uninstall-run-alt
 # and install these
 #
 bin_SCRIPTS               = $(MY_WRAPPERS)
+
+#
+# to build wrapper scripts
+#
+
+COMPILER_SED_SCRIPT = 's%\@PTHREAD_CC\@%@PTHREAD_CC@%g'
+
+oshcc:	oshcc.in	osh_common
+	cat $^ | sed -e $(COMPILER_SED_SCRIPT) > $@
+
+if ENABLE_CXX
+oshcxx:	oshcxx.in	osh_common
+	cat $^ > $@
+endif # c++
+
+if ENABLE_FORTRAN
+oshfort:	oshfort.in	osh_common
+	cat $^ > $@
+endif # fortran
+
+oshrun:	oshrun.in
+	sed -e 's%\@SHMEM_LAUNCHER\@%@SHMEM_LAUNCHER@%g' < $^ > $@
