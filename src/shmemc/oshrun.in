@@ -288,7 +288,7 @@ sub prrte_launch {
     warn "$progname: internal error at line " .
       __LINE__ .
       ", should not be here";
-    return 11;
+    return 1;
   }
 }
 
