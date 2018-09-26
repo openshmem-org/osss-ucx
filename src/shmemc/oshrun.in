@@ -158,6 +158,7 @@ sub zap {                       # clean up after signal
 
   for (1 .. 2) {
     kill TERM => $pid;
+    debug("launch: signalled termination to $pid");
 
     $s = kill 0 => $pid;
     if ($s != 1) {
@@ -167,6 +168,7 @@ sub zap {                       # clean up after signal
     sleep 1;
   }
   kill KILL => $pid if $s == 1;
+  debug("launch: signalled kill to $pid");
   # maybe add extra existence check here
  zap_out:
   debug("launch: cleaned up process $pid");
@@ -237,7 +239,7 @@ sub prrte_shutdown {
   my $killed = waitpid($prte_pid, 0);
 
   if ($killed == $prte_pid) {
-    debug("prrte: pid $prte_pid shut down");
+    debug("prrte: process $prte_pid shut down");
   }
   else {
     die "$progname:$prte_pid: couldn't kill PRRTE starter: $!";
@@ -286,7 +288,7 @@ sub prrte_launch {
     warn "$progname: internal error at line " .
       __LINE__ .
       ", should not be here";
-    return 11;
+    return 1;
   }
 }
 

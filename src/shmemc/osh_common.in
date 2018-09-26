@@ -14,11 +14,11 @@ EOF
     exit 1
 fi
 
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-shmem_dir=@prefix@
-shmem_include=@includedir@
-shmem_lib=@libdir@
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+shmem_dir="@prefix@"
+shmem_include="@includedir@"
+shmem_lib="@libdir@"
 
 pmixlib_stanza="@PMIX_LIBS@"
 

@@ -35,7 +35,7 @@ shmemc_init(void)
      * TODO: 2018-04-27: newest UCX has revamped AMOs, getting hangs
      * without flush here
      */
-    shmemc_quiet();
+    /* shmemc_quiet(); */
 }
 
 void
