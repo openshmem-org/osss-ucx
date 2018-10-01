@@ -30,12 +30,6 @@ shmemc_init(void)
     shmemc_pmi_publish_rkeys_and_heaps();
 
     shmemc_pmi_exchange_rkeys_and_heaps();
-
-    /*
-     * TODO: 2018-04-27: newest UCX has revamped AMOs, getting hangs
-     * without flush here
-     */
-    /* shmemc_quiet(); */
 }
 
 void
