@@ -258,7 +258,7 @@ SHMEMC_CTX_WAIT_UNTIL(64, ge)
 /*
  * -- Context management -----------------------------------------------------
  *
- * int functions return 0 for success, non-zero otherwise
+ * int functions return 1 for success, 0 for failure
  */
 
 int shmemc_context_create(long options, shmem_ctx_t *ctxp);
