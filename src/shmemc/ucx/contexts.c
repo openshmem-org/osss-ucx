@@ -13,7 +13,7 @@
 /*
  * fill in context
  *
- * Return 0 on success, 1 on failure
+ * Return  on success, 0 on failure
  */
 
 int
@@ -40,13 +40,13 @@ shmemc_context_fill(long options, shmemc_context_h ch)
 
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(ch->w));
     if (shmemu_unlikely(s != UCS_OK)) {
-        return 1;
+        return 0;
         /* NOT REACHED */
     }
 
     ch->creator_thread = threadwrap_thread_id();
 
-    return 0;
+    return 1;
 }
 
 /*
