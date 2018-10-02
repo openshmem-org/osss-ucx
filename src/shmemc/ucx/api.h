@@ -30,6 +30,6 @@ void shmemc_ucx_make_remote_endpoints(void);
  * see if emulation is being used
  */
 
-int shmemc_ucx_emulation_query(void);
+int shmemc_ucx_emulation_used(void);
 
 #endif /* ! _SHMEMC_UCX_H */

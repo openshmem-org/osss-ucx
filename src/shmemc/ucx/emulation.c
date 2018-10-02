@@ -10,7 +10,7 @@
 #include <ucp/api/ucp.h>
 
 int
-shmemc_ucx_emulation_query(void)
+shmemc_ucx_emulation_used(void)
 {
 #ifdef UCP_WORKER_ATTR_FIELD_EMULATION_MODE
     ucs_status_t s;
