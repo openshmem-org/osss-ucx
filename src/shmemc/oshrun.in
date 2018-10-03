@@ -161,11 +161,11 @@ sub zap {                       # clean up after signal
     debug("launch: signalled termination to $pid");
 
     $s = kill 0 => $pid;
-    if ($s != 1) {
+    sleep 1;
+
+    if ($s == 1) {              # got it!
       goto zap_out;
     }
-
-    sleep 1;
   }
   kill KILL => $pid if $s == 1;
   debug("launch: signalled kill to $pid");
