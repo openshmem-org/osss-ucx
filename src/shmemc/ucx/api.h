@@ -26,10 +26,4 @@ void shmemc_ucx_finalize(void);
 
 void shmemc_ucx_make_remote_endpoints(void);
 
-/*
- * see if emulation is being used
- */
-
-int shmemc_ucx_progress_needed(void);
-
 #endif /* ! _SHMEMC_UCX_H */
