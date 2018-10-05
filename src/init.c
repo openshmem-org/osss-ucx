@@ -50,9 +50,6 @@ finalize_helper(void)
            __func__
            );
 
-    /* implicit barrier on finalize */
-    shmem_barrier_all();
-
     this = threadwrap_thread_id();
     if (this != proc.td.invoking_thread) {
         logger(LOG_FINALIZE,
@@ -60,8 +57,11 @@ finalize_helper(void)
                proc.td.invoking_thread, this);
     }
 
-    progress_finalize();
+    /* implicit barrier on finalize */
+    shmem_barrier_all();
+
     shmemc_finalize();
+    progress_finalize();
     shmemu_finalize();
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -82,7 +82,9 @@ init_thread_helper(int requested, int *provided)
         return 0;
     }
 
+    /* set up comms, read environment */
     shmemc_init();
+    /* utiltiies */
     shmemu_init();
     progress_init();
 
@@ -172,24 +174,4 @@ void
 shmem_init(void)
 {
     (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
-}
-
-/*
- * deprecated
- */
-
-#ifdef ENABLE_PSHMEM
-#pragma weak start_pes = pstart_pes
-#define start_pes pstart_pes
-#endif /* ENABLE_PSHMEM */
-
-void
-start_pes(int n)
-{
-    NO_WARN_UNUSED(n);
-
-    shmem_init();
-
-    /* can't tell anyone until init has really happened */
-    deprecate(__func__, 1, 2);
 }

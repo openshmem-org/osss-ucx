@@ -49,10 +49,10 @@ static khash_t(events_hash) *events;
 inline static void
 event_set(shmemu_log_t name, bool state)
 {
-    int nocheck;
     khiter_t k;
+    int ret;
 
-    k = kh_put(events_hash, events, name, &nocheck);
+    k = kh_put(events_hash, events, name, &ret);
     kh_value(events, k) = state;
 }
 

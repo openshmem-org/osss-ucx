@@ -383,6 +383,7 @@ shmemc_ucx_make_remote_endpoints(void)
     }
 }
 
+
 /*
  * Barrier config
  */
