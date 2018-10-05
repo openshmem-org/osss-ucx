@@ -29,6 +29,7 @@ MY_SOURCES             = \
                                 quiet.c \
 				ranks.c  \
                                 shmalloc.c \
+				test.c \
 				tl_query.c \
                                 version.c \
                                 waituntil.c
