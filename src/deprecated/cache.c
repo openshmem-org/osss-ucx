@@ -30,16 +30,19 @@
  * Compatibility no-op cache routines
  */
 
+static const int major = 1;
+static const int minor = 3;
+
 void
 shmem_set_cache_inv(void)
 {
-    deprecate(__func__, 1, 3);
+    deprecate(__func__, major, minor);
 }
 
 void
 shmem_clear_cache_inv(void)
 {
-    deprecate(__func__, 1, 3);
+    deprecate(__func__, major, minor);
 }
 
 void
@@ -47,7 +50,7 @@ shmem_set_cache_line_inv(void *target)
 {
     NO_WARN_UNUSED(target);
 
-    deprecate(__func__, 1, 3);
+    deprecate(__func__, major, minor);
 }
 
 void
@@ -55,13 +58,13 @@ shmem_clear_cache_line_inv(void *target)
 {
     NO_WARN_UNUSED(target);
 
-    deprecate(__func__, 1, 3);
+    deprecate(__func__, major, minor);
 }
 
 void
 shmem_udcflush(void)
 {
-    deprecate(__func__, 1, 3);
+    deprecate(__func__, major, minor);
 }
 
 void
@@ -69,5 +72,5 @@ shmem_udcflush_line(void *target)
 {
     NO_WARN_UNUSED(target);
 
-    deprecate(__func__, 1, 3);
+    deprecate(__func__, major, minor);
 }

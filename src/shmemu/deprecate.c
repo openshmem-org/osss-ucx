@@ -5,10 +5,11 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "boolean.h"
 
 #include "klib/khash.h"
 
-KHASH_SET_INIT_STR(deprecations)
+KHASH_MAP_INIT_STR(deprecations, bool)
 
 static khash_t(deprecations) *table;
 
@@ -22,14 +23,26 @@ static khash_t(deprecations) *table;
 void
 shmemu_deprecate(const char *fn_name, int maj, int min)
 {
-    int absent;
+    khiter_t k;
+    int ret;
 
-    (void) kh_put(deprecations, table, fn_name, &absent);
-
-    if (shmemu_likely(absent) == 0) {
+    /* already there? */
+    k = kh_get(deprecations, table, fn_name);
+    if (k != kh_end(table)) {
         return;
         /* NOT REACHED */
     }
+
+    k = kh_put(deprecations, table, fn_name, &ret);
+
+    if (ret != 0) {
+        logger(LOG_FATAL,
+               "failed to insert \"%s\" into deprecations table",
+               fn_name);
+        /* NOT REACHED */
+    }
+
+    kh_value(table, k) = true;
 
     logger(LOG_DEPRECATE,
            "\"%s\" is deprecated as of specification %d.%d",

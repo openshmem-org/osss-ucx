@@ -15,24 +15,31 @@ MY_INCLUDE             = -I../include -I$(top_srcdir)/include
 all_cppflags           = $(shmemc_cppflags) $(shmemu_cppflags) $(MY_INCLUDE)
 
 MY_SOURCES             = \
-                                accessible.c \
-                                atomics.c \
-                                cache.c \
+				accessible.c \
+				atomics.c \
 				contexts.c \
-                                globalexit.c \
+				globalexit.c \
 				info.c \
-                                init.c \
-                                lock.c \
+				init.c \
+				lock.c \
 				progress.c \
-                                ptr.c \
-                                putget.c \
-                                quiet.c \
-				ranks.c  \
-                                shmalloc.c \
+				ptr.c \
+				putget.c \
+				quiet.c \
+				ranks.c	 \
+				shmalloc.c \
 				test.c \
 				tl_query.c \
-                                version.c \
-                                waituntil.c
+				version.c \
+				waituntil.c
+
+MY_SOURCES            += \
+			deprecated/atomics.c \
+			deprecated/cache.c \
+			deprecated/init.c \
+			deprecated/ranks.c \
+			deprecated/shmalloc.c \
+			deprecated/waituntil.c
 
 SUBDIRS                = $(shmemu_dir) $(shmemc_dir) osh_info
 
@@ -83,7 +90,7 @@ noinst_LIBRARIES       = liballocator.a
 noinst_LTLIBRARIES     = liballocator.la
 
 if ENABLE_FORTRAN
-MY_SOURCES            += fortran.c
+MY_SOURCES            += deprecated/fortran.c
 endif # fortran
 
 if ENABLE_EXPERIMENTAL
