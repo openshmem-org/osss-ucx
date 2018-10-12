@@ -24,14 +24,14 @@
  *
  */
 
-static const int major = 1;
-static const int minor = 4;
+#define MAJOR 1
+#define MINOR 4
 
 #define SHMEM_DEPRECATE_VOID_AMO1(_op, _name, _type, _size) \
     void                                                    \
     shmem_##_name##_##_op(_type *target, int pe)            \
     {                                                       \
-        deprecate(__func__, major, minor);                  \
+        deprecate(__func__, MAJOR, MINOR);                  \
         shmemc_##_op##_size(target, pe);                    \
     }
 
@@ -39,7 +39,7 @@ static const int minor = 4;
     void                                                        \
     shmem_##_name##_##_op(_type *target, _type value, int pe)   \
     {                                                           \
-        deprecate(__func__, major, minor);                      \
+        deprecate(__func__, MAJOR, MINOR);                      \
         shmemc_##_op##_size(target, value, pe);                 \
     }
 
@@ -49,7 +49,7 @@ static const int minor = 4;
                           _type cond, _type value,          \
                           int pe)                           \
     {                                                       \
-        deprecate(__func__, major, minor);                  \
+        deprecate(__func__, MAJOR, MINOR);                  \
         shmemc_##_op##_size(target, cond, value, pe);       \
     }
 
@@ -57,7 +57,7 @@ static const int minor = 4;
     _type                                               \
     shmem_##_name##_##_op(_type *target, int pe)        \
     {                                                   \
-        deprecate(__func__, major, minor);              \
+        deprecate(__func__, MAJOR, MINOR);              \
         return shmemc_##_op##_size(target, pe);         \
     }
 
@@ -65,7 +65,7 @@ static const int minor = 4;
     _type                                                       \
     shmem_##_name##_##_op(_type *target, _type value, int pe)   \
     {                                                           \
-        deprecate(__func__, major, minor);                      \
+        deprecate(__func__, MAJOR, MINOR);                      \
         return shmemc_##_op##_size(target, value, pe);          \
     }
 
@@ -75,7 +75,7 @@ static const int minor = 4;
                           _type cond, _type value,              \
                           int pe)                               \
     {                                                           \
-        deprecate(__func__, major, minor);                      \
+        deprecate(__func__, MAJOR, MINOR);                      \
         return shmemc_##_op##_size(target, cond, value, pe);    \
     }
 
