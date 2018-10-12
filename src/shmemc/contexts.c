@@ -74,7 +74,7 @@ register_context_run(shmemc_context_h ch)
                         spill_ctxt * sizeof(*(proc.comms.ctxts)));
 
             if (shmemu_unlikely(proc.comms.ctxts == NULL)) {
-                return 0;
+                return 1;
                 /* NOT REACHED */
             }
         }
@@ -94,13 +94,13 @@ register_context_run(shmemc_context_h ch)
     ch->id = next;
     proc.comms.ctxts[next] = ch;
 
-    return 1;
+    return 0;
 }
 
 /*
  * insert context into PE state
  *
- * Return 1 on success, 0 on failure
+ * Return 0 on success, non-0 on failure
  */
 
 inline static int
@@ -127,7 +127,7 @@ context_deregister(shmemc_context_h ch)
 /*
  * create new context
  *
- * Return 1 on success, 0 on failure
+ * Return 0 on success, non-zero on failure
  */
 
 int
@@ -138,23 +138,25 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 
     ch = (shmemc_context_h) malloc(sizeof(*ch));
     if (ch == NULL) {
-        return 0;     /* fail if no memory free for new context */
+        return 1;     /* fail if no memory free for new context */
         /* NOT REACHED */
     }
 
     n = shmemc_context_fill(options, ch);
-    if (shmemu_likely(n != 0)) {
-        if (shmemu_unlikely(context_register(ch) == 0)) {
-            return 0;
+    if (shmemu_likely(n == 0)) {
+        n = context_register(ch);
+        if (shmemu_unlikely(n != 0)) {
+            return 1;
             /* NOT REACHED */
         }
+
         *ctxp = (shmem_ctx_t) ch;
     }
     else {
         free(ch);
     }
 
-    return n;
+    return 0;
 }
 
 /*
@@ -205,7 +207,7 @@ shmemc_context_id(shmem_ctx_t ctx)
  * the first, default, context gets a special SHMEM handle, also needs
  * address exchange through PMI, so we give it its own routine
  *
- * Return 1 if successful, 0 otherwise
+ * Return 0 if successful, non-0 otherwise
  */
 shmemc_context_t shmemc_default_context;
 
@@ -217,8 +219,8 @@ shmemc_init_default_context(void)
     const long default_options = 0L;
 
     n = shmemc_context_fill(default_options, ch);
-    if (shmemu_unlikely(n == 0)) {
-        return n;
+    if (shmemu_unlikely(n != 0)) {
+        return 1;
         /* NOT REACHED */
     }
 
