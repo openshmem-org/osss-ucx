@@ -1543,12 +1543,12 @@ extern "C"
     /**
      * @brief These routines perform an atomic "or" operation
      * between a data value and the target data object.
-     * @page shmem_ulong_atomic_or
+     * @page shmem_long_atomic_or
      * @section Synopsis
      *
      * - C/C++:
      * @code
-     void shmem_ulong_atomic_or(unsigned long *dest, unsigned long value, int pe);
+     void shmem_long_atomic_or(long *dest, long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -1579,30 +1579,33 @@ extern "C"
      * None.
      *
      */
+    SHMEM_DECL_VOID_AMO2(or, long, long)
+
+    /* see \ref shmem_long_atomic_or() */
     SHMEM_DECL_VOID_AMO2(or, ulong, unsigned long)
-    /* see \ref shmem_ulong_atomic_or() */
+    /* see \ref shmem_long_atomic_or() */
     SHMEM_DECL_VOID_AMO2(or, uint, unsigned int)
-    /* see \ref shmem_ulong_atomic_or() */
+    /* see \ref shmem_long_atomic_or() */
     SHMEM_DECL_VOID_AMO2(or, ulonglong, unsigned long long)
-    /* see \ref shmem_ulong_atomic_or() */
+    /* see \ref shmem_long_atomic_or() */
     SHMEM_DECL_VOID_AMO2(or, int32, int32_t)
-    /* see \ref shmem_ulong_atomic_or() */
+    /* see \ref shmem_long_atomic_or() */
     SHMEM_DECL_VOID_AMO2(or, int64, int64_t)
-    /* see \ref shmem_ulong_atomic_or() */
+    /* see \ref shmem_long_atomic_or() */
     SHMEM_DECL_VOID_AMO2(or, uint32, uint32_t)
-    /* see \ref shmem_ulong_atomic_or() */
+    /* see \ref shmem_long_atomic_or() */
     SHMEM_DECL_VOID_AMO2(or, uint64, uint64_t)
 
     /**
      * @brief These routines perform an atomic "or"
      * operation between a data value and the target data object and
      * return the former remote value.
-     * @page shmem_ulong_atomic_fetch_or
+     * @page shmem_long_atomic_fetch_or
      * @section Synopsis
      *
      * - C/C++:
      * @code
-     unsigned long shmem_ulong_atomic_fetch_or(unsigned long *dest, unsigned long value, int pe);
+     long shmem_long_atomic_fetch_or(long *dest, long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -1633,29 +1636,32 @@ extern "C"
      * Value stored previously in remote location.
      *
      */
+    SHMEM_DECL_AMO2(fetch_or, long, long)
+
+    /* see \ref shmem_long_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, ulong, unsigned long)
-    /* see \ref shmem_ulong_atomic_fetch_or() */
+    /* see \ref shmem_long_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, uint, unsigned int)
-    /* see \ref shmem_ulong_atomic_fetch_or() */
+    /* see \ref shmem_long_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, ulonglong, unsigned long long)
-    /* see \ref shmem_ulong_atomic_fetch_or() */
+    /* see \ref shmem_long_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, int32, int32_t)
-    /* see \ref shmem_ulong_atomic_fetch_or() */
+    /* see \ref shmem_long_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, int64, int64_t)
-    /* see \ref shmem_ulong_atomic_fetch_or() */
+    /* see \ref shmem_long_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, uint32, uint32_t)
-    /* see \ref shmem_ulong_atomic_fetch_or() */
+    /* see \ref shmem_long_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, uint64, uint64_t)
 
     /**
      * @brief These routines perform an atomic "and" operation
      * between a data value and the target data object.
-     * @page shmem_ulong_atomic_and
+     * @page shmem_long_atomic_and
      * @section Synopsis
      *
      * - C/C++:
      * @code
-     void shmem_ulong_atomic_and(unsigned long *dest, unsigned long value, int pe);
+     void shmem_long_atomic_and(long *dest, long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -1686,18 +1692,21 @@ extern "C"
      * None.
      *
      */
+    SHMEM_DECL_VOID_AMO2(and, long, long)
+
+    /* see \ref shmem_long_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, ulong, unsigned long)
-    /* see \ref shmem_ulong_atomic_and() */
+    /* see \ref shmem_long_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, uint, unsigned int)
-    /* see \ref shmem_ulong_atomic_and() */
+    /* see \ref shmem_long_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, ulonglong, unsigned long long)
-    /* see \ref shmem_ulong_atomic_and() */
+    /* see \ref shmem_long_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, int32, int32_t)
-    /* see \ref shmem_ulong_atomic_and() */
+    /* see \ref shmem_long_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, int64, int64_t)
-    /* see \ref shmem_ulong_atomic_and() */
+    /* see \ref shmem_long_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, uint32, uint32_t)
-    /* see \ref shmem_ulong_atomic_and() */
+    /* see \ref shmem_long_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, uint64, uint64_t)
 
     /**
@@ -1709,7 +1718,7 @@ extern "C"
      *
      * - C/C++:
      * @code
-     unsigned long shmem_ulong_atomic_fetch_and(unsigned long *dest, unsigned long value, int pe);
+     long shmem_long_atomic_fetch_and(long *dest, long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -1740,29 +1749,32 @@ extern "C"
      * Value stored previously in remote location.
      *
      */
+    SHMEM_DECL_AMO2(fetch_and, long, long)
+
+    /* see \ref shmem_long_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, ulong, unsigned long)
-    /* see \ref shmem_ulong_atomic_fetch_and() */
+    /* see \ref shmem_long_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, uint, unsigned int)
-    /* see \ref shmem_ulong_atomic_fetch_and() */
+    /* see \ref shmem_long_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, ulonglong, unsigned long long)
-    /* see \ref shmem_ulong_atomic_fetch_and() */
+    /* see \ref shmem_long_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, int32, int32_t)
-    /* see \ref shmem_ulong_atomic_fetch_and() */
+    /* see \ref shmem_long_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, int64, int64_t)
-    /* see \ref shmem_ulong_atomic_fetch_and() */
+    /* see \ref shmem_long_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, uint32, uint32_t)
-    /* see \ref shmem_ulong_atomic_fetch_and() */
+    /* see \ref shmem_long_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, uint64, uint64_t)
 
     /**
      * @brief These routines perform an atomic "xor" operation
      * between a data value and the target data object.
-     * @page shmem_ulong_atomic_xor
+     * @page shmem_long_atomic_xor
      * @section Synopsis
      *
      * - C/C++:
      * @code
-     void shmem_ulong_atomic_xor(unsigned long *dest, unsigned long value, int pe);
+     void shmem_long_atomic_xor(long *dest, long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -1793,30 +1805,33 @@ extern "C"
      * None.
      *
      */
+    SHMEM_DECL_VOID_AMO2(xor, long, long)
+
+    /* see \ref shmem_long_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, ulong, unsigned long)
-    /* see \ref shmem_ulong_atomic_xor() */
+    /* see \ref shmem_long_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, uint, unsigned int)
-    /* see \ref shmem_ulong_atomic_xor() */
+    /* see \ref shmem_long_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, ulonglong, unsigned long long)
-    /* see \ref shmem_ulong_atomic_xor() */
+    /* see \ref shmem_long_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, int32, int32_t)
-    /* see \ref shmem_ulong_atomic_xor() */
+    /* see \ref shmem_long_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, int64, int64_t)
-    /* see \ref shmem_ulong_atomic_xor() */
+    /* see \ref shmem_long_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, uint32, uint32_t)
-    /* see \ref shmem_ulong_atomic_xor() */
+    /* see \ref shmem_long_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, uint64, uint64_t)
 
     /**
      * @brief These routines perform an atomic "xor"
      * operation between a data value and the target data object and
      * return the former remote value.
-     * @page shmem_ulong_atomic_fetch_xor
+     * @page shmem_long_atomic_fetch_xor
      * @section Synopsis
      *
      * - C/C++:
      * @code
-     unsigned long shmem_ulong_atomic_fetch_xor(unsigned long *dest, unsigned long value, int pe);
+     long shmem_long_atomic_fetch_xor(long *dest, long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -1848,18 +1863,19 @@ extern "C"
      * Value stored previously in remote location.
      *
      */
-    SHMEM_DECL_AMO2(fetch_xor, ulong, unsigned long)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, long, long)
+
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint, unsigned int)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, ulonglong, unsigned long long)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, int32, int32_t)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, int64, int64_t)
-   /* see \ref shmem_ulong_atomic_fetch_xor() */
+   /* see \ref shmem_uong_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint32, uint32_t)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint64, uint64_t)
 
     /**
@@ -2013,12 +2029,12 @@ extern "C"
     /**
      * @brief These routines perform an atomic set of a variable on a
      * remote PE
-     * @page shmem_ulong_atomic_fetch_xor
+     * @page shmem_long_atomic_fetch_xor
      * @section Synopsis
      *
      * - C/C++:
      * @code
-     unsigned long shmem_ulong_atomic_fetch_xor(unsigned long *dest, unsigned long value, int pe);
+     long shmem_ulong_atomic_fetch_xor(long *dest, long value, int pe);
      * @endcode
      *
      * @param dest    Address of the symmetric data object where to save
@@ -2050,18 +2066,21 @@ extern "C"
      * Value stored previously in remote location.
      *
      */
+    SHMEM_DECL_AMO2(fetch_xor, long, long)
+
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, ulong, unsigned long)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint, unsigned int)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, ulonglong, unsigned long long)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, int32, int32_t)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, int64, int64_t)
-   /* see \ref shmem_ulong_atomic_fetch_xor() */
+   /* see \ref shmem_uong_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint32, uint32_t)
-    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    /* see \ref shmem_long_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint64, uint64_t)
 
     /**
