@@ -6,13 +6,18 @@
 #include "shmem/defs.h"
 #include "shmem/depr.h"
 
-    /**
-     * cache flushing(deprecated)
-     */
+/**
+ * cache flushing(deprecated)
+ */
 
-    /*
+#ifdef __cplusplus
+extern "C"
+{
+#endif  /* __cplusplus */
+
+    /**
      * @brief shmem_clear_cache_inv has no effect.
-     *
+     * @page shmem_clear_cache_inv
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -22,24 +27,26 @@
      *
      * @subsection f Fortran
      @code
-     CALL SHMEM_CLEAR_CACHE_INV()
+     CALL SHMEM_CLEAR_CACHE_INV
      @endcode
      *
      * @section Effect
      *
      * None.
      *
-     * @deprecated Included for legacy use only, these calls have no
+     * @section Deprecated
+     * Included for legacy use only, these calls have no
      * effect in OpenSHMEM.
      *
-     * @return None.
+     * @section Return
+     * None.
      *
      */
     void shmem_clear_cache_inv(void) _DEPRECATED;
 
-    /*
+    /**
      * @brief shmem_set_cache_inv has no effect.
-     *
+     * @page shmem_set_cache_inv
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -49,24 +56,26 @@
      *
      * @subsection f Fortran
      @code
-     CALL SHMEM_SET_CACHE_INV()
+     CALL SHMEM_SET_CACHE_INV
      @endcode
      *
      * @section Effect
      *
-     * None.  Included for legacy use only, these calls have no
+     * None.
+     *
+     * @section Deprecated
+     * Included for legacy use only, these calls have no
      * effect in OpenSHMEM.
      *
-     * @deprecated Included for legacy use only.
-     *
-     * @return None.
+     * @section Return
+     * None.
      *
      */
     void shmem_set_cache_inv(void) _DEPRECATED;
 
-    /*
+    /**
      * @brief shmem_clear_cache_line_inv has no effect.
-     *
+     * @page shmem_clear_cache_line_inv
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -85,17 +94,19 @@
      *
      * None.
      *
-     * @deprecated Included for legacy use only, these calls have no
+     * @section Deprecated
+     * Included for legacy use only, these calls have no
      * effect in OpenSHMEM.
      *
-     * @return None.
+     * @section Return
+     * None.
      *
      */
     void shmem_clear_cache_line_inv(void *target) _DEPRECATED;
 
-    /*
+    /**
      * @brief shmem_set_cache_line_inv has no effect.
-     *
+     * @page shmem_set_cache_line_inv
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -114,17 +125,19 @@
      *
      * None.
      *
-     * @deprecated Included for legacy use only, these calls have no
+     * @section Deprecated
+     * Included for legacy use only, these calls have no
      * effect in OpenSHMEM.
      *
-     * @return None.
+     * @section Return
+     * None.
      *
      */
     void shmem_set_cache_line_inv(void *target) _DEPRECATED;
 
-    /*
+    /**
      * @brief shmem_udcflush has no effect.
-     *
+     * @page shmem_udcflush
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -134,24 +147,26 @@
      *
      * @subsection f Fortran
      @code
-     CALL SHMEM_UDCFLUSH()
+     CALL SHMEM_UDCFLUSH
      @endcode
      *
      * @section Effect
      *
      * None.
      *
-     * @deprecated Included for legacy use only, these calls have no
+     * @section Deprecated
+     * Included for legacy use only, these calls have no
      * effect in OpenSHMEM.
      *
-     * @return None.
+     * @section Return
+     * None.
      *
      */
     void shmem_udcflush(void) _DEPRECATED;
 
-    /*
+    /**
      * @brief shmem_udcflush_line has no effect.
-     *
+     * @page shmem_udcflush_line
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -170,12 +185,18 @@
      *
      * None.
      *
-     * @deprecated Included for legacy use only, these calls have no
+     * @section Deprecated
+     * Included for legacy use only, these calls have no
      * effect in OpenSHMEM.
      *
-     * @return None.
+     * @section Return
+     * None.
      *
      */
     void shmem_udcflush_line(void *target) _DEPRECATED;
+
+#ifdef __cplusplus
+}
+#endif  /* __cplusplus */
 
 #endif  /* ! _SHMEM_CACHE_H */
