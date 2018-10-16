@@ -2496,7 +2496,61 @@ extern "C"
      *
      */
 
+    /**
+     * @brief creates a new context
+     * @page shmem_ctx_create
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     int shmem_ctx_create(long options, shmem_ctx_t *ctxp);
+     @endcode
+     *
+     * @param[in] options how to create this context
+     * @param[out] ctxp pointer to the newly created context
+     *
+     * @section Effect
+     *
+     * creates a new communication context and returns
+     * its handle through the ctx argument.
+     *
+     * @section Options
+     *
+     * bitwise-or of SHMEM_CTX_SERIALIZED, SHMEM_CTX_PRIVATE,
+     * SHMEM_CTX_NOSTORE, or zero for no special options.
+     *
+     * @section Return
+     *
+     * Zero on success, non-zero otherwise
+     *
+     */
     int shmem_ctx_create(long options, shmem_ctx_t *ctxp);
+
+    /**
+     * @brief creates a new context
+     * @page shmem_ctx_destroy
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_ctx_destroy(shmem_ctx_t ctx);
+     @endcode
+     *
+     * @param[in] ctx an existing context
+     *
+     * @section Effect
+     *
+     * destroys a context that was created by a call to shmem_ctx_create.
+     *
+     * @section Notes
+     *
+     * it is illegal to pass the default context SHMEM_CTX_DEFAULT to
+     * this routine.
+     *
+     * @section Return
+     * None.
+     *
+     */
     void shmem_ctx_destroy(shmem_ctx_t ctx);
 
     /*
