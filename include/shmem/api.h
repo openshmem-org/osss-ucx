@@ -1077,7 +1077,7 @@ extern "C"
      * to "size" bytes.
      *
      * @section Return
-     *( a pointer to the resized area, or NULL if this is not
+     * a pointer to the resized area, or NULL if this is not
      * possible.
      *
      */
@@ -1091,7 +1091,7 @@ extern "C"
 
     /**
      * @brief test for symmetric variable to change value
-     *
+     * @page shmem_long_test
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1108,7 +1108,8 @@ extern "C"
      *
      * ivar may be updated by another PE
      *
-     * @section Return 1 if the comparison is true, 0 if not
+     * @section Return
+     * 1 if the comparison is true, 0 if not
      *
      */
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, longdouble, long double)
@@ -1137,7 +1138,7 @@ extern "C"
     /**
      * @brief wait for a symmetric variable to change value with
      *        specified condition
-     *
+     * @page shmmem_long_wait_until
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1186,7 +1187,7 @@ extern "C"
 
     /**
      * @brief wait for symmetric variable to change value
-     *
+     * @page shmem_long_wait
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1206,7 +1207,8 @@ extern "C"
      * @section Return
      * None.
      *
-     * @section Deprecated by by shmem_long_wait_until
+     * @section Deprecated
+     * by \ref shmem_long_wait_until
      *
      */
 #define API_DECL_WAIT(_name, _type)                                     \
@@ -1245,7 +1247,7 @@ extern "C"
 
     /**
      * @brief swap value into symmetric variable, fetch back old value
-     *
+     * @page shmem_long_atomic_swap
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1307,7 +1309,7 @@ extern "C"
     /**
      * @brief conditionally swap value into symmetric variable, fetch
      * back old value
-     *
+     * @page shmem_long_atomic_compare_swap
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1375,9 +1377,9 @@ extern "C"
      * atomic fetch-{add,inc} & add,inc
      */
 
-    /*
+    /**
      * @brief add value to symmetric variable, fetch back old value
-     *
+     * @page shmem_long_atomic_fetch_add
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1430,9 +1432,9 @@ extern "C"
                                   int pe)
         _DEPRECATED_BY(shmem_longlong_atomic_fetch_add) _WUR;
 
-    /*
+    /**
      * @brief increment symmetric variable, fetch back old value
-     *
+     * @page shmem_long_atomic_fetch_inc
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1484,9 +1486,9 @@ extern "C"
     long long shmem_longlong_finc(long long *target, int pe)
         _DEPRECATED_BY(shmem_longlong_atomic_fetch_inc) _WUR;
 
-    /*
+    /**
      * @brief add value to symmetric variable
-     *
+     * @page shmem_long_atomic_add
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1541,8 +1543,8 @@ extern "C"
     /**
      * @brief These routines perform an atomic "or" operation
      * between a data value and the target data object.
-     *
-     * @b Synopsis:
+     * @page shmem_ulong_atomic_or
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -1557,7 +1559,7 @@ extern "C"
      *                which dest is to be updated. If you are using Fortran,
      *                it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in
      *        the Synopsis section.
@@ -1566,7 +1568,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic or routines perform a bitwise or-operation between
      * value and the data at address dest on PE pe. The operation must
@@ -1595,8 +1597,8 @@ extern "C"
      * @brief These routines perform an atomic "or"
      * operation between a data value and the target data object and
      * return the former remote value.
-     *
-     * @b Synopsis:
+     * @page shmem_ulong_atomic_fetch_or
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -1611,7 +1613,7 @@ extern "C"
      *                which dest is to be updated. If you are using Fortran,
      *                it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in
      *        the Synopsis section.
@@ -1620,7 +1622,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic and routines perform a bitwise and-operation between
      * value and the data at address dest on PE pe. The operation must
@@ -1648,8 +1650,8 @@ extern "C"
     /**
      * @brief These routines perform an atomic "and" operation
      * between a data value and the target data object.
-     *
-     * @b Synopsis:
+     * @page shmem_ulong_atomic_and
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -1664,7 +1666,7 @@ extern "C"
      *                which dest is to be updated. If you are using Fortran,
      *                it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in
      *        the Synopsis section.
@@ -1673,7 +1675,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic exclusive-or routines perform an and-operation between
      * value and the data at address dest on PE pe. The operation must
@@ -1702,8 +1704,8 @@ extern "C"
      * @brief These routines perform an atomic "and"
      * operation between a data value and the target data object and
      * return the former remote value.
-     *
-     * @b Synopsis:
+     * @page shmem_ulong_atomic_feth_and
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -1718,7 +1720,7 @@ extern "C"
      *                which dest is to be updated. If you are using Fortran,
      *                it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in
      *        the Synopsis section.
@@ -1727,7 +1729,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic exclusive-or routines perform an and-operation between
      * value and the data at address dest on PE pe. The operation must
@@ -1755,8 +1757,8 @@ extern "C"
     /**
      * @brief These routines perform an atomic "xor" operation
      * between a data value and the target data object.
-     *
-     * @b Synopsis:
+     * @page shmem_ulong_atomic_xor
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -1771,7 +1773,7 @@ extern "C"
      *                which dest is to be updated. If you are using Fortran,
      *                it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in
      *        the Synopsis section.
@@ -1780,7 +1782,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic exclusive-or routines perform an xor-operation between
      * value and the data at address dest on PE pe. The operation must
@@ -1809,8 +1811,8 @@ extern "C"
      * @brief These routines perform an atomic "xor"
      * operation between a data value and the target data object and
      * return the former remote value.
-     *
-     * @b Synopsis:
+     * @page shmem_ulong_atomic_fetch_xor
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -1825,7 +1827,7 @@ extern "C"
      *                which dest is to be updated. If you are using Fortran,
      *                it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in
      *        the Synopsis section.
@@ -1834,7 +1836,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic exclusive-or routines perform an xor-operation between
      * value and the data at address dest on PE pe. The operation must
@@ -1842,6 +1844,7 @@ extern "C"
      * dest between the time of the fetch and the update.
      *
      * @section Return
+     *
      * Value stored previously in remote location.
      *
      */
@@ -1859,9 +1862,9 @@ extern "C"
     /* see \ref shmem_ulong_atomic_fetch_xor() */
     SHMEM_DECL_AMO2(fetch_xor, uint64, uint64_t)
 
-    /*
+    /**
      * @brief increment symmetric variable
-     *
+     * @page shmem_long_atomic_inc
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1915,8 +1918,8 @@ extern "C"
 
     /**
      * @brief These routines perform an atomic fetch from a remote PE
-     *
-     * @b Synopsis:
+     * @page shmem_ctx_long_atomic_fetch
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -1943,7 +1946,7 @@ extern "C"
      *                    which dest is to be updated. If you are using
      *                    Fortran, it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied
      *        in the Synopsis section. When calling from Fortran,
@@ -1957,7 +1960,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic fetch routines atomically return the value at address
      * "dest" on PE pe. The operation must
@@ -2010,8 +2013,211 @@ extern "C"
     /**
      * @brief These routines perform an atomic set of a variable on a
      * remote PE
+     * @page shmem_ulong_atomic_fetch_xor
+     * @section Synopsis
      *
-     * @b Synopsis:
+     * - C/C++:
+     * @code
+     unsigned long shmem_ulong_atomic_fetch_xor(unsigned long *dest, unsigned long value, int pe);
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object where to save
+     *                    the data on the target pe.
+     * @param value     The value with which the exclusive-or operation is
+     *                    atomically performed with the data at address dest.
+     * @param pe        An integer that indicates the PE number upon
+     *                which dest is to be updated. If you are using Fortran,
+     *                it must be a default integer value.
+     *
+     * @section Constraints
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied in
+     *        the Synopsis section.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @section Effect
+     *
+     * The atomic exclusive-or routines perform an xor-operation between
+     * value and the data at address dest on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest between the time of the fetch and the update.
+     *
+     * @section Return
+     *
+     * Value stored previously in remote location.
+     *
+     */
+    SHMEM_DECL_AMO2(fetch_xor, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, int64, int64_t)
+   /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_xor() */
+    SHMEM_DECL_AMO2(fetch_xor, uint64, uint64_t)
+
+    /**
+     * @brief increment symmetric variable
+     * @page shmem_long_atomic_inc
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_long_atomic_inc(long *target, int pe);
+     @endcode
+     *
+     * @subsection f Fortran
+     @code
+     ...
+     @endcode
+     *
+     * @section Effect
+     *
+     * atomic increment on another PE
+     *
+     * @section Return
+     * None.
+     *
+     */
+    SHMEM_DECL_VOID_AMO1(inc, long, long)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, int, int)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, longlong, long long)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, uint, unsigned int)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, int32, int32_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, int64, int64_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, size, size_t)
+    /* see \ref shmem_long_atomic_inc() */
+    SHMEM_DECL_VOID_AMO1(inc, ptrdiff, ptrdiff_t)
+
+    void shmem_long_inc(long *target, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_inc);
+    void shmem_int_inc(int *target, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_inc);
+    void shmem_longlong_inc(long long *target, int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_inc);
+
+    /**
+     * @brief These routines perform an atomic fetch from a remote PE
+     * @page shmem_ctx_long_atomic_fetch
+     * @section Synopsis
+     *
+     * - C/C++:
+     * @code
+     long shmem_ctx_long_atomic_fetch(shmem_ctx_t ctx, const long *dest, int pe);
+     * @endcode
+     *
+     * - Fortran:
+     * @code
+     integer pe
+     integer*4 v4
+     integer*8 v8
+     real*4 r4
+     real*8 r8
+
+     v4 = shmem_int4_fetch(dest, pe)
+     v8 = shmem_int8_fetch(dest, pe)
+     r4 = shmem_real4_fetch(dest, pe)
+     r8 = shmem_real8_fetch(dest, pe)
+     * @endcode
+     *
+     * @param dest    Address of the symmetric data object in which save the
+     *                    data on the target pe.
+     * @param pe        An integer that indicates the PE number upon
+     *                    which dest is to be updated. If you are using
+     *                    Fortran, it must be a default integer value.
+     *
+     * @section Constraints
+     *      - dest must be the address of a symmetric data object.
+     *      - If using C/C++, the type of value must match that implied
+     *        in the Synopsis section. When calling from Fortran,
+     *        the data type of value must be as follows:
+     *          - For SHMEM_INT4_FETCH(), value must be of type Integer,
+     *            with element size of 4 bytes
+     *          - For SHMEM_INT8_FETCH(), value must be of type Integer,
+     *            with element size of 8 bytes.
+     *      - value must be the same type as the target data object.
+     *      - This process must be carried out guaranteeing that it will not
+     *          be interrupted by any other atomic operation on the
+     *          specified type.
+     *
+     * @section Effect
+     *
+     * The atomic fetch routines atomically return the value at address
+     * "dest" on PE pe. The operation must
+     * be completed without the possibility of another process updating
+     * dest on PE pe using the same type.
+     *
+     * @section Return
+     * The value stored at address "dest" on PE pe.
+     *
+     */
+    SHMEM_DECL_AMO1(fetch, long, long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, int, int)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, float, float)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, double, double)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, longlong, long long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, uint, unsigned int)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, int32, int32_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, int64, int64_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, size, size_t)
+    /* see \ref shmem_long_atomic_fetch() */
+    SHMEM_DECL_AMO1(fetch, ptrdiff, ptrdiff_t)
+
+    int shmem_int_fetch(const int *dest, int pe)
+        _DEPRECATED_BY(shmem_int_atomic_fetch) _WUR;
+    long shmem_long_fetch(const long *dest, int pe)
+        _DEPRECATED_BY(shmem_long_atomic_fetch) _WUR;
+    long long shmem_longlong_fetch(const long long *dest, int pe)
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch) _WUR;
+    float shmem_float_fetch(const float *dest, int pe)
+        _DEPRECATED_BY(shmem_float_atomic_fetch) _WUR;
+    double shmem_double_fetch(const double *dest, int pe)
+        _DEPRECATED_BY(shmem_double_atomic_fetch) _WUR;
+
+    /**
+     * @brief These routines perform an atomic set of a variable on a
+     * remote PE
+     * @page shmem_ctx_long_atomic_set
+     *
+     * @section Synopsis
      *
      * - C/C++:
      * @code
@@ -2040,7 +2246,7 @@ extern "C"
      *                    which dest is to be updated. If you are using
      *                    Fortran, it must be a default integer value.
      *
-     * @b Constraints:
+     * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in the
      *        Synopsis section. When calling from Fortran, the data type of
@@ -2054,7 +2260,7 @@ extern "C"
      *          be interrupted by any other atomic operation on the
      *          specified type.
      *
-     * @b Effect:
+     * @section Effect
      *
      * The atomic set routines atomically update an address to be "value" on
      * PE pe. The operation must
