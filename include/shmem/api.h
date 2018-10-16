@@ -2540,7 +2540,7 @@ extern "C"
      *
      * @section Effect
      *
-     * destroys a context that was created by a call to shmem_ctx_create.
+     * destroys a context that was created by a call to \ref shmem_ctx_create.
      *
      * @section Notes
      *
