@@ -1327,7 +1327,8 @@ extern "C"
      *
      * @section Effect
      *
-     * swaps things!  conditionally!
+     * Performs an atomic swap of @a value but only if @a cond is
+     * equal to the old value on the remote PE.
      *
      * @section Return
      * None.
