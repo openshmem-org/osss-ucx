@@ -452,6 +452,7 @@ shmemc_pmi_client_finalize(void)
         free(proc.comms.xchg_wrkr_info[pe].buf);
         for (r = 0; r < proc.comms.nregions; r += 1) {
             ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
+            free(proc.comms.regions[r].minfo[pe].racc.rkey);
         }
     }
 
