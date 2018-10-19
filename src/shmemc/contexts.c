@@ -21,7 +21,7 @@
  * how many more to allocate when we run out (magic number)
  */
 
-static const size_t SPILL_BLOCK = 16;
+static const size_t SPILL_BLOCK = 64;
 
 static size_t spill_ctxt = 0;
 
@@ -116,8 +116,6 @@ context_register(shmemc_context_h ch)
 inline static void
 context_deregister(shmemc_context_h ch)
 {
-    proc.comms.ctxts[ch->id] = NULL;
-
     /* this one is re-usable */
     *kl_pushp(freelist, fl) = ch->id;
 
@@ -170,8 +168,6 @@ shmemc_context_destroy(shmem_ctx_t ctx)
     if (shmemu_unlikely(ctx == SHMEM_CTX_INVALID)) {
         logger(LOG_CONTEXTS,
                "ignoring attempt to destroy invalid context");
-        return;
-        /* NOT REACHED */
     }
     else if (shmemu_unlikely(ctx == SHMEM_CTX_DEFAULT)) {
         logger(LOG_FATAL,
