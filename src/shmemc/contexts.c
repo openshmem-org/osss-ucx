@@ -21,7 +21,7 @@
  * how many more to allocate when we run out (magic number)
  */
 
-static const size_t SPILL_BLOCK = 16;
+static const size_t SPILL_BLOCK = 64;
 
 static size_t spill_ctxt = 0;
 
