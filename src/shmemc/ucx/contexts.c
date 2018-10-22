@@ -57,6 +57,7 @@ void
 shmemc_context_cleanup(shmemc_context_h ch)
 {
     ucp_worker_destroy(ch->w);
+    ch->w = NULL;               /* mark for finalize cleanup */
 }
 
 /*

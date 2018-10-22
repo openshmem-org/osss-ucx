@@ -80,14 +80,17 @@ deallocate_contexts_table(void)
     ucp_worker_release_address(def->w,
                                proc.comms.xchg_wrkr_info[proc.rank].addr);
     ucp_worker_destroy(def->w);
+
     /*
      * clear up each allocated SHMEM context
      */
     for (c = 1; c < proc.comms.nctxts; c += 1) {
-        if (proc.comms.ctxts[c] != NULL) {
+#if 1
+        if (proc.comms.ctxts[c]->w != NULL) {
             ucp_worker_destroy(proc.comms.ctxts[c]->w);
-            free(proc.comms.ctxts[c]);
         }
+#endif
+        free(proc.comms.ctxts[c]);
     }
 }
 
