@@ -29,9 +29,9 @@ static size_t spill_ctxt = 0;
  * manage free list of re-usable contexts
  */
 
-#define __int_free(x)
+#define __size_t_free(x)
 
-KLIST_INIT(freelist, int, __int_free)
+KLIST_INIT(freelist, size_t, __size_t_free)
 
 static klist_t(freelist) *fl = NULL;
 
@@ -41,32 +41,33 @@ static klist_t(freelist) *fl = NULL;
  * first call performs initialization, then reroutes to real work
  */
 
-static int register_context_boot(shmemc_context_h ch);
-static int register_context_run(shmemc_context_h ch);
+static size_t get_usable_context_boot(bool *reused);
+static size_t get_usable_context_run(bool *reused);
 
-static int (*register_fn)(shmemc_context_h ch) = register_context_boot;
+static size_t (*get_usable_context)(bool *reused)
+    = get_usable_context_boot;
 
-static int
-register_context_boot(shmemc_context_h ch)
+static size_t
+get_usable_context_boot(bool *reused)
 {
     fl = kl_init(freelist);
 
-    register_fn = register_context_run;
+    get_usable_context = get_usable_context_run;
 
-    return register_fn(ch);
+    return get_usable_context(reused);
 }
 
-static int
-register_context_run(shmemc_context_h ch)
+static size_t
+get_usable_context_run(bool *reused)
 {
-    size_t next;
+    size_t idx;
     kliter_t(freelist) *head = kl_begin(fl);
 
     if (head == kl_end(fl)) {   /* nothing in free list */
-        next = proc.comms.nctxts;
+        idx = proc.comms.nctxts;
 
-        /* if out of space, grab some more */
-        if (next == spill_ctxt) {
+        /* if out of space, grab some more slots */
+        if (idx == spill_ctxt) {
             spill_ctxt += SPILL_BLOCK;
 
             proc.comms.ctxts = (shmemc_context_h *)
@@ -74,44 +75,44 @@ register_context_run(shmemc_context_h ch)
                         spill_ctxt * sizeof(*(proc.comms.ctxts)));
 
             if (shmemu_unlikely(proc.comms.ctxts == NULL)) {
-                return 1;
+                logger(LOG_FATAL,
+                       "can't allocate more memory for context freelist");
                 /* NOT REACHED */
             }
         }
 
-        /* and for next one */
-        proc.comms.nctxts += 1;
+        /* allocate context in current slot */
+        proc.comms.ctxts[idx] =
+            (shmemc_context_h) malloc(sizeof(shmemc_context_t));
+        if (shmemu_unlikely(proc.comms.ctxts[idx] == NULL)) {
+            logger(LOG_FATAL,
+                   "unable to allocate memory for new context");
+            /* NOT REACHED */
+        }
+
+        proc.comms.nctxts += 1; /* for next one */
+        *reused = false;
     }
     else {                /* grab & remove the head of the freelist */
-        next = kl_val(head);
+        idx = kl_val(head);
         kl_shift(freelist, fl, NULL);
         logger(LOG_CONTEXTS,
                "reclaiming context #%lu from free list",
-               next);
+               idx);
+        *reused = true;
     }
-
-    /* record this new context */
-    ch->id = next;
-    proc.comms.ctxts[next] = ch;
-
-    return 0;
+    return idx;
 }
 
 /*
- * insert context into PE state
- *
- * Return 0 on success, non-0 on failure
+ * add/remove context in PE state
  */
 
-inline static int
+inline static void
 context_register(shmemc_context_h ch)
 {
-    return register_fn(ch);
+    logger(LOG_CONTEXTS, "using context #%lu", ch->id);
 }
-
-/*
- * remove context from PE state
- */
 
 inline static void
 context_deregister(shmemc_context_h ch)
@@ -123,6 +124,20 @@ context_deregister(shmemc_context_h ch)
 }
 
 /*
+ * fill in context
+ *
+ * Return 0 on success, non-0 on failure
+ */
+
+static void
+shmemc_context_set_options(long options, shmemc_context_h ch)
+{
+    ch->attr.serialized = options & SHMEM_CTX_SERIALIZED;
+    ch->attr.private    = options & SHMEM_CTX_PRIVATE;
+    ch->attr.nostore    = options & SHMEM_CTX_NOSTORE;
+}
+
+/*
  * create new context
  *
  * Return 0 on success, non-zero on failure
@@ -131,28 +146,30 @@ context_deregister(shmemc_context_h ch)
 int
 shmemc_context_create(long options, shmem_ctx_t *ctxp)
 {
-    int n;
-    shmemc_context_h ch;
+    bool reuse;
+    const size_t idx = get_usable_context(&reuse);
+    shmemc_context_h ch = proc.comms.ctxts[idx];
 
-    ch = (shmemc_context_h) malloc(sizeof(*ch));
-    if (ch == NULL) {
-        return 1;     /* fail if no memory free for new context */
-        /* NOT REACHED */
-    }
+    /* set SHMEM context behavior */
+    shmemc_context_set_options(options, ch);
 
-    n = shmemc_context_fill(options, ch);
-    if (shmemu_likely(n == 0)) {
-        n = context_register(ch);
-        if (shmemu_unlikely(n != 0)) {
-            return 1;
+    /* is this reclaimed from free list or do we have to set up? */
+    if (! reuse) {
+        const int ret = shmemc_context_progress(ch);
+
+        if (shmemu_unlikely(ret != 0)) {
+            free(ch);
+            return ret;
             /* NOT REACHED */
         }
+    }
 
-        *ctxp = (shmem_ctx_t) ch;
-    }
-    else {
-        free(ch);
-    }
+    ch->creator_thread = threadwrap_thread_id();
+    ch->id = idx;
+
+    context_register(ch);
+
+    *ctxp = (shmem_ctx_t) ch;
 
     return 0;
 }
@@ -211,14 +228,9 @@ int
 shmemc_init_default_context(void)
 {
     shmemc_context_h ch = &shmemc_default_context;
-    int n;
-    const long default_options = 0L;
 
-    n = shmemc_context_fill(default_options, ch);
-    if (shmemu_unlikely(n != 0)) {
-        return 1;
-        /* NOT REACHED */
-    }
+    shmemc_context_set_options(0L, ch);
+    shmemc_context_progress(ch);
 
     return shmemc_context_default_set_info(ch);
 }

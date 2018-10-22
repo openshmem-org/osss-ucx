@@ -84,13 +84,8 @@ deallocate_contexts_table(void)
     /*
      * clear up each allocated SHMEM context
      */
-    for (c = 1; c < proc.comms.nctxts; c += 1) {
-#if 1
-        if (proc.comms.ctxts[c]->w != NULL) {
-            ucp_worker_destroy(proc.comms.ctxts[c]->w);
-        }
-#endif
-        free(proc.comms.ctxts[c]);
+    for (c = 0; c < proc.comms.nctxts; c += 1) {
+        ucp_worker_destroy(proc.comms.ctxts[c]->w);
     }
 }
 
