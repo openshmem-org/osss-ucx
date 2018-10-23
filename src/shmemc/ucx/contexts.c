@@ -11,22 +11,18 @@
 #include <ucp/api/ucp.h>
 
 /*
- * fill in context
+ * fill in context's worker
  *
  * Return 0 on success, non-0 on failure
  */
 
 int
-shmemc_context_fill(long options, shmemc_context_h ch)
+shmemc_context_progress(shmemc_context_h ch)
 {
-    ucs_status_t s;
     ucp_worker_params_t wkpm;
+    ucs_status_t s;
 
-    ch->attr.serialized = options & SHMEM_CTX_SERIALIZED;
-    ch->attr.private    = options & SHMEM_CTX_PRIVATE;
-    ch->attr.nostore    = options & SHMEM_CTX_NOSTORE;
-
-    wkpm.field_mask  = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
+    wkpm.field_mask = UCP_WORKER_PARAM_FIELD_THREAD_MODE;
 
     if (ch->attr.serialized) {
         wkpm.thread_mode = UCS_THREAD_MODE_SERIALIZED;
@@ -37,26 +33,13 @@ shmemc_context_fill(long options, shmemc_context_h ch)
     else {
         wkpm.thread_mode = UCS_THREAD_MODE_MULTI;
     }
-
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(ch->w));
     if (shmemu_unlikely(s != UCS_OK)) {
         return 1;
         /* NOT REACHED */
     }
 
-    ch->creator_thread = threadwrap_thread_id();
-
     return 0;
-}
-
-/*
- * zap an existing context
- */
-
-void
-shmemc_context_cleanup(shmemc_context_h ch)
-{
-    ucp_worker_destroy(ch->w);
 }
 
 /*
