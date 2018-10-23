@@ -198,8 +198,6 @@ shmemc_context_destroy(shmem_ctx_t ctx)
         /* spec 1.4 ++ has implicit quiet for storable contexts */
         shmemc_ctx_quiet(ch);
 
-        shmemc_context_cleanup(ch);
-
         context_deregister(ch);
     }
 }

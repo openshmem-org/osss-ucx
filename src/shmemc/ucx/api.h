@@ -10,7 +10,6 @@
 #include "pe.h"
 
 int shmemc_context_progress(shmemc_context_h ch);
-void shmemc_context_cleanup(shmemc_context_h ch);
 int shmemc_context_default_set_info(shmemc_context_h ch);
 
 /*

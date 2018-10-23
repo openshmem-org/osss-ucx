@@ -43,20 +43,6 @@ shmemc_context_progress(shmemc_context_h ch)
 }
 
 /*
- * zap an existing context
- */
-
-void
-shmemc_context_cleanup(shmemc_context_h ch)
-{
-    NO_WARN_UNUSED(ch);
-#if 0
-    ucp_worker_destroy(ch->w);
-    ch->w = NULL;               /* mark for finalize cleanup */
-#endif
-}
-
-/*
  * Fill out info for default context
  *
  * Return 0 on success, non-0 otherwise
