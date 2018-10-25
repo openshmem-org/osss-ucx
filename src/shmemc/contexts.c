@@ -18,14 +18,6 @@
 #include <stdlib.h>
 
 /*
- * how many more to allocate when we run out (magic number)
- */
-
-static size_t spill_block;
-
-static size_t spill_ctxt = 0;
-
-/*
  * manage free list of re-usable contexts
  */
 
@@ -47,12 +39,59 @@ static size_t get_usable_context_run(bool *reused);
 static size_t (*get_usable_context)(bool *reused)
     = get_usable_context_boot;
 
+/*
+ * how many more to allocate when we run out (magic number)
+ */
+
+static size_t spill_block;
+
+static size_t spill_ctxt = 0;
+
+inline static shmemc_context_h *
+resize_spill_block(size_t n)
+{
+    shmemc_context_h *chp = (shmemc_context_h *)
+        realloc(proc.comms.ctxts,
+                n * sizeof(*(proc.comms.ctxts))
+                );
+
+    if (shmemu_unlikely(chp == NULL)) {
+        logger(LOG_FATAL,
+               "can't allocate %lu bytes for context freelist",
+               n);
+        /* NOT REACHED */
+    }
+
+    return chp;
+}
+
+/*
+ * allocate new context
+ */
+
+inline static shmemc_context_h
+alloc_freelist_slot(void)
+{
+    shmemc_context_h ch =
+        (shmemc_context_h) malloc(sizeof(shmemc_context_t));
+
+    if (shmemu_unlikely(ch == NULL)) {
+        logger(LOG_FATAL,
+               "unable to allocate memory for new context");
+        /* NOT REACHED */
+    }
+
+    return ch;
+}
+
 static size_t
 get_usable_context_boot(bool *reused)
 {
     fl = kl_init(freelist);
 
     spill_block = proc.env.prealloc_contexts;
+    spill_block = proc.env.prealloc_contexts;
+    proc.comms.ctxts = resize_spill_block(spill_block);
 
     get_usable_context = get_usable_context_run;
 
