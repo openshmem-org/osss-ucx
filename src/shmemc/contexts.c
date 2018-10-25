@@ -89,7 +89,7 @@ get_usable_context_boot(bool *reused)
 {
     fl = kl_init(freelist);
 
-    spill_block = proc.env.prealloc_contexts;
+    /* pre-alloc */
     spill_block = proc.env.prealloc_contexts;
     proc.comms.ctxts = resize_spill_block(spill_block);
 
@@ -111,9 +111,7 @@ get_usable_context_run(bool *reused)
         if (idx == spill_ctxt) {
             spill_ctxt += spill_block;
 
-            proc.comms.ctxts = (shmemc_context_h *)
-                realloc(proc.comms.ctxts,
-                        spill_ctxt * sizeof(*(proc.comms.ctxts)));
+            proc.comms.ctxts = resize_spill_block(spill_ctxt);
 
             if (shmemu_unlikely(proc.comms.ctxts == NULL)) {
                 logger(LOG_FATAL,
@@ -123,13 +121,7 @@ get_usable_context_run(bool *reused)
         }
 
         /* allocate context in current slot */
-        proc.comms.ctxts[idx] =
-            (shmemc_context_h) malloc(sizeof(shmemc_context_t));
-        if (shmemu_unlikely(proc.comms.ctxts[idx] == NULL)) {
-            logger(LOG_FATAL,
-                   "unable to allocate memory for new context");
-            /* NOT REACHED */
-        }
+        proc.comms.ctxts[idx] = alloc_freelist_slot();
 
         proc.comms.nctxts += 1; /* for next one */
         *reused = false;
