@@ -21,7 +21,7 @@
  * how many more to allocate when we run out (magic number)
  */
 
-static const size_t SPILL_BLOCK = 64;
+static size_t spill_block;
 
 static size_t spill_ctxt = 0;
 
@@ -52,6 +52,8 @@ get_usable_context_boot(bool *reused)
 {
     fl = kl_init(freelist);
 
+    spill_block = proc.env.prealloc_contexts;
+
     get_usable_context = get_usable_context_run;
 
     return get_usable_context(reused);
@@ -68,7 +70,7 @@ get_usable_context_run(bool *reused)
 
         /* if out of space, grab some more slots */
         if (idx == spill_ctxt) {
-            spill_ctxt += SPILL_BLOCK;
+            spill_ctxt += spill_block;
 
             proc.comms.ctxts = (shmemc_context_h *)
                 realloc(proc.comms.ctxts,

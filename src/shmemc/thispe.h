@@ -76,6 +76,8 @@ typedef struct env_info {
     shmemc_coll_t coll;         /* collectives */
 
     char *progress_threads;     /* do we need to start our own? */
+
+    size_t prealloc_contexts;   /* set up this many at start */
 } env_info_t;
 
 /*
