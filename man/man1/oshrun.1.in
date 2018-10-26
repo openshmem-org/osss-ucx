@@ -72,10 +72,14 @@ Algorithm name to use for broadcasts: currently one of "linear",
 "tree", "dissem", "binomial", "binomial2".
 .RE
 .RS 4
+.IP "SHMEM_PREALLOC_CTXS (integer: default 64)"
+How many OpenSHMEM context slots to preallocate at startup.
+.RE
+.RS 4
 .IP "SHMEM_LAUNCHER (default: search)"
-Name of program to use for underlying PMI-aware (currently PMIx-aware)
-launcher.  Default behavior is to search for an MPI launcher.  Can
-also be set by configure.
+Name of program to use for underlying launcher.  Default behavior is
+to search for PRRTE or a PMIx-aware MPI launcher.  Can also be set by
+configure.
 .RE
 .\"
 .RE
