@@ -244,10 +244,8 @@ void shmemu_deprecate_finalize(void);
             shmemu_human_number(_bytes, buf_b, 15);                     \
             fprintf(stderr,                                             \
                     "%d: WARNING: "                                     \
-                    "allocating %s "                              \
-                    "would overrun heap size of %s\n",                  \
-                    proc.rank,                                          \
-                    buf_b, buf_h                                        \
+                    "allocating %s would overrun heap size of %s\n",    \
+                    proc.rank, buf_b, buf_h                             \
                     );                                                  \
             fprintf(stderr,                                             \
                     "%d: WARNING: "                                     \
