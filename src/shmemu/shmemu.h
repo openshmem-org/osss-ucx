@@ -234,6 +234,28 @@ void shmemu_deprecate_finalize(void);
         }                                                               \
     } while (0)
 
+# define SHMEMU_CHECK_ALLOC(_addr, _bytes)                              \
+    do {                                                                \
+        if ((_addr) == NULL) {                                          \
+            char buf_b[16];                                             \
+            char buf_h[16];                                             \
+                                                                        \
+            shmemu_human_number(proc.env.heaps.heapsize[0], buf_h, 15); \
+            shmemu_human_number(_bytes, buf_b, 15);                     \
+            fprintf(stderr,                                             \
+                    "%d: WARNING: "                                     \
+                    "allocating %s would overrun heap size of %s\n",    \
+                    proc.rank, buf_b, buf_h                             \
+                    );                                                  \
+            fprintf(stderr,                                             \
+                    "%d: WARNING: "                                     \
+                    "try setting environment variable "                 \
+                    "SHMEM_SYMMETRIC_SIZE\n",                           \
+                    proc.rank                                           \
+                    );                                                  \
+        }                                                               \
+    } while (0)
+
 #else  /* ! ENABLE_DEBUG */
 
 /*
@@ -245,7 +267,8 @@ void shmemu_deprecate_finalize(void);
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
 # define SHMEMU_CHECK_INIT()
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)
-# define SHMEMU_CHECK_HEAP_INDEX(idx)
+# define SHMEMU_CHECK_HEAP_INDEX(_idx)
+# define SHMEMU_CHECK_ALLOC(_addr, _bytes)
 
 #endif /* ENABLE_DEBUG */
 

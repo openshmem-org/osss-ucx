@@ -3,4 +3,4 @@
 Our OpenSHMEM collectives are implemented as a thin layer on top of
 the the SHCOLL Collectives library, currently the version in:
 
-    git@github.com:tonycurtis/OpenSHMEM-Collective-Routines
+    https://github.com/tonycurtis/shcoll

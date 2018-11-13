@@ -114,11 +114,11 @@ shmemc_env_init(void)
     }
     CHECK_ENV(e, LOGGING_FILE);
     if (e != NULL) {
-        proc.env.logging_file = strdup(e);
+        proc.env.logging_file = strdup(e); /* free@end */
     }
     CHECK_ENV(e, LOGGING_EVENTS);
     if (e != NULL) {
-        proc.env.logging_events = strdup(e);
+        proc.env.logging_events = strdup(e); /* free@end */
     }
     CHECK_ENV(e, XPMEM_KLUDGE);
     if (e != NULL) {
@@ -135,38 +135,50 @@ shmemc_env_init(void)
 
     CHECK_ENV(e, BARRIER_ALGO);
     if (e != NULL) {
-        proc.env.coll.barrier = strdup(e);
+        proc.env.coll.barrier = strdup(e); /* free@end */
     }
     CHECK_ENV(e, BROADCAST_ALGO);
     if (e != NULL) {
-        proc.env.coll.broadcast = strdup(e);
+        proc.env.coll.broadcast = strdup(e); /* free@end */
     }
     CHECK_ENV(e, COLLLECT_ALGO);
     if (e != NULL) {
-        proc.env.coll.collect = strdup(e);
+        proc.env.coll.collect = strdup(e); /* free@end */
     }
     CHECK_ENV(e, FCOLLLECT_ALGO);
     if (e != NULL) {
-        proc.env.coll.fcollect = strdup(e);
+        proc.env.coll.fcollect = strdup(e); /* free@end */
     }
     CHECK_ENV(e, ALLTOALL_ALGO);
     if (e != NULL) {
-        proc.env.coll.alltoall = strdup(e);
+        proc.env.coll.alltoall = strdup(e); /* free@end */
     }
     CHECK_ENV(e, ALLTOALLS_ALGO);
     if (e != NULL) {
-        proc.env.coll.alltoalls = strdup(e);
+        proc.env.coll.alltoalls = strdup(e); /* free@end */
     }
     CHECK_ENV(e, REDUCE_ALGO);
     if (e != NULL) {
-        proc.env.coll.reduce = strdup(e);
+        proc.env.coll.reduce = strdup(e); /* free@end */
     }
 
     proc.env.progress_threads = NULL;
 
     CHECK_ENV(e, PROGRESS_THREADS);
     if (e != NULL) {
-        proc.env.progress_threads = strdup(e);
+        proc.env.progress_threads = strdup(e); /* free@end */
+    }
+
+    proc.env.prealloc_contexts = 64; /* magic number */
+
+    CHECK_ENV(e, PREALLOC_CTXS);
+    if (e != NULL) {
+        long n = strtol(e, NULL, 10);
+
+        if (n < 0) {
+            n = proc.env.prealloc_contexts;
+        }
+        proc.env.prealloc_contexts = (size_t) n;
     }
 }
 
@@ -280,11 +292,6 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "SHMEM_LOGGING_FILE",
             val_width, proc.env.logging_file ? proc.env.logging_file : "unset",
             "file for logging information");
-    fprintf(stream, "%s%-*s %-*s %s\n",
-            prefix,
-            var_width, "SHMEM_XPMEM_KLUDGE",
-            val_width, shmemu_human_option(proc.env.xpmem_kludge),
-            "avoid XPMEM tear-down bug (temporary)");
 
 #define DESCRIBE_COLLECTIVE(_name, _envvar)                             \
     do {                                                                \
@@ -310,6 +317,20 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width,
             proc.env.progress_threads ? proc.env.progress_threads : "no",
             "Do we manage our own progress?");
+    fprintf(stream, "%s%-*s %-*lu %s\n",
+            prefix,
+            var_width, "SHMEM_PREALLOC_CTXS",
+            val_width, proc.env.prealloc_contexts,
+            "pre-allocate contexts at startup");
+
+    fprintf(stream, "%s\n", prefix);
+    fprintf(stream, "%s%-*s %-*s %s\n",
+            prefix,
+            var_width, "SHMEM_XPMEM_KLUDGE",
+            val_width, shmemu_human_option(proc.env.xpmem_kludge),
+            "avoid XPMEM tear-down bug (temporary)");
+
+    /* ---------------------------------------------------------------- */
 
     fprintf(stream, "%s\n", prefix);
     hr(stream, prefix);
