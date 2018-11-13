@@ -199,7 +199,7 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
         va_end(ap);
 
         STRNCAT_SAFE(tmp2, tmp1, TRACE_MSG_BUF_SIZE_1);
-        STRNCAT_SAFE(tmp2, "\n", 1);
+        STRNCAT_SAFE(tmp2, "\n", 2);
 
         fputs(tmp2, log_stream);
         /* make sure this all goes out in 1 burst */

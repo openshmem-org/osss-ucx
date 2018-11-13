@@ -144,6 +144,8 @@ get_usable_context_run(bool *reused)
 inline static void
 context_register(shmemc_context_h ch)
 {
+    NO_WARN_UNUSED(ch);
+
     logger(LOG_CONTEXTS, "using context #%lu", ch->id);
 }
 

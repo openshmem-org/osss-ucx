@@ -53,6 +53,8 @@ shmem_malloc(size_t s)
            (unsigned long) s, addr
            );
 
+    SHMEMU_CHECK_ALLOC(addr, s);
+
     return addr;
 }
 
@@ -74,6 +76,8 @@ shmem_calloc(size_t n, size_t s)
            __func__,
            (unsigned long) n, (unsigned long) s, addr
            );
+
+    SHMEMU_CHECK_ALLOC(addr, s);
 
     return addr;
 }
@@ -114,6 +118,8 @@ shmem_realloc(void *p, size_t s)
            p, (unsigned long) s, addr
            );
 
+    SHMEMU_CHECK_ALLOC(addr, s);
+
     return addr;
 }
 
@@ -135,6 +141,8 @@ shmem_align(size_t a, size_t s)
            __func__,
            (unsigned long) a, (unsigned long) s, addr
            );
+
+    SHMEMU_CHECK_ALLOC(addr, s);
 
     return addr;
 }
