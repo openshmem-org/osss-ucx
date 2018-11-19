@@ -5,7 +5,7 @@ AC_MSG_NOTICE([Checking for how we handle collectives])
 
 AC_ARG_WITH([shcoll],
             [AS_HELP_STRING([--with-shcoll@<:@=DIR@:>@],
-	    [Use SHCOLL library from DIR, or "internal" to use bundled version])])
+	    [Use SHCOLL library from DIR, or "internal" to use bundled version [default: internal]])])
 
 SHCOLL_TYPE="internal"
 # don't evaluate top_srcdir until we're compiling
