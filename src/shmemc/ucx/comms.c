@@ -557,12 +557,6 @@ helper_ctx_progress(shmem_ctx_t ctx)
     (void) ucp_worker_progress(ch->w);
 }
 
-inline static void
-helper_progress(void)
-{
-    helper_ctx_progress(SHMEM_CTX_DEFAULT);
-}
-
 void
 shmemc_ctx_progress(shmem_ctx_t ctx)
 {
