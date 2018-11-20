@@ -54,16 +54,16 @@
                                            size_t nelems, int pe);
 
 FORTRAN_EXTERN_COMPLEX_OPS(put, f, float)
-FORTRAN_EXTERN_COMPLEX_OPS(put, d, double)
+/* FORTRAN_EXTERN_COMPLEX_OPS(put, d, double) */
 
 FORTRAN_EXTERN_COMPLEX_OPS(get, f, float)
-FORTRAN_EXTERN_COMPLEX_OPS(get, d, double)
+/* FORTRAN_EXTERN_COMPLEX_OPS(get, d, double) */
 
 FORTRAN_EXTERN_COMPLEX_OPS(put_nbi, f, float)
-FORTRAN_EXTERN_COMPLEX_OPS(put_nbi, d, double)
+/* FORTRAN_EXTERN_COMPLEX_OPS(put_nbi, d, double) */
 
 FORTRAN_EXTERN_COMPLEX_OPS(get_nbi, f, float)
-FORTRAN_EXTERN_COMPLEX_OPS(get_nbi, d, double)
+/* FORTRAN_EXTERN_COMPLEX_OPS(get_nbi, d, double) */
 
 #undef FORTRAN_EXTERN_COMPLEX_OPS
 
@@ -78,16 +78,16 @@ FORTRAN_EXTERN_COMPLEX_OPS(get_nbi, d, double)
     }
 
 FORTRAN_COMPLEX_OPS(put, f, float)
-FORTRAN_COMPLEX_OPS(put, d, double)
+/* FORTRAN_COMPLEX_OPS(put, d, double) */
 
 FORTRAN_COMPLEX_OPS(get, f, float)
-FORTRAN_COMPLEX_OPS(get, d, double)
+/* FORTRAN_COMPLEX_OPS(get, d, double) */
 
 FORTRAN_COMPLEX_OPS(put_nbi, f, float)
-FORTRAN_COMPLEX_OPS(put_nbi, d, double)
+/* FORTRAN_COMPLEX_OPS(put_nbi, d, double) */
 
 FORTRAN_COMPLEX_OPS(get_nbi, f, float)
-FORTRAN_COMPLEX_OPS(get_nbi, d, double)
+/* FORTRAN_COMPLEX_OPS(get_nbi, d, double) */
 
 #undef FORTRAN_COMPLEX_OPS
 
@@ -100,10 +100,10 @@ FORTRAN_COMPLEX_OPS(get_nbi, d, double)
                                             size_t nelems, int pe);
 
 FORTRAN_EXTERN_STRIDED_COMPLEX_OPS(put, f, float)
-FORTRAN_EXTERN_STRIDED_COMPLEX_OPS(put, d, double)
+/* FORTRAN_EXTERN_STRIDED_COMPLEX_OPS(put, d, double) */
 
 FORTRAN_EXTERN_STRIDED_COMPLEX_OPS(get, f, float)
-FORTRAN_EXTERN_STRIDED_COMPLEX_OPS(get, d, double)
+/* FORTRAN_EXTERN_STRIDED_COMPLEX_OPS(get, d, double) */
 
 #undef FORTRAN_EXTERN_STRIDED_COMPLEX_OPS
 
@@ -121,10 +121,10 @@ FORTRAN_EXTERN_STRIDED_COMPLEX_OPS(get, d, double)
     }
 
 FORTRAN_STRIDED_COMPLEX_OPS(put, f, float)
-FORTRAN_STRIDED_COMPLEX_OPS(put, d, double)
+/* FORTRAN_STRIDED_COMPLEX_OPS(put, d, double) */
 
 FORTRAN_STRIDED_COMPLEX_OPS(get, f, float)
-FORTRAN_STRIDED_COMPLEX_OPS(get, d, double)
+/* FORTRAN_STRIDED_COMPLEX_OPS(get, d, double) */
 
 #undef FORTRAN_STRIDED_COMPLEX_OPS
 
