@@ -780,7 +780,9 @@ SHMEMC_PUTGET_SIGNAL(get)
     shmemc_ctx_add##_size(shmem_ctx_t ctx,                  \
                           void *t, uint64_t v, int pe)      \
     {                                                       \
-        helper_atomic_add##_size(ctx, (uint64_t) t, v, pe); \
+        shmemc_context_h ch = (shmemc_context_h) ctx;       \
+                                                            \
+        helper_atomic_add##_size(ch, (uint64_t) t, v, pe);  \
     }
 
 SHMEMC_CTX_ADD(32)
@@ -790,12 +792,14 @@ SHMEMC_CTX_ADD(64)
  * inc
  */
 
-#define SHMEMC_CTX_INC(_size)                               \
-    void                                                    \
-    shmemc_ctx_inc##_size(shmem_ctx_t ctx,                  \
-                          void *t, int pe)                  \
-    {                                                       \
-        helper_atomic_inc##_size(ctx, (uint64_t) t, pe);    \
+#define SHMEMC_CTX_INC(_size)                           \
+    void                                                \
+    shmemc_ctx_inc##_size(shmem_ctx_t ctx,              \
+                          void *t, int pe)              \
+    {                                                   \
+        shmemc_context_h ch = (shmemc_context_h) ctx;   \
+                                                        \
+        helper_atomic_inc##_size(ch, (uint64_t) t, pe); \
     }
 
 SHMEMC_CTX_INC(32)
@@ -805,13 +809,15 @@ SHMEMC_CTX_INC(64)
  * fetch-and-add
  */
 
-#define SHMEMC_CTX_FADD(_size)                                      \
-    uint64_t                                                        \
-    shmemc_ctx_fadd##_size(shmem_ctx_t ctx,                         \
-                           void *t, uint64_t v, int pe)             \
-    {                                                               \
-        return helper_atomic_fetch_add##_size(ctx, (uint64_t) t,    \
-                                              v, pe);               \
+#define SHMEMC_CTX_FADD(_size)                                  \
+    uint64_t                                                    \
+    shmemc_ctx_fadd##_size(shmem_ctx_t ctx,                     \
+                           void *t, uint64_t v, int pe)         \
+    {                                                           \
+        shmemc_context_h ch = (shmemc_context_h) ctx;           \
+                                                                \
+        return helper_atomic_fetch_add##_size(ch, (uint64_t) t, \
+                                              v, pe);           \
     }
 
 SHMEMC_CTX_FADD(32)
@@ -821,13 +827,15 @@ SHMEMC_CTX_FADD(64)
  * fetch-and-inc
  */
 
-#define SHMEMC_CTX_FINC(_size)                                      \
-    uint64_t                                                        \
-    shmemc_ctx_finc##_size(shmem_ctx_t ctx,                         \
-                           void *t, int pe)                         \
-    {                                                               \
-        return helper_atomic_fetch_inc##_size(ctx, (uint64_t) t,    \
-                                              pe);                  \
+#define SHMEMC_CTX_FINC(_size)                                  \
+    uint64_t                                                    \
+    shmemc_ctx_finc##_size(shmem_ctx_t ctx,                     \
+                           void *t, int pe)                     \
+    {                                                           \
+        shmemc_context_h ch = (shmemc_context_h) ctx;           \
+                                                                \
+        return helper_atomic_fetch_inc##_size(ch, (uint64_t) t, \
+                                              pe);              \
     }
 
 SHMEMC_CTX_FINC(32)
@@ -837,12 +845,14 @@ SHMEMC_CTX_FINC(64)
  * swaps
  */
 
-#define SHMEMC_CTX_SWAP(_size)                                          \
-    uint64_t                                                            \
-    shmemc_ctx_swap##_size(shmem_ctx_t ctx,                             \
-                           void *t, uint64_t v, int pe)                 \
-    {                                                                   \
-        return helper_atomic_swap##_size(ctx, (uint64_t) t, v, pe);     \
+#define SHMEMC_CTX_SWAP(_size)                                      \
+    uint64_t                                                        \
+    shmemc_ctx_swap##_size(shmem_ctx_t ctx,                         \
+                           void *t, uint64_t v, int pe)             \
+    {                                                               \
+        shmemc_context_h ch = (shmemc_context_h) ctx;               \
+                                                                    \
+        return helper_atomic_swap##_size(ch, (uint64_t) t, v, pe);  \
     }
 
 SHMEMC_CTX_SWAP(32)
@@ -853,7 +863,9 @@ SHMEMC_CTX_SWAP(64)
     shmemc_ctx_cswap##_size(shmem_ctx_t ctx,                            \
                             void *t, uint64_t c, uint64_t v, int pe)    \
     {                                                                   \
-        return helper_atomic_cswap##_size(ctx, (uint64_t) t, c, v, pe); \
+        shmemc_context_h ch = (shmemc_context_h) ctx;                   \
+                                                                        \
+        return helper_atomic_cswap##_size(ch, (uint64_t) t, c, v, pe);  \
     }
 
 SHMEMC_CTX_CSWAP(32)
@@ -864,13 +876,15 @@ SHMEMC_CTX_CSWAP(64)
  *
  */
 
-#define SHMEMC_CTX_FETCH(_size)                                     \
-    uint64_t                                                        \
-    shmemc_ctx_fetch##_size(shmem_ctx_t ctx,                        \
-                            void *t, int pe)                        \
-    {                                                               \
-        return helper_atomic_fetch_add##_size(ctx, (uint64_t) t,    \
-                                              0, pe);               \
+#define SHMEMC_CTX_FETCH(_size)                                 \
+    uint64_t                                                    \
+    shmemc_ctx_fetch##_size(shmem_ctx_t ctx,                    \
+                            void *t, int pe)                    \
+    {                                                           \
+        shmemc_context_h ch = (shmemc_context_h) ctx;           \
+                                                                \
+        return helper_atomic_fetch_add##_size(ch, (uint64_t) t, \
+                                              0, pe);           \
     }
 
 SHMEMC_CTX_FETCH(32)
@@ -884,7 +898,9 @@ SHMEMC_CTX_FETCH(64)
     shmemc_ctx_set##_size(shmem_ctx_t ctx,                          \
                           void *t, uint64_t v, int pe)              \
     {                                                               \
-        (void) helper_atomic_swap##_size(ctx, (uint64_t) t, v, pe); \
+        shmemc_context_h ch = (shmemc_context_h) ctx;               \
+                                                                    \
+        (void) helper_atomic_swap##_size(ch, (uint64_t) t, v, pe);  \
     }
 
 SHMEMC_CTX_SET(32)
@@ -899,7 +915,9 @@ SHMEMC_CTX_SET(64)
     shmemc_ctx_fetch_##_op##_size(shmem_ctx_t ctx,                  \
                                   void *t, uint64_t v, int pe)      \
     {                                                               \
-        return helper_atomic_fetch_##_op##_size(ctx, (uint64_t) t,  \
+        shmemc_context_h ch = (shmemc_context_h) ctx;               \
+                                                                    \
+        return helper_atomic_fetch_##_op##_size(ch, (uint64_t) t,   \
                                                 v, pe);             \
     }
 
@@ -914,13 +932,15 @@ SHMEMC_CTX_FETCH_BITWISE(xor, 64)
  * bitwise
  */
 
-#define SHMEMC_CTX_BITWISE(_op, _size)                              \
-    void                                                            \
-    shmemc_ctx_##_op##_size(shmem_ctx_t ctx,                        \
-                            void *t, uint64_t v, int pe)            \
-    {                                                               \
-        helper_atomic_##_op##_size(ctx, (uint64_t) t,               \
-                                   v, pe);                          \
+#define SHMEMC_CTX_BITWISE(_op, _size)                      \
+    void                                                    \
+    shmemc_ctx_##_op##_size(shmem_ctx_t ctx,                \
+                            void *t, uint64_t v, int pe)    \
+    {                                                       \
+        shmemc_context_h ch = (shmemc_context_h) ctx;       \
+                                                            \
+        helper_atomic_##_op##_size(ch, (uint64_t) t,        \
+                                   v, pe);                  \
     }
 
 SHMEMC_CTX_BITWISE(and, 32)
