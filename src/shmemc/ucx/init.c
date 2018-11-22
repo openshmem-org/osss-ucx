@@ -341,10 +341,14 @@ deregister_memory_regions(void)
         deregister_symmetric_heap(shp);
 
         /* TODO: reclaim shmema_finalize(); */
-
     }
 
     deregister_globals();
+
+    for (hi = 0; hi < proc.comms.nregions; hi += 1) {
+        free(proc.comms.regions[hi].minfo);
+    }
+    free(proc.comms.regions);
 }
 
 /**

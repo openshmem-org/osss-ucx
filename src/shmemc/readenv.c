@@ -199,6 +199,8 @@ shmemc_env_finalize(void)
     free(proc.env.coll.broadcast);
 
     free(proc.env.progress_threads);
+
+    free(proc.env.heaps.heapsize);
 }
 
 static const int var_width = 22;
