@@ -322,7 +322,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s%-*s %-*lu %s\n",
             prefix,
             var_width, "SHMEM_PREALLOC_CTXS",
-            val_width, proc.env.prealloc_contexts,
+            val_width, (unsigned long) proc.env.prealloc_contexts,
             "pre-allocate contexts at startup");
 
     fprintf(stream, "%s\n", prefix);
