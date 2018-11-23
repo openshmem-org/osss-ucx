@@ -40,7 +40,7 @@ parse_unit(char u, size_t *sp)
             /* NOT REACHED */
         }
         bytes *= multiplier;
-        usp += 1;
+        ++usp;
     }
 
     if (foundit) {
@@ -120,7 +120,7 @@ shmemu_human_number(double bytes, char *buf, size_t buflen)
             break;
             /* NOT REACHED */
         }
-        wc += 1, walk += 1;
+        ++wc, ++walk;
         divvy *= multiplier;
         b /= multiplier;
     }

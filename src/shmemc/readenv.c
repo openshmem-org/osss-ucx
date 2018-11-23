@@ -213,7 +213,7 @@ hr(FILE *stream, const char *prefix)
     int i;
 
     fprintf(stream, "%s", prefix);
-    for (i = 0; i < hr_width; i += 1) {
+    for (i = 0; i < hr_width; ++i) {
         fprintf(stream, "-");
     }
     fprintf(stream, "\n");

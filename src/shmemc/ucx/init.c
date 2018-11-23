@@ -84,7 +84,7 @@ deallocate_contexts_table(void)
     /*
      * clear up each allocated SHMEM context
      */
-    for (c = 0; c < proc.comms.nctxts; c += 1) {
+    for (c = 0; c < proc.comms.nctxts; ++c) {
         ucp_worker_destroy(proc.comms.ctxts[c]->w);
     }
 }
@@ -270,11 +270,11 @@ disconnect_all_endpoints(void)
     shmemu_assert(req != NULL,
                   "failed to allocate memory for UCP endpoint disconnect");
 
-    for (i = 0; i < proc.nranks; i += 1) {
+    for (i = 0; i < proc.nranks; ++i) {
         req[i] = ep_disconnect_nb(proc.comms.eps[i]);
     }
 
-    for (i = 0; i < proc.nranks; i += 1) {
+    for (i = 0; i < proc.nranks; ++i) {
         ep_wait(req[i]);
     }
 
@@ -300,7 +300,7 @@ init_memory_regions(void)
                   "can't allocate memory for memory regions");
 
     /* now prep for all PEs to exchange */
-    for (i = 0; i < proc.comms.nregions; i += 1) {
+    for (i = 0; i < proc.comms.nregions; ++i) {
         proc.comms.regions[i].minfo =
             (mem_info_t *) calloc(proc.nranks, sizeof(mem_info_t));
         shmemu_assert(proc.comms.regions[i].minfo != NULL,
@@ -322,7 +322,7 @@ register_memory_regions(void)
 
     register_globals();
 
-    for (hi = 1; hi < proc.comms.nregions; hi += 1) {
+    for (hi = 1; hi < proc.comms.nregions; ++hi) {
         mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.rank];
 
         register_symmetric_heap(hi - 1, shp);
@@ -345,7 +345,7 @@ deregister_memory_regions(void)
 
     deregister_globals();
 
-    for (hi = 0; hi < proc.comms.nregions; hi += 1) {
+    for (hi = 0; hi < proc.comms.nregions; ++hi) {
         free(proc.comms.regions[hi].minfo);
     }
     free(proc.comms.regions);
@@ -364,7 +364,7 @@ shmemc_ucx_make_remote_endpoints(void)
     ucp_ep_params_t epm;
     int i;
 
-    for (i = 0; i < proc.nranks; i += 1) {
+    for (i = 0; i < proc.nranks; ++i) {
         const int pe = SHIFT(i);
 
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
@@ -401,7 +401,7 @@ long *shmemc_sync_all_psync;
                                                                         \
         (_var) = (long *) shmema_malloc(nbytes);                        \
                                                                         \
-        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; i += 1) {              \
+        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; ++i) {                 \
             (_var)[i] = SHMEM_SYNC_VALUE;                               \
         }                                                               \
     } while (0)

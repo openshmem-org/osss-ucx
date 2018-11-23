@@ -21,7 +21,7 @@
 #define ASSIGN(_n)                                                  \
     do {                                                            \
         (*out)[i] = _n;                                             \
-        i += 1;                                                     \
+        ++i;                                                        \
         if (shmemu_unlikely(i >= nnums)) {                          \
             nnums += 8;                                             \
             *out = (int *) realloc(*out, nnums * sizeof(**out));    \
@@ -90,7 +90,7 @@ shmemu_parse_csv(char *str, int **out, size_t *nout)
             const int v2 = intify(&next[s2]);
             int j;
 
-            for (j = v1; j <= v2; j += 1) {
+            for (j = v1; j <= v2; ++j) {
                 ASSIGN(j);
             }
         }

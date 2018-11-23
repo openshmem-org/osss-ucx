@@ -40,7 +40,7 @@ barrier_sync_helper_linear(int PE_start,
 
         /* send acks out */
         pe = PE_start + stride;
-        for (i = 1; i < PE_size; i += 1) {
+        for (i = 1; i < PE_size; ++i) {
             shmem_long_p(pSync, SHCOLL_SYNC_VALUE + 1, pe);
             pe += stride;
         }

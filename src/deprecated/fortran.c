@@ -953,7 +953,7 @@ FORTRANIFY(shmem_info_get_name)(char *name)
     len = strlen(name);
     while(len < max_f_len) {
         name[len] = ' ';
-        len += 1;
+        ++len;
     }
 }
 
@@ -1024,7 +1024,7 @@ sherror(void)
             return etp->msg;
             /* NOT REACHED */
         }
-        etp += 1;
+        ++etp;
     }
 
     return "unknown memory error";

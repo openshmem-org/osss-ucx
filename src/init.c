@@ -103,7 +103,7 @@ init_thread_helper(int requested, int *provided)
 
     proc.status = SHMEMC_PE_RUNNING;
 
-    proc.refcount += 1;
+    ++proc.refcount;
 
     /* for now */
     switch(requested) {

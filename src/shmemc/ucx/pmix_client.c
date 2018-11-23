@@ -129,7 +129,7 @@ shmemc_pmi_publish_rkeys_and_heaps(void)
 
     publish_one_rkeys(&ri, 0);
 
-    for (r = 1; r < proc.comms.nregions; r += 1) {
+    for (r = 1; r < proc.comms.nregions; ++r) {
         publish_one_rkeys(&ri, r);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -158,7 +158,7 @@ shmemc_pmi_exchange_workers(void)
 
     PMIX_PDATA_CONSTRUCT(&fetch);
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         const int i = SHIFT(pe);
 
         snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
@@ -231,7 +231,7 @@ exchange_all_rkeys(pmix_pdata_t *rdp, size_t r)
 {
     int pe;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         const int i = SHIFT(pe);
 
         exchange_one_rkeys(rdp, r, i);
@@ -247,7 +247,7 @@ exchange_one_rkeys_and_heaps(pmix_pdata_t *rdp,
 
     NO_WARN_UNUSED(hdp);
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         const int i = SHIFT(pe);
 
         exchange_one_rkeys(rdp, r, i);
@@ -272,7 +272,7 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
     exchange_all_rkeys(&rd, 0);
 
     /* now everything else */
-    for (r = 1; r < proc.comms.nregions; r += 1) {
+    for (r = 1; r < proc.comms.nregions; ++r) {
         exchange_one_rkeys_and_heaps(&rd, hdp, r);
     }
 
@@ -440,12 +440,12 @@ shmemc_pmi_client_finalize(void)
                   "PMIx can't finalize (%s)",
                   PMIx_Error_string(ps));
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         size_t r;
 
         /* clean up allocations for exchanged buffers */
         free(proc.comms.xchg_wrkr_info[pe].buf);
-        for (r = 0; r < proc.comms.nregions; r += 1) {
+        for (r = 0; r < proc.comms.nregions; ++r) {
             ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
         }
     }
