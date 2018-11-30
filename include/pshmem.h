@@ -657,11 +657,11 @@ extern "C"
     unsigned long long pshmem_ulonglong_atomic_swap(unsigned long long *target,
                                                     unsigned long long value,
                                                     int pe) _WUR;
-    int32 pshmem_int32_atomic_swap(int32_t *target, int32_t value, int pe) _WUR;
-    int64 pshmem_int64_atomic_swap(int64_t *target, int64_t value, int pe) _WUR;
-    uint32 pshmem_uint32_atomic_swap(uint32_t *target, uint32_t value,
+    int32_t pshmem_int32_atomic_swap(int32_t *target, int32_t value, int pe) _WUR;
+    int64_t pshmem_int64_atomic_swap(int64_t *target, int64_t value, int pe) _WUR;
+    uint32_t pshmem_uint32_atomic_swap(uint32_t *target, uint32_t value,
                                      int pe) _WUR;
-    uint64 pshmem_uint64_atomic_swap(uint64_t *target, uint64_t value,
+    uint64_t pshmem_uint64_atomic_swap(uint64_t *target, uint64_t value,
                                      int pe) _WUR;
     size_t pshmem_size_atomic_swap(size_t *target, size_t value,
                                    int pe) _WUR;
@@ -694,13 +694,13 @@ extern "C"
     pshmem_ulonglong_atomic_compare_swap(unsigned long long *target,
                                          unsigned long long value,
                                          int pe) _WUR;
-    int32 pshmem_int32_atomic_compare_swap(int32_t *target, int32_t value,
+    int32_t pshmem_int32_atomic_compare_swap(int32_t *target, int32_t value,
                                            int pe) _WUR;
-    int64 pshmem_int64_atomic_compare_swap(int64_t *target, int64_t value,
+    int64_t pshmem_int64_atomic_compare_swap(int64_t *target, int64_t value,
                                            int pe) _WUR;
-    uint32 pshmem_uint32_atomic_compare_swap(uint32_t *target, uint32_t value,
+    uint32_t pshmem_uint32_atomic_compare_swap(uint32_t *target, uint32_t value,
                                              int pe) _WUR;
-    uint64 pshmem_uint64_atomic_compare_swap(uint64_t *target, uint64_t value,
+    uint64_t pshmem_uint64_atomic_compare_swap(uint64_t *target, uint64_t value,
                                              int pe) _WUR;
     size_t pshmem_size_atomic_compare_swap(size_t *target, size_t value,
                                            int pe) _WUR;
