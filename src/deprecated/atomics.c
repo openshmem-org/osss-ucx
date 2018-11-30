@@ -131,6 +131,10 @@ SHMEM_DEPRECATE_VOID_AMO2(add, longlong, long long, 64)
 #define shmem_long_fetch pshmem_long_fetch
 #pragma weak shmem_longlong_fetch = pshmem_longlong_fetch
 #define shmem_longlong_fetch pshmem_longlong_fetch
+#pragma weak shmem_float_fetch = pshmem_float_fetch
+#define shmem_float_fetch pshmem_float_fetch
+#pragma weak shmem_double_fetch = pshmem_double_fetch
+#define shmem_double_fetch pshmem_double_fetch
 #endif /* ENABLE_PSHMEM */
 
 SHMEM_DEPRECATE_AMO1(fetch, int, int, 32)
