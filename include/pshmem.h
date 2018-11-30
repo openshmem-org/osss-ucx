@@ -543,62 +543,62 @@ extern "C"
      * wait operations
      */
 
-    int pshmem_short_test(short *ivar, shmem_cmp_t cmp,
+    int pshmem_short_test(short *ivar, int cmp,
                           short cmp_value);
-    int pshmem_int_test(int *ivar, shmem_cmp_t cmp,
+    int pshmem_int_test(int *ivar, int cmp,
                         int cmp_value);
-    int pshmem_long_test(long *ivar, shmem_cmp_t cmp,
+    int pshmem_long_test(long *ivar, int cmp,
                          long cmp_value);
-    int pshmem_longlong_test(long long *ivar, shmem_cmp_t cmp,
+    int pshmem_longlong_test(long long *ivar, int cmp,
                              long long cmp_value);
-    int pshmem_ushort_test(unsigned short *ivar, shmem_cmp_t cmp,
+    int pshmem_ushort_test(unsigned short *ivar, int cmp,
                            unsigned short cmp_value);
-    int pshmem_uint_test(unsigned int *ivar, shmem_cmp_t cmp,
+    int pshmem_uint_test(unsigned int *ivar, int cmp,
                          unsigned int cmp_value);
-    int pshmem_ulong_test(unsigned long *ivar, shmem_cmp_t cmp,
+    int pshmem_ulong_test(unsigned long *ivar, int cmp,
                           unsigned long cmp_value);
-    int pshmem_ulonglong_test(unsigned long long *ivar, shmem_cmp_t cmp,
+    int pshmem_ulonglong_test(unsigned long long *ivar, int cmp,
                               unsigned long long cmp_value);
-    int pshmem_int32_test(int32_t *ivar, shmem_cmp_t cmp,
+    int pshmem_int32_test(int32_t *ivar, int cmp,
                           int32_t cmp_value);
-    int pshmem_int64_test(int64_t *ivar, shmem_cmp_t cmp,
+    int pshmem_int64_test(int64_t *ivar, int cmp,
                           int64_t cmp_value);
-    int pshmem_uint32_test(uint32_t *ivar, shmem_cmp_t cmp,
+    int pshmem_uint32_test(uint32_t *ivar, int cmp,
                            uint32_t cmp_value);
-    int pshmem_uint64_test(uint64_t *ivar, shmem_cmp_t cmp,
+    int pshmem_uint64_test(uint64_t *ivar, int cmp,
                            uint64_t cmp_value);
-    int pshmem_size_test(size_t *ivar, shmem_cmp_t cmp,
+    int pshmem_size_test(size_t *ivar, int cmp,
                          size_t cmp_value);
-    int pshmem_ptrdiff_test(ptrdiff_t *ivar, shmem_cmp_t cmp,
+    int pshmem_ptrdiff_test(ptrdiff_t *ivar, int cmp,
                             ptrdiff_t cmp_value);
 
-    void pshmem_short_wait_until(short *ivar, shmem_cmp_t cmp,
+    void pshmem_short_wait_until(short *ivar, int cmp,
                                  short cmp_value);
-    void pshmem_int_wait_until(int *ivar, shmem_cmp_t cmp,
+    void pshmem_int_wait_until(int *ivar, int cmp,
                                int cmp_value);
-    void pshmem_long_wait_until(long *ivar, shmem_cmp_t cmp,
+    void pshmem_long_wait_until(long *ivar, int cmp,
                                 long cmp_value);
-    void pshmem_longlong_wait_until(long long *ivar, shmem_cmp_t cmp,
+    void pshmem_longlong_wait_until(long long *ivar, int cmp,
                                     long long cmp_value);
-    void pshmem_ushort_wait_until(unsigned short *ivar, shmem_cmp_t cmp,
+    void pshmem_ushort_wait_until(unsigned short *ivar, int cmp,
                                   unsigned short cmp_value);
-    void pshmem_uint_wait_until(unsigned int *ivar, shmem_cmp_t cmp,
+    void pshmem_uint_wait_until(unsigned int *ivar, int cmp,
                                 unsigned int cmp_value);
-    void pshmem_ulong_wait_until(unsigned long *ivar, shmem_cmp_t cmp,
+    void pshmem_ulong_wait_until(unsigned long *ivar, int cmp,
                                  unsigned long cmp_value);
-    void pshmem_ulonglong_wait_until(unsigned long long *ivar, shmem_cmp_t cmp,
+    void pshmem_ulonglong_wait_until(unsigned long long *ivar, int cmp,
                                      unsigned long long cmp_value);
-    void pshmem_int32_wait_until(int32_t *ivar, shmem_cmp_t cmp,
+    void pshmem_int32_wait_until(int32_t *ivar, int cmp,
                                  int32_t cmp_value);
-    void pshmem_int64_wait_until(int64_t *ivar, shmem_cmp_t cmp,
+    void pshmem_int64_wait_until(int64_t *ivar, int cmp,
                                  int64_t cmp_value);
-    void pshmem_uint32_wait_until(uint32_t *ivar, shmem_cmp_t cmp,
+    void pshmem_uint32_wait_until(uint32_t *ivar, int cmp,
                                   uint32_t cmp_value);
-    void pshmem_uint64_wait_until(uint64_t *ivar, shmem_cmp_t cmp,
+    void pshmem_uint64_wait_until(uint64_t *ivar, int cmp,
                                   uint64_t cmp_value);
-    void pshmem_size_wait_until(size_t *ivar, shmem_cmp_t cmp,
+    void pshmem_size_wait_until(size_t *ivar, int cmp,
                                 size_t cmp_value);
-    void pshmem_ptrdiff_wait_until(ptrdiff_t *ivar, shmem_cmp_t cmp,
+    void pshmem_ptrdiff_wait_until(ptrdiff_t *ivar, int cmp,
                                    ptrdiff_t cmp_value);
 
     /* deprecations */
@@ -655,11 +655,11 @@ extern "C"
     unsigned long long pshmem_ulonglong_atomic_swap(unsigned long long *target,
                                                     unsigned long long value,
                                                     int pe) _WUR;
-    int32 pshmem_int32_atomic_swap(int32 *target, int32 value, int pe) _WUR;
-    int64 pshmem_int64_atomic_swap(int64 *target, int64 value, int pe) _WUR;
-    uint32 pshmem_uint32_atomic_swap(uint32 *target, uint32 value,
+    int32 pshmem_int32_atomic_swap(int32_t *target, int32_t value, int pe) _WUR;
+    int64 pshmem_int64_atomic_swap(int64_t *target, int64_t value, int pe) _WUR;
+    uint32 pshmem_uint32_atomic_swap(uint32_t *target, uint32_t value,
                                      int pe) _WUR;
-    uint64 pshmem_uint64_atomic_swap(uint64 *target, uint64 value,
+    uint64 pshmem_uint64_atomic_swap(uint64_t *target, uint64_t value,
                                      int pe) _WUR;
     size_t pshmem_size_atomic_swap(size_t *target, size_t value,
                                    int pe) _WUR;
@@ -692,13 +692,13 @@ extern "C"
     pshmem_ulonglong_atomic_compare_swap(unsigned long long *target,
                                          unsigned long long value,
                                          int pe) _WUR;
-    int32 pshmem_int32_atomic_compare_swap(int32 *target, int32 value,
+    int32 pshmem_int32_atomic_compare_swap(int32_t *target, int32_t value,
                                            int pe) _WUR;
-    int64 pshmem_int64_atomic_compare_swap(int64 *target, int64 value,
+    int64 pshmem_int64_atomic_compare_swap(int64_t *target, int64_t value,
                                            int pe) _WUR;
-    uint32 pshmem_uint32_atomic_compare_swap(uint32 *target, uint32 value,
+    uint32 pshmem_uint32_atomic_compare_swap(uint32_t *target, uint32_t value,
                                              int pe) _WUR;
-    uint64 pshmem_uint64_atomic_compare_swap(uint64 *target, uint64 value,
+    uint64 pshmem_uint64_atomic_compare_swap(uint64_t *target, uint64_t value,
                                              int pe) _WUR;
     size_t pshmem_size_atomic_compare_swap(size_t *target, size_t value,
                                            int pe) _WUR;
