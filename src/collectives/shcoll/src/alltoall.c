@@ -5,6 +5,8 @@
 #include "shcoll.h"
 #include "shcoll/compat.h"
 
+#include "shmem.h"
+
 #include <string.h>
 #include <limits.h>
 #include <assert.h>

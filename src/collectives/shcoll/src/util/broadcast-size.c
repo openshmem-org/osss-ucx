@@ -6,6 +6,7 @@
 #include "trees.h"
 #include "../shcoll.h"
 
+#include "shmem.h"
 
 const int binomial_tree_radix = 8;
 

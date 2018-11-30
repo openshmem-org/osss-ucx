@@ -5,6 +5,8 @@
 #include "../shcoll.h"
 #include "scan.h"
 
+#include "shmem.h"
+
 void exclusive_prefix_sum(size_t *dest, size_t value, int PE_start, int logPE_stride, int PE_size, long *pSync) {
     const int stride = 1 << logPE_stride;
     const int me = shmem_my_pe();

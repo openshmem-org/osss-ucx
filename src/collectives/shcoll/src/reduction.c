@@ -2,6 +2,8 @@
 #include "util/bithacks.h"
 #include "../tests/util/debug.h"
 
+#include "shmem.h"
+
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
