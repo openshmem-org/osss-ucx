@@ -596,7 +596,7 @@ SHMEM_CTX_TYPE_SET(ptrdiff, ptrdiff_t, 64)
 #define shmem_ctx_ulong_atomic_and pshmem_ctx_ulong_atomic_and
 #pragma weak shmem_ctx_ulonglong_atomic_and = pshmem_ctx_ulonglong_atomic_and
 #define shmem_ctx_ulonglong_atomic_and pshmem_ctx_ulonglong_atomic_and
-#pragma weak shmem_ctx_int32_atomic_xor = pshmem_ctx_int32_atomic_xor
+#pragma weak shmem_ctx_int32_atomic_and = pshmem_ctx_int32_atomic_and
 #define shmem_ctx_int32_atomic_and pshmem_ctx_int32_atomic_and
 #pragma weak shmem_ctx_int64_atomic_and = pshmem_ctx_int64_atomic_and
 #define shmem_ctx_int64_atomic_and pshmem_ctx_int64_atomic_and
@@ -1156,7 +1156,7 @@ API_DEF_AMO3(compare_swap, ptrdiff, ptrdiff_t)
 #define shmem_ulong_atomic_fetch_and pshmem_ulong_atomic_fetch_and
 #pragma weak shmem_ulonglong_atomic_fetch_and = pshmem_ulonglong_atomic_fetch_and
 #define shmem_ulonglong_atomic_fetch_and pshmem_ulonglong_atomic_fetch_and
-#pragma weak shmem_int32_atomic_fetch_xor = pshmem_int32_atomic_fetch_xor
+#pragma weak shmem_int32_atomic_fetch_and = pshmem_int32_atomic_fetch_and
 #define shmem_int32_atomic_fetch_and pshmem_int32_atomic_fetch_and
 #pragma weak shmem_int64_atomic_fetch_and = pshmem_int64_atomic_fetch_and
 #define shmem_int64_atomic_fetch_and pshmem_int64_atomic_fetch_and
@@ -1227,7 +1227,7 @@ API_DEF_AMO2(fetch_and, uint64, uint64_t)
 #define shmem_ulong_atomic_and pshmem_ulong_atomic_and
 #pragma weak shmem_ulonglong_atomic_and = pshmem_ulonglong_atomic_and
 #define shmem_ulonglong_atomic_and pshmem_ulonglong_atomic_and
-#pragma weak shmem_int32_atomic_xor = pshmem_int32_atomic_xor
+#pragma weak shmem_int32_atomic_and = pshmem_int32_atomic_and
 #define shmem_int32_atomic_and pshmem_int32_atomic_and
 #pragma weak shmem_int64_atomic_and = pshmem_int64_atomic_and
 #define shmem_int64_atomic_and pshmem_int64_atomic_and
