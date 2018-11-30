@@ -199,6 +199,8 @@ shmemc_env_finalize(void)
     free(proc.env.coll.broadcast);
 
     free(proc.env.progress_threads);
+
+    free(proc.env.heaps.heapsize);
 }
 
 static const int var_width = 22;
@@ -211,7 +213,7 @@ hr(FILE *stream, const char *prefix)
     int i;
 
     fprintf(stream, "%s", prefix);
-    for (i = 0; i < hr_width; i += 1) {
+    for (i = 0; i < hr_width; ++i) {
         fprintf(stream, "-");
     }
     fprintf(stream, "\n");
@@ -320,7 +322,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     fprintf(stream, "%s%-*s %-*lu %s\n",
             prefix,
             var_width, "SHMEM_PREALLOC_CTXS",
-            val_width, proc.env.prealloc_contexts,
+            val_width, (unsigned long) proc.env.prealloc_contexts,
             "pre-allocate contexts at startup");
 
     fprintf(stream, "%s\n", prefix);

@@ -1289,6 +1289,7 @@ extern "C"
     API_CTX_DECL_SWAP(int32, int32_t)
     API_CTX_DECL_SWAP(int64, int64_t)
     API_CTX_DECL_SWAP(uint32, uint32_t)
+    API_CTX_DECL_SWAP(uint64, uint64_t)
     API_CTX_DECL_SWAP(size, size_t)
     API_CTX_DECL_SWAP(ptrdiff, ptrdiff_t)
 
@@ -1355,6 +1356,7 @@ extern "C"
     API_CTX_DECL_CSWAP(int32, int32_t)
     API_CTX_DECL_CSWAP(int64, int64_t)
     API_CTX_DECL_CSWAP(uint32, uint32_t)
+    API_CTX_DECL_CSWAP(uint64, uint64_t)
     API_CTX_DECL_CSWAP(size, size_t)
     API_CTX_DECL_CSWAP(ptrdiff, ptrdiff_t)
 

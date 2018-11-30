@@ -130,7 +130,7 @@ shmemc_pmi_publish_rkeys_and_heaps(void)
 
     publish_one_rkeys(0);
 
-    for (r = 1; r < proc.comms.nregions; r += 1) {
+    for (r = 1; r < proc.comms.nregions; ++r) {
         publish_one_rkeys(r);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -144,7 +144,7 @@ shmemc_pmi_exchange_workers(void)
 {
     int pe;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         int ps;
         worker_info_t *wp;
         const int i = SHIFT(pe);
@@ -232,7 +232,7 @@ exchange_all_rkeys(size_t r)
 {
     int pe;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         const int i = SHIFT(pe);
 
         exchange_one_rkeys(r, i);
@@ -244,7 +244,7 @@ exchange_one_rkeys_and_heaps(size_t r)
 {
     int pe;
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         const int i = SHIFT(pe);
 
         exchange_one_rkeys(r, i);
@@ -264,7 +264,7 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
     exchange_all_rkeys(0);
 
     /* now everything else */
-    for (r = 1; r < proc.comms.nregions; r += 1) {
+    for (r = 1; r < proc.comms.nregions; ++r) {
         exchange_one_rkeys_and_heaps(r);
     }
 }
@@ -376,12 +376,12 @@ shmemc_pmi_client_finalize(void)
 
     /* TODO: PMI client common code below */
 
-    for (pe = 0; pe < proc.nranks; pe += 1) {
+    for (pe = 0; pe < proc.nranks; ++pe) {
         size_t r;
 
         /* clean up allocations for exchanged buffers */
         free(proc.comms.xchg_wrkr_info[pe].buf);
-        for (r = 0; r < proc.comms.nregions; r += 1) {
+        for (r = 0; r < proc.comms.nregions; ++r) {
             ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
         }
     }

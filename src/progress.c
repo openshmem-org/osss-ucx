@@ -111,7 +111,7 @@ check_if_progress_required(void)
     if (s > 0) {
         size_t i;
 
-        for (i = 0; i < nres; i += 1) {
+        for (i = 0; i < nres; ++i) {
             if (res[i] == proc.rank) {
                 ret = 1;
                 goto out_free;

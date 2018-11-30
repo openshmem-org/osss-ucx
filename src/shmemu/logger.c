@@ -69,7 +69,7 @@ upperize(char *str)
 {
     char *q;
 
-    for (q = str; *q != '\0'; q += 1) {
+    for (q = str; *q != '\0'; ++q) {
         *q = toupper(*q);
     }
 }

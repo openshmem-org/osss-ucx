@@ -123,7 +123,7 @@ get_usable_context_run(bool *reused)
         /* allocate context in current slot */
         proc.comms.ctxts[idx] = alloc_freelist_slot();
 
-        proc.comms.nctxts += 1; /* for next one */
+        ++proc.comms.nctxts;    /* for next one */
         *reused = false;
     }
     else {                /* grab & remove the head of the freelist */

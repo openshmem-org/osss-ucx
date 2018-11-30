@@ -171,7 +171,7 @@
                shmemc_context_id(ctx), target, source, tst, sst, nelems, pe \
                );                                                       \
                                                                         \
-        for (i = 0; i < nelems; i += 1) {                               \
+        for (i = 0; i < nelems; ++i) {                                  \
             shmem_ctx_##_name##_put(ctx,                                \
                                     &(target[ti]),                      \
                                     &(source[si]),                      \
@@ -202,7 +202,7 @@
                shmemc_context_id(ctx), target, source, tst, sst, nelems, pe \
                );                                                       \
                                                                         \
-        for (i = 0; i < nelems; i += 1) {                               \
+        for (i = 0; i < nelems; ++i) {                                  \
             shmem_ctx_##_name##_get(ctx,                                \
                                     &(target[ti]),                      \
                                     &(source[si]),                      \
@@ -233,7 +233,7 @@
                shmemc_context_id(ctx), target, source, tst, sst, nelems, pe \
                );                                                       \
                                                                         \
-        for (i = 0; i < nelems; i += 1) {                               \
+        for (i = 0; i < nelems; ++i) {                                  \
             shmem_ctx_put##_size(ctx,                                   \
                                  (void *) &((char *) target)[ti],       \
                                  (void *) &((char *) source)[si],       \
@@ -265,7 +265,7 @@
                );                                                       \
                                                                         \
                                                                         \
-        for (i = 0; i < nelems; i += 1) {                               \
+        for (i = 0; i < nelems; ++i) {                                  \
             shmem_ctx_get##_size(ctx,                                   \
                                  (void *) &((char *) target)[ti],       \
                                  (void *) &((char *) source)[si],       \
