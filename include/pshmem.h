@@ -884,7 +884,7 @@ extern "C"
                                  short *pWrk, long *pSync);
 
     void pshmem_int_max_to_all(int *target,
-                               cnost int *source,
+                               const int *source,
                                int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
@@ -915,7 +915,7 @@ extern "C"
                                   double *pWrk, long *pSync);
 
     void pshmem_int_min_to_all(int *target,
-                               cost int *source,
+                               const int *source,
                                int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
