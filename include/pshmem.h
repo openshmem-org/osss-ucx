@@ -5,6 +5,8 @@
 
 #include "shmem.h"
 
+#include <stdint.h>             /* uint*_t */
+
 #ifdef __cplusplus
 extern "C"
 {
@@ -58,10 +60,10 @@ extern "C"
     PSHMEM_DECL_PUTGET(put, int16, int16_t)
     PSHMEM_DECL_PUTGET(put, int32, int32_t)
     PSHMEM_DECL_PUTGET(put, int64, int64_t)
-    PSHMEM_DECL_PUTGET(put, uint8, unsigned int8_t)
-    PSHMEM_DECL_PUTGET(put, uint16, unsigned int16_t)
-    PSHMEM_DECL_PUTGET(put, uint32, unsigned int32_t)
-    PSHMEM_DECL_PUTGET(put, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET(put, uint8, uint8_t)
+    PSHMEM_DECL_PUTGET(put, uint16, uint16_t)
+    PSHMEM_DECL_PUTGET(put, uint32, uint32_t)
+    PSHMEM_DECL_PUTGET(put, uint64, uint64_t)
     PSHMEM_DECL_PUTGET(put, size, size_t)
     PSHMEM_DECL_PUTGET(put, ptrdiff, ptrdiff_t)
 
@@ -83,10 +85,10 @@ extern "C"
     PSHMEM_DECL_PUTGET(get, int16, int16_t)
     PSHMEM_DECL_PUTGET(get, int32, int32_t)
     PSHMEM_DECL_PUTGET(get, int64, int64_t)
-    PSHMEM_DECL_PUTGET(get, uint8, unsigned int8_t)
-    PSHMEM_DECL_PUTGET(get, uint16, unsigned int16_t)
-    PSHMEM_DECL_PUTGET(get, uint32, unsigned int32_t)
-    PSHMEM_DECL_PUTGET(get, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET(get, uint8, uint8_t)
+    PSHMEM_DECL_PUTGET(get, uint16, uint16_t)
+    PSHMEM_DECL_PUTGET(get, uint32, uint32_t)
+    PSHMEM_DECL_PUTGET(get, uint64, uint64_t)
     PSHMEM_DECL_PUTGET(get, size, size_t)
     PSHMEM_DECL_PUTGET(get, ptrdiff, ptrdiff_t)
 
@@ -137,10 +139,10 @@ extern "C"
     PSHMEM_DECL_P(int16, int16_t)
     PSHMEM_DECL_P(int32, int32_t)
     PSHMEM_DECL_P(int64, int64_t)
-    PSHMEM_DECL_P(uint8, unsigned int8_t)
-    PSHMEM_DECL_P(uint16, unsigned int16_t)
-    PSHMEM_DECL_P(uint32, unsigned int32_t)
-    PSHMEM_DECL_P(uint64, unsigned int64_t)
+    PSHMEM_DECL_P(uint8, uint8_t)
+    PSHMEM_DECL_P(uint16, uint16_t)
+    PSHMEM_DECL_P(uint32, uint32_t)
+    PSHMEM_DECL_P(uint64, uint64_t)
     PSHMEM_DECL_P(size, size_t)
     PSHMEM_DECL_P(ptrdiff, ptrdiff_t)
 
@@ -167,10 +169,10 @@ extern "C"
     PSHMEM_DECL_G(int16, int16_t)
     PSHMEM_DECL_G(int32, int32_t)
     PSHMEM_DECL_G(int64, int64_t)
-    PSHMEM_DECL_G(uint8, unsigned int8_t)
-    PSHMEM_DECL_G(uint16, unsigned int16_t)
-    PSHMEM_DECL_G(uint32, unsigned int32_t)
-    PSHMEM_DECL_G(uint64, unsigned int64_t)
+    PSHMEM_DECL_G(uint8, uint8_t)
+    PSHMEM_DECL_G(uint16, uint16_t)
+    PSHMEM_DECL_G(uint32, uint32_t)
+    PSHMEM_DECL_G(uint64, uint64_t)
     PSHMEM_DECL_G(size, size_t)
     PSHMEM_DECL_G(ptrdiff, ptrdiff_t)
 
@@ -204,10 +206,10 @@ extern "C"
     PSHMEM_DECL_STRIDED_OP(put, int16, int16_t)
     PSHMEM_DECL_STRIDED_OP(put, int32, int32_t)
     PSHMEM_DECL_STRIDED_OP(put, int64, int64_t)
-    PSHMEM_DECL_STRIDED_OP(put, uint8, unsigned int8_t)
-    PSHMEM_DECL_STRIDED_OP(put, uint16, unsigned int16_t)
-    PSHMEM_DECL_STRIDED_OP(put, uint32, unsigned int32_t)
-    PSHMEM_DECL_STRIDED_OP(put, uint64, unsigned int64_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint8, uint8_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint16, uint16_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint32, uint32_t)
+    PSHMEM_DECL_STRIDED_OP(put, uint64, uint64_t)
     PSHMEM_DECL_STRIDED_OP(put, size, size_t)
     PSHMEM_DECL_STRIDED_OP(put, ptrdiff, ptrdiff_t)
 
@@ -229,10 +231,10 @@ extern "C"
     PSHMEM_DECL_STRIDED_OP(get, int16, int16_t)
     PSHMEM_DECL_STRIDED_OP(get, int32, int32_t)
     PSHMEM_DECL_STRIDED_OP(get, int64, int64_t)
-    PSHMEM_DECL_STRIDED_OP(get, uint8, unsigned int8_t)
-    PSHMEM_DECL_STRIDED_OP(get, uint16, unsigned int16_t)
-    PSHMEM_DECL_STRIDED_OP(get, uint32, unsigned int32_t)
-    PSHMEM_DECL_STRIDED_OP(get, uint64, unsigned int64_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint8, uint8_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint16, uint16_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint32, uint32_t)
+    PSHMEM_DECL_STRIDED_OP(get, uint64, uint64_t)
     PSHMEM_DECL_STRIDED_OP(get, size, size_t)
     PSHMEM_DECL_STRIDED_OP(get, ptrdiff, ptrdiff_t)
 
@@ -285,10 +287,10 @@ extern "C"
     PSHMEM_DECL_PUTGET_NBI(put, int16, int16_t)
     PSHMEM_DECL_PUTGET_NBI(put, int32, int32_t)
     PSHMEM_DECL_PUTGET_NBI(put, int64, int64_t)
-    PSHMEM_DECL_PUTGET_NBI(put, uint8, unsigned int8_t)
-    PSHMEM_DECL_PUTGET_NBI(put, uint16, unsigned int16_t)
-    PSHMEM_DECL_PUTGET_NBI(put, uint32, unsigned int32_t)
-    PSHMEM_DECL_PUTGET_NBI(put, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint8, uint8_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint16, uint16_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint32, uint32_t)
+    PSHMEM_DECL_PUTGET_NBI(put, uint64, uint64_t)
     PSHMEM_DECL_PUTGET_NBI(put, size, size_t)
     PSHMEM_DECL_PUTGET_NBI(put, ptrdiff, ptrdiff_t)
 
@@ -310,10 +312,10 @@ extern "C"
     PSHMEM_DECL_PUTGET_NBI(get, int16, int16_t)
     PSHMEM_DECL_PUTGET_NBI(get, int32, int32_t)
     PSHMEM_DECL_PUTGET_NBI(get, int64, int64_t)
-    PSHMEM_DECL_PUTGET_NBI(get, uint8, unsigned int8_t)
-    PSHMEM_DECL_PUTGET_NBI(get, uint16, unsigned int16_t)
-    PSHMEM_DECL_PUTGET_NBI(get, uint32, unsigned int32_t)
-    PSHMEM_DECL_PUTGET_NBI(get, uint64, unsigned int64_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint8, uint8_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint16, uint16_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint32, uint32_t)
+    PSHMEM_DECL_PUTGET_NBI(get, uint64, uint64_t)
     PSHMEM_DECL_PUTGET_NBI(get, size, size_t)
     PSHMEM_DECL_PUTGET_NBI(get, ptrdiff, ptrdiff_t)
 
