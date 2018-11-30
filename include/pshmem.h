@@ -92,11 +92,11 @@ extern "C"
 
 #undef PSHMEM_DECL_PUTGET
 
-#define PSHMEM_DECL_PUTGET_SIZE(_opname, _size)                 \
-    void pshmem_##_opname##_size(void *dest, const _void *src,  \
-                                 size_t nelems, int pe);
+#define PSHMEM_DECL_PUTGET_SIZE(_opname, _size)                     \
+        void pshmem_##_opname##_size(void *dest, const void *src,   \
+                                     size_t nelems, int pe);
 
-    PSHMEM_DECL_PUTGET_SIZE(put, 8)
+        PSHMEM_DECL_PUTGET_SIZE(put, 8)
     PSHMEM_DECL_PUTGET_SIZE(put, 16)
     PSHMEM_DECL_PUTGET_SIZE(put, 32)
     PSHMEM_DECL_PUTGET_SIZE(put, 64)
