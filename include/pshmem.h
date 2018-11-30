@@ -92,11 +92,11 @@ extern "C"
 
 #undef PSHMEM_DECL_PUTGET
 
-#define PSHMEM_DECL_PUTGET_SIZE(_opname, _size)                 \
-    void pshmem_##_opname##_size(void *dest, const _void *src,  \
-                                 size_t nelems, int pe);
+#define PSHMEM_DECL_PUTGET_SIZE(_opname, _size)                     \
+        void pshmem_##_opname##_size(void *dest, const void *src,   \
+                                     size_t nelems, int pe);
 
-    PSHMEM_DECL_PUTGET_SIZE(put, 8)
+        PSHMEM_DECL_PUTGET_SIZE(put, 8)
     PSHMEM_DECL_PUTGET_SIZE(put, 16)
     PSHMEM_DECL_PUTGET_SIZE(put, 32)
     PSHMEM_DECL_PUTGET_SIZE(put, 64)
@@ -147,7 +147,7 @@ extern "C"
 #undef PSHMEM_DECL_P
 
 #define PSHMEM_DECL_G(_name, _type)                 \
-    _type pshmem_##_name##_g(_type *dest, int pe);
+    _type pshmem_##_name##_g(const _type *dest, int pe);
 
     PSHMEM_DECL_G(float, float)
     PSHMEM_DECL_G(double, double)
@@ -543,62 +543,62 @@ extern "C"
      * wait operations
      */
 
-    int pshmem_short_test(short *ivar, shmem_cmp_t cmp,
+    int pshmem_short_test(short *ivar, int cmp,
                           short cmp_value);
-    int pshmem_int_test(int *ivar, shmem_cmp_t cmp,
+    int pshmem_int_test(int *ivar, int cmp,
                         int cmp_value);
-    int pshmem_long_test(long *ivar, shmem_cmp_t cmp,
+    int pshmem_long_test(long *ivar, int cmp,
                          long cmp_value);
-    int pshmem_longlong_test(long long *ivar, shmem_cmp_t cmp,
+    int pshmem_longlong_test(long long *ivar, int cmp,
                              long long cmp_value);
-    int pshmem_ushort_test(unsigned short *ivar, shmem_cmp_t cmp,
+    int pshmem_ushort_test(unsigned short *ivar, int cmp,
                            unsigned short cmp_value);
-    int pshmem_uint_test(unsigned int *ivar, shmem_cmp_t cmp,
+    int pshmem_uint_test(unsigned int *ivar, int cmp,
                          unsigned int cmp_value);
-    int pshmem_ulong_test(unsigned long *ivar, shmem_cmp_t cmp,
+    int pshmem_ulong_test(unsigned long *ivar, int cmp,
                           unsigned long cmp_value);
-    int pshmem_ulonglong_test(unsigned long long *ivar, shmem_cmp_t cmp,
+    int pshmem_ulonglong_test(unsigned long long *ivar, int cmp,
                               unsigned long long cmp_value);
-    int pshmem_int32_test(int32_t *ivar, shmem_cmp_t cmp,
+    int pshmem_int32_test(int32_t *ivar, int cmp,
                           int32_t cmp_value);
-    int pshmem_int64_test(int64_t *ivar, shmem_cmp_t cmp,
+    int pshmem_int64_test(int64_t *ivar, int cmp,
                           int64_t cmp_value);
-    int pshmem_uint32_test(uint32_t *ivar, shmem_cmp_t cmp,
+    int pshmem_uint32_test(uint32_t *ivar, int cmp,
                            uint32_t cmp_value);
-    int pshmem_uint64_test(uint64_t *ivar, shmem_cmp_t cmp,
+    int pshmem_uint64_test(uint64_t *ivar, int cmp,
                            uint64_t cmp_value);
-    int pshmem_size_test(size_t *ivar, shmem_cmp_t cmp,
+    int pshmem_size_test(size_t *ivar, int cmp,
                          size_t cmp_value);
-    int pshmem_ptrdiff_test(ptrdiff_t *ivar, shmem_cmp_t cmp,
+    int pshmem_ptrdiff_test(ptrdiff_t *ivar, int cmp,
                             ptrdiff_t cmp_value);
 
-    void pshmem_short_wait_until(short *ivar, shmem_cmp_t cmp,
+    void pshmem_short_wait_until(short *ivar, int cmp,
                                  short cmp_value);
-    void pshmem_int_wait_until(int *ivar, shmem_cmp_t cmp,
+    void pshmem_int_wait_until(int *ivar, int cmp,
                                int cmp_value);
-    void pshmem_long_wait_until(long *ivar, shmem_cmp_t cmp,
+    void pshmem_long_wait_until(long *ivar, int cmp,
                                 long cmp_value);
-    void pshmem_longlong_wait_until(long long *ivar, shmem_cmp_t cmp,
+    void pshmem_longlong_wait_until(long long *ivar, int cmp,
                                     long long cmp_value);
-    void pshmem_ushort_wait_until(unsigned short *ivar, shmem_cmp_t cmp,
+    void pshmem_ushort_wait_until(unsigned short *ivar, int cmp,
                                   unsigned short cmp_value);
-    void pshmem_uint_wait_until(unsigned int *ivar, shmem_cmp_t cmp,
+    void pshmem_uint_wait_until(unsigned int *ivar, int cmp,
                                 unsigned int cmp_value);
-    void pshmem_ulong_wait_until(unsigned long *ivar, shmem_cmp_t cmp,
+    void pshmem_ulong_wait_until(unsigned long *ivar, int cmp,
                                  unsigned long cmp_value);
-    void pshmem_ulonglong_wait_until(unsigned long long *ivar, shmem_cmp_t cmp,
+    void pshmem_ulonglong_wait_until(unsigned long long *ivar, int cmp,
                                      unsigned long long cmp_value);
-    void pshmem_int32_wait_until(int32_t *ivar, shmem_cmp_t cmp,
+    void pshmem_int32_wait_until(int32_t *ivar, int cmp,
                                  int32_t cmp_value);
-    void pshmem_int64_wait_until(int64_t *ivar, shmem_cmp_t cmp,
+    void pshmem_int64_wait_until(int64_t *ivar, int cmp,
                                  int64_t cmp_value);
-    void pshmem_uint32_wait_until(uint32_t *ivar, shmem_cmp_t cmp,
+    void pshmem_uint32_wait_until(uint32_t *ivar, int cmp,
                                   uint32_t cmp_value);
-    void pshmem_uint64_wait_until(uint64_t *ivar, shmem_cmp_t cmp,
+    void pshmem_uint64_wait_until(uint64_t *ivar, int cmp,
                                   uint64_t cmp_value);
-    void pshmem_size_wait_until(size_t *ivar, shmem_cmp_t cmp,
+    void pshmem_size_wait_until(size_t *ivar, int cmp,
                                 size_t cmp_value);
-    void pshmem_ptrdiff_wait_until(ptrdiff_t *ivar, shmem_cmp_t cmp,
+    void pshmem_ptrdiff_wait_until(ptrdiff_t *ivar, int cmp,
                                    ptrdiff_t cmp_value);
 
     /* deprecations */
@@ -655,11 +655,11 @@ extern "C"
     unsigned long long pshmem_ulonglong_atomic_swap(unsigned long long *target,
                                                     unsigned long long value,
                                                     int pe) _WUR;
-    int32 pshmem_int32_atomic_swap(int32 *target, int32 value, int pe) _WUR;
-    int64 pshmem_int64_atomic_swap(int64 *target, int64 value, int pe) _WUR;
-    uint32 pshmem_uint32_atomic_swap(uint32 *target, uint32 value,
+    int32 pshmem_int32_atomic_swap(int32_t *target, int32_t value, int pe) _WUR;
+    int64 pshmem_int64_atomic_swap(int64_t *target, int64_t value, int pe) _WUR;
+    uint32 pshmem_uint32_atomic_swap(uint32_t *target, uint32_t value,
                                      int pe) _WUR;
-    uint64 pshmem_uint64_atomic_swap(uint64 *target, uint64 value,
+    uint64 pshmem_uint64_atomic_swap(uint64_t *target, uint64_t value,
                                      int pe) _WUR;
     size_t pshmem_size_atomic_swap(size_t *target, size_t value,
                                    int pe) _WUR;
@@ -692,13 +692,13 @@ extern "C"
     pshmem_ulonglong_atomic_compare_swap(unsigned long long *target,
                                          unsigned long long value,
                                          int pe) _WUR;
-    int32 pshmem_int32_atomic_compare_swap(int32 *target, int32 value,
+    int32 pshmem_int32_atomic_compare_swap(int32_t *target, int32_t value,
                                            int pe) _WUR;
-    int64 pshmem_int64_atomic_compare_swap(int64 *target, int64 value,
+    int64 pshmem_int64_atomic_compare_swap(int64_t *target, int64_t value,
                                            int pe) _WUR;
-    uint32 pshmem_uint32_atomic_compare_swap(uint32 *target, uint32 value,
+    uint32 pshmem_uint32_atomic_compare_swap(uint32_t *target, uint32_t value,
                                              int pe) _WUR;
-    uint64 pshmem_uint64_atomic_compare_swap(uint64 *target, uint64 value,
+    uint64 pshmem_uint64_atomic_compare_swap(uint64_t *target, uint64_t value,
                                              int pe) _WUR;
     size_t pshmem_size_atomic_compare_swap(size_t *target, size_t value,
                                            int pe) _WUR;
@@ -743,201 +743,202 @@ extern "C"
      */
 
     void pshmem_complexd_sum_to_all(COMPLEXIFY(double) * target,
-                                    COMPLEXIFY(double) * source,
+                                    const COMPLEXIFY(double) * source,
                                     int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size,
                                     COMPLEXIFY(double) * pWrk,
                                     long *pSync);
     void pshmem_complexf_sum_to_all(COMPLEXIFY(float) * target,
-                                    COMPLEXIFY(float) * source,
+                                    const COMPLEXIFY(float) * source,
                                     int nreduce, int PE_start,
                                     int logPE_stride, int PE_size,
                                     COMPLEXIFY(float) * pWrk,
                                     long *pSync);
-    void pshmem_double_sum_to_all(double *target, double *source,
+    void pshmem_double_sum_to_all(double *target, const double *source,
                                   int nreduce, int PE_start,
                                   int logPE_stride, int PE_size,
                                   double *pWrk, long *pSync);
-    void pshmem_float_sum_to_all(float *target, float *source,
+    void pshmem_float_sum_to_all(float *target, const float *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  float *pWrk, long *pSync);
-    void pshmem_int_sum_to_all(int *target, int *source, int nreduce,
+    void pshmem_int_sum_to_all(int *target, const int *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
-    void pshmem_long_sum_to_all(long *target, long *source, int nreduce,
+    void pshmem_long_sum_to_all(long *target, const long *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, long *pWrk, long *pSync);
     void pshmem_longdouble_sum_to_all(long double *target,
-                                      long double *source, int nreduce,
+                                      const long double *source, int nreduce,
                                       int PE_start, int logPE_stride,
                                       int PE_size, long double *pWrk,
                                       long *pSync);
     void pshmem_longlong_sum_to_all(long long *target,
-                                    long long *source, int nreduce,
+                                    const long long *source, int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size, long long *pWrk,
                                     long *pSync);
-    void pshmem_short_sum_to_all(short *target, short *source,
+    void pshmem_short_sum_to_all(short *target, const short *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  short *pWrk, long *pSync);
 
     void pshmem_complexd_prod_to_all(COMPLEXIFY(double) * target,
-                                     COMPLEXIFY(double) * source,
+                                     const COMPLEXIFY(double) * source,
                                      int nreduce,
                                      int PE_start, int logPE_stride,
                                      int PE_size,
                                      COMPLEXIFY(double) * pWrk,
                                      long *pSync);
     void pshmem_complexf_prod_to_all(COMPLEXIFY(float) * target,
-                                     COMPLEXIFY(float) * source,
+                                     const COMPLEXIFY(float) * source,
                                      int nreduce, int PE_start,
                                      int logPE_stride, int PE_size,
                                      COMPLEXIFY(float) * pWrk,
                                      long *pSync);
-    void pshmem_double_prod_to_all(double *target, double *source,
+    void pshmem_double_prod_to_all(double *target, const double *source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    double *pWrk, long *pSync);
-    void pshmem_float_prod_to_all(float *target, float *source,
+    void pshmem_float_prod_to_all(float *target, const float *source,
                                   int nreduce, int PE_start,
                                   int logPE_stride, int PE_size,
                                   float *pWrk, long *pSync);
-    void pshmem_int_prod_to_all(int *target, int *source, int nreduce,
+    void pshmem_int_prod_to_all(int *target, const int *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, int *pWrk, long *pSync);
-    void pshmem_long_prod_to_all(long *target, long *source,
+    void pshmem_long_prod_to_all(long *target, const long *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  long *pWrk, long *pSync);
     void pshmem_longdouble_prod_to_all(long double *target,
-                                       long double *source, int nreduce,
+                                       const long double *source, int nreduce,
                                        int PE_start, int logPE_stride,
                                        int PE_size, long double *pWrk,
                                        long *pSync);
     void pshmem_longlong_prod_to_all(long long *target,
-                                     long long *source, int nreduce,
+                                     const long long *source, int nreduce,
                                      int PE_start, int logPE_stride,
                                      int PE_size, long long *pWrk,
                                      long *pSync);
-    void pshmem_short_prod_to_all(short *target, short *source,
+    void pshmem_short_prod_to_all(short *target, const short *source,
                                   int nreduce, int PE_start,
                                   int logPE_stride, int PE_size,
                                   short *pWrk, long *pSync);
 
     void pshmem_int_and_to_all(int *target,
-                               int *source,
+                               const int *source,
                                int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
-    void pshmem_long_and_to_all(long *target, long *source, int nreduce,
+    void pshmem_long_and_to_all(long *target, const long *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, long *pWrk, long *pSync);
     void pshmem_longlong_and_to_all(long long *target,
-                                    long long *source, int nreduce,
+                                    const long long *source, int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size, long long *pWrk,
                                     long *pSync);
-    void pshmem_short_and_to_all(short *target, short *source,
+    void pshmem_short_and_to_all(short *target, const short *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  short *pWrk, long *pSync);
 
     void pshmem_int_or_to_all(int *target,
-                              int *source,
+                              const int *source,
                               int nreduce,
                               int PE_start, int logPE_stride,
                               int PE_size, int *pWrk, long *pSync);
-    void pshmem_long_or_to_all(long *target, long *source, int nreduce,
+    void pshmem_long_or_to_all(long *target, const long *source, int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, long *pWrk, long *pSync);
-    void pshmem_longlong_or_to_all(long long *target, long long *source,
+    void pshmem_longlong_or_to_all(long long *target,
+                                   const long long *source,
                                    int nreduce, int PE_start,
                                    int logPE_stride, int PE_size,
                                    long long *pWrk, long *pSync);
-    void pshmem_short_or_to_all(short *target, short *source,
+    void pshmem_short_or_to_all(short *target, const short *source,
                                 int nreduce, int PE_start,
                                 int logPE_stride, int PE_size,
                                 short *pWrk, long *pSync);
 
     void pshmem_int_xor_to_all(int *target,
-                               int *source,
+                               const int *source,
                                int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
-    void pshmem_long_xor_to_all(long *target, long *source, int nreduce,
+    void pshmem_long_xor_to_all(long *target, const long *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, long *pWrk, long *pSync);
     void pshmem_longlong_xor_to_all(long long *target,
-                                    long long *source, int nreduce,
+                                    const long long *source, int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size, long long *pWrk,
                                     long *pSync);
-    void pshmem_short_xor_to_all(short *target, short *source,
+    void pshmem_short_xor_to_all(short *target, const short *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  short *pWrk, long *pSync);
 
     void pshmem_int_max_to_all(int *target,
-                               int *source,
+                               cnost int *source,
                                int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
-    void pshmem_long_max_to_all(long *target, long *source, int nreduce,
+    void pshmem_long_max_to_all(long *target, const long *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, long *pWrk, long *pSync);
     void pshmem_longlong_max_to_all(long long *target,
-                                    long long *source, int nreduce,
+                                    const long long *source, int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size, long long *pWrk,
                                     long *pSync);
-    void pshmem_short_max_to_all(short *target, short *source,
+    void pshmem_short_max_to_all(short *target, const short *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  short *pWrk, long *pSync);
     void pshmem_longdouble_max_to_all(long double *target,
-                                      long double *source, int nreduce,
+                                      const long double *source, int nreduce,
                                       int PE_start, int logPE_stride,
                                       int PE_size, long double *pWrk,
                                       long *pSync);
-    void pshmem_float_max_to_all(float *target, float *source,
+    void pshmem_float_max_to_all(float *target, const float *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  float *pWrk, long *pSync);
-    void pshmem_double_max_to_all(double *target, double *source,
+    void pshmem_double_max_to_all(double *target, const double *source,
                                   int nreduce, int PE_start,
                                   int logPE_stride, int PE_size,
                                   double *pWrk, long *pSync);
 
     void pshmem_int_min_to_all(int *target,
-                               int *source,
+                               cost int *source,
                                int nreduce,
                                int PE_start, int logPE_stride,
                                int PE_size, int *pWrk, long *pSync);
-    void pshmem_long_min_to_all(long *target, long *source, int nreduce,
+    void pshmem_long_min_to_all(long *target, const long *source, int nreduce,
                                 int PE_start, int logPE_stride,
                                 int PE_size, long *pWrk, long *pSync);
     void pshmem_longlong_min_to_all(long long *target,
-                                    long long *source, int nreduce,
+                                    const long long *source, int nreduce,
                                     int PE_start, int logPE_stride,
                                     int PE_size, long long *pWrk,
                                     long *pSync);
-    void pshmem_short_min_to_all(short *target, short *source,
+    void pshmem_short_min_to_all(short *target, const short *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  short *pWrk, long *pSync);
     void pshmem_longdouble_min_to_all(long double *target,
-                                      long double *source, int nreduce,
+                                      const long double *source, int nreduce,
                                       int PE_start, int logPE_stride,
                                       int PE_size, long double *pWrk,
                                       long *pSync);
-    void pshmem_float_min_to_all(float *target, float *source,
+    void pshmem_float_min_to_all(float *target, const float *source,
                                  int nreduce, int PE_start,
                                  int logPE_stride, int PE_size,
                                  float *pWrk, long *pSync);
-    void pshmem_double_min_to_all(double *target, double *source,
+    void pshmem_double_min_to_all(double *target, const double *source,
                                   int nreduce, int PE_start,
                                   int logPE_stride, int PE_size,
                                   double *pWrk, long *pSync);
