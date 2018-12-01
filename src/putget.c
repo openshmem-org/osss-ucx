@@ -54,6 +54,10 @@
 #define shmem_ctx_uint32_put pshmem_ctx_uint32_put
 #pragma weak shmem_ctx_uint64_put = pshmem_ctx_uint64_put
 #define shmem_ctx_uint64_put pshmem_ctx_uint64_put
+#pragma weak shmem_ctx_size_put = pshmem_ctx_size_put
+#define shmem_ctx_size_put pshmem_ctx_size_put
+#pragma weak shmem_ctx_ptrdiff_put = pshmem_ctx_ptrdiff_put
+#define shmem_ctx_ptrdiff_put pshmem_ctx_ptrdiff_put
 /* for Fortran */
 #pragma weak shmem_ctx_complexf_put = pshmem_ctx_complexf_put
 #define shmem_ctx_complexf_put pshmem_ctx_complexf_put
@@ -160,6 +164,10 @@ SHMEM_CTX_PUTMEM()
 #define shmem_ctx_uint32_p pshmem_ctx_uint32_p
 #pragma weak shmem_ctx_uint64_p = pshmem_ctx_uint64_p
 #define shmem_ctx_uint64_p pshmem_ctx_uint64_p
+#pragma weak shmem_ctx_size_p = pshmem_ctx_size_p
+#define shmem_ctx_size_p pshmem_ctx_size_p
+#pragma weak shmem_ctx_ptrdiff_p = pshmem_ctx_ptrdiff_p
+#define shmem_ctx_ptrdiff_p pshmem_ctx_ptrdiff_p
 /* for Fortran */
 #pragma weak shmem_ctx_complexf_p = pshmem_ctx_complexf_p
 #define shmem_ctx_complexf_p pshmem_ctx_complexf_p
@@ -245,6 +253,15 @@ SHMEM_CTX_TYPED_P(complexd, COMPLEXIFY(double))
 #define shmem_ctx_uint32_iput pshmem_ctx_uint32_iput
 #pragma weak shmem_ctx_uint64_iput = pshmem_ctx_uint64_iput
 #define shmem_ctx_uint64_iput pshmem_ctx_uint64_iput
+#pragma weak shmem_ctx_size_iput = pshmem_ctx_size_iput
+#define shmem_ctx_size_iput pshmem_ctx_size_iput
+#pragma weak shmem_ctx_ptrdiff_iput = pshmem_ctx_ptrdiff_iput
+#define shmem_ctx_ptrdiff_iput pshmem_ctx_ptrdiff_iput
+/* for Fortran */
+#pragma weak shmem_ctx_complexf_iput = pshmem_ctx_complexf_iput
+#define shmem_ctx_complexf_iput pshmem_ctx_complexf_iput
+#pragma weak shmem_ctx_complexd_iput = pshmem_ctx_complexd_iput
+#define shmem_ctx_complexd_iput pshmem_ctx_complexd_iput
 #endif /* ENABLE_PSHMEM */
 
 SHMEM_CTX_TYPED_IPUT(float, float)
@@ -271,7 +288,6 @@ SHMEM_CTX_TYPED_IPUT(uint32, uint32_t)
 SHMEM_CTX_TYPED_IPUT(uint64, uint64_t)
 SHMEM_CTX_TYPED_IPUT(size, size_t)
 SHMEM_CTX_TYPED_IPUT(ptrdiff, ptrdiff_t)
-/* for Fortran */
 SHMEM_CTX_TYPED_IPUT(complexf, COMPLEXIFY(float))
 SHMEM_CTX_TYPED_IPUT(complexd, COMPLEXIFY(double))
 
@@ -339,6 +355,10 @@ SHMEM_CTX_SIZED_IPUT(128)
 #define shmem_ctx_uint32_put_nbi pshmem_ctx_uint32_put_nbi
 #pragma weak shmem_ctx_uint64_put_nbi = pshmem_ctx_uint64_put_nbi
 #define shmem_ctx_uint64_put_nbi pshmem_ctx_uint64_put_nbi
+#pragma weak shmem_ctx_size_put_nbi = pshmem_ctx_size_put_nbi
+#define shmem_ctx_size_put_nbi pshmem_ctx_size_put_nbi
+#pragma weak shmem_ctx_ptrdiff_put_nbi = pshmem_ctx_ptrdiff_put_nbi
+#define shmem_ctx_ptrdiff_put_nbi pshmem_ctx_ptrdiff_put_nbi
 /* for Fortran */
 #pragma weak shmem_ctx_complexf_put_nbi = pshmem_ctx_complexf_put_nbi
 #define shmem_ctx_complexf_put_nbi pshmem_ctx_complexf_put_nbi
@@ -445,6 +465,10 @@ SHMEM_CTX_PUTMEM_NBI()
 #define shmem_uint32_put pshmem_uint32_put
 #pragma weak shmem_uint64_put = pshmem_uint64_put
 #define shmem_uint64_put pshmem_uint64_put
+#pragma weak shmem_size_put = pshmem_size_put
+#define shmem_size_put pshmem_size_put
+#pragma weak shmem_ptrdiff_put = pshmem_ptrdiff_put
+#define shmem_ptrdiff_put pshmem_ptrdiff_put
 
 #pragma weak shmem_float_iput = pshmem_float_iput
 #define shmem_float_iput pshmem_float_iput
@@ -490,6 +514,10 @@ SHMEM_CTX_PUTMEM_NBI()
 #define shmem_uint32_iput pshmem_uint32_iput
 #pragma weak shmem_uint64_iput = pshmem_uint64_iput
 #define shmem_uint64_iput pshmem_uint64_iput
+#pragma weak shmem_size_iput = pshmem_size_iput
+#define shmem_size_iput pshmem_size_iput
+#pragma weak shmem_ptrdiff_iput = pshmem_ptrdiff_iput
+#define shmem_ptrdiff_iput pshmem_ptrdiff_iput
 
 #pragma weak shmem_float_put_nbi = pshmem_float_put_nbi
 #define shmem_float_put_nbi pshmem_float_put_nbi
@@ -535,6 +563,10 @@ SHMEM_CTX_PUTMEM_NBI()
 #define shmem_uint32_put_nbi pshmem_uint32_put_nbi
 #pragma weak shmem_uint64_put_nbi = pshmem_uint64_put_nbi
 #define shmem_uint64_put_nbi pshmem_uint64_put_nbi
+#pragma weak shmem_size_put_nbi = pshmem_size_put_nbi
+#define shmem_size_put_nbi pshmem_size_put_nbi
+#pragma weak shmem_ptrdiff_put_nbi = pshmem_ptrdiff_put_nbi
+#define shmem_ptrdiff_put_nbi pshmem_ptrdiff_put_nbi
 #endif /* ENABLE_PSHMEM */
 
 API_DECL_TYPED_PUT(float, float)
@@ -737,6 +769,10 @@ API_DECL_TYPED_P(ptrdiff, ptrdiff_t)
 #define shmem_ctx_uint32_get pshmem_ctx_uint32_get
 #pragma weak shmem_ctx_uint64_get = pshmem_ctx_uint64_get
 #define shmem_ctx_uint64_get pshmem_ctx_uint64_get
+#pragma weak shmem_ctx_size_get = pshmem_ctx_size_get
+#define shmem_ctx_size_get pshmem_ctx_size_get
+#pragma weak shmem_ctx_ptrdiff_get = pshmem_ctx_ptrdiff_get
+#define shmem_ctx_ptrdiff_get pshmem_ctx_ptrdiff_get
 /* for Fortran */
 #pragma weak shmem_ctx_complexf_get = pshmem_ctx_complexf_get
 #define shmem_ctx_complexf_get pshmem_ctx_complexf_get
@@ -843,6 +879,10 @@ SHMEM_CTX_GETMEM()
 #define shmem_ctx_uint32_g pshmem_ctx_uint32_g
 #pragma weak shmem_ctx_uint64_g = pshmem_ctx_uint64_g
 #define shmem_ctx_uint64_g pshmem_ctx_uint64_g
+#pragma weak shmem_ctx_size_g = pshmem_ctx_size_g
+#define shmem_ctx_size_g pshmem_ctx_size_g
+#pragma weak shmem_ctx_ptrdiff_g = pshmem_ctx_ptrdiff_g
+#define shmem_ctx_ptrdiff_g pshmem_ctx_ptrdiff_g
 /* for Fortran */
 #pragma weak shmem_ctx_complexf_g = pshmem_ctx_complexf_g
 #define shmem_ctx_complexf_g pshmem_ctx_complexf_g
@@ -923,6 +963,15 @@ SHMEM_CTX_TYPED_G(complexd, COMPLEXIFY(double))
 #define shmem_ctx_uint32_iget pshmem_ctx_uint32_iget
 #pragma weak shmem_ctx_uint64_iget = pshmem_ctx_uint64_iget
 #define shmem_ctx_uint64_iget pshmem_ctx_uint64_iget
+#pragma weak shmem_ctx_size_iget = pshmem_ctx_size_iget
+#define shmem_ctx_size_iget pshmem_ctx_size_iget
+#pragma weak shmem_ctx_ptrdiff_iget = pshmem_ctx_ptrdiff_iget
+#define shmem_ctx_ptrdiff_iget pshmem_ctx_ptrdiff_iget
+/* for Fortran */
+#pragma weak shmem_ctx_complexf_iget = pshmem_ctx_complexf_iget
+#define shmem_ctx_complexf_iget pshmem_ctx_complexf_iget
+#pragma weak shmem_ctx_complexd_iget = pshmem_ctx_complexd_iget
+#define shmem_ctx_complexd_iget pshmem_ctx_complexd_iget
 #endif /* ENABLE_PSHMEM */
 
 SHMEM_CTX_TYPED_IGET(float, float)
@@ -1017,6 +1066,10 @@ SHMEM_CTX_SIZED_IGET(128)
 #define shmem_ctx_uint32_get_nbi pshmem_ctx_uint32_get_nbi
 #pragma weak shmem_ctx_uint64_get_nbi = pshmem_ctx_uint64_get_nbi
 #define shmem_ctx_uint64_get_nbi pshmem_ctx_uint64_get_nbi
+#pragma weak shmem_ctx_size_get_nbi = pshmem_ctx_size_get_nbi
+#define shmem_ctx_size_get_nbi pshmem_ctx_size_get_nbi
+#pragma weak shmem_ctx_ptrdiff_get_nbi = pshmem_ctx_ptrdiff_get_nbi
+#define shmem_ctx_ptrdiff_get_nbi pshmem_ctx_ptrdiff_get_nbi
 /* for Fortran */
 #pragma weak shmem_ctx_complexf_get_nbi = pshmem_ctx_complexf_get_nbi
 #define shmem_ctx_complexf_get_nbi pshmem_ctx_complexf_get_nbi
@@ -1123,6 +1176,10 @@ SHMEM_CTX_GETMEM_NBI()
 #define shmem_uint32_get pshmem_uint32_get
 #pragma weak shmem_uint64_get = pshmem_uint64_get
 #define shmem_uint64_get pshmem_uint64_get
+#pragma weak shmem_size_get = pshmem_size_get
+#define shmem_size_get pshmem_size_get
+#pragma weak shmem_ptrdiff_get = pshmem_ptrdiff_get
+#define shmem_ptrdiff_get pshmem_ptrdiff_get
 
 #pragma weak shmem_float_iget = pshmem_float_iget
 #define shmem_float_iget pshmem_float_iget
@@ -1168,6 +1225,10 @@ SHMEM_CTX_GETMEM_NBI()
 #define shmem_uint32_iget pshmem_uint32_iget
 #pragma weak shmem_uint64_iget = pshmem_uint64_iget
 #define shmem_uint64_iget pshmem_uint64_iget
+#pragma weak shmem_size_iget = pshmem_size_iget
+#define shmem_size_iget pshmem_size_iget
+#pragma weak shmem_ptrdiff_iget = pshmem_ptrdiff_iget
+#define shmem_ptrdiff_iget pshmem_ptrdiff_iget
 
 #pragma weak shmem_float_get_nbi = pshmem_float_get_nbi
 #define shmem_float_get_nbi pshmem_float_get_nbi
@@ -1213,6 +1274,10 @@ SHMEM_CTX_GETMEM_NBI()
 #define shmem_uint32_get_nbi pshmem_uint32_get_nbi
 #pragma weak shmem_uint64_get_nbi = pshmem_uint64_get_nbi
 #define shmem_uint64_get_nbi pshmem_uint64_get_nbi
+#pragma weak shmem_size_get_nbi = pshmem_size_get_nbi
+#define shmem_size_get_nbi pshmem_size_get_nbi
+#pragma weak shmem_ptrdiff_get_nbi = pshmem_ptrdiff_get_nbi
+#define shmem_ptrdiff_get_nbi pshmem_ptrdiff_get_nbi
 #endif /* ENABLE_PSHMEM */
 
 API_DECL_TYPED_GET(float, float)
