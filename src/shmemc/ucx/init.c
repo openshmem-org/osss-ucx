@@ -112,6 +112,7 @@ register_globals()
     mp.address = (void *) g_base;
     mp.length = len;
     mp.flags =
+        UCP_MEM_MAP_NONBLOCK |
         UCP_MEM_MAP_ALLOCATE |
         UCP_MEM_MAP_FIXED;
 
@@ -159,6 +160,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     mp.length = proc.env.heaps.heapsize[heapno];
 
     mp.flags =
+        UCP_MEM_MAP_NONBLOCK |
         UCP_MEM_MAP_ALLOCATE;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->racc.mh);
