@@ -159,9 +159,7 @@ context_deregister(shmemc_context_h ch)
 }
 
 /*
- * fill in context
- *
- * Return 0 on success, non-0 on failure
+ * fill in context from provided options
  */
 
 static void
