@@ -25,5 +25,5 @@ start_pes(int n)
     shmem_init();
 
     /* can't tell anyone until init has really happened */
-    deprecate(__func__, 1, 2);
+    deprecate(__func__, 1.2);
 }

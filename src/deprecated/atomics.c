@@ -24,14 +24,13 @@
  *
  */
 
-#define MAJOR 1
-#define MINOR 4
+#define DEPR_SINCE 1.4
 
 #define SHMEM_DEPRECATE_VOID_AMO1(_op, _name, _type, _size) \
     void                                                    \
     shmem_##_name##_##_op(_type *target, int pe)            \
     {                                                       \
-        deprecate(__func__, MAJOR, MINOR);                  \
+        deprecate(__func__, DEPR_SINCE);                    \
         shmemc_##_op##_size(target, pe);                    \
     }
 
@@ -39,7 +38,7 @@
     void                                                        \
     shmem_##_name##_##_op(_type *target, _type value, int pe)   \
     {                                                           \
-        deprecate(__func__, MAJOR, MINOR);                      \
+        deprecate(__func__, DEPR_SINCE);                        \
         shmemc_##_op##_size(target, value, pe);                 \
     }
 
@@ -49,7 +48,7 @@
                           _type cond, _type value,          \
                           int pe)                           \
     {                                                       \
-        deprecate(__func__, MAJOR, MINOR);                  \
+        deprecate(__func__, DEPR_SINCE);                    \
         shmemc_##_op##_size(target, cond, value, pe);       \
     }
 
@@ -57,7 +56,7 @@
     _type                                               \
     shmem_##_name##_##_op(_type *target, int pe)        \
     {                                                   \
-        deprecate(__func__, MAJOR, MINOR);              \
+        deprecate(__func__, DEPR_SINCE);                \
         return shmemc_##_op##_size(target, pe);         \
     }
 
@@ -65,7 +64,7 @@
     _type                                                       \
     shmem_##_name##_##_op(_type *target, _type value, int pe)   \
     {                                                           \
-        deprecate(__func__, MAJOR, MINOR);                      \
+        deprecate(__func__, DEPR_SINCE);                        \
         return shmemc_##_op##_size(target, value, pe);          \
     }
 
@@ -75,7 +74,7 @@
                           _type cond, _type value,              \
                           int pe)                               \
     {                                                           \
-        deprecate(__func__, MAJOR, MINOR);                      \
+        deprecate(__func__, DEPR_SINCE);                        \
         return shmemc_##_op##_size(target, cond, value, pe);    \
     }
 

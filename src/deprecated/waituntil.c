@@ -50,7 +50,7 @@
     void                                                            \
     shmem_##_name##_wait(_type *ivar, _type cmp_value)              \
     {                                                               \
-        deprecate(__func__, 1, 4);                                  \
+        deprecate(__func__, 1.4);                                   \
         shmemc_ctx_wait_ne_until##_size(SHMEM_CTX_DEFAULT,          \
                                         (int##_size##_t *) ivar,    \
                                         cmp_value);                 \

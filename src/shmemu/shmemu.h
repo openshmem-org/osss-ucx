@@ -109,7 +109,7 @@ typedef const char *shmemu_log_t;
 typedef shmemu_log_t *shmemu_log_table_t;
 
 void shmemu_logger(shmemu_log_t evt, const char *fmt, ...);
-void shmemu_deprecate(const char *fn, int maj, int min);
+void shmemu_deprecate(const char *fn, float version);
 
 # define logger(...) shmemu_logger(__VA_ARGS__)
 void shmemu_logger_init(void);

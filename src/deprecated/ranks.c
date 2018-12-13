@@ -13,16 +13,18 @@
 #define _num_pes p_num_pes
 #endif /* ENABLE_PSHMEM */
 
+#define DEPR_SINCE 1.2
+
 int
 _my_pe(void)
 {
-    deprecate(__func__, 1, 2);
+    deprecate(__func__, DEPR_SINCE);
     return shmemc_my_pe();
 }
 
 int
 _num_pes(void)
 {
-    deprecate(__func__, 1, 2);
+    deprecate(__func__, DEPR_SINCE);
     return shmemc_n_pes();
 }
