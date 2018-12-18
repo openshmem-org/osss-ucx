@@ -87,6 +87,8 @@ deallocate_contexts_table(void)
     for (c = 0; c < proc.comms.nctxts; ++c) {
         ucp_worker_destroy(proc.comms.ctxts[c]->w);
     }
+
+    free(proc.comms.ctxts);
 }
 
 /*
