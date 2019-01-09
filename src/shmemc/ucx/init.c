@@ -46,7 +46,7 @@ allocate_endpoints_table(void)
     proc.comms.eps = (ucp_ep_h *)
         calloc(proc.nranks, sizeof(*(proc.comms.eps)));
     shmemu_assert(proc.comms.eps != NULL,
-                  "can't allocate memory for endpoints");
+                  "can't allocate memory for remotely accessible endpoints");
 }
 
 inline static void
@@ -71,7 +71,7 @@ allocate_contexts_table(void)
 inline static void
 deallocate_contexts_table(void)
 {
-    shmemc_context_h def = (shmemc_context_h) SHMEM_CTX_DEFAULT;
+    shmemc_context_h def = &shmemc_default_context;
     size_t c;
 
     /*
@@ -364,7 +364,7 @@ void
 shmemc_ucx_make_remote_endpoints(void)
 {
     ucs_status_t s;
-    shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;
+    shmemc_context_h ch = &shmemc_default_context;
     ucp_ep_params_t epm;
     int i;
 
@@ -376,16 +376,11 @@ shmemc_ucx_make_remote_endpoints(void)
 
         s = ucp_ep_create(ch->w, &epm, &proc.comms.eps[pe]);
 
-        /*
-         * this can fail if we have e.g. mlx4 and not mlx5 infiniband.
-         * I can tell it's failed, but I don't really know why...
-         */
-        if (s != UCS_OK) {
-            shmemu_fatal("Unable to create remote endpoints: %s",
-                         ucs_status_string(s)
-                         );
-            /* NOT REACHED */
-        }
+        shmemu_assert(s == UCS_OK,
+                      "Unable to create remote endpoints: %s",
+                      ucs_status_string(s)
+                      );
+        /* NOT REACHED */
     }
 }
 
