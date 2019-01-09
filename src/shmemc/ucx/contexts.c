@@ -33,6 +33,7 @@ shmemc_context_progress(shmemc_context_h ch)
     else {
         wkpm.thread_mode = UCS_THREAD_MODE_MULTI;
     }
+
     s = ucp_worker_create(proc.comms.ucx_ctxt, &wkpm, &(ch->w));
     if (shmemu_unlikely(s != UCS_OK)) {
         return 1;

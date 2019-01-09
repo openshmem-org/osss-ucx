@@ -162,8 +162,8 @@ context_deregister(shmemc_context_h ch)
  * fill in context from provided options
  */
 
-static void
-shmemc_context_set_options(long options, shmemc_context_h ch)
+inline static void
+context_set_options(long options, shmemc_context_h ch)
 {
     ch->attr.serialized = options & SHMEM_CTX_SERIALIZED;
     ch->attr.private    = options & SHMEM_CTX_PRIVATE;
@@ -184,7 +184,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
     shmemc_context_h ch = proc.comms.ctxts[idx];
 
     /* set SHMEM context behavior */
-    shmemc_context_set_options(options, ch);
+    context_set_options(options, ch);
 
     /* is this reclaimed from free list or do we have to set up? */
     if (! reuse) {
@@ -260,7 +260,8 @@ shmemc_init_default_context(void)
 {
     shmemc_context_h ch = &shmemc_default_context;
 
-    shmemc_context_set_options(0L, ch);
+    context_set_options(0L, ch);
+
     shmemc_context_progress(ch);
 
     return shmemc_context_default_set_info(ch);
