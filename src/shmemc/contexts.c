@@ -188,7 +188,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 
     /* is this reclaimed from free list or do we have to set up? */
     if (! reuse) {
-        const int ret = shmemc_context_progress(ch);
+        const int ret = shmemc_ucx_context_progress(ch);
 
         if (shmemu_unlikely(ret != 0)) {
             free(ch);
@@ -258,11 +258,11 @@ shmemc_context_t shmemc_default_context;
 int
 shmemc_init_default_context(void)
 {
-    shmemc_context_h ch = &shmemc_default_context;
+    shmemc_context_h def = &shmemc_default_context;
 
-    context_set_options(0L, ch);
+    context_set_options(0L, def);
 
-    shmemc_context_progress(ch);
+    shmemc_ucx_context_progress(def);
 
-    return shmemc_context_default_set_info(ch);
+    return shmemc_ucx_context_default_set_info();
 }

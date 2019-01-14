@@ -9,9 +9,6 @@
 
 #include "pe.h"
 
-int shmemc_context_progress(shmemc_context_h ch);
-int shmemc_context_default_set_info(shmemc_context_h ch);
-
 /*
  * setup and teardown
  */
@@ -20,9 +17,17 @@ void shmemc_ucx_init(void);
 void shmemc_ucx_finalize(void);
 
 /*
- * build endpoints from remotely exchanged worker info
+ * build context endpoints
  */
 
-void shmemc_ucx_make_remote_endpoints(void);
+int shmemc_ucx_context_default_set_info(void);
+
+void shmemc_ucx_allocate_eps_table(void);
+void shmemc_ucx_deallocate_eps_table(void);
+
+int shmemc_ucx_context_progress(shmemc_context_h ch);
+void shmemc_ucx_make_remote_eps(void);
+void shmemc_ucx_disconnect_all_eps(void);
+
 
 #endif /* ! _SHMEMC_UCX_H */

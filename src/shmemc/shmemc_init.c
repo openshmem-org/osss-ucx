@@ -25,7 +25,7 @@ shmemc_init(void)
     /* exchange worker info and then create EPs */
     shmemc_pmi_exchange_workers();
 
-    shmemc_ucx_make_remote_endpoints();
+    shmemc_ucx_make_remote_eps();
 
     shmemc_pmi_publish_rkeys_and_heaps();
 

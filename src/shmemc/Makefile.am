@@ -15,6 +15,7 @@ LIBSHMEMC_SOURCES         = \
 LIBSHMEMC_SOURCES        += \
 				ucx/comms.c \
 				ucx/contexts.c \
+				ucx/eps.c \
 				ucx/init.c \
 				ucx/waituntil.c
 
