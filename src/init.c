@@ -60,8 +60,8 @@ finalize_helper(void)
     /* implicit barrier on finalize */
     shmem_barrier_all();
 
-    shmemc_finalize();
     progress_finalize();
+    shmemc_finalize();
     shmemu_finalize();
 
 #ifdef ENABLE_EXPERIMENTAL
