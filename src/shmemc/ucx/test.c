@@ -103,7 +103,7 @@ COMMS_CTX_TEST_ALL_SIZE(64, ge, >=)
 #define COMMS_CTX_TEST_SOME_SIZE(_size, _opname, _op)                   \
     size_t                                                              \
     shmemc_ctx_test_some_##_opname##_size(shmem_ctx_t ctx,              \
-                                          int##_size##_t *vars,         \
+                                          int##_size##_t * restrict vars, \
                                           size_t nelems,                \
                                           size_t * restrict indices,    \
                                           int * restrict status,        \
@@ -158,7 +158,7 @@ COMMS_CTX_TEST_SOME_SIZE(64, ge, >=)
 #define COMMS_CTX_TEST_ANY_SIZE(_size, _opname, _op)                    \
     size_t                                                              \
     shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,               \
-                                         int##_size##_t *vars,          \
+                                         int##_size##_t * restrict vars, \
                                          size_t nelems,                 \
                                          int * restrict status,         \
                                          int##_size##_t value)          \
