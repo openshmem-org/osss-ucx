@@ -99,6 +99,7 @@ MY_SOURCES            += \
 			extensions/putget_signal.c \
 			extensions/shmalloc.c \
 			extensions/testany.c \
+			extensions/testsome.c \
 			extensions/wtime.c \
 			extensions/interop.c
 
