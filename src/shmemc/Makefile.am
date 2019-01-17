@@ -17,7 +17,7 @@ LIBSHMEMC_SOURCES        += \
 				ucx/contexts.c \
 				ucx/eps.c \
 				ucx/init.c \
-				ucx/waituntil.c
+				ucx/test.c ucx/waituntil.c
 
 if HAVE_PMI
 LIBSHMEMC_SOURCES        += ucx/pmi1_client.c
