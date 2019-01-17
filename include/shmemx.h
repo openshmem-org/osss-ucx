@@ -343,6 +343,49 @@ extern "C"
 
     int shmemx_query_interoperability(int property);
 
+#define APIX_DECL_TEST_ANY(_opname, _type)                              \
+    size_t                                                              \
+    shmemx_##_opname##_test_any(_type *ivars, size_t nelems,            \
+                                int * restrict status,                  \
+                                int cmp, _type cmp_value)
+
+    APIX_DECL_TEST_ANY(short, short);
+    APIX_DECL_TEST_ANY(int, int);
+    APIX_DECL_TEST_ANY(long, long);
+    APIX_DECL_TEST_ANY(longlong, long long);
+    APIX_DECL_TEST_ANY(ushort, unsigned short);
+    APIX_DECL_TEST_ANY(uint, unsigned int);
+    APIX_DECL_TEST_ANY(ulong, unsigned long);
+    APIX_DECL_TEST_ANY(ulonglong, unsigned long long);
+    APIX_DECL_TEST_ANY(int32, int32_t);
+    APIX_DECL_TEST_ANY(int64, int64_t);
+    APIX_DECL_TEST_ANY(uint32, uint32_t);
+    APIX_DECL_TEST_ANY(uint64, uint64_t);
+    APIX_DECL_TEST_ANY(size, size_t);
+    APIX_DECL_TEST_ANY(ptrdiff, ptrdiff_t);
+
+#if SHMEM_HAS_C11
+
+#define shmemx_test_any(_ivars, _nelems, _status, _cmp, _cmp_value) \
+    _Generic(*ivars,                                                \
+             short: shmemx_short_test_any,                          \
+             int: shmemx_int_test_any,                              \
+             long: shmemx_long_test_any,                            \
+             long long: shmemx_longlong_test_any,                   \
+             unsigned short: shmemx_ushort_test_any,                \
+             unsigned int: shmemx_uint_test_any,                    \
+             unsigned long: shmemx_ulong_test_any,                  \
+             unsigned long long: shmemx_ulonglong_test_any,         \
+             int32_t: shmemx_int32_test_any,                        \
+             int64_t: shmemx_int64_test_any,                        \
+             uint32_t: shmemx_uint32_test_any,                      \
+             uint64_t: shmemx_uint64_test_any,                      \
+             size_t: shmemx_size_test_any,                          \
+             ptrdiff_t: shmemx_ptrdiff_test_any                     \
+             )(_ivars, _nelems, _status, _cmp, _cmp_value)
+
+#endif /* SHMEM_HAS_C11 */
+
 #ifdef __cplusplus
 }
 #endif  /* __cplusplus */
