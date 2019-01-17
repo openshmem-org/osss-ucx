@@ -227,9 +227,9 @@ SHMEMC_CTX_TEST(32, ge)
 SHMEMC_CTX_TEST(64, ge)
 
 #define SHMEMC_CTX_WAIT_UNTIL(_size, _opname)                           \
-    void shmemc_ctx_wait_##_opname##_until##_size(shmem_ctx_t ctx,      \
-                                                  int##_size##_t *var,  \
-                                                  int##_size##_t value);
+    void shmemc_ctx_wait_until_##_opname##_size(shmem_ctx_t ctx,        \
+                                                int##_size##_t *var,    \
+                                                int##_size##_t value);
 
 SHMEMC_CTX_WAIT_UNTIL(16, eq)
 SHMEMC_CTX_WAIT_UNTIL(32, eq)
@@ -317,7 +317,7 @@ SHMEMC_CTX_TEST_SOME(16, ge)
 SHMEMC_CTX_TEST_SOME(32, ge)
 SHMEMC_CTX_TEST_SOME(64, ge)
 
-#define SHMEMC_CTX_TEST_ANY(_size, _opname)                           \
+#define SHMEMC_CTX_TEST_ANY(_size, _opname)                             \
     size_t shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,        \
                                                 int##_size##_t *vars,   \
                                                 size_t nelems,          \
@@ -555,46 +555,46 @@ SHMEMC_DECL_COLLECT_SIZE(64)
 #define shmemc_test_ge64(...)                         \
     shmemc_ctx_test_ge64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_wait_eq_until16(...)                         \
-    shmemc_ctx_wait_eq_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_eq_until32(...)                         \
-    shmemc_ctx_wait_eq_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_eq_until64(...)                         \
-    shmemc_ctx_wait_eq_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_eq16(...)                         \
+    shmemc_ctx_wait_until_eq16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_eq32(...)                         \
+    shmemc_ctx_wait_until_eq32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_eq64(...)                         \
+    shmemc_ctx_wait_until_eq64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_wait_ne_until16(...)                         \
-    shmemc_ctx_wait_ne_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_ne_until32(...)                         \
-    shmemc_ctx_wait_ne_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_ne_until64(...)                         \
-    shmemc_ctx_wait_ne_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_ne16(...)                         \
+    shmemc_ctx_wait_until_ne16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_ne32(...)                         \
+    shmemc_ctx_wait_until_ne32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_ne64(...)                         \
+    shmemc_ctx_wait_until_ne64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_wait_gt_until16(...)                         \
-    shmemc_ctx_wait_gt_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_gt_until32(...)                         \
-    shmemc_ctx_wait_gt_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_gt_until64(...)                         \
-    shmemc_ctx_wait_gt_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_gt16(...)                         \
+    shmemc_ctx_wait_until_gt16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_gt32(...)                         \
+    shmemc_ctx_wait_until_gt32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_gt64(...)                         \
+    shmemc_ctx_wait_until_gt64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_wait_le_until16(...)                         \
-    shmemc_ctx_wait_le_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_le_until32(...)                         \
-    shmemc_ctx_wait_le_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_le_until64(...)                         \
-    shmemc_ctx_wait_le_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_le16(...)                         \
+    shmemc_ctx_wait_until_le16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_le32(...)                         \
+    shmemc_ctx_wait_until_le32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_le64(...)                         \
+    shmemc_ctx_wait_until_le64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_wait_lt_until16(...)                         \
-    shmemc_ctx_wait_lt_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_lt_until32(...)                         \
-    shmemc_ctx_wait_lt_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_lt_until64(...)                         \
-    shmemc_ctx_wait_lt_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_lt16(...)                         \
+    shmemc_ctx_wait_until_lt16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_lt32(...)                         \
+    shmemc_ctx_wait_until_lt32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_lt64(...)                         \
+    shmemc_ctx_wait_until_lt64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_wait_ge_until16(...)                         \
-    shmemc_ctx_wait_ge_until16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_ge_until32(...)                         \
-    shmemc_ctx_wait_ge_until32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_wait_ge_until64(...)                         \
-    shmemc_ctx_wait_ge_until64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_ge16(...)                         \
+    shmemc_ctx_wait_until_ge16(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_ge32(...)                         \
+    shmemc_ctx_wait_until_ge32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_wait_until_ge64(...)                         \
+    shmemc_ctx_wait_until_ge64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #endif /* ! _SHMEMC_H */

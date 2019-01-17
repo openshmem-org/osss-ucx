@@ -54,32 +54,32 @@
             (                                                           \
              switch (cmp) {                                             \
              case SHMEM_CMP_EQ:                                         \
-                 shmemc_ctx_wait_eq_until##_size(SHMEM_CTX_DEFAULT,     \
+                 shmemc_ctx_wait_until_eq##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivar, \
                                                  cmp_value);            \
                  break;                                                 \
              case SHMEM_CMP_NE:                                         \
-                 shmemc_ctx_wait_ne_until##_size(SHMEM_CTX_DEFAULT,     \
+                 shmemc_ctx_wait_until_ne##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivar, \
                                                  cmp_value);            \
                  break;                                                 \
              case SHMEM_CMP_GT:                                         \
-                 shmemc_ctx_wait_gt_until##_size(SHMEM_CTX_DEFAULT,     \
+                 shmemc_ctx_wait_until_gt##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivar, \
                                                  cmp_value);            \
                  break;                                                 \
              case SHMEM_CMP_LE:                                         \
-                 shmemc_ctx_wait_le_until##_size(SHMEM_CTX_DEFAULT,     \
+                 shmemc_ctx_wait_until_le##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivar, \
                                                  cmp_value);            \
                  break;                                                 \
              case SHMEM_CMP_LT:                                         \
-                 shmemc_ctx_wait_lt_until##_size(SHMEM_CTX_DEFAULT,     \
+                 shmemc_ctx_wait_until_lt##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivar, \
                                                  cmp_value);            \
                  break;                                                 \
              case SHMEM_CMP_GE:                                         \
-                 shmemc_ctx_wait_ge_until##_size(SHMEM_CTX_DEFAULT,     \
+                 shmemc_ctx_wait_until_ge##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivar, \
                                                  cmp_value);            \
                  break;                                                 \

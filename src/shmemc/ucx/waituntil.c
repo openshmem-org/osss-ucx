@@ -58,9 +58,9 @@ COMMS_CTX_TEST_SIZE(64, ge, >=)
 
 #define COMMS_CTX_WAIT_SIZE(_size, _opname)                             \
     void                                                                \
-    shmemc_ctx_wait_##_opname##_until##_size(shmem_ctx_t ctx,           \
-                                             int##_size##_t *var,       \
-                                             int##_size##_t value)      \
+    shmemc_ctx_wait_until_##_opname##_size(shmem_ctx_t ctx,             \
+                                           int##_size##_t *var,         \
+                                           int##_size##_t value)        \
     {                                                                   \
         shmemc_context_h ch = (shmemc_context_h) ctx;                   \
                                                                         \
