@@ -364,10 +364,33 @@ extern "C"
     APIX_DECL_TEST_ANY(size, size_t);
     APIX_DECL_TEST_ANY(ptrdiff, ptrdiff_t);
 
+#define APIX_DECL_TEST_SOME(_opname, _type)                             \
+    size_t                                                              \
+    shmemx_##_opname##_test_some(_type *ivars, size_t nelems,           \
+                                 size_t * restrict indices,             \
+                                 int * restrict status,                 \
+                                 int cmp, _type cmp_value)
+
+    APIX_DECL_TEST_SOME(short, short);
+    APIX_DECL_TEST_SOME(int, int);
+    APIX_DECL_TEST_SOME(long, long);
+    APIX_DECL_TEST_SOME(longlong, long long);
+    APIX_DECL_TEST_SOME(ushort, unsigned short);
+    APIX_DECL_TEST_SOME(uint, unsigned int);
+    APIX_DECL_TEST_SOME(ulong, unsigned long);
+    APIX_DECL_TEST_SOME(ulonglong, unsigned long long);
+    APIX_DECL_TEST_SOME(int32, int32_t);
+    APIX_DECL_TEST_SOME(int64, int64_t);
+    APIX_DECL_TEST_SOME(uint32, uint32_t);
+    APIX_DECL_TEST_SOME(uint64, uint64_t);
+    APIX_DECL_TEST_SOME(size, size_t);
+    APIX_DECL_TEST_SOME(ptrdiff, ptrdiff_t);
+
 #if SHMEM_HAS_C11
 
-#define shmemx_test_any(_ivars, _nelems, _status, _cmp, _cmp_value) \
-    _Generic(*ivars,                                                \
+#define shmemx_test_any(_ivars, _nelems, _status,                   \
+                        _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                              \
              short: shmemx_short_test_any,                          \
              int: shmemx_int_test_any,                              \
              long: shmemx_long_test_any,                            \
@@ -375,14 +398,21 @@ extern "C"
              unsigned short: shmemx_ushort_test_any,                \
              unsigned int: shmemx_uint_test_any,                    \
              unsigned long: shmemx_ulong_test_any,                  \
-             unsigned long long: shmemx_ulonglong_test_any,         \
-             int32_t: shmemx_int32_test_any,                        \
-             int64_t: shmemx_int64_test_any,                        \
-             uint32_t: shmemx_uint32_test_any,                      \
-             uint64_t: shmemx_uint64_test_any,                      \
-             size_t: shmemx_size_test_any,                          \
-             ptrdiff_t: shmemx_ptrdiff_test_any                     \
+             unsigned long long: shmemx_ulonglong_test_any          \
              )(_ivars, _nelems, _status, _cmp, _cmp_value)
+
+#define shmemx_test_some(_ivars, _nelems, _indices, _status,         \
+                         _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                               \
+             short: shmemx_short_test_some,                          \
+             int: shmemx_int_test_some,                              \
+             long: shmemx_long_test_some,                            \
+             long long: shmemx_longlong_test_some,                   \
+             unsigned short: shmemx_ushort_test_some,                \
+             unsigned int: shmemx_uint_test_some,                    \
+             unsigned long: shmemx_ulong_test_some,                  \
+             unsigned long long: shmemx_ulonglong_test_some          \
+             )(_ivars, _nelems, _indices, _status, _cmp, _cmp_value)
 
 #endif /* SHMEM_HAS_C11 */
 
