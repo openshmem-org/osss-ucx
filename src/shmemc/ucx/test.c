@@ -105,7 +105,7 @@ COMMS_CTX_TEST_ALL_SIZE(64, ge, >=)
     shmemc_ctx_test_some_##_opname##_size(shmem_ctx_t ctx,              \
                                           int##_size##_t * restrict vars, \
                                           size_t nelems,                \
-                                          size_t * restrict indices,    \
+                                          size_t * restrict idxs,       \
                                           int * restrict status,        \
                                           int##_size##_t value)         \
     {                                                                   \
@@ -120,7 +120,7 @@ COMMS_CTX_TEST_ALL_SIZE(64, ge, >=)
             if (shmemc_ctx_test_##_opname##_size(ctx,                   \
                                                  &(vars[n]),            \
                                                  value) != 0) {         \
-                indices[i++] = n;                                       \
+                idxs[i++] = n;                                          \
             }                                                           \
         }                                                               \
         return i;                                                       \

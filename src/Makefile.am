@@ -101,6 +101,9 @@ MY_SOURCES            += \
 			extensions/testall.c \
 			extensions/testany.c \
 			extensions/testsome.c \
+			extensions/waitall.c \
+			extensions/waitany.c \
+			extensions/waitsome.c \
 			extensions/wtime.c \
 			extensions/interop.c
 

@@ -287,9 +287,9 @@ SHMEMC_CTX_TEST_ALL(64, ge)
 
 #define SHMEMC_CTX_TEST_SOME(_size, _opname)                            \
     size_t shmemc_ctx_test_some_##_opname##_size(shmem_ctx_t ctx,       \
-                                                 int##_size##_t *vars,  \
+                                                 int##_size##_t * restrict vars,  \
                                                  size_t nelems,         \
-                                                 size_t * restrict indices, \
+                                                 size_t * restrict idxs, \
                                                  int * restrict status, \
                                                  int##_size##_t value);
 
@@ -319,7 +319,7 @@ SHMEMC_CTX_TEST_SOME(64, ge)
 
 #define SHMEMC_CTX_TEST_ANY(_size, _opname)                             \
     size_t shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,        \
-                                                int##_size##_t *vars,   \
+                                                int##_size##_t * restrict vars,   \
                                                 size_t nelems,          \
                                                 int * restrict status,  \
                                                 int##_size##_t value);
@@ -347,6 +347,99 @@ SHMEMC_CTX_TEST_ANY(64, lt)
 SHMEMC_CTX_TEST_ANY(16, ge)
 SHMEMC_CTX_TEST_ANY(32, ge)
 SHMEMC_CTX_TEST_ANY(64, ge)
+
+#define SHMEMC_CTX_WAIT_UNTIL_ALL(_size, _opname)                       \
+    void shmemc_ctx_wait_until_all_##_opname##_size(shmem_ctx_t ctx,    \
+                                                    int##_size##_t *vars, \
+                                                    size_t nelems,      \
+                                                    int##_size##_t value);
+
+SHMEMC_CTX_WAIT_UNTIL_ALL(16, eq)
+SHMEMC_CTX_WAIT_UNTIL_ALL(32, eq)
+SHMEMC_CTX_WAIT_UNTIL_ALL(64, eq)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL(16, ne)
+SHMEMC_CTX_WAIT_UNTIL_ALL(32, ne)
+SHMEMC_CTX_WAIT_UNTIL_ALL(64, ne)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL(16, gt)
+SHMEMC_CTX_WAIT_UNTIL_ALL(32, gt)
+SHMEMC_CTX_WAIT_UNTIL_ALL(64, gt)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL(16, le)
+SHMEMC_CTX_WAIT_UNTIL_ALL(32, le)
+SHMEMC_CTX_WAIT_UNTIL_ALL(64, le)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL(16, lt)
+SHMEMC_CTX_WAIT_UNTIL_ALL(32, lt)
+SHMEMC_CTX_WAIT_UNTIL_ALL(64, lt)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL(16, ge)
+SHMEMC_CTX_WAIT_UNTIL_ALL(32, ge)
+SHMEMC_CTX_WAIT_UNTIL_ALL(64, ge)
+
+#define SHMEMC_CTX_WAIT_UNTIL_SOME(_size, _opname)                      \
+    size_t shmemc_ctx_wait_until_some_##_opname##_size(shmem_ctx_t ctx, \
+                                                       int##_size##_t * restrict vars, \
+                                                       size_t nelems,   \
+                                                       size_t * restrict idxs, \
+                                                       int * restrict status, \
+                                                       int##_size##_t value);
+
+SHMEMC_CTX_WAIT_UNTIL_SOME(16, eq)
+SHMEMC_CTX_WAIT_UNTIL_SOME(32, eq)
+SHMEMC_CTX_WAIT_UNTIL_SOME(64, eq)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME(16, ne)
+SHMEMC_CTX_WAIT_UNTIL_SOME(32, ne)
+SHMEMC_CTX_WAIT_UNTIL_SOME(64, ne)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME(16, gt)
+SHMEMC_CTX_WAIT_UNTIL_SOME(32, gt)
+SHMEMC_CTX_WAIT_UNTIL_SOME(64, gt)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME(16, le)
+SHMEMC_CTX_WAIT_UNTIL_SOME(32, le)
+SHMEMC_CTX_WAIT_UNTIL_SOME(64, le)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME(16, lt)
+SHMEMC_CTX_WAIT_UNTIL_SOME(32, lt)
+SHMEMC_CTX_WAIT_UNTIL_SOME(64, lt)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME(16, ge)
+SHMEMC_CTX_WAIT_UNTIL_SOME(32, ge)
+SHMEMC_CTX_WAIT_UNTIL_SOME(64, ge)
+
+#define SHMEMC_CTX_WAIT_UNTIL_ANY(_size, _opname)                       \
+    size_t shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,  \
+                                                      int##_size##_t * restrict vars, \
+                                                      size_t nelems,    \
+                                                      int * restrict status, \
+                                                      int##_size##_t value);
+
+SHMEMC_CTX_WAIT_UNTIL_ANY(16, eq)
+SHMEMC_CTX_WAIT_UNTIL_ANY(32, eq)
+SHMEMC_CTX_WAIT_UNTIL_ANY(64, eq)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY(16, ne)
+SHMEMC_CTX_WAIT_UNTIL_ANY(32, ne)
+SHMEMC_CTX_WAIT_UNTIL_ANY(64, ne)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY(16, gt)
+SHMEMC_CTX_WAIT_UNTIL_ANY(32, gt)
+SHMEMC_CTX_WAIT_UNTIL_ANY(64, gt)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY(16, le)
+SHMEMC_CTX_WAIT_UNTIL_ANY(32, le)
+SHMEMC_CTX_WAIT_UNTIL_ANY(64, le)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY(16, lt)
+SHMEMC_CTX_WAIT_UNTIL_ANY(32, lt)
+SHMEMC_CTX_WAIT_UNTIL_ANY(64, lt)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY(16, ge)
+SHMEMC_CTX_WAIT_UNTIL_ANY(32, ge)
+SHMEMC_CTX_WAIT_UNTIL_ANY(64, ge)
 
 /*
  * -- Context management -----------------------------------------------------
