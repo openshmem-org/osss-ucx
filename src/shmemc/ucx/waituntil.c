@@ -160,12 +160,14 @@ COMMS_CTX_TEST_ALL_SIZE(64, ge, >=)
         size_t i = 0;                                                   \
                                                                         \
         for (n = 0; n < nelems; ++n) {                                  \
-            if ( (status != NULL) && ( status[n] == 0) ) {              \
-                if (shmemc_ctx_test_##_opname##_size(ctx,               \
-                                                     &(vars[n]),        \
-                                                     value) != 0) {     \
-                    indices[i++] = n;                                   \
-                }                                                       \
+            if ( (status != NULL) && ( status[n] != 0) ) {              \
+                continue;                                               \
+            }                                                           \
+                                                                        \
+            if (shmemc_ctx_test_##_opname##_size(ctx,                   \
+                                                 &(vars[n]),            \
+                                                 value) != 0) {         \
+                indices[i++] = n;                                       \
             }                                                           \
         }                                                               \
         return i;                                                       \
@@ -211,12 +213,14 @@ COMMS_CTX_TEST_SOME_SIZE(64, ge, >=)
         size_t n;                                                       \
                                                                         \
         for (n = 0; n < nelems; ++n) {                                  \
-            if ( (status != NULL) && ( status[n] == 0) ) {              \
-                if (shmemc_ctx_test_##_opname##_size(ctx,               \
-                                                     &(vars[n]),        \
-                                                     value) != 0) {     \
-                    return n;                                           \
-                }                                                       \
+            if ( (status != NULL) && ( status[n] != 0) ) {              \
+                continue;                                               \
+            }                                                           \
+                                                                        \
+            if (shmemc_ctx_test_##_opname##_size(ctx,                   \
+                                                 &(vars[n]),            \
+                                                 value) != 0) {         \
+                return n;                                               \
             }                                                           \
         }                                                               \
         return 0;                                                       \

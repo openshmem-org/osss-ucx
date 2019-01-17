@@ -343,6 +343,26 @@ extern "C"
 
     int shmemx_query_interoperability(int property);
 
+#define APIX_DECL_TEST_ALL(_opname, _type)                              \
+    size_t                                                              \
+    shmemx_##_opname##_test_all(_type *ivars, size_t nelems,            \
+                                int cmp, _type cmp_value)
+
+    APIX_DECL_TEST_ALL(short, short);
+    APIX_DECL_TEST_ALL(int, int);
+    APIX_DECL_TEST_ALL(long, long);
+    APIX_DECL_TEST_ALL(longlong, long long);
+    APIX_DECL_TEST_ALL(ushort, unsigned short);
+    APIX_DECL_TEST_ALL(uint, unsigned int);
+    APIX_DECL_TEST_ALL(ulong, unsigned long);
+    APIX_DECL_TEST_ALL(ulonglong, unsigned long long);
+    APIX_DECL_TEST_ALL(int32, int32_t);
+    APIX_DECL_TEST_ALL(int64, int64_t);
+    APIX_DECL_TEST_ALL(uint32, uint32_t);
+    APIX_DECL_TEST_ALL(uint64, uint64_t);
+    APIX_DECL_TEST_ALL(size, size_t);
+    APIX_DECL_TEST_ALL(ptrdiff, ptrdiff_t);
+
 #define APIX_DECL_TEST_ANY(_opname, _type)                              \
     size_t                                                              \
     shmemx_##_opname##_test_any(_type *ivars, size_t nelems,            \
@@ -387,6 +407,19 @@ extern "C"
     APIX_DECL_TEST_SOME(ptrdiff, ptrdiff_t);
 
 #if SHMEM_HAS_C11
+
+#define shmemx_test_all(_ivars, _nelems,                            \
+                        _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_test_all,                          \
+             int: shmemx_int_test_all,                              \
+             long: shmemx_long_test_all,                            \
+             long long: shmemx_longlong_test_all,                   \
+             unsigned short: shmemx_ushort_test_all,                \
+             unsigned int: shmemx_uint_test_all,                    \
+             unsigned long: shmemx_ulong_test_all,                  \
+             unsigned long long: shmemx_ulonglong_test_all          \
+             )(_ivars, _nelems, _cmp, _cmp_value)
 
 #define shmemx_test_any(_ivars, _nelems, _status,                   \
                         _cmp, _cmp_value)                           \

@@ -98,6 +98,7 @@ if ENABLE_EXPERIMENTAL
 MY_SOURCES            += \
 			extensions/putget_signal.c \
 			extensions/shmalloc.c \
+			extensions/testall.c \
 			extensions/testany.c \
 			extensions/testsome.c \
 			extensions/wtime.c \
