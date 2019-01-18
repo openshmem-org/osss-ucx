@@ -6,10 +6,6 @@
 
 #include "shmemu.h"
 
-#include "yielder.h"
-
-#include <ucp/api/ucp.h>
-
 /*
  * return 1 if the memory location changed w.r.t "value", otherwise 0
  */
