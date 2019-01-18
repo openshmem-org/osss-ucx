@@ -9,7 +9,7 @@ LIBSHMEMC_SOURCES         = \
 				readenv.c \
 				shmemc_init.c \
 				state.c
-#
+
 # -- begin: UCX sources --
 #
 LIBSHMEMC_SOURCES        += \
