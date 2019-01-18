@@ -69,7 +69,7 @@ The interaction with most impact is that of PMIx and Open-MPI:
 
   o For end-users, the most stable combinations are
       o PMIx 1.2.5 and Open-MPI 2.1.3
-      o PMIx 2.1.1 and Open-MPI 3.1.0
+      o PMIx 2.1.1 and Open-MPI 3.1.0, 4.0.0
   o For developers, the github master versions throughout will track
     all the latest updates.
 
