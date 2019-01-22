@@ -61,11 +61,20 @@ COMMS_CTX_WAIT_SIZE(64, ge)
                                                size_t nelems,           \
                                                int##_size##_t value)    \
     {                                                                   \
-        NO_WARN_UNUSED(ctx);                                            \
-        NO_WARN_UNUSED(vars);                                           \
-        NO_WARN_UNUSED(nelems);                                         \
-        NO_WARN_UNUSED(value);                                          \
-        return ;                       /* TODO */                       \
+        size_t n = 0;                                                   \
+        size_t i;                                                       \
+                                                                        \
+        do {                                                            \
+            for (i = 0; i < nelems; ++i) {                              \
+                shmemc_progress();                                      \
+                yielder();                                              \
+                if (shmemc_ctx_test_##_opname##_size(ctx,               \
+                                                     &(vars[i]),        \
+                                                     value) != 0) {     \
+                    ++n;                                                \
+                }                                                       \
+            }                                                           \
+        } while (n < nelems);                                           \
    }
 
 COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, eq, ==)
@@ -100,12 +109,28 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
                                                int * restrict status,   \
                                                int##_size##_t value)    \
     {                                                                   \
-        NO_WARN_UNUSED(ctx);                                            \
-        NO_WARN_UNUSED(vars);                                           \
-        NO_WARN_UNUSED(nelems);                                         \
-        NO_WARN_UNUSED(status);                                         \
-        NO_WARN_UNUSED(value);                                          \
-        return 0;                       /* TODO */                      \
+        size_t winner;                                                  \
+        size_t i;                                                       \
+                                                                        \
+        while (1) {                                                     \
+            for (i = 0; i < nelems; ++i) {                              \
+                if ( (status != NULL) && ( status[i] != 0) ) {          \
+                    continue;                                           \
+                }                                                       \
+                                                                        \
+                shmemc_progress();                                      \
+                yielder();                                              \
+                if (shmemc_ctx_test_##_opname##_size(ctx,               \
+                                                     &(vars[i]),        \
+                                                     value) != 0) {     \
+                    winner = i;                                         \
+                    break;                                              \
+                    /* NOT REACHED */                                   \
+                }                                                       \
+            }                                                           \
+        }                                                               \
+                                                                        \
+        return winner;                                                  \
     }
 
 COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, eq, ==)
@@ -141,13 +166,28 @@ COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge, >=)
                                                 int * restrict status,  \
                                                 int##_size##_t value)   \
     {                                                                   \
-        NO_WARN_UNUSED(ctx);                                            \
-        NO_WARN_UNUSED(vars);                                           \
-        NO_WARN_UNUSED(nelems);                                         \
-        NO_WARN_UNUSED(idxs);                                           \
-        NO_WARN_UNUSED(status);                                         \
-        NO_WARN_UNUSED(value);                                          \
-        return 0;                       /* TODO */                      \
+        size_t i;                                                       \
+        size_t hits = 0;                                                \
+                                                                        \
+        /* find any one (there may be others too, further up) */        \
+        (void) shmemc_ctx_wait_until_any_##_opname##_size(ctx,          \
+                                                          vars,         \
+                                                          nelems,       \
+                                                          status,       \
+                                                          value);       \
+        /* see which ones match */                                      \
+        for (i = 0; i < nelems; ++i) {                                  \
+            if ( (status != NULL) && ( status[i] != 0) ) {              \
+                continue;                                               \
+            }                                                           \
+            if (shmemc_ctx_test_##_opname##_size(ctx,                   \
+                                                 &(vars[i]),            \
+                                                 value) != 0) {         \
+                idxs[hits] = i;                                         \
+                ++hits;                                                 \
+            }                                                           \
+        }                                                               \
+        return hits;                                                    \
     }
 
 COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, eq, ==)
