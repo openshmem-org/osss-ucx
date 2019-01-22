@@ -124,12 +124,13 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
                                                      &(vars[i]),        \
                                                      value) != 0) {     \
                     winner = i;                                         \
-                    break;                                              \
+                    goto ret;                                           \
                     /* NOT REACHED */                                   \
                 }                                                       \
             }                                                           \
         }                                                               \
                                                                         \
+    ret:                                                                \
         return winner;                                                  \
     }
 
