@@ -203,13 +203,15 @@ void shmemu_deprecate_finalize(void);
             if (ch->attr.private) {                                     \
                 const threadwrap_thread_t me = threadwrap_thread_id();  \
                 const threadwrap_thread_t cr = ch->creator_thread;      \
+                const unsigned long ulme = (unsigned long) me;          \
+                const unsigned long ulcr = (unsigned long) cr;          \
                                                                         \
                 if (! threadwrap_thread_equal(cr,  me)) {               \
-                    shmemu_fatal("In %s(), invoking thread #%d"         \
-                                 " not owner thread #%d"                \
+                    shmemu_fatal("In %s(), invoking thread #%lu"        \
+                                 " not owner thread #%lu"               \
                                  "in private context #%lu",             \
                                  __func__,                              \
-                                 me, cr,                                \
+                                 ulme, ulcr,                            \
                                  ch->id                                 \
                                  );                                     \
                     /* NOT REACHED */                                   \

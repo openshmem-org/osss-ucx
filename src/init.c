@@ -39,7 +39,7 @@
 static void
 finalize_helper(void)
 {
-    unsigned long this;
+    threadwrap_thread_t this;
 
     /* do nothing if multiple finalizes */
     if (proc.refcount < 1) {
@@ -55,7 +55,9 @@ finalize_helper(void)
     if (this != proc.td.invoking_thread) {
         logger(LOG_FINALIZE,
                "mis-match: thread %lu initialized, but %lu finalized",
-               proc.td.invoking_thread, this);
+               threadwrap_thread_id(proc.td.invoking_thread),
+               threadwrap_thread_id(this)
+               );
     }
 
     /* implicit barrier on finalize */

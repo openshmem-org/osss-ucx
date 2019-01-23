@@ -8,7 +8,6 @@
 #endif /* HAVE_CONFIG_H */
 
 typedef void *threadwrap_thread_t;
-typedef unsigned long threadwrap_threadid_t;
 typedef void *threadwrap_mutex_t;
 
 int threadwrap_mutex_init(threadwrap_mutex_t *tp);
@@ -21,7 +20,7 @@ int threadwrap_thread_create(threadwrap_thread_t *threadp,
                              void *args);
 int threadwrap_thread_join(threadwrap_thread_t thread,
                            void **retval);
-threadwrap_threadid_t threadwrap_thread_id(void);
+threadwrap_thread_t threadwrap_thread_id(void);
 int threadwrap_thread_equal(threadwrap_thread_t t1, threadwrap_thread_t t2);
 
 #endif  /* ! _THREADWRAP_THREADING_H */
