@@ -9,6 +9,7 @@
 #include "state.h"
 #include "info.h"
 #include "threading.h"
+#include "shmem_mutex.h"
 #include "progress.h"
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -38,7 +39,7 @@
 static void
 finalize_helper(void)
 {
-    threadwrap_thread_t this;
+    unsigned long this;
 
     /* do nothing if multiple finalizes */
     if (proc.refcount < 1) {
@@ -85,6 +86,7 @@ init_thread_helper(int requested, int *provided)
     /* set up comms, read environment */
     shmemc_init();
     /* utiltiies */
+    shmemt_init();
     shmemu_init();
     progress_init();
 
