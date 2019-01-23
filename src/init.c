@@ -53,10 +53,11 @@ finalize_helper(void)
 
     this = threadwrap_thread_id();
     if (this != proc.td.invoking_thread) {
+
         logger(LOG_FINALIZE,
                "mis-match: thread %lu initialized, but %lu finalized",
-               threadwrap_thread_id(proc.td.invoking_thread),
-               threadwrap_thread_id(this)
+               (unsigned long) proc.td.invoking_thread,
+               (unsigned long) this
                );
     }
 
