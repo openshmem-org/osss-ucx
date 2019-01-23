@@ -46,15 +46,15 @@ threadwrap_mutex_trylock(threadwrap_mutex_t *mp)
 
 inline static int
 threadwrap_thread_create(threadwrap_thread_t *threadp,
-                     void *(*start_routine)(void *),
-                     void *args)
+                         void *(*start_routine)(void *),
+                         void *args)
 {
     return pthread_create(threadp, NULL /* attr */, start_routine, args);
 }
 
 inline static int
 threadwrap_thread_join(threadwrap_thread_t thread,
-                   void **retval)
+                       void **retval)
 {
     return pthread_join(thread, retval);
 }
