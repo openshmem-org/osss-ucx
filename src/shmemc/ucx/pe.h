@@ -70,6 +70,8 @@ typedef struct shmemc_context_attr {
 typedef struct shmemc_context {
     ucp_worker_h w;             /* for separate context progress */
 
+    ucp_ep_h *eps;              /* endpoints */
+
     unsigned long id;           /* internal tracking */
 
     threadwrap_thread_t creator_thread; /* thread ID that created me */
@@ -92,7 +94,6 @@ typedef shmemc_context_t *shmemc_context_h;
 typedef struct comms_info {
     ucp_context_h ucx_ctxt;     /* local communication context */
     ucp_config_t *ucx_cfg;      /* local config */
-    ucp_ep_h *eps;              /* nranks endpoints (1 of which is mine) */
 
     worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
 

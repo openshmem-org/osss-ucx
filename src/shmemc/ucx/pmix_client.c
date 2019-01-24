@@ -7,6 +7,7 @@
 #include "thispe.h"
 #include "shmemu.h"
 #include "state.h"
+#include "ucx/api.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,10 +67,9 @@ publish_one_rkeys(pmix_info_t *rip, size_t r)
     void *packed_rkey;
     size_t rkey_len;
     const ucs_status_t s =
-        ucp_rkey_pack(proc.comms.ucx_ctxt,
-                      proc.comms.regions[r].minfo[proc.rank].racc.mh,
-                      &packed_rkey, &rkey_len
-                      );
+        shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.rank].racc.mh,
+                             &packed_rkey, &rkey_len
+                             );
     shmemu_assert(s == UCS_OK, "can't pack rkey");
 
     snprintf(rip->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
@@ -210,6 +210,7 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 inline static void
 exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
+    shmemc_context_h ch = &shmemc_default_context;
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
     ucs_status_t s;
@@ -219,10 +220,10 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
     ps = PMIx_Lookup(rdp, 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
 
-    s = ucp_ep_rkey_unpack(proc.comms.eps[pe],
-                           bop->bytes,
-                           &proc.comms.regions[r].minfo[pe].racc.rkey
-                           );
+    s = shmemc_ucx_rkey_unpack(ch->eps[pe],
+                               bop->bytes,
+                               &proc.comms.regions[r].minfo[pe].racc.rkey
+                               );
     shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
 }
 

@@ -19,20 +19,16 @@
 void
 shmemc_ucx_allocate_eps_table(shmemc_context_h ch)
 {
-    NO_WARN_UNUSED(ch);
-
-    proc.comms.eps = (ucp_ep_h *)
-        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
-    shmemu_assert(proc.comms.eps != NULL,
+    ch->eps = (ucp_ep_h *)
+        calloc(proc.nranks, sizeof(*(ch->eps)));
+    shmemu_assert(ch->eps != NULL,
                   "can't allocate memory for remotely accessible endpoints");
 }
 
 void
 shmemc_ucx_deallocate_eps_table(shmemc_context_h ch)
 {
-    NO_WARN_UNUSED(ch);
-
-    free(proc.comms.eps);
+    free(ch->eps);
 }
 
 /*
@@ -95,14 +91,12 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
     ucs_status_ptr_t *req;
     int i;
 
-    NO_WARN_UNUSED(ch);
-
     req = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*req));
     shmemu_assert(req != NULL,
                   "failed to allocate memory for UCP endpoint disconnect");
 
     for (i = 0; i < proc.nranks; ++i) {
-        req[i] = ep_disconnect_nb(proc.comms.eps[i]);
+        req[i] = ep_disconnect_nb(ch->eps[i]);
     }
 
     for (i = 0; i < proc.nranks; ++i) {
@@ -125,7 +119,7 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
         epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
-        s = ucp_ep_create(ch->w, &epm, &proc.comms.eps[pe]);
+        s = ucp_ep_create(ch->w, &epm, &(ch->eps[pe]));
 
         shmemu_assert(s == UCS_OK,
                       "Unable to create remote endpoints: %s",
@@ -133,4 +127,19 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
                       );
         /* NOT REACHED */
     }
+}
+
+ucs_status_t
+shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
+{
+    return ucp_rkey_pack(proc.comms.ucx_ctxt,
+                         mh,
+                         packed_rkey_p, rkey_len_p
+                         );
+}
+
+ucs_status_t
+shmemc_ucx_rkey_unpack(ucp_ep_h ep, void *data, ucp_rkey_h *rk_p)
+{
+    return ucp_ep_rkey_unpack(ep, data, rk_p);
 }
