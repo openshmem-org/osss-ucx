@@ -71,7 +71,7 @@ typedef struct env_info {
     bool logging;            /* turn on message logging? */
     char *logging_file;      /* where does logging output go? */
     char *logging_events;    /* show only these types of messages */
-    bool xpmem_kludge;       /* protect against UCX bug temporarily */
+    bool teardown_kludge;    /* protect against UCX bug temporarily */
 
     shmemc_coll_t coll;         /* collectives */
 

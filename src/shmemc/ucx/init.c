@@ -383,7 +383,7 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-    if (! proc.env.xpmem_kludge) {
+    if (! proc.env.teardown_kludge) {
         shmemc_ucx_disconnect_all_eps();
     }
     shmemc_ucx_deallocate_eps_table();
