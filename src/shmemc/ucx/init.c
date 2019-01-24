@@ -356,7 +356,7 @@ shmemc_ucx_init(void)
 
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
-    shmemc_ucx_allocate_eps_table();
+    shmemc_ucx_allocate_eps_table(&shmemc_default_context);
 
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
@@ -384,9 +384,9 @@ shmemc_ucx_finalize(void)
     shmemc_globalexit_finalize();
 
     if (! proc.env.teardown_kludge) {
-        shmemc_ucx_disconnect_all_eps();
+        shmemc_ucx_disconnect_all_eps(&shmemc_default_context);
     }
-    shmemc_ucx_deallocate_eps_table();
+    shmemc_ucx_deallocate_eps_table(&shmemc_default_context);
 
     deallocate_contexts_table();
     deallocate_xworkers_table();

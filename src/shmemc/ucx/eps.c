@@ -17,8 +17,10 @@
  */
 
 void
-shmemc_ucx_allocate_eps_table(void)
+shmemc_ucx_allocate_eps_table(shmemc_context_h ch)
 {
+    NO_WARN_UNUSED(ch);
+
     proc.comms.eps = (ucp_ep_h *)
         calloc(proc.nranks, sizeof(*(proc.comms.eps)));
     shmemu_assert(proc.comms.eps != NULL,
@@ -26,8 +28,10 @@ shmemc_ucx_allocate_eps_table(void)
 }
 
 void
-shmemc_ucx_deallocate_eps_table(void)
+shmemc_ucx_deallocate_eps_table(shmemc_context_h ch)
 {
+    NO_WARN_UNUSED(ch);
+
     free(proc.comms.eps);
 }
 
@@ -86,10 +90,12 @@ ep_wait(ucs_status_ptr_t req)
  */
 
 void
-shmemc_ucx_disconnect_all_eps(void)
+shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 {
     ucs_status_ptr_t *req;
     int i;
+
+    NO_WARN_UNUSED(ch);
 
     req = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*req));
     shmemu_assert(req != NULL,
@@ -107,10 +113,9 @@ shmemc_ucx_disconnect_all_eps(void)
 }
 
 void
-shmemc_ucx_make_remote_eps(void)
+shmemc_ucx_make_remote_eps(shmemc_context_h ch)
 {
     ucs_status_t s;
-    shmemc_context_h ch = &shmemc_default_context;
     ucp_ep_params_t epm;
     int i;
 
