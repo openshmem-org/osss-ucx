@@ -113,10 +113,11 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
     ucp_ep_params_t epm;
     int i;
 
+    epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
+
     for (i = 0; i < proc.nranks; ++i) {
         const int pe = SHIFT(i);
 
-        epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
         s = ucp_ep_create(ch->w, &epm, &(ch->eps[pe]));
