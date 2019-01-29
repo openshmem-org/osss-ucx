@@ -44,8 +44,8 @@
 #define SHMEMX_TYPE_WAIT_UNTIL_SOME(_opname, _type, _size)              \
     size_t                                                              \
     shmemx_##_opname##_wait_until_some(_type *ivars, size_t nelems,     \
-                                       size_t * restrict idxs,          \
-                                       int * restrict status,           \
+                                       size_t *idxs,                    \
+                                       int *status,                     \
                                        int cmp, _type cmp_value)        \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \

@@ -44,7 +44,7 @@
 #define SHMEMX_TYPE_TEST_ANY(_opname, _type, _size)                     \
     size_t                                                              \
     shmemx_##_opname##_test_any(_type *ivars, size_t nelems,            \
-                                int * restrict status,                  \
+                                int *status,                            \
                                 int cmp, _type cmp_value)               \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \

@@ -366,7 +366,7 @@ extern "C"
 #define APIX_DECL_TEST_ANY(_opname, _type)                              \
     size_t                                                              \
     shmemx_##_opname##_test_any(_type *ivars, size_t nelems,            \
-                                int * restrict status,                  \
+                                int *status,                            \
                                 int cmp, _type cmp_value)
 
     APIX_DECL_TEST_ANY(short, short);
@@ -387,8 +387,8 @@ extern "C"
 #define APIX_DECL_TEST_SOME(_opname, _type)                             \
     size_t                                                              \
     shmemx_##_opname##_test_some(_type *ivars, size_t nelems,           \
-                                 size_t * restrict indices,             \
-                                 int * restrict status,                 \
+                                 size_t *indices,                       \
+                                 int *status,                           \
                                  int cmp, _type cmp_value)
 
     APIX_DECL_TEST_SOME(short, short);
@@ -472,7 +472,7 @@ extern "C"
 #define APIX_DECL_WAIT_UNTIL_ANY(_opname, _type)                        \
     size_t                                                              \
     shmemx_##_opname##_wait_until_any(_type *ivars, size_t nelems,      \
-                                      int * restrict status,            \
+                                      int *status,                      \
                                       int cmp, _type cmp_value)
 
     APIX_DECL_WAIT_UNTIL_ANY(short, short);
@@ -493,8 +493,8 @@ extern "C"
 #define APIX_DECL_WAIT_UNTIL_SOME(_opname, _type)                       \
     size_t                                                              \
     shmemx_##_opname##_wait_until_some(_type *ivars, size_t nelems,     \
-                                       size_t * restrict indices,       \
-                                       int * restrict status,           \
+                                       size_t *indices,                 \
+                                       int *status,                     \
                                        int cmp, _type cmp_value)
 
     APIX_DECL_WAIT_UNTIL_SOME(short, short);
