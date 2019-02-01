@@ -95,7 +95,7 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
             /* NOT REACHED */
         }
 
-        shmemc_wait_until_eq16(&(node->d.next), 0);
+        shmemc_wait_until_ge16(&(node->d.next), 0);
     }
 
     shmemc_put(&(node->d.locked), &zero, sizeof(zero), node->d.next);
