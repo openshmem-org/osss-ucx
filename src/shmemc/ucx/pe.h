@@ -29,6 +29,7 @@ typedef struct worker_info {
  */
 typedef struct mem_region_access {
     ucp_mem_h mh;               /* memory handle */
+    void *rkey_data;            /* opaque rkey */
     ucp_rkey_h rkey;            /* remote key for this heap */
 } mem_region_access_t;
 
