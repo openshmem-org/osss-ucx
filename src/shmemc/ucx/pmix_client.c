@@ -6,6 +6,7 @@
 
 #include "thispe.h"
 #include "shmemu.h"
+#include "shmemc.h"
 #include "state.h"
 #include "ucx/api.h"
 
@@ -27,6 +28,8 @@
 static pmix_info_t waiter;      /* control lookups */
 static pmix_proc_t my_proc;     /* about me */
 static pmix_proc_t wc_proc;     /* wildcard lookups */
+
+static shmemc_context_h defc = &shmemc_default_context;
 
 /*
  * Make local info avaialable to PMIx
@@ -67,7 +70,7 @@ publish_one_rkeys(pmix_info_t *rip, size_t r)
     void *packed_rkey;
     size_t rkey_len;
     const ucs_status_t s =
-        shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.rank].racc.mh,
+        shmemc_ucx_rkey_pack(defc->regions[r].minfo[proc.rank].racc.mh,
                              &packed_rkey, &rkey_len
                              );
     shmemu_assert(s == UCS_OK, "can't pack rkey");
@@ -92,13 +95,13 @@ publish_one_heap(pmix_info_t hip[2], size_t r)
              region_base_fmt, r, proc.rank);
     hip[0].value.type = PMIX_UINT64;
     hip[0].value.data.uint64 =
-        (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
+        (uint64_t) defc->regions[r].minfo[proc.rank].base;
 
     snprintf(hip[1].key, PMIX_MAX_KEYLEN,
              region_size_fmt, r, proc.rank);
     hip[1].value.type = PMIX_SIZE;
     hip[1].value.data.size =
-        proc.comms.regions[r].minfo[proc.rank].len;
+        defc->regions[r].minfo[proc.rank].len;
 
     /* newer PMIx should be able to do this at one go */
 #if PMIX_VERSION_MAJOR > 2
@@ -129,7 +132,7 @@ shmemc_pmi_publish_rkeys_and_heaps(void)
 
     publish_one_rkeys(&ri, 0);
 
-    for (r = 1; r < proc.comms.nregions; ++r) {
+    for (r = 1; r < defc->nregions; ++r) {
         publish_one_rkeys(&ri, r);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -196,26 +199,22 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap size");
 #endif /* PMIX_VERSION_MAJOR */
-    proc.comms.regions[r].minfo[pe].base =
-        hdp[0].value.data.uint64;
-    proc.comms.regions[r].minfo[pe].len =
-        hdp[1].value.data.size;
-    /* slightly redundant storage, but useful */
-    proc.comms.regions[r].minfo[pe].end =
-        proc.comms.regions[r].minfo[pe].base +
-        hdp[1].value.data.size;
+
+    shmemc_context_set_heap(defc,
+                            r, pe,
+                            hdp[0].value.data.uint64,
+                            hdp[1].value.data.size);
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 inline static void
 exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
-    shmemc_context_h def = &shmemc_default_context;
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
     ucs_status_t s;
     /* opaque rkey */
-    void *ork_data = proc.comms.regions[r].minfo[pe].racc.rkey_data;
+    void *ork_data = defc->regions[r].minfo[pe].racc.rkey_data;
 
     snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
@@ -229,9 +228,9 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
     memcpy(ork_data, bop->bytes, bop->size);
 
     /* TODO this should be moved out of here and generalized to any context */
-    s = shmemc_ucx_rkey_unpack(def->eps[pe],
+    s = shmemc_ucx_rkey_unpack(defc->eps[pe],
                                ork_data,
-                               &proc.comms.regions[r].minfo[pe].racc.rkey
+                               & defc->regions[r].minfo[pe].racc.rkey
                                );
     shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
 }
@@ -282,7 +281,7 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
     exchange_all_rkeys(&rd, 0);
 
     /* now everything else */
-    for (r = 1; r < proc.comms.nregions; ++r) {
+    for (r = 1; r < defc->nregions; ++r) {
         exchange_one_rkeys_and_heaps(&rd, hdp, r);
     }
 
@@ -455,8 +454,8 @@ shmemc_pmi_client_finalize(void)
 
         /* clean up allocations for exchanged buffers */
         free(proc.comms.xchg_wrkr_info[pe].buf);
-        for (r = 0; r < proc.comms.nregions; ++r) {
-            ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
+        for (r = 0; r < defc->nregions; ++r) {
+            ucp_rkey_destroy(defc->regions[r].minfo[pe].racc.rkey);
         }
     }
 
@@ -469,8 +468,8 @@ shmemc_pmi_client_finalize(void)
     for (pe = 0; pe < proc.nranks; ++pe) {
         size_t r;
 
-        for (r = 0; r < proc.comms.nregions; ++r) {
-            free(proc.comms.regions[r].minfo[pe].racc.rkey_data);
+        for (r = 0; r < defc->nregions; ++r) {
+            free(defc->regions[r].minfo[pe].racc.rkey_data);
         }
     }
 }

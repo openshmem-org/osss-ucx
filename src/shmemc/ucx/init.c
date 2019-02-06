@@ -21,6 +21,8 @@
 
 #include <ucp/api/ucp.h>
 
+static shmemc_context_h defc = &shmemc_default_context;
+
 /*
  * worker tables
  */
@@ -55,15 +57,14 @@ allocate_contexts_table(void)
 inline static void
 deallocate_contexts_table(void)
 {
-    shmemc_context_h def = &shmemc_default_context;
     size_t c;
 
     /*
      * special release case for default context
      */
-    ucp_worker_release_address(def->w,
+    ucp_worker_release_address(defc->w,
                                proc.comms.xchg_wrkr_info[proc.rank].addr);
-    ucp_worker_destroy(def->w);
+    ucp_worker_destroy(defc->w);
 
     /*
      * clear up each allocated SHMEM context
@@ -204,24 +205,24 @@ init_memory_regions(void)
     size_t i;
 
     /* 1 globals region, plus symmetric heaps */
-    proc.comms.nregions = 1 + proc.env.heaps.nheaps;
+    defc->nregions = 1 + proc.env.heaps.nheaps;
 
     /* init that many regions on me */
-    proc.comms.regions =
-        (mem_region_t *) calloc(proc.comms.nregions, sizeof(mem_region_t));
-    shmemu_assert(proc.comms.regions != NULL,
+    defc->regions =
+        (mem_region_t *) calloc(defc->nregions, sizeof(mem_region_t));
+    shmemu_assert(defc->regions != NULL,
                   "can't allocate memory for memory regions");
 
     /* now prep for all PEs to exchange */
-    for (i = 0; i < proc.comms.nregions; ++i) {
-        proc.comms.regions[i].minfo =
+    for (i = 0; i < defc->nregions; ++i) {
+        defc->regions[i].minfo =
             (mem_info_t *) calloc(proc.nranks, sizeof(mem_info_t));
-        shmemu_assert(proc.comms.regions[i].minfo != NULL,
+        shmemu_assert(defc->regions[i].minfo != NULL,
                       "can't allocate memory region metadata");
     }
 
     /* to access global variables */
-    globals = & proc.comms.regions[0].minfo[proc.rank];
+    globals = & defc->regions[0].minfo[proc.rank];
 }
 
 /*
@@ -235,12 +236,16 @@ register_memory_regions(void)
 
     register_globals();
 
-    for (hi = 1; hi < proc.comms.nregions; ++hi) {
-        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.rank];
+    for (hi = 1; hi < defc->nregions; ++hi) {
+        mem_info_t *shp = & defc->regions[hi].minfo[proc.rank];
 
         register_symmetric_heap(hi - 1, shp);
     }
 }
+
+/*
+ * TODO make this per-context
+ */
 
 inline static void
 deregister_memory_regions(void)
@@ -248,8 +253,8 @@ deregister_memory_regions(void)
     size_t hi;
 
     /* deregister symmetric heaps, then globals (index 0) */
-    for (hi = proc.comms.nregions - 1; hi >= 1; hi -= 1) {
-        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.rank];
+    for (hi = defc->nregions - 1; hi >= 1; hi -= 1) {
+        mem_info_t *shp = & defc->regions[hi].minfo[proc.rank];
 
         deregister_symmetric_heap(shp);
 
@@ -258,10 +263,10 @@ deregister_memory_regions(void)
 
     deregister_globals();
 
-    for (hi = 0; hi < proc.comms.nregions; ++hi) {
-        free(proc.comms.regions[hi].minfo);
+    for (hi = 0; hi < defc->nregions; ++hi) {
+        free(defc->regions[hi].minfo);
     }
-    free(proc.comms.regions);
+    free(defc->regions);
 }
 
 /**
@@ -356,7 +361,7 @@ shmemc_ucx_init(void)
 
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
-    shmemc_ucx_allocate_eps_table(&shmemc_default_context);
+    shmemc_ucx_allocate_eps_table(defc);
 
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
@@ -383,10 +388,11 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
+    /* TODO generalize to all extant contexts */
     if (! proc.env.teardown_kludge) {
-        shmemc_ucx_disconnect_all_eps(&shmemc_default_context);
+        shmemc_ucx_disconnect_all_eps(defc);
     }
-    shmemc_ucx_deallocate_eps_table(&shmemc_default_context);
+    shmemc_ucx_deallocate_eps_table(defc);
 
     deallocate_contexts_table();
     deallocate_xworkers_table();

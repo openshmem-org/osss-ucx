@@ -68,18 +68,15 @@ typedef struct shmemc_context_attr {
 
 typedef struct shmemc_context {
     ucp_worker_h w;             /* for separate context progress */
-
     ucp_ep_h *eps;              /* endpoints */
-
+    mem_region_t *regions;      /* exchanged symmetric regions */
+    size_t nregions;            /* how many regions */
     unsigned long id;           /* internal tracking */
-
     threadwrap_thread_t creator_thread; /* thread ID that created me */
-
     /*
      * parsed options during creation (defaults: no)
      */
     shmemc_context_attr_t attr;
-
     /*
      * possibly other things
      */
@@ -93,14 +90,11 @@ typedef shmemc_context_t *shmemc_context_h;
 typedef struct comms_info {
     ucp_context_h ucx_ctxt;     /* local communication context */
     ucp_config_t *ucx_cfg;      /* local config */
-
     worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
-
     shmemc_context_h *ctxts;    /* PE's contexts */
     size_t nctxts;              /* how many contexts */
-
-    mem_region_t *regions;      /* exchanged symmetric regions */
-    size_t nregions;            /* how many regions */
+    /* mem_region_t *regions; */      /* exchanged symmetric regions */
+    /* size_t nregions; */            /* how many regions */
 } comms_info_t;
 
 typedef struct thread_desc {

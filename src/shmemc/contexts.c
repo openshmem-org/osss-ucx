@@ -266,3 +266,15 @@ shmemc_init_default_context(void)
 
     return shmemc_ucx_context_default_set_info();
 }
+
+void
+shmemc_context_set_heap(shmemc_context_h ch,
+                        size_t r, int pe,
+                        uint64_t base,
+                        size_t size)
+{
+    ch->regions[r].minfo[pe].base = base;
+    ch->regions[r].minfo[pe].len = size;
+    /* slightly redundant storage, but useful */
+    ch->regions[r].minfo[pe].end = base + size;
+}
