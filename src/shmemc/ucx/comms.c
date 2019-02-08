@@ -39,7 +39,7 @@ lookup_ucp_ep(shmemc_context_h ch, int pe)
 inline static ucp_rkey_h
 lookup_rkey(shmemc_context_h ch, size_t region, int pe)
 {
-    return ch->regions[region].minfo[pe].racc.rkey;
+    return ch->racc[region].rinfo[pe].rkey;
 }
 
 /*
@@ -48,7 +48,9 @@ lookup_rkey(shmemc_context_h ch, size_t region, int pe)
 inline static uint64_t
 get_base(shmemc_context_h ch, size_t region, int pe)
 {
-    return ch->regions[region].minfo[pe].base;
+    NO_WARN_UNUSED(ch);
+
+    return proc.comms.regions[region].minfo[pe].base;
 }
 
 /*
@@ -62,7 +64,9 @@ get_base(shmemc_context_h ch, size_t region, int pe)
 inline static int
 in_region(shmemc_context_h ch, uint64_t addr, size_t region, int pe)
 {
-    const mem_info_t mi = ch->regions[region].minfo[pe];
+    const mem_info_t mi = proc.comms.regions[region].minfo[pe];
+
+    NO_WARN_UNUSED(ch);
 
     return (mi.base <= addr) && (addr < mi.end);
 }
@@ -80,7 +84,7 @@ lookup_region(shmemc_context_h ch, uint64_t addr, int pe)
      * assumption most data in heaps and newest one is most likely
      * (may need to revisit)
      */
-    for (r = ch->nregions - 1; r >= 0; r -= 1) {
+    for (r = proc.comms.nregions - 1; r >= 0; r -= 1) {
         if (in_region(ch, addr, (size_t) r, pe)) {
             return r;
             /* NOT REACHED */

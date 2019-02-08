@@ -25,10 +25,20 @@ typedef struct worker_info {
 /*
  * Encapsulate what UCX needs for remote access to a memory region
  */
-typedef struct mem_region_access {
-    ucp_mem_h mh;               /* memory handle */
-    void *rkey_data;            /* opaque rkey */
+typedef struct mem_opaque_rkey {
+    void *data;
+} mem_opaque_rkey_t;
+
+typedef struct mem_opaque {
+    mem_opaque_rkey_t *rkey;
+} mem_opaque_t;
+
+typedef struct mem_access {
     ucp_rkey_h rkey;            /* remote key for this heap */
+} mem_access_t;
+
+typedef struct mem_region_access {
+    mem_access_t *rinfo;        /* nranks remote access info */
 } mem_region_access_t;
 
 /*
@@ -40,7 +50,7 @@ typedef struct mem_info {
     uint64_t base;              /* start of this heap */
     uint64_t end;               /* end of this heap */
     size_t len;                 /* its size (b) */
-    mem_region_access_t racc;   /* for remote access */
+    ucp_mem_h mh;               /* memory handle */
 } mem_info_t;
 
 /*
@@ -69,14 +79,15 @@ typedef struct shmemc_context_attr {
 typedef struct shmemc_context {
     ucp_worker_h w;             /* for separate context progress */
     ucp_ep_h *eps;              /* endpoints */
-    mem_region_t *regions;      /* exchanged symmetric regions */
-    size_t nregions;            /* how many regions */
     unsigned long id;           /* internal tracking */
     threadwrap_thread_t creator_thread; /* thread ID that created me */
     /*
      * parsed options during creation (defaults: no)
      */
     shmemc_context_attr_t attr;
+
+    mem_region_access_t *racc;  /* for endpoint remote access */
+
     /*
      * possibly other things
      */
@@ -91,10 +102,14 @@ typedef struct comms_info {
     ucp_context_h ucx_ctxt;     /* local communication context */
     ucp_config_t *ucx_cfg;      /* local config */
     worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
+
     shmemc_context_h *ctxts;    /* PE's contexts */
     size_t nctxts;              /* how many contexts */
-    /* mem_region_t *regions; */      /* exchanged symmetric regions */
-    /* size_t nregions; */            /* how many regions */
+
+    mem_region_t *regions;      /* exchanged symmetric regions */
+    size_t nregions;            /* how many memory regions */
+
+    mem_opaque_t *orks;         /* opaque rkeys (nregions * PEs) */
 } comms_info_t;
 
 typedef struct thread_desc {

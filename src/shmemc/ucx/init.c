@@ -107,7 +107,7 @@ register_globals()
     globals->end  = globals->base + len;
     globals->len  = len;
 
-    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->mh);
     shmemu_assert(s == UCS_OK, "can't map global memory");
 
     /* don't need allocator, variables already there */
@@ -118,7 +118,7 @@ deregister_globals(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->racc.mh);
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->mh);
     shmemu_assert(s == UCS_OK, "can't unmap global memory");
 }
 
@@ -150,7 +150,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
         UCP_MEM_MAP_NONBLOCK |
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->mh);
     shmemu_assert(s == UCS_OK,
                   "can't map memory for symmetric heap #%lu",
                   hn);
@@ -167,7 +167,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(mip->racc.mh, &attr);
+    s = ucp_mem_query(mip->mh, &attr);
     shmemu_assert(s == UCS_OK,
                   "can't query extent of memory for symmetric heap #%lu",
                   hn);
@@ -189,7 +189,7 @@ deregister_symmetric_heap(mem_info_t *mip)
 
     NO_WARN_UNUSED(hn);
 
-    s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->racc.mh);
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->mh);
     shmemu_assert(s == UCS_OK,
                   "can't unmap memory for symmetric heap #%lu",
                   hn);
@@ -200,29 +200,39 @@ deregister_symmetric_heap(mem_info_t *mip)
  */
 
 inline static void
+init_opaque_rkeys(void)
+{
+    proc.comms.orks = (mem_opaque_t *)
+        calloc(proc.comms.nregions * proc.nranks,
+               sizeof(mem_opaque_t));
+    shmemu_assert(proc.comms.orks != NULL,
+                  "can't allocate memory for opaque rkeys");
+}
+
+inline static void
 init_memory_regions(void)
 {
     size_t i;
 
     /* 1 globals region, plus symmetric heaps */
-    defc->nregions = 1 + proc.env.heaps.nheaps;
+    proc.comms.nregions = 1 + proc.env.heaps.nheaps;
 
     /* init that many regions on me */
-    defc->regions =
-        (mem_region_t *) calloc(defc->nregions, sizeof(mem_region_t));
-    shmemu_assert(defc->regions != NULL,
+    proc.comms.regions =
+        (mem_region_t *) calloc(proc.comms.nregions, sizeof(mem_region_t));
+    shmemu_assert(proc.comms.regions != NULL,
                   "can't allocate memory for memory regions");
 
     /* now prep for all PEs to exchange */
-    for (i = 0; i < defc->nregions; ++i) {
-        defc->regions[i].minfo =
+    for (i = 0; i < proc.comms.nregions; ++i) {
+        proc.comms.regions[i].minfo =
             (mem_info_t *) calloc(proc.nranks, sizeof(mem_info_t));
-        shmemu_assert(defc->regions[i].minfo != NULL,
+        shmemu_assert(proc.comms.regions[i].minfo != NULL,
                       "can't allocate memory region metadata");
     }
 
     /* to access global variables */
-    globals = & defc->regions[0].minfo[proc.rank];
+    globals = & proc.comms.regions[0].minfo[proc.rank];
 }
 
 /*
@@ -236,8 +246,8 @@ register_memory_regions(void)
 
     register_globals();
 
-    for (hi = 1; hi < defc->nregions; ++hi) {
-        mem_info_t *shp = & defc->regions[hi].minfo[proc.rank];
+    for (hi = 1; hi < proc.comms.nregions; ++hi) {
+        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.rank];
 
         register_symmetric_heap(hi - 1, shp);
     }
@@ -253,8 +263,8 @@ deregister_memory_regions(void)
     size_t hi;
 
     /* deregister symmetric heaps, then globals (index 0) */
-    for (hi = defc->nregions - 1; hi >= 1; hi -= 1) {
-        mem_info_t *shp = & defc->regions[hi].minfo[proc.rank];
+    for (hi = proc.comms.nregions - 1; hi >= 1; hi -= 1) {
+        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.rank];
 
         deregister_symmetric_heap(shp);
 
@@ -263,10 +273,10 @@ deregister_memory_regions(void)
 
     deregister_globals();
 
-    for (hi = 0; hi < defc->nregions; ++hi) {
-        free(defc->regions[hi].minfo);
+    for (hi = 0; hi < proc.comms.nregions; ++hi) {
+        free(proc.comms.regions[hi].minfo);
     }
-    free(defc->regions);
+    free(proc.comms.regions);
 }
 
 /**
@@ -348,8 +358,6 @@ ucx_cleanup(void)
 void
 shmemc_ucx_init(void)
 {
-    int n;
-
     ucx_init_ready();
 
     /* user-supplied setup */
@@ -366,8 +374,10 @@ shmemc_ucx_init(void)
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
 
-    n = shmemc_init_default_context();
+#if 0
+    n = shmemc_context_init_default();
     shmemu_assert(n == 0, "couldn't initialize default context");
+#endif
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);

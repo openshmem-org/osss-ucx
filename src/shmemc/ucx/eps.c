@@ -81,6 +81,21 @@ ep_wait(ucs_status_ptr_t req)
     ucp_request_free(req);
 }
 
+ucs_status_t
+shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
+{
+    return ucp_rkey_pack(proc.comms.ucx_ctxt,
+                         mh,
+                         packed_rkey_p, rkey_len_p
+                         );
+}
+
+ucs_status_t
+shmemc_ucx_rkey_unpack(ucp_ep_h ep, void *data, ucp_rkey_h *rk_p)
+{
+    return ucp_ep_rkey_unpack(ep, data, rk_p);
+}
+
 /*
  * Start the disconnects for all PEs, and then wait for completion
  */
@@ -112,6 +127,7 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
     ucs_status_t s;
     ucp_ep_params_t epm;
     int i;
+    size_t r;
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
 
@@ -127,20 +143,15 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
                       ucs_status_string(s)
                       );
         /* NOT REACHED */
+
+        for (r = 0; r < proc.comms.nregions; ++r) {
+            void *ork_data = proc.comms.orks[r].rkey[pe].data;
+
+            s = ucp_ep_rkey_unpack(ch->eps[pe],
+                                   ork_data,
+                                   & ch->racc[r].rinfo[pe].rkey
+                                   );
+            shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
+        }
     }
-}
-
-ucs_status_t
-shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
-{
-    return ucp_rkey_pack(proc.comms.ucx_ctxt,
-                         mh,
-                         packed_rkey_p, rkey_len_p
-                         );
-}
-
-ucs_status_t
-shmemc_ucx_rkey_unpack(ucp_ep_h ep, void *data, ucp_rkey_h *rk_p)
-{
-    return ucp_ep_rkey_unpack(ep, data, rk_p);
 }

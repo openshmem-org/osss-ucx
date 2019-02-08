@@ -15,21 +15,21 @@ shmemc_init(void)
     /* find launch info */
     shmemc_pmi_client_init();
 
-    /* launch and connect my heap to network resources */
+    /* launch and connect me to network resources */
     shmemc_ucx_init();
 
-    /* now heap registered... */
+    /* prep default context */
+    shmemc_context_init_default();
 
+    /* exchange default worker info */
     shmemc_pmi_publish_worker();
-
-    /* exchange worker info and then create EPs */
     shmemc_pmi_exchange_workers();
 
-    shmemc_ucx_make_remote_eps(&shmemc_default_context);
-
+    /* exchange memory keys and (if needed) heap info */
     shmemc_pmi_publish_rkeys_and_heaps();
-
     shmemc_pmi_exchange_rkeys_and_heaps();
+
+    shmemc_ucx_make_remote_eps(&shmemc_default_context);
 }
 
 void

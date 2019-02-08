@@ -452,11 +452,7 @@ void shmemc_context_destroy(shmem_ctx_t ctx);
 unsigned long shmemc_context_id(shmem_ctx_t ctx);
 
 extern shmemc_context_t shmemc_default_context;
-int shmemc_init_default_context(void);
-void shmemc_context_set_heap(shmemc_context_h ch,
-                             size_t r, int pe,
-                             uint64_t base,
-                             size_t size);
+int shmemc_context_init_default(void);
 
 /*
  * -- barriers & syncs -------------------------------------------------------

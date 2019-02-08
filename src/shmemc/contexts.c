@@ -256,25 +256,15 @@ shmemc_context_id(shmem_ctx_t ctx)
 shmemc_context_t shmemc_default_context;
 
 int
-shmemc_init_default_context(void)
+shmemc_context_init_default(void)
 {
-    shmemc_context_h def = &shmemc_default_context;
+    shmemc_context_h defc = &shmemc_default_context;
 
-    context_set_options(0L, def);
+    context_set_options(0L, defc);
 
-    shmemc_ucx_context_progress(def);
+    // shmemc_ucx_make_remote_eps(defc);
+
+    shmemc_ucx_context_progress(defc);
 
     return shmemc_ucx_context_default_set_info();
-}
-
-void
-shmemc_context_set_heap(shmemc_context_h ch,
-                        size_t r, int pe,
-                        uint64_t base,
-                        size_t size)
-{
-    ch->regions[r].minfo[pe].base = base;
-    ch->regions[r].minfo[pe].len = size;
-    /* slightly redundant storage, but useful */
-    ch->regions[r].minfo[pe].end = base + size;
 }
