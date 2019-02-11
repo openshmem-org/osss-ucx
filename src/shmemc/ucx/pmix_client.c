@@ -180,6 +180,8 @@ shmemc_pmi_exchange_workers(void)
 inline static void
 exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 {
+    uint64_t base;
+    size_t len;
     pmix_status_t ps;
 
     snprintf(hdp[0].key, PMIX_MAX_KEYLEN,
@@ -200,14 +202,13 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
                   "can't fetch heap size");
 #endif /* PMIX_VERSION_MAJOR */
 
-    proc.comms.regions[r].minfo[pe].base =
-        hdp[0].value.data.uint64;
-    proc.comms.regions[r].minfo[pe].len =
-        hdp[1].value.data.size;
+    base = hdp[0].value.data.uint64;
+    len  = hdp[1].value.data.size;
+
+    proc.comms.regions[r].minfo[pe].base = base;
+    proc.comms.regions[r].minfo[pe].len = len;
     /* slightly redundant storage, but useful */
-    proc.comms.regions[r].minfo[pe].end =
-        proc.comms.regions[r].minfo[pe].base +
-        proc.comms.regions[r].minfo[pe].len;
+    proc.comms.regions[r].minfo[pe].end = base + len;
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
@@ -216,31 +217,18 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
-#if 0
-    ucs_status_t s;
-#endif
-    /* opaque rkey shortcut */
-    void *ork_data = proc.comms.orks[r].rkey[pe].data;
 
     snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
     ps = PMIx_Lookup(rdp, 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
 
-    ork_data = malloc(bop->size);
-    shmemu_assert(ork_data != NULL,
+    proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
+
+    shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,
                   "couldn't allocate memory for rkey data");
 
-    memcpy(ork_data, bop->bytes, bop->size);
-
-#if 0
-    /* TODO this should be moved out of here and generalized to any context */
-    s = shmemc_ucx_rkey_unpack(defc->eps[pe],
-                               ork_data,
-                               & defc->regions[r].minfo[pe].racc.rkey
-                               );
-    shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
-#endif
+    memcpy(proc.comms.orks[r].rkeys[pe].data, bop->bytes, bop->size);
 }
 
 inline static void
@@ -477,7 +465,7 @@ shmemc_pmi_client_finalize(void)
         size_t r;
 
         for (r = 0; r < proc.comms.nregions; ++r) {
-            free(proc.comms.orks[r].rkey[pe].data);
+            free(proc.comms.orks[r].rkeys[pe].data);
         }
     }
 }

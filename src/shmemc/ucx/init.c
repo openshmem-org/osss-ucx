@@ -202,11 +202,20 @@ deregister_symmetric_heap(mem_info_t *mip)
 inline static void
 init_opaque_rkeys(void)
 {
+    size_t r;
+
     proc.comms.orks = (mem_opaque_t *)
-        calloc(proc.comms.nregions * proc.nranks,
-               sizeof(mem_opaque_t));
+        calloc(proc.comms.nregions, sizeof(mem_opaque_t));
     shmemu_assert(proc.comms.orks != NULL,
                   "can't allocate memory for opaque rkeys");
+
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        proc.comms.orks[r].rkeys =
+            (mem_opaque_rkey_t *) calloc(proc.nranks,
+                                         sizeof(mem_opaque_rkey_t));
+        shmemu_assert(proc.comms.orks[r].rkeys != NULL,
+                      "can't allocate memory for opaque rkeys");
+    }
 }
 
 inline static void
@@ -367,17 +376,14 @@ shmemc_ucx_init(void)
     init_memory_regions();
     register_memory_regions();
 
+    init_opaque_rkeys();
+
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
     shmemc_ucx_allocate_eps_table(defc);
 
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();
-
-#if 0
-    n = shmemc_context_init_default();
-    shmemu_assert(n == 0, "couldn't initialize default context");
-#endif
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);

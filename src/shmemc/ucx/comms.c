@@ -18,8 +18,6 @@
  * -- helpers ----------------------------------------------------------------
  */
 
-static shmemc_context_h defc = &shmemc_default_context;
-
 /*
  * shortcut to look up the UCP endpoint of a context
  */
@@ -28,9 +26,9 @@ lookup_ucp_ep(shmemc_context_h ch, int pe)
 {
     /* TODO: currently this has to be the default context at all times */
 
-    NO_WARN_UNUSED(ch);
+    // NO_WARN_UNUSED(ch);
 
-    return defc->eps[pe];
+    return ch->eps[pe];
 }
 
 /*
@@ -46,10 +44,8 @@ lookup_rkey(shmemc_context_h ch, size_t region, int pe)
  * where the heap lives on PE "pe"
  */
 inline static uint64_t
-get_base(shmemc_context_h ch, size_t region, int pe)
+get_base(size_t region, int pe)
 {
-    NO_WARN_UNUSED(ch);
-
     return proc.comms.regions[region].minfo[pe].base;
 }
 
@@ -62,11 +58,9 @@ get_base(shmemc_context_h ch, size_t region, int pe)
  * not.
  */
 inline static int
-in_region(shmemc_context_h ch, uint64_t addr, size_t region, int pe)
+in_region(uint64_t addr, size_t region, int pe)
 {
     const mem_info_t mi = proc.comms.regions[region].minfo[pe];
-
-    NO_WARN_UNUSED(ch);
 
     return (mi.base <= addr) && (addr < mi.end);
 }
@@ -75,7 +69,7 @@ in_region(shmemc_context_h ch, uint64_t addr, size_t region, int pe)
  * find memory region that ADDR is in, or -1 if none
  */
 inline static long
-lookup_region(shmemc_context_h ch, uint64_t addr, int pe)
+lookup_region(uint64_t addr, int pe)
 {
     long r;
 
@@ -85,7 +79,7 @@ lookup_region(shmemc_context_h ch, uint64_t addr, int pe)
      * (may need to revisit)
      */
     for (r = proc.comms.nregions - 1; r >= 0; r -= 1) {
-        if (in_region(ch, addr, (size_t) r, pe)) {
+        if (in_region(addr, (size_t) r, pe)) {
             return r;
             /* NOT REACHED */
         }
@@ -103,8 +97,7 @@ lookup_region(shmemc_context_h ch, uint64_t addr, int pe)
  * variables
  */
 inline static uint64_t
-translate_address(shmemc_context_h ch,
-                  uint64_t local_addr, size_t region, int pe)
+translate_address(uint64_t local_addr, size_t region, int pe)
 {
 #ifdef ENABLE_ALIGNED_ADDRESSES
     NO_WARN_UNUSED(region);
@@ -117,9 +110,9 @@ translate_address(shmemc_context_h ch,
     }
     else {
         const uint64_t my_offset =
-            local_addr - get_base(ch, region, proc.rank);
+            local_addr - get_base(region, proc.rank);
         const uint64_t remote_addr =
-            my_offset + get_base(ch, region, pe);
+            my_offset + get_base(region, pe);
 
         return remote_addr;
     }
@@ -134,12 +127,12 @@ get_remote_key_and_addr(shmemc_context_h ch,
                         uint64_t local_addr, int pe,
                         ucp_rkey_h *rkey_p, uint64_t *raddr_p)
 {
-    const long r = lookup_region(ch, local_addr, proc.rank);
+    const long r = lookup_region(local_addr, proc.rank);
 
     shmemu_assert(r >= 0, "can't find memory region for %p", local_addr);
 
     *rkey_p = lookup_rkey(ch, r, pe);
-    *raddr_p = translate_address(ch, local_addr, r, pe);
+    *raddr_p = translate_address(local_addr, r, pe);
 }
 
 /*
@@ -622,7 +615,7 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 int
 shmemc_addr_accessible(const void *addr, int pe)
 {
-    return lookup_region(defc, (uint64_t) addr, pe) >= 0;
+    return lookup_region((uint64_t) addr, pe) >= 0;
 }
 
 /*

@@ -30,7 +30,7 @@ typedef struct mem_opaque_rkey {
 } mem_opaque_rkey_t;
 
 typedef struct mem_opaque {
-    mem_opaque_rkey_t *rkey;
+    mem_opaque_rkey_t *rkeys;   /* per PE */
 } mem_opaque_t;
 
 typedef struct mem_access {

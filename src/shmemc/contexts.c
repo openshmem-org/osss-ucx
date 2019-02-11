@@ -195,6 +195,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
             return ret;
             /* NOT REACHED */
         }
+        shmemc_ucx_make_remote_eps(ch);
     }
 
     ch->creator_thread = threadwrap_thread_id();
@@ -261,8 +262,6 @@ shmemc_context_init_default(void)
     shmemc_context_h defc = &shmemc_default_context;
 
     context_set_options(0L, defc);
-
-    // shmemc_ucx_make_remote_eps(defc);
 
     shmemc_ucx_context_progress(defc);
 

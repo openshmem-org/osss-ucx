@@ -90,11 +90,13 @@ shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
                          );
 }
 
+#if 0
 ucs_status_t
 shmemc_ucx_rkey_unpack(ucp_ep_h ep, void *data, ucp_rkey_h *rk_p)
 {
     return ucp_ep_rkey_unpack(ep, data, rk_p);
 }
+#endif
 
 /*
  * Start the disconnects for all PEs, and then wait for completion
@@ -129,6 +131,21 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
     int i;
     size_t r;
 
+    /* allocate remote access fields */
+
+    ch->racc = (mem_region_access_t *) calloc(proc.comms.nregions,
+                                              sizeof(mem_region_access_t));
+    shmemu_assert(ch->racc != NULL,
+                  "can't allocate memory for remote access rkeys");
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        ch->racc[r].rinfo = (mem_access_t *) calloc(proc.nranks,
+                                                    sizeof(mem_access_t));
+        shmemu_assert(ch->racc[r].rinfo != NULL,
+                      "can't allocate memory for remote access rkeys");
+    }
+
+    /* create endpoints and unpack rkeys onto them */
+
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
 
     for (i = 0; i < proc.nranks; ++i) {
@@ -145,10 +162,8 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
         /* NOT REACHED */
 
         for (r = 0; r < proc.comms.nregions; ++r) {
-            void *ork_data = proc.comms.orks[r].rkey[pe].data;
-
             s = ucp_ep_rkey_unpack(ch->eps[pe],
-                                   ork_data,
+                                   proc.comms.orks[r].rkeys[pe].data,
                                    & ch->racc[r].rinfo[pe].rkey
                                    );
             shmemu_assert(s == UCS_OK, "can't unpack remote rkey");

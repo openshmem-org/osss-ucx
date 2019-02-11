@@ -29,6 +29,7 @@ shmemc_init(void)
     shmemc_pmi_publish_rkeys_and_heaps();
     shmemc_pmi_exchange_rkeys_and_heaps();
 
+    /* populate endpoints of default context */
     shmemc_ucx_make_remote_eps(&shmemc_default_context);
 }
 
