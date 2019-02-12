@@ -9,6 +9,8 @@
 #include "shmemu.h"
 
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 #include <ucp/api/ucp.h>
 
@@ -22,7 +24,9 @@ shmemc_ucx_allocate_eps_table(shmemc_context_h ch)
     ch->eps = (ucp_ep_h *)
         calloc(proc.nranks, sizeof(*(ch->eps)));
     shmemu_assert(ch->eps != NULL,
-                  "can't allocate memory for remotely accessible endpoints");
+                  "can't allocate memory "
+                  "for remotely accessible endpoints: %s",
+                  strerror(errno));
 }
 
 void
@@ -90,14 +94,6 @@ shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
                          );
 }
 
-#if 0
-ucs_status_t
-shmemc_ucx_rkey_unpack(ucp_ep_h ep, void *data, ucp_rkey_h *rk_p)
-{
-    return ucp_ep_rkey_unpack(ep, data, rk_p);
-}
-#endif
-
 /*
  * Start the disconnects for all PEs, and then wait for completion
  */
@@ -110,7 +106,9 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 
     req = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*req));
     shmemu_assert(req != NULL,
-                  "failed to allocate memory for UCP endpoint disconnect");
+                  "failed to allocate memory "
+                  "for UCP endpoint disconnect: %s",
+                  strerror(errno));
 
     for (i = 0; i < proc.nranks; ++i) {
         req[i] = ep_disconnect_nb(ch->eps[i]);
@@ -141,7 +139,10 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
         ch->racc[r].rinfo = (mem_access_t *) calloc(proc.nranks,
                                                     sizeof(mem_access_t));
         shmemu_assert(ch->racc[r].rinfo != NULL,
-                      "can't allocate memory for remote access rkeys");
+                      "can't allocate remote access info"
+                      "for memory region %lu: %s",
+                      (unsigned long) r,
+                      strerror(errno));
     }
 
     /* create endpoints and unpack rkeys onto them */
@@ -156,17 +157,20 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
         s = ucp_ep_create(ch->w, &epm, &(ch->eps[pe]));
 
         shmemu_assert(s == UCS_OK,
-                      "Unable to create remote endpoints: %s",
-                      ucs_status_string(s)
+                      "Unable to create remote endpoints for PE %d: %s",
+                      pe, ucs_status_string(s)
                       );
-        /* NOT REACHED */
 
         for (r = 0; r < proc.comms.nregions; ++r) {
             s = ucp_ep_rkey_unpack(ch->eps[pe],
                                    proc.comms.orks[r].rkeys[pe].data,
                                    & ch->racc[r].rinfo[pe].rkey
                                    );
-            shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
+            shmemu_assert(s == UCS_OK,
+                          "can't unpack remote rkey "
+                          "for memory region %lu, PE %d: %s",
+                          (unsigned long) r, pe,
+                          ucs_status_string(s));
         }
     }
 }
