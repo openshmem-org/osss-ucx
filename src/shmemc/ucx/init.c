@@ -262,10 +262,6 @@ register_memory_regions(void)
     }
 }
 
-/*
- * TODO make this per-context
- */
-
 inline static void
 deregister_memory_regions(void)
 {
@@ -376,6 +372,7 @@ shmemc_ucx_init(void)
     init_memory_regions();
     register_memory_regions();
 
+    /* master copy of exchanged rkeys */
     init_opaque_rkeys();
 
     /* Create exchange workers and space for EPs */

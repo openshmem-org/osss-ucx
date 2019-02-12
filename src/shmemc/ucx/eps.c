@@ -145,6 +145,8 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
                       strerror(errno));
     }
 
+    /* TODO free racc memory on teardown */
+
     /* create endpoints and unpack rkeys onto them */
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;

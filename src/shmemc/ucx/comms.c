@@ -24,10 +24,6 @@
 inline static ucp_ep_h
 lookup_ucp_ep(shmemc_context_h ch, int pe)
 {
-    /* TODO: currently this has to be the default context at all times */
-
-    // NO_WARN_UNUSED(ch);
-
     return ch->eps[pe];
 }
 
