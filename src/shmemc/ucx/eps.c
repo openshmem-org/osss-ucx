@@ -124,10 +124,10 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 void
 shmemc_ucx_make_remote_eps(shmemc_context_h ch)
 {
-    ucs_status_t s;
     ucp_ep_params_t epm;
-    int i;
+    ucs_status_t s;
     size_t r;
+    int pe;
 
     /* allocate remote access fields */
 
@@ -135,6 +135,7 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
                                               sizeof(mem_region_access_t));
     shmemu_assert(ch->racc != NULL,
                   "can't allocate memory for remote access rkeys");
+
     for (r = 0; r < proc.comms.nregions; ++r) {
         ch->racc[r].rinfo = (mem_access_t *) calloc(proc.nranks,
                                                     sizeof(mem_access_t));
@@ -145,18 +146,15 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
                       strerror(errno));
     }
 
-    /* TODO free racc memory on teardown */
-
     /* create endpoints and unpack rkeys onto them */
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
 
-    for (i = 0; i < proc.nranks; ++i) {
-        const int pe = SHIFT(i);
+    for (pe = 0; pe < proc.nranks; ++pe) {
 
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
-        s = ucp_ep_create(ch->w, &epm, &(ch->eps[pe]));
+        s = ucp_ep_create(ch->w, &epm, & ch->eps[pe]);
 
         shmemu_assert(s == UCS_OK,
                       "Unable to create remote endpoints for PE %d: %s",
@@ -175,4 +173,6 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
                           ucs_status_string(s));
         }
     }
+
+    /* TODO free racc memory on teardown */
 }
