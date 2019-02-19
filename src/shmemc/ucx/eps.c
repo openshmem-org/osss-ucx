@@ -9,6 +9,8 @@
 #include "shmemu.h"
 
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 
 #include <ucp/api/ucp.h>
 
@@ -115,12 +117,19 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
 
+    ch->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(ucp_ep_h));
+    shmemu_assert(ch->eps != NULL,
+                  "can't allocate memory for endpoints "
+                  "for context %lu: %s",
+                  ch->id,
+                  strerror(errno));
+
     for (i = 0; i < proc.nranks; ++i) {
         const int pe = SHIFT(i);
 
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
-        s = ucp_ep_create(ch->w, &epm, &(ch->eps[pe]));
+        s = ucp_ep_create(ch->w, &epm, & ch->eps[pe]);
 
         shmemu_assert(s == UCS_OK,
                       "Unable to create remote endpoints: %s",
