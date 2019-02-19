@@ -109,7 +109,7 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 }
 
 void
-shmemc_ucx_make_remote_eps(shmemc_context_h ch)
+shmemc_ucx_make_eps(shmemc_context_h ch)
 {
     ucs_status_t s;
     ucp_ep_params_t epm;
