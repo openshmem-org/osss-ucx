@@ -45,7 +45,7 @@ deallocate_xworkers_table(void)
  * Context management
  */
 inline static void
-allocate_contexts_table(void)
+contexts_table_init(void)
 {
     /*
      * no new SHMEM contexts created yet
@@ -55,23 +55,45 @@ allocate_contexts_table(void)
 }
 
 inline static void
-deallocate_contexts_table(void)
+teardown_context(shmemc_context_h ch)
+{
+    size_t r;
+    int pe;
+
+    if (! proc.env.teardown_kludge) {
+        shmemc_ucx_disconnect_all_eps(ch);
+    }
+    shmemc_ucx_deallocate_eps_table(ch);
+    ucp_worker_destroy(ch->w);
+
+    /* release remote access memory */
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        for (pe = 0; pe < proc.nranks; ++pe) {
+            ucp_rkey_destroy(ch->racc[r].rinfo[pe].rkey);
+        }
+        free(ch->racc[r].rinfo);
+    }
+    free(ch->racc);
+}
+
+inline static void
+contexts_table_finalize(void)
 {
     size_t c;
+
+    /*
+     * clear up each allocated SHMEM context
+     */
+    for (c = 0; c < proc.comms.nctxts; ++c) {
+        teardown_context(proc.comms.ctxts[c]);
+    }
 
     /*
      * special release case for default context
      */
     ucp_worker_release_address(defc->w,
                                proc.comms.xchg_wrkr_info[proc.rank].addr);
-    ucp_worker_destroy(defc->w);
-
-    /*
-     * clear up each allocated SHMEM context
-     */
-    for (c = 0; c < proc.comms.nctxts; ++c) {
-        ucp_worker_destroy(proc.comms.ctxts[c]->w);
-    }
+    teardown_context(defc);
 
     free(proc.comms.ctxts);
 }
@@ -200,7 +222,7 @@ deregister_symmetric_heap(mem_info_t *mip)
  */
 
 inline static void
-init_opaque_rkeys(void)
+opaque_rkeys_init(void)
 {
     size_t r;
 
@@ -215,6 +237,20 @@ init_opaque_rkeys(void)
                                          sizeof(mem_opaque_rkey_t));
         shmemu_assert(proc.comms.orks[r].rkeys != NULL,
                       "can't allocate memory for opaque rkeys");
+    }
+}
+
+inline static void
+opaque_rkeys_finalize(void)
+{
+    size_t r;
+    int pe;
+
+    /* clear opaque rkeys */
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        for (pe = 0; pe < proc.nranks; ++pe) {
+            free(proc.comms.orks[r].rkeys[pe].data);
+        }
     }
 }
 
@@ -373,14 +409,15 @@ shmemc_ucx_init(void)
     register_memory_regions();
 
     /* master copy of exchanged rkeys */
-    init_opaque_rkeys();
+    opaque_rkeys_init();
 
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
+
     shmemc_ucx_allocate_eps_table(defc);
 
     /* prep contexts, allocate first one (default) */
-    allocate_contexts_table();
+    contexts_table_init();
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
@@ -401,18 +438,15 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-    /* TODO generalize to all extant contexts */
-    if (! proc.env.teardown_kludge) {
-        shmemc_ucx_disconnect_all_eps(defc);
-    }
-    shmemc_ucx_deallocate_eps_table(defc);
+    contexts_table_finalize();
 
-    deallocate_contexts_table();
     deallocate_xworkers_table();
 
     /* free up internal sync variables */
     FREE_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
     FREE_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
+
+    opaque_rkeys_finalize();
 
     deregister_memory_regions();
 

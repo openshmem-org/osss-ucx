@@ -195,7 +195,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
             return ret;
             /* NOT REACHED */
         }
-        shmemc_ucx_make_remote_eps(ch);
+        shmemc_ucx_make_eps(ch);
     }
 
     ch->creator_thread = threadwrap_thread_id();

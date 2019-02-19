@@ -26,7 +26,7 @@ void shmemc_ucx_allocate_eps_table(shmemc_context_h ch);
 void shmemc_ucx_deallocate_eps_table(shmemc_context_h ch);
 
 int shmemc_ucx_context_progress(shmemc_context_h ch);
-void shmemc_ucx_make_remote_eps(shmemc_context_h ch);
+void shmemc_ucx_make_eps(shmemc_context_h ch);
 void shmemc_ucx_disconnect_all_eps(shmemc_context_h ch);
 
 ucs_status_t shmemc_ucx_rkey_pack(ucp_mem_h mh,

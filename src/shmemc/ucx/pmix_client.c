@@ -445,29 +445,10 @@ shmemc_pmi_client_finalize(void)
                   "PMIx can't finalize (%s)",
                   PMIx_Error_string(ps));
 
-    for (pe = 0; pe < proc.nranks; ++pe) {
-        size_t r;
-
-        /* clean up allocations for exchanged buffers */
-        free(proc.comms.xchg_wrkr_info[pe].buf);
-        for (r = 0; r < proc.comms.nregions; ++r) {
-            ucp_rkey_destroy(defc->racc[r].rinfo[pe].rkey);
-        }
-    }
-
     release_waiter();
 
     /* clean up memory recording peer PEs */
     free(proc.peers);
-
-    /* clear opaque rkeys */
-    for (pe = 0; pe < proc.nranks; ++pe) {
-        size_t r;
-
-        for (r = 0; r < proc.comms.nregions; ++r) {
-            free(proc.comms.orks[r].rkeys[pe].data);
-        }
-    }
 }
 
 /*

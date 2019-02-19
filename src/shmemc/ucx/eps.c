@@ -63,7 +63,7 @@ ep_disconnect_nb(ucp_ep_h ep)
  */
 
 inline static void
-ep_wait(ucs_status_ptr_t req)
+ep_wait(shmemc_context_h ch, ucs_status_ptr_t req)
 {
     ucs_status_t s;
 
@@ -73,7 +73,7 @@ ep_wait(ucs_status_ptr_t req)
     }
 
     do {
-        shmemc_progress();
+        shmemc_ctx_progress(ch);
 
 #ifdef HAVE_UCP_REQUEST_CHECK_STATUS
         s = ucp_request_check_status(req);
@@ -115,14 +115,14 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
     }
 
     for (i = 0; i < proc.nranks; ++i) {
-        ep_wait(req[i]);
+        ep_wait(ch, req[i]);
     }
 
     free(req);
 }
 
 void
-shmemc_ucx_make_remote_eps(shmemc_context_h ch)
+shmemc_ucx_make_eps(shmemc_context_h ch)
 {
     ucp_ep_params_t epm;
     ucs_status_t s;
@@ -140,11 +140,18 @@ shmemc_ucx_make_remote_eps(shmemc_context_h ch)
         ch->racc[r].rinfo = (mem_access_t *) calloc(proc.nranks,
                                                     sizeof(mem_access_t));
         shmemu_assert(ch->racc[r].rinfo != NULL,
-                      "can't allocate remote access info"
+                      "can't allocate remote access info "
                       "for memory region %lu: %s",
                       (unsigned long) r,
                       strerror(errno));
     }
+
+    ch->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(ucp_ep_h));
+    shmemu_assert(ch->eps != NULL,
+                  "can't allocate memory for endpoints "
+                  "for context %lu: %s",
+                  ch->id,
+                  strerror(errno));
 
     /* create endpoints and unpack rkeys onto them */
 
