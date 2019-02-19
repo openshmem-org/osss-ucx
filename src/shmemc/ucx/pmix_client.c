@@ -29,8 +29,6 @@ static pmix_info_t waiter;      /* control lookups */
 static pmix_proc_t my_proc;     /* about me */
 static pmix_proc_t wc_proc;     /* wildcard lookups */
 
-static shmemc_context_h defc = &shmemc_default_context;
-
 /*
  * Make local info avaialable to PMIx
  */
