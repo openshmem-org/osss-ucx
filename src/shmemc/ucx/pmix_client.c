@@ -437,7 +437,6 @@ void
 shmemc_pmi_client_finalize(void)
 {
     pmix_status_t ps;
-    int pe;
 
     ps = pmix_finalize_wrapper();
 
