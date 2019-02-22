@@ -55,15 +55,14 @@ allocate_contexts_table(void)
 inline static void
 deallocate_contexts_table(void)
 {
-    shmemc_context_h def = &shmemc_default_context;
     size_t c;
 
     /*
      * special release case for default context
      */
-    ucp_worker_release_address(def->w,
+    ucp_worker_release_address(defcp->w,
                                proc.comms.xchg_wrkr_info[proc.rank].addr);
-    ucp_worker_destroy(def->w);
+    ucp_worker_destroy(defcp->w);
 
     /*
      * clear up each allocated SHMEM context
@@ -384,9 +383,9 @@ shmemc_ucx_finalize(void)
     shmemc_globalexit_finalize();
 
     if (! proc.env.teardown_kludge) {
-        shmemc_ucx_disconnect_all_eps(&shmemc_default_context);
+        shmemc_ucx_disconnect_all_eps(defcp);
     }
-    shmemc_ucx_deallocate_eps_table(&shmemc_default_context);
+    shmemc_ucx_deallocate_eps_table(defcp);
 
     deallocate_contexts_table();
     deallocate_xworkers_table();

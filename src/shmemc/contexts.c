@@ -254,15 +254,14 @@ shmemc_context_id(shmem_ctx_t ctx)
  * Return 0 if successful, non-0 otherwise
  */
 shmemc_context_t shmemc_default_context;
+shmemc_context_h defcp = & shmemc_default_context;
 
 int
 shmemc_init_default_context(void)
 {
-    shmemc_context_h def = &shmemc_default_context;
+    context_set_options(0L, defcp);
 
-    context_set_options(0L, def);
-
-    shmemc_ucx_context_progress(def);
+    shmemc_ucx_context_progress(defcp);
 
     return shmemc_ucx_context_default_set_info();
 }
