@@ -214,23 +214,24 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
     ucs_status_t s;
-    /* opaque rkey */
-    void *ork_data = proc.comms.regions[r].minfo[pe].racc.rkey_data;
 
     snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
     ps = PMIx_Lookup(rdp, 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
 
-    ork_data = malloc(bop->size);
-    shmemu_assert(ork_data != NULL,
+    /* opaque rkey */
+    proc.comms.regions[r].minfo[pe].racc.rkey_data = malloc(bop->size);
+    shmemu_assert(proc.comms.regions[r].minfo[pe].racc.rkey_data != NULL,
                   "couldn't allocate memory for rkey data");
 
-    memcpy(ork_data, bop->bytes, bop->size);
+    memcpy(proc.comms.regions[r].minfo[pe].racc.rkey_data,
+           bop->bytes,
+           bop->size);
 
     /* TODO this should be moved out of here and generalized to any context */
     s = shmemc_ucx_rkey_unpack(def->eps[pe],
-                               ork_data,
+                               proc.comms.regions[r].minfo[pe].racc.rkey_data,
                                &proc.comms.regions[r].minfo[pe].racc.rkey
                                );
     shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
