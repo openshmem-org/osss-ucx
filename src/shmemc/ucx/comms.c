@@ -144,25 +144,6 @@ static shmemc_context_h defc = &shmemc_default_context;
  * currently, progress is on the default context
  */
 
-#if 0
-#define SHMEMC_FENCE_QUIET(_op, _ucp_op)                            \
-    void                                                            \
-    shmemc_ctx_##_op(shmem_ctx_t ctx)                               \
-    {                                                               \
-        if (ctx != SHMEM_CTX_INVALID) {                             \
-            shmemc_context_h ch = (shmemc_context_h) ctx;           \
-                                                                    \
-            if (! ch->attr.nostore) {                               \
-                const ucs_status_t s = ucp_worker_##_ucp_op(ch->w); \
-                                                                    \
-                shmemu_assert(s == UCS_OK,                          \
-                              "%s() failed (status: %s)", #_op,     \
-                              ucs_status_string(s));                \
-            }                                                       \
-        }                                                           \
-    }
-#endif
-
 #define SHMEMC_FENCE_QUIET(_op, _ucp_op)                                \
     void                                                                \
     shmemc_ctx_##_op(shmem_ctx_t ctx)                                   \
