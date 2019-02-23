@@ -1,6 +1,6 @@
 ![](./doc/doxygen/openshmemlogo.svg)
 
-<hr>
+---
 
 # OSSS-UCX
 
