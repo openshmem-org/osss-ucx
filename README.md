@@ -1,8 +1,4 @@
-<div align="center">
-  <a href="http://www.openshmem.org/">
-    <img src="./doc/doxygen/openshmemlogo.svg">
-  </a>
-</div>
+![](./doc/doxygen/openshmemlogo.svg)
 
 <hr>
 
@@ -19,7 +15,7 @@ Implementation on top of OpenUCX (UCX) and PMIx.
 
 ## Software Architecture
 
-<img src="./doc/doxygen/osss-ucx.svg">
+![](./doc/doxygen/osss-ucx.svg)
 
 ## Download Links
 
