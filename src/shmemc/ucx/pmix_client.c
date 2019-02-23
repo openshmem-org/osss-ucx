@@ -357,25 +357,18 @@ pmix_finalize_wrapper(void)
  * get the PMIx client-side up and running
  */
 
-void
-shmemc_pmi_client_init(void)
+inline static void
+init_ranks(void)
 {
     pmix_value_t v;
     pmix_value_t *vp = &v;      /* holds things we get from PMIx */
     pmix_status_t ps;
 
-    ps = pmix_init_wrapper(&my_proc);
-
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't initialize (%s)",
-                  PMIx_Error_string(ps));
-
     /* we can get our own rank immediately */
     proc.rank = (int) my_proc.rank;
     shmemu_assert(proc.rank >= 0,
-                  "PMIx PE rank %d is not valid (%s)",
-                  proc.rank,
-                  PMIx_Error_string(ps));
+                  "PMIx PE rank %d must be >= 0",
+                  proc.rank);
 
     /* make a new proc to query things not linked to a specific rank */
     PMIX_PROC_CONSTRUCT(&wc_proc);
@@ -406,6 +399,14 @@ shmemc_pmi_client_init(void)
     shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
                   "PMIx PE rank %d is not valid",
                   proc.rank);
+}
+
+inline static void
+init_peers(void)
+{
+    pmix_value_t v;
+    pmix_value_t *vp = &v;      /* holds things we get from PMIx */
+    pmix_status_t ps;
 
     /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
@@ -431,6 +432,21 @@ shmemc_pmi_client_init(void)
         NO_WARN_UNUSED(n);
         shmemu_assert(s > 0, "Unable to parse peer PE numbers");
     }
+}
+
+void
+shmemc_pmi_client_init(void)
+{
+    pmix_status_t ps;
+
+    ps = pmix_init_wrapper(&my_proc);
+
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't initialize (%s)",
+                  PMIx_Error_string(ps));
+
+    init_ranks();
+    init_peers();
 
     make_waiter();
 }
