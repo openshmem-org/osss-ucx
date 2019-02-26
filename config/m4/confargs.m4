@@ -68,7 +68,7 @@ AM_CONDITIONAL([ENABLE_ALIGNED_ADDRESSES], [test "x$enable_aligned_addresses" = 
 #
 AC_ARG_ENABLE([threads],
 	AS_HELP_STRING([--disable-threads],
-			[This implementation will support threading levels @<:@default=yes@:>@]))
+		       [Are threading levels supported? @<:@default=yes@:>@]))
 AS_IF([test "x$enable_threads" != "xno"],
 	[AC_DEFINE([ENABLE_THREADS], [1], [Enable threading support])
 	 AC_SUBST([ENABLE_THREADS], [1])],

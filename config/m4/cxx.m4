@@ -15,7 +15,7 @@ fi
 
 AC_ARG_ENABLE([cxx],
 	AS_HELP_STRING([--disable-cxx],
-			[Support C++ compiler? @<:@default=yes@:>@]))
+			[Provide OpenSHMEM C++ compiler wrapper? @<:@default=yes@:>@]))
 
 AS_IF([test "x$cxx_happy" = "xyes" -a "x$enable_cxx" != "xno"],
 	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ compiler])
