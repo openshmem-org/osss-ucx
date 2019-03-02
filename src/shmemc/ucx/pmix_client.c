@@ -360,8 +360,7 @@ pmix_finalize_wrapper(void)
 inline static void
 init_ranks(void)
 {
-    pmix_value_t v;
-    pmix_value_t *vp = &v;      /* holds things we get from PMIx */
+    pmix_value_t *vp;           /* holds things we get from PMIx */
     pmix_status_t ps;
 
     /* we can get our own rank immediately */
@@ -404,8 +403,7 @@ init_ranks(void)
 inline static void
 init_peers(void)
 {
-    pmix_value_t v;
-    pmix_value_t *vp = &v;      /* holds things we get from PMIx */
+    pmix_value_t *vp;           /* holds things we get from PMIx */
     pmix_status_t ps;
 
     /* what's on this node? */
