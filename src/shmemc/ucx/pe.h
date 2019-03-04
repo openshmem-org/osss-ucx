@@ -17,18 +17,18 @@
  * exchanged at start-up
  */
 typedef struct worker_info {
-    ucp_address_t *addr;        /* worker address */
-    char *buf;                  /* allocated to copy remote worker */
-    size_t len;                 /* size of worker */
+    ucp_address_t *addr;        /**< worker address */
+    char *buf;                  /**< allocated to copy remote worker */
+    size_t len;                 /**< size of worker */
 } worker_info_t;
 
 /*
  * Encapsulate what UCX needs for remote access to a memory region
  */
 typedef struct mem_region_access {
-    ucp_mem_h mh;               /* memory handle */
-    void *rkey_data;            /* opaque rkey */
-    ucp_rkey_h rkey;            /* remote key for this heap */
+    ucp_mem_h mh;               /**< memory handle */
+    void *rkey_data;            /**< opaque rkey */
+    ucp_rkey_h rkey;            /**< remote key for this heap */
 } mem_region_access_t;
 
 /*
@@ -36,18 +36,18 @@ typedef struct mem_region_access {
  * info:
  */
 typedef struct mem_info {
-    size_t id;                  /* number of this heap */
-    uint64_t base;              /* start of this heap */
-    uint64_t end;               /* end of this heap */
-    size_t len;                 /* its size (b) */
-    mem_region_access_t racc;   /* for remote access */
+    size_t id;                  /**< number of this heap */
+    uint64_t base;              /**< start of this heap */
+    uint64_t end;               /**< end of this heap */
+    size_t len;                 /**< its size (b) */
+    mem_region_access_t racc;   /**< for remote access */
 } mem_info_t;
 
 /*
  * for PE exchange
  */
 typedef struct mem_region {
-    mem_info_t *minfo;          /* nranks mem info */
+    mem_info_t *minfo;          /**< nranks mem info */
 } mem_region_t;
 
 /*
@@ -67,13 +67,13 @@ typedef struct shmemc_context_attr {
 } shmemc_context_attr_t;
 
 typedef struct shmemc_context {
-    ucp_worker_h w;             /* for separate context progress */
+    ucp_worker_h w;             /**< for separate context progress */
 
-    ucp_ep_h *eps;              /* endpoints */
+    ucp_ep_h *eps;              /**< endpoints */
 
-    unsigned long id;           /* internal tracking */
+    unsigned long id;           /**< internal tracking */
 
-    threadwrap_thread_t creator_thread; /* thread ID that created me */
+    threadwrap_thread_t creator_thread; /**< thread ID that created me */
 
     /*
      * parsed options during creation (defaults: no)
@@ -91,22 +91,22 @@ typedef shmemc_context_t *shmemc_context_h;
  * this comms-layer needs to know...
  */
 typedef struct comms_info {
-    ucp_context_h ucx_ctxt;     /* local communication context */
-    ucp_config_t *ucx_cfg;      /* local config */
+    ucp_context_h ucx_ctxt;     /**< local communication context */
+    ucp_config_t *ucx_cfg;      /**< local config */
 
-    worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
+    worker_info_t *xchg_wrkr_info; /**< nranks worker info exchanged */
 
-    shmemc_context_h *ctxts;    /* PE's contexts */
-    size_t nctxts;              /* how many contexts */
+    shmemc_context_h *ctxts;    /**< PE's contexts */
+    size_t nctxts;              /**< how many contexts */
 
-    mem_region_t *regions;      /* exchanged symmetric regions */
-    size_t nregions;            /* how many regions */
+    mem_region_t *regions;      /**< exchanged symmetric regions */
+    size_t nregions;            /**< how many regions */
 } comms_info_t;
 
 typedef struct thread_desc {
-    ucs_thread_mode_t ucx_tl;   /* UCX thread level */
-    int osh_tl;                 /* corresponding OpenSHMEM thread level */
-    threadwrap_thread_t invoking_thread; /* who called shmem_init*()? */
+    ucs_thread_mode_t ucx_tl;   /**< UCX thread level */
+    int osh_tl;                 /**< corresponding OpenSHMEM thread level */
+    threadwrap_thread_t invoking_thread; /**< who called shmem_init*()? */
 } thread_desc_t;
 
 #endif /* ! _UCP_PE_H */
