@@ -24,12 +24,9 @@
 inline static ucp_ep_h
 lookup_ucp_ep(shmemc_context_h ch, int pe)
 {
-    /* TODO: currently this has to be the default context at all times */
-    shmemc_context_h def = &shmemc_default_context;
-
     NO_WARN_UNUSED(ch);
 
-    return def->eps[pe];
+    return defcp->eps[pe];
 }
 
 /*
@@ -137,8 +134,6 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
  * -- ordering -----------------------------------------------------------
  */
 
-static shmemc_context_h defc = &shmemc_default_context;
-
 /*
  * fence and quiet only do something on storable contexts, but
  * currently, progress is on the default context
@@ -152,7 +147,7 @@ static shmemc_context_h defc = &shmemc_default_context;
             shmemc_context_h ch = (shmemc_context_h) ctx;               \
                                                                         \
             if (! ch->attr.nostore) {                                   \
-                const ucs_status_t s = ucp_worker_##_ucp_op(defc->w);   \
+                const ucs_status_t s = ucp_worker_##_ucp_op(defcp->w);  \
                                                                         \
                 shmemu_assert(s == UCS_OK,                              \
                               "%s() failed (status: %s)", #_op,         \

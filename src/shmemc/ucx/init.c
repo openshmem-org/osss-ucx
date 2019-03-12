@@ -355,7 +355,7 @@ shmemc_ucx_init(void)
 
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
-    shmemc_ucx_allocate_eps_table(&shmemc_default_context);
+    shmemc_ucx_allocate_eps_table(defcp);
 
     /* prep contexts, allocate first one (default) */
     allocate_contexts_table();

@@ -210,7 +210,6 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 inline static void
 exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
-    shmemc_context_h def = &shmemc_default_context;
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
     ucs_status_t s;
@@ -230,7 +229,7 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
            bop->size);
 
     /* TODO this should be moved out of here and generalized to any context */
-    s = shmemc_ucx_rkey_unpack(def->eps[pe],
+    s = shmemc_ucx_rkey_unpack(defcp->eps[pe],
                                proc.comms.regions[r].minfo[pe].racc.rkey_data,
                                &proc.comms.regions[r].minfo[pe].racc.rkey
                                );
