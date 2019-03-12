@@ -207,18 +207,20 @@ noop_callback(void *request, ucs_status_t status)
 inline static ucs_status_t
 check_wait_for_request(shmemc_context_h ch, void *req)
 {
+    NO_WARN_UNUSED(ch);
+
     if (req == NULL) {          /* completed */
         return UCS_OK;
     }
     else if (UCS_PTR_IS_ERR(req)) {
-        ucp_request_cancel(ch->w, req);
+        ucp_request_cancel(defcp->w, req);
         return UCS_PTR_STATUS(req);
     }
     else {                      /* wait for completion */
         ucs_status_t s;
 
         do {
-            ucp_worker_progress(ch->w);
+            ucp_worker_progress(defcp->w);
 
             s = UCX_REQUEST_CHECK(req);
         } while (s == UCS_INPROGRESS);
