@@ -221,15 +221,6 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
     ps = PMIx_Lookup(rdp, 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
 
-    /* opaque rkey */
-    proc.comms.regions[r].minfo[pe].racc.rkey_data = malloc(bop->size);
-    shmemu_assert(proc.comms.regions[r].minfo[pe].racc.rkey_data != NULL,
-                  "couldn't allocate memory for rkey data");
-
-    memcpy(proc.comms.regions[r].minfo[pe].racc.rkey_data,
-           bop->bytes,
-           bop->size);
-
     proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
 
     shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,

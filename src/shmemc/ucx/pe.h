@@ -109,7 +109,7 @@ typedef struct comms_info {
     mem_region_t *regions;      /**< exchanged symmetric regions */
     size_t nregions;            /**< how many regions */
 
-    mem_opaque_t *orks;         /**< opaque rkeys (nregions * PEs) */
+    mem_opaque_t *orks;         /* opaque rkeys (nregions * PEs) */
 } comms_info_t;
 
 typedef struct thread_desc {

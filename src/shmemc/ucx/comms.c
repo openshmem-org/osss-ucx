@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "shmemc.h"
 #include "state.h"
 
 #include "shmem/defs.h"
