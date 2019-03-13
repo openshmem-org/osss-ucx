@@ -183,6 +183,7 @@ AC_CONFIG_FILES([
 	src/shmemc/Makefile
 	src/shmemc/osh_common
 	src/shmemu/Makefile
+	src/shmemt/Makefile
         ])
 
 AC_OUTPUT

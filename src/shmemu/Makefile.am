@@ -2,7 +2,8 @@
 
 OTHER_CPPFLAGS            = -I../../include \
 				-I$(srcdir)/.. \
-				-I$(srcdir)/../shmemc
+				-I$(srcdir)/../shmemc \
+				-I$(srcdir)/../shmemt
 
 LIBSHMEMU_SOURCES         = shmemu_init.c \
 				hostname.c \

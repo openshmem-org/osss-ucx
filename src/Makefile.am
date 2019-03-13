@@ -10,9 +10,17 @@ shmemu_cppflags        = -I$(top_srcdir)/src/$(shmemu_dir)
 shmemu_ldflags         = -L$(shmemu_dir)
 shmemu_libs            = -lshmemu
 
+shmemt_dir             = ./shmemt
+shmemt_cppflags        = -I$(top_srcdir)/src/$(shmemt_dir)
+shmemt_ldflags         = -L$(shmemt_dir)
+shmemt_libs            = -lshmemt
+
 MY_INCLUDE             = -I../include -I$(top_srcdir)/include
 
-all_cppflags           = $(shmemc_cppflags) $(shmemu_cppflags) $(MY_INCLUDE)
+all_cppflags           = $(shmemc_cppflags) \
+				$(shmemu_cppflags) \
+				$(shmemt_cppflags) \
+				$(MY_INCLUDE)
 
 MY_SOURCES             = \
 				accessible.c \
@@ -29,7 +37,6 @@ MY_SOURCES             = \
 				ranks.c	 \
 				shmalloc.c \
 				test.c \
-				threading.c \
 				tl_query.c \
 				version.c \
 				waituntil.c
@@ -42,7 +49,7 @@ MY_SOURCES            += \
 			deprecated/shmalloc.c \
 			deprecated/waituntil.c
 
-SUBDIRS                = $(shmemu_dir) $(shmemc_dir) osh_info
+SUBDIRS                = $(shmemu_dir) $(shmemc_dir) $(shmemt_dir) osh_info
 
 #
 # -- begin: SHCOLL --
@@ -65,10 +72,6 @@ endif
 # But we need the shim no matter what
 
 MY_SOURCES            += collectives/shcoll-shim.c
-
-if ENABLE_THREADS
-MY_SOURCES            += shmem_mutex.c
-endif # threads
 
 #
 # separate out the memory allocation routines

@@ -1,6 +1,7 @@
 # For license: see LICENSE file at top-level
 
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
+				-I$(srcdir)/../shmemt \
 				-I../../include -I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \
 				contexts.c \
