@@ -21,8 +21,6 @@
 
 #include <ucp/api/ucp.h>
 
-static shmemc_context_h defc = &shmemc_default_context;
-
 /*
  * worker tables
  */
@@ -91,9 +89,9 @@ contexts_table_finalize(void)
     /*
      * special release case for default context
      */
-    ucp_worker_release_address(defc->w,
+    ucp_worker_release_address(defcp->w,
                                proc.comms.xchg_wrkr_info[proc.rank].addr);
-    teardown_context(defc);
+    teardown_context(defcp);
 
     free(proc.comms.ctxts);
 }
@@ -414,7 +412,7 @@ shmemc_ucx_init(void)
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
 
-    shmemc_ucx_allocate_eps_table(defc);
+    shmemc_ucx_allocate_eps_table(defcp);
 
     /* prep contexts, allocate first one (default) */
     contexts_table_init();

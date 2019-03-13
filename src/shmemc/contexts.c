@@ -260,11 +260,9 @@ shmemc_context_h defcp = & shmemc_default_context;
 int
 shmemc_context_init_default(void)
 {
-    shmemc_context_h defc = &shmemc_default_context;
+    context_set_options(0L, defcp);
 
-    context_set_options(0L, defc);
-
-    shmemc_ucx_context_progress(defc);
+    shmemc_ucx_context_progress(defcp);
 
     return shmemc_ucx_context_default_set_info();
 }

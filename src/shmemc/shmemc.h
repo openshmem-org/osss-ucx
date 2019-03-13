@@ -451,6 +451,9 @@ int shmemc_context_create(long options, shmem_ctx_t *ctxp);
 void shmemc_context_destroy(shmem_ctx_t ctx);
 unsigned long shmemc_context_id(shmem_ctx_t ctx);
 
+/*
+ * Special handling for default context
+ */
 extern shmemc_context_t shmemc_default_context;
 extern shmemc_context_h defcp;
 
