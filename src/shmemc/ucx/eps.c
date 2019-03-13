@@ -24,7 +24,9 @@ shmemc_ucx_allocate_eps_table(shmemc_context_h ch)
     ch->eps = (ucp_ep_h *)
         calloc(proc.nranks, sizeof(*(ch->eps)));
     shmemu_assert(ch->eps != NULL,
-                  "can't allocate memory for remotely accessible endpoints");
+                  "can't allocate memory "
+                  "for remotely accessible endpoints: %s",
+                  strerror(errno));
 }
 
 void
@@ -61,7 +63,7 @@ ep_disconnect_nb(ucp_ep_h ep)
  */
 
 inline static void
-ep_wait(ucs_status_ptr_t req)
+ep_wait(shmemc_context_h ch, ucs_status_ptr_t req)
 {
     ucs_status_t s;
 
@@ -71,7 +73,7 @@ ep_wait(ucs_status_ptr_t req)
     }
 
     do {
-        shmemc_progress();
+        shmemc_ctx_progress(ch);
 
 #ifdef HAVE_UCP_REQUEST_CHECK_STATUS
         s = ucp_request_check_status(req);
@@ -81,6 +83,15 @@ ep_wait(ucs_status_ptr_t req)
     } while (s == UCS_INPROGRESS);
 
     ucp_request_free(req);
+}
+
+ucs_status_t
+shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
+{
+    return ucp_rkey_pack(proc.comms.ucx_ctxt,
+                         mh,
+                         packed_rkey_p, rkey_len_p
+                         );
 }
 
 /*
@@ -95,14 +106,16 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 
     req = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*req));
     shmemu_assert(req != NULL,
-                  "failed to allocate memory for UCP endpoint disconnect");
+                  "failed to allocate memory "
+                  "for UCP endpoint disconnect: %s",
+                  strerror(errno));
 
     for (i = 0; i < proc.nranks; ++i) {
         req[i] = ep_disconnect_nb(ch->eps[i]);
     }
 
     for (i = 0; i < proc.nranks; ++i) {
-        ep_wait(req[i]);
+        ep_wait(ch, req[i]);
     }
 
     free(req);
@@ -111,11 +124,27 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 void
 shmemc_ucx_make_eps(shmemc_context_h ch)
 {
-    ucs_status_t s;
     ucp_ep_params_t epm;
-    int i;
+    ucs_status_t s;
+    size_t r;
+    int pe;
 
-    epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
+    /* allocate remote access fields */
+
+    ch->racc = (mem_region_access_t *) calloc(proc.comms.nregions,
+                                              sizeof(mem_region_access_t));
+    shmemu_assert(ch->racc != NULL,
+                  "can't allocate memory for remote access rkeys");
+
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        ch->racc[r].rinfo = (mem_access_t *) calloc(proc.nranks,
+                                                    sizeof(mem_access_t));
+        shmemu_assert(ch->racc[r].rinfo != NULL,
+                      "can't allocate remote access info "
+                      "for memory region %lu: %s",
+                      (unsigned long) r,
+                      strerror(errno));
+    }
 
     ch->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(ucp_ep_h));
     shmemu_assert(ch->eps != NULL,
@@ -124,32 +153,33 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
                   ch->id,
                   strerror(errno));
 
-    for (i = 0; i < proc.nranks; ++i) {
-        const int pe = SHIFT(i);
+    /* create endpoints and unpack rkeys onto them */
+
+    epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
+
+    for (pe = 0; pe < proc.nranks; ++pe) {
 
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
         s = ucp_ep_create(ch->w, &epm, & ch->eps[pe]);
 
         shmemu_assert(s == UCS_OK,
-                      "Unable to create remote endpoints: %s",
-                      ucs_status_string(s)
+                      "Unable to create remote endpoints for PE %d: %s",
+                      pe, ucs_status_string(s)
                       );
-        /* NOT REACHED */
+
+        for (r = 0; r < proc.comms.nregions; ++r) {
+            s = ucp_ep_rkey_unpack(ch->eps[pe],
+                                   proc.comms.orks[r].rkeys[pe].data,
+                                   & ch->racc[r].rinfo[pe].rkey
+                                   );
+            shmemu_assert(s == UCS_OK,
+                          "can't unpack remote rkey "
+                          "for memory region %lu, PE %d: %s",
+                          (unsigned long) r, pe,
+                          ucs_status_string(s));
+        }
     }
-}
 
-ucs_status_t
-shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
-{
-    return ucp_rkey_pack(proc.comms.ucx_ctxt,
-                         mh,
-                         packed_rkey_p, rkey_len_p
-                         );
-}
-
-ucs_status_t
-shmemc_ucx_rkey_unpack(ucp_ep_h ep, void *data, ucp_rkey_h *rk_p)
-{
-    return ucp_ep_rkey_unpack(ep, data, rk_p);
+    /* TODO free racc memory on teardown */
 }

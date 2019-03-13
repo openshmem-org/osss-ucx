@@ -29,9 +29,6 @@ int shmemc_ucx_context_progress(shmemc_context_h ch);
 void shmemc_ucx_make_eps(shmemc_context_h ch);
 void shmemc_ucx_disconnect_all_eps(shmemc_context_h ch);
 
-ucs_status_t shmemc_ucx_rkey_unpack(ucp_ep_h ep,
-                                    void *data,
-                                    ucp_rkey_h *rk_p);
 ucs_status_t shmemc_ucx_rkey_pack(ucp_mem_h mh,
                                   void **packed_rkey_p,
                                   size_t *len_p);

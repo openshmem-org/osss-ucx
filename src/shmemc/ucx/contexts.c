@@ -12,6 +12,8 @@
 
 #include <ucp/api/ucp.h>
 
+static shmemc_context_h defc = &shmemc_default_context;
+
 /*
  * fill in context's worker
  *
@@ -59,7 +61,7 @@ shmemc_ucx_context_default_set_info(void)
     size_t len;
 
     /* get address for remote access to worker */
-    s = ucp_worker_get_address(defcp->w, &addr, &len);
+    s = ucp_worker_get_address(defc->w, &addr, &len);
     if (shmemu_unlikely(s != UCS_OK)) {
         return 1;
         /* NOT REACHED */

@@ -6,6 +6,7 @@
 
 #include "thispe.h"
 #include "shmemu.h"
+#include "shmemc.h"
 #include "state.h"
 #include "ucx/api.h"
 
@@ -67,7 +68,7 @@ publish_one_rkeys(pmix_info_t *rip, size_t r)
     void *packed_rkey;
     size_t rkey_len;
     const ucs_status_t s =
-        shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.rank].racc.mh,
+        shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.rank].mh,
                              &packed_rkey, &rkey_len
                              );
     shmemu_assert(s == UCS_OK, "can't pack rkey");
@@ -177,6 +178,8 @@ shmemc_pmi_exchange_workers(void)
 inline static void
 exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 {
+    uint64_t base;
+    size_t len;
     pmix_status_t ps;
 
     snprintf(hdp[0].key, PMIX_MAX_KEYLEN,
@@ -196,14 +199,14 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap size");
 #endif /* PMIX_VERSION_MAJOR */
-    proc.comms.regions[r].minfo[pe].base =
-        hdp[0].value.data.uint64;
-    proc.comms.regions[r].minfo[pe].len =
-        hdp[1].value.data.size;
+
+    base = hdp[0].value.data.uint64;
+    len  = hdp[1].value.data.size;
+
+    proc.comms.regions[r].minfo[pe].base = base;
+    proc.comms.regions[r].minfo[pe].len = len;
     /* slightly redundant storage, but useful */
-    proc.comms.regions[r].minfo[pe].end =
-        proc.comms.regions[r].minfo[pe].base +
-        hdp[1].value.data.size;
+    proc.comms.regions[r].minfo[pe].end = base + len;
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
@@ -212,7 +215,6 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
-    ucs_status_t s;
 
     snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
@@ -228,12 +230,12 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
            bop->bytes,
            bop->size);
 
-    /* TODO this should be moved out of here and generalized to any context */
-    s = shmemc_ucx_rkey_unpack(defcp->eps[pe],
-                               proc.comms.regions[r].minfo[pe].racc.rkey_data,
-                               &proc.comms.regions[r].minfo[pe].racc.rkey
-                               );
-    shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
+    proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
+
+    shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,
+                  "couldn't allocate memory for rkey data");
+
+    memcpy(proc.comms.orks[r].rkeys[pe].data, bop->bytes, bop->size);
 }
 
 inline static void
@@ -456,7 +458,6 @@ void
 shmemc_pmi_client_finalize(void)
 {
     pmix_status_t ps;
-    int pe;
 
     ps = pmix_finalize_wrapper();
 
@@ -464,29 +465,10 @@ shmemc_pmi_client_finalize(void)
                   "PMIx can't finalize (%s)",
                   PMIx_Error_string(ps));
 
-    for (pe = 0; pe < proc.nranks; ++pe) {
-        size_t r;
-
-        /* clean up allocations for exchanged buffers */
-        free(proc.comms.xchg_wrkr_info[pe].buf);
-        for (r = 0; r < proc.comms.nregions; ++r) {
-            ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
-        }
-    }
-
     release_waiter();
 
     /* clean up memory recording peer PEs */
     free(proc.peers);
-
-    /* clear opaque rkeys */
-    for (pe = 0; pe < proc.nranks; ++pe) {
-        size_t r;
-
-        for (r = 0; r < proc.comms.nregions; ++r) {
-            free(proc.comms.regions[r].minfo[pe].racc.rkey_data);
-        }
-    }
 }
 
 /*
