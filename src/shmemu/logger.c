@@ -98,13 +98,15 @@ parse_log_events(void)
 void
 shmemu_logger_init(void)
 {
+    double wd;
+
     if (! proc.env.logging) {
         return;
     }
 
     host = shmemu_gethostname();
     if (host == NULL) {
-        host = "unknown";
+        host = (char *) "unknown";
     }
 
     /* TODO "%" modifiers for extra info */
@@ -121,7 +123,8 @@ shmemu_logger_init(void)
     }
 
     /* how wide to display things */
-    pe_width = (int) ceil(log10((double) proc.nranks));
+    wd = ceil(log10((double) proc.nranks));
+    pe_width = (int) wd;
     stamp_width = 30 - pe_width;
     if (stamp_width < 1) {
         stamp_width = 1;

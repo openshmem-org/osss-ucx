@@ -76,7 +76,7 @@ shmemu_parse_csv(char *str, int **out, size_t *nout)
 
     next = strtok(str, sep);
     while (next != NULL) {
-        const int s = regexec(&range, next, NMATCH, matches, 0);
+        s = regexec(&range, next, NMATCH, matches, 0);
 
         if (s == REG_NOMATCH) {
             const int v = intify(next);

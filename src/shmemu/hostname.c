@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
+
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/param.h>
