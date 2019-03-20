@@ -4,10 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "state.h"
 #include "shmemu.h"
-
-#include "shmem/defs.h"
+#include "shmemc.h"
 
 #include "yielder.h"
 
@@ -17,50 +15,11 @@
 #define VOLATILIZE(_type, _var) (* ( volatile _type *) (_var))
 #endif
 
-/*
- * return 1 if the memory location changed w.r.t "value", otherwise 0
- */
-
-#define COMMS_CTX_TEST_SIZE(_size, _opname, _op)                        \
-    int                                                                 \
-    shmemc_ctx_test_##_opname##_size(shmem_ctx_t ctx,                   \
-                                     int##_size##_t *var,               \
-                                     int##_size##_t value)              \
-    {                                                                   \
-        NO_WARN_UNUSED(ctx);                                            \
-                                                                        \
-        return ( (*var) _op (value) ) ? 1 : 0;                          \
-    }
-
-COMMS_CTX_TEST_SIZE(16, eq, ==)
-COMMS_CTX_TEST_SIZE(32, eq, ==)
-COMMS_CTX_TEST_SIZE(64, eq, ==)
-
-COMMS_CTX_TEST_SIZE(16, ne, !=)
-COMMS_CTX_TEST_SIZE(32, ne, !=)
-COMMS_CTX_TEST_SIZE(64, ne, !=)
-
-COMMS_CTX_TEST_SIZE(16, gt, >)
-COMMS_CTX_TEST_SIZE(32, gt, >)
-COMMS_CTX_TEST_SIZE(64, gt, >)
-
-COMMS_CTX_TEST_SIZE(16, le, <=)
-COMMS_CTX_TEST_SIZE(32, le, <=)
-COMMS_CTX_TEST_SIZE(64, le, <=)
-
-COMMS_CTX_TEST_SIZE(16, lt, <)
-COMMS_CTX_TEST_SIZE(32, lt, <)
-COMMS_CTX_TEST_SIZE(64, lt, <)
-
-COMMS_CTX_TEST_SIZE(16, ge, >=)
-COMMS_CTX_TEST_SIZE(32, ge, >=)
-COMMS_CTX_TEST_SIZE(64, ge, >=)
-
 #define COMMS_CTX_WAIT_SIZE(_size, _opname)                             \
     void                                                                \
-    shmemc_ctx_wait_##_opname##_until##_size(shmem_ctx_t ctx,           \
-                                             int##_size##_t *var,       \
-                                             int##_size##_t value)      \
+    shmemc_ctx_wait_until_##_opname##_size(shmem_ctx_t ctx,             \
+                                           int##_size##_t *var,         \
+                                           int##_size##_t value)        \
     {                                                                   \
         shmemc_context_h ch = (shmemc_context_h) ctx;                   \
                                                                         \
@@ -94,3 +53,164 @@ COMMS_CTX_WAIT_SIZE(64, lt)
 COMMS_CTX_WAIT_SIZE(16, ge)
 COMMS_CTX_WAIT_SIZE(32, ge)
 COMMS_CTX_WAIT_SIZE(64, ge)
+
+#define COMMS_CTX_WAIT_UNTIL_ALL_SIZE(_size, _opname, _op)              \
+    void                                                                \
+    shmemc_ctx_wait_until_all_##_opname##_size(shmem_ctx_t ctx,         \
+                                               int##_size##_t *vars,    \
+                                               size_t nelems,           \
+                                               int##_size##_t value)    \
+    {                                                                   \
+        size_t n = 0;                                                   \
+        size_t i;                                                       \
+                                                                        \
+        do {                                                            \
+            for (i = 0; i < nelems; ++i) {                              \
+                shmemc_progress();                                      \
+                yielder();                                              \
+                if (shmemc_ctx_test_##_opname##_size(ctx,               \
+                                                     &(vars[i]),        \
+                                                     value) != 0) {     \
+                    ++n;                                                \
+                }                                                       \
+            }                                                           \
+        } while (n < nelems);                                           \
+   }
+
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, eq, ==)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, eq, ==)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, eq, ==)
+
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, ne, !=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, ne, !=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ne, !=)
+
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, gt, >)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, gt, >)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, gt, >)
+
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, le, <=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, le, <=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, le, <=)
+
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, lt, <)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, lt, <)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, lt, <)
+
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, ge, >=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, ge, >=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
+
+#define COMMS_CTX_WAIT_UNTIL_ANY_SIZE(_size, _opname, _op)              \
+    size_t                                                              \
+    shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,         \
+                                               int##_size##_t * restrict vars, \
+                                               size_t nelems,           \
+                                               int * restrict status,   \
+                                               int##_size##_t value)    \
+    {                                                                   \
+        size_t winner;                                                  \
+        size_t i;                                                       \
+                                                                        \
+        while (1) {                                                     \
+            for (i = 0; i < nelems; ++i) {                              \
+                if ( (status != NULL) && ( status[i] != 0) ) {          \
+                    continue;                                           \
+                }                                                       \
+                                                                        \
+                shmemc_progress();                                      \
+                yielder();                                              \
+                if (shmemc_ctx_test_##_opname##_size(ctx,               \
+                                                     &(vars[i]),        \
+                                                     value) != 0) {     \
+                    winner = i;                                         \
+                    goto ret;                                           \
+                    /* NOT REACHED */                                   \
+                }                                                       \
+            }                                                           \
+        }                                                               \
+                                                                        \
+    ret:                                                                \
+        return winner;                                                  \
+    }
+
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, eq, ==)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, eq, ==)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, eq, ==)
+
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, ne, !=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, ne, !=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ne, !=)
+
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, gt, >)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, gt, >)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, gt, >)
+
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, le, <=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, le, <=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, le, <=)
+
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, lt, <)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, lt, <)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, lt, <)
+
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, ge, >=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, ge, >=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge, >=)
+
+#define COMMS_CTX_WAIT_UNTIL_SOME_SIZE(_size, _opname, _op)             \
+    size_t                                                              \
+    shmemc_ctx_wait_until_some_##_opname##_size(shmem_ctx_t ctx,        \
+                                                int##_size##_t * restrict vars, \
+                                                size_t nelems,          \
+                                                size_t * restrict idxs, \
+                                                int * restrict status,  \
+                                                int##_size##_t value)   \
+    {                                                                   \
+        size_t i;                                                       \
+        size_t hits = 0;                                                \
+                                                                        \
+        /* find any one (there may be others too, further up) */        \
+        (void) shmemc_ctx_wait_until_any_##_opname##_size(ctx,          \
+                                                          vars,         \
+                                                          nelems,       \
+                                                          status,       \
+                                                          value);       \
+        /* see which ones match */                                      \
+        for (i = 0; i < nelems; ++i) {                                  \
+            if ( (status != NULL) && ( status[i] != 0) ) {              \
+                continue;                                               \
+            }                                                           \
+            if (shmemc_ctx_test_##_opname##_size(ctx,                   \
+                                                 &(vars[i]),            \
+                                                 value) != 0) {         \
+                idxs[hits] = i;                                         \
+                ++hits;                                                 \
+            }                                                           \
+        }                                                               \
+        return hits;                                                    \
+    }
+
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, eq, ==)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, eq, ==)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, eq, ==)
+
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, ne, !=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, ne, !=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ne, !=)
+
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, gt, >)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, gt, >)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, gt, >)
+
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, le, <=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, le, <=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, le, <=)
+
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, lt, <)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, lt, <)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, lt, <)
+
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, ge, >=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, ge, >=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ge, >=)

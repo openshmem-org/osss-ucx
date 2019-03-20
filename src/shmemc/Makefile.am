@@ -1,6 +1,7 @@
 # For license: see LICENSE file at top-level
 
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
+				-I$(srcdir)/../shmemt \
 				-I../../include -I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \
 				contexts.c \
@@ -9,14 +10,15 @@ LIBSHMEMC_SOURCES         = \
 				readenv.c \
 				shmemc_init.c \
 				state.c
-#
+
 # -- begin: UCX sources --
 #
 LIBSHMEMC_SOURCES        += \
 				ucx/comms.c \
 				ucx/contexts.c \
+				ucx/eps.c \
 				ucx/init.c \
-				ucx/waituntil.c
+				ucx/test.c ucx/waituntil.c
 
 if HAVE_PMI
 LIBSHMEMC_SOURCES        += ucx/pmi1_client.c

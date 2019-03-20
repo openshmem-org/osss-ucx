@@ -49,8 +49,8 @@ typedef enum shmemc_status {
  */
 
 typedef struct heapinfo {
-    size_t nheaps;              /* how many heaps requested */
-    size_t *heapsize;           /* array of their sizes */
+    size_t nheaps;              /**< how many heaps requested */
+    size_t *heapsize;           /**< array of their sizes */
 } heapinfo_t;
 
 /*
@@ -60,52 +60,52 @@ typedef struct env_info {
     /*
      * required
      */
-    bool print_version;         /* produce info output? */
-    bool print_info;            /* show settings at program start? */
-    heapinfo_t heaps;           /* the heaps we manage */
-    bool debug;                 /* are we doing sanity debugging? */
+    bool print_version;         /**< produce info output? */
+    bool print_info;            /**< show settings at program start? */
+    heapinfo_t heaps;           /**< the heaps we manage */
+    bool debug;                 /**< are we doing sanity debugging? */
 
     /*
      * this implementation
      */
-    bool logging;            /* turn on message logging? */
-    char *logging_file;      /* where does logging output go? */
-    char *logging_events;    /* show only these types of messages */
-    bool xpmem_kludge;       /* protect against UCX bug temporarily */
+    bool logging;          /**< turn on message logging? */
+    char *logging_file;    /**< where does logging output go? */
+    char *logging_events;  /**< show only these types of messages */
+    bool teardown_kludge;  /**< protect against UCX bug temporarily */
 
-    shmemc_coll_t coll;         /* collectives */
+    shmemc_coll_t coll;         /**< collectives */
 
-    char *progress_threads;     /* do we need to start our own? */
+    char *progress_threads;     /**< do we need to start our own? */
 
-    size_t prealloc_contexts;   /* set up this many at start */
+    size_t prealloc_contexts;   /**< set up this many at start */
 } env_info_t;
 
 /*
  * PEs can belong to teams
  */
 typedef struct shmemc_team {
-    size_t id;                  /* team ID# */
-    int *members;               /* list of PEs in the team */
-    size_t nmembers;            /* how many PEs */
+    size_t id;                  /**< team ID# */
+    int *members;               /**< list of PEs in the team */
+    size_t nmembers;            /**< how many PEs */
 } shmemc_team_t;
 
 /*
  * each PE has this state info
  */
 typedef struct thispe_info {
-    comms_info_t comms;         /* per-comms layer info */
-    env_info_t env;             /* environment vars */
-    thread_desc_t td;           /* threading model invoked */
-    int rank;                   /* physical rank info */
-    int nranks;                 /* number of ranks requested */
-    int maxranks;               /* universe size (e.g. for spares) */
-    shmemc_status_t status;     /* up, down, out to lunch etc */
-    int refcount;               /* library initialization count */
-    int *peers;                 /* peer PEs in a node group */
-    int npeers;                 /* how many peers */
-    shmemc_team_t *teams;       /* PE teams we belong to */
-    size_t nteams;              /* how many teams */
-    bool progress_thread;       /* PE requests progress thread */
+    comms_info_t comms;         /**< per-comms layer info */
+    env_info_t env;             /**< environment vars */
+    thread_desc_t td;           /**< threading model invoked */
+    int rank;                   /**< physical rank info */
+    int nranks;                 /**< number of ranks requested */
+    int maxranks;               /**< universe size (e.g. for spares) */
+    shmemc_status_t status;     /**< up, down, out to lunch etc */
+    int refcount;               /**< library initialization count */
+    int *peers;                 /**< peer PEs in a node group */
+    int npeers;                 /**< how many peers */
+    shmemc_team_t *teams;       /**< PE teams we belong to */
+    size_t nteams;              /**< how many teams */
+    bool progress_thread;       /**< PE requests progress thread */
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */

@@ -9,6 +9,7 @@
 #include "state.h"
 #include "info.h"
 #include "threading.h"
+#include "shmem_mutex.h"
 #include "progress.h"
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -52,16 +53,19 @@ finalize_helper(void)
 
     this = threadwrap_thread_id();
     if (this != proc.td.invoking_thread) {
+
         logger(LOG_FINALIZE,
                "mis-match: thread %lu initialized, but %lu finalized",
-               proc.td.invoking_thread, this);
+               (unsigned long) proc.td.invoking_thread,
+               (unsigned long) this
+               );
     }
 
     /* implicit barrier on finalize */
     shmem_barrier_all();
 
-    shmemc_finalize();
     progress_finalize();
+    shmemc_finalize();
     shmemu_finalize();
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -85,6 +89,7 @@ init_thread_helper(int requested, int *provided)
     /* set up comms, read environment */
     shmemc_init();
     /* utiltiies */
+    shmemt_init();
     shmemu_init();
     progress_init();
 

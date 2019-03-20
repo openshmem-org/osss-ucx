@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "shmemc.h"
 #include "state.h"
 
 #include "shmem/defs.h"
@@ -24,18 +25,16 @@
 inline static ucp_ep_h
 lookup_ucp_ep(shmemc_context_h ch, int pe)
 {
-    NO_WARN_UNUSED(ch);
-
-    return proc.comms.eps[pe];
+    return ch->eps[pe];
 }
 
 /*
  * find rkey for memory "region" on PE "pe"
  */
 inline static ucp_rkey_h
-lookup_rkey(size_t region, int pe)
+lookup_rkey(shmemc_context_h ch, size_t region, int pe)
 {
-    return proc.comms.regions[region].minfo[pe].racc.rkey;
+    return ch->racc[region].rinfo[pe].rkey;
 }
 
 /*
@@ -107,8 +106,10 @@ translate_address(uint64_t local_addr, size_t region, int pe)
         return local_addr;
     }
     else {
-        const uint64_t my_offset = local_addr - get_base(region, proc.rank);
-        const uint64_t remote_addr = my_offset + get_base(region, pe);
+        const uint64_t my_offset =
+            local_addr - get_base(region, proc.rank);
+        const uint64_t remote_addr =
+            my_offset + get_base(region, pe);
 
         return remote_addr;
     }
@@ -119,14 +120,15 @@ translate_address(uint64_t local_addr, size_t region, int pe)
  * All ops here need to find remote keys and addresses
  */
 inline static void
-get_remote_key_and_addr(uint64_t local_addr, int pe,
+get_remote_key_and_addr(shmemc_context_h ch,
+                        uint64_t local_addr, int pe,
                         ucp_rkey_h *rkey_p, uint64_t *raddr_p)
 {
     const long r = lookup_region(local_addr, proc.rank);
 
     shmemu_assert(r >= 0, "can't find memory region for %p", local_addr);
 
-    *rkey_p = lookup_rkey(r, pe);
+    *rkey_p = lookup_rkey(ch, r, pe);
     *raddr_p = translate_address(local_addr, r, pe);
 }
 
@@ -135,24 +137,25 @@ get_remote_key_and_addr(uint64_t local_addr, int pe,
  */
 
 /*
- * fence and quiet only do something on storable contexts
+ * fence and quiet only do something on storable contexts, but
+ * currently, progress is on the default context
  */
 
-#define SHMEMC_FENCE_QUIET(_op, _ucp_op)                            \
-    void                                                            \
-    shmemc_ctx_##_op(shmem_ctx_t ctx)                               \
-    {                                                               \
-        if (ctx != SHMEM_CTX_INVALID) {                             \
-            shmemc_context_h ch = (shmemc_context_h) ctx;           \
-                                                                    \
-            if (! ch->attr.nostore) {                               \
-                const ucs_status_t s = ucp_worker_##_ucp_op(ch->w); \
-                                                                    \
-                shmemu_assert(s == UCS_OK,                          \
-                              "%s() failed (status: %s)", #_op,     \
-                              ucs_status_string(s));                \
-            }                                                       \
-        }                                                           \
+#define SHMEMC_FENCE_QUIET(_op, _ucp_op)                                \
+    void                                                                \
+    shmemc_ctx_##_op(shmem_ctx_t ctx)                                   \
+    {                                                                   \
+        if (ctx != SHMEM_CTX_INVALID) {                                 \
+            shmemc_context_h ch = (shmemc_context_h) ctx;               \
+                                                                        \
+            if (! ch->attr.nostore) {                                   \
+                const ucs_status_t s = ucp_worker_##_ucp_op(defcp->w);  \
+                                                                        \
+                shmemu_assert(s == UCS_OK,                              \
+                              "%s() failed (status: %s)", #_op,         \
+                              ucs_status_string(s));                    \
+            }                                                           \
+        }                                                               \
     }
 
 SHMEMC_FENCE_QUIET(fence, fence)
@@ -206,18 +209,20 @@ noop_callback(void *request, ucs_status_t status)
 inline static ucs_status_t
 check_wait_for_request(shmemc_context_h ch, void *req)
 {
+    NO_WARN_UNUSED(ch);
+
     if (req == NULL) {          /* completed */
         return UCS_OK;
     }
     else if (UCS_PTR_IS_ERR(req)) {
-        ucp_request_cancel(ch->w, req);
+        ucp_request_cancel(defcp->w, req);
         return UCS_PTR_STATUS(req);
     }
     else {                      /* wait for completion */
         ucs_status_t s;
 
         do {
-            ucp_worker_progress(ch->w);
+            ucp_worker_progress(defcp->w);
 
             s = UCX_REQUEST_CHECK(req);
         } while (s == UCS_INPROGRESS);
@@ -247,7 +252,7 @@ ucx_atomic_post_op(ucp_atomic_post_op_t uapo,
     ucp_rkey_h r_key;
     ucp_ep_h ep;
 
-    get_remote_key_and_addr(t, pe, &r_key, &r_t);
+    get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);
     ep = lookup_ucp_ep(ch, pe);
 
     return ucp_atomic_post(ep, uapo, v, vs, r_t, r_key);
@@ -267,7 +272,7 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
     ucp_ep_h ep;
     ucs_status_ptr_t sp;
 
-    get_remote_key_and_addr(t, pe, &r_key, &r_t);
+    get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);
     ep = lookup_ucp_ep(ch, pe);
 
     sp = ucp_atomic_fetch_nb(ep, uafo, v, result, vs, r_t, r_key,
@@ -292,7 +297,7 @@ ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
         ucp_rkey_h r_key;                                           \
         ucp_ep_h ep;                                                \
                                                                     \
-        get_remote_key_and_addr(t, pe, &r_key, &r_t);               \
+        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);           \
         ep = lookup_ucp_ep(ch, pe);                                 \
                                                                     \
         s = ucp_atomic_fadd##_size(ep, v, r_t, r_key, &ret);        \
@@ -318,7 +323,7 @@ HELPER_FADD(64)
         ucp_rkey_h r_key;                                       \
         ucp_ep_h ep;                                            \
                                                                 \
-        get_remote_key_and_addr(t, pe, &r_key, &r_t);           \
+        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);       \
         ep = lookup_ucp_ep(ch, pe);                             \
                                                                 \
         s = ucp_atomic_add##_size(ep, v, r_t, r_key);           \
@@ -373,7 +378,7 @@ HELPER_INC(64)
         ucp_ep_h ep;                                            \
         ucs_status_t s;                                         \
                                                                 \
-        get_remote_key_and_addr(t, pe, &r_key, &r_t);           \
+        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);       \
         ep = lookup_ucp_ep(ch, pe);                             \
                                                                 \
         s = ucp_atomic_swap##_size(ep, v, r_t, r_key, &ret);    \
@@ -400,7 +405,7 @@ HELPER_SWAP(64)
         ucp_ep_h ep;                                                    \
         ucs_status_t s;                                                 \
                                                                         \
-        get_remote_key_and_addr(t, pe, &r_key, &r_t);                   \
+        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);               \
         ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
         s = ucp_atomic_cswap##_size(ep, c, v, r_t, r_key, &ret);        \
@@ -581,16 +586,15 @@ shmemc_progress(void)
 void *
 shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
-    NO_WARN_UNUSED(ctx);
-
     /* check to see if UCX is new enough */
 #ifdef HAVE_UCP_RKEY_PTR
+    shmemc_context_h ch = (shmemc_context_h) ctx;
     uint64_t r_addr;            /* address on other PE */
     ucp_rkey_h r_key;            /* rkey for remote address */
     void *usable_addr = NULL;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) addr, pe, &r_key, &r_addr);
+    get_remote_key_and_addr(ch, (uint64_t) addr, pe, &r_key, &r_addr);
 
     s = ucp_rkey_ptr(r_key, r_addr, &usable_addr);
     if (s == UCS_OK) {
@@ -646,7 +650,7 @@ shmemc_ctx_put(shmem_ctx_t ctx,
 #endif /* HAVE_UCP_PUT_NB */
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) dest, pe, &r_key, &r_dest);
+    get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
     ep = lookup_ucp_ep(ch, pe);
 
 #ifdef HAVE_UCP_PUT_NB
@@ -676,7 +680,7 @@ shmemc_ctx_get(shmem_ctx_t ctx,
 #endif /* HAVE_UCP_GET_NB */
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) src, pe, &r_key, &r_src);
+    get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
     ep = lookup_ucp_ep(ch, pe);
 
 #ifdef HAVE_UCP_GET_NB
@@ -712,7 +716,7 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) dest, pe, &r_key, &r_dest);
+    get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
     ep = lookup_ucp_ep(ch, pe);
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
@@ -732,7 +736,7 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     ucp_ep_h ep;
     ucs_status_t s;
 
-    get_remote_key_and_addr((uint64_t) src, pe, &r_key, &r_src);
+    get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
     ep = lookup_ucp_ep(ch, pe);
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);

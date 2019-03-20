@@ -11,14 +11,17 @@
 
 #else
 
+#define _ADORNED_DEPRECATION(_text, _version)                           \
+    __attribute__((deprecated("with specification " #_version           \
+                              " and up, use `" #_text "' instead")))
 
 /*
  * TODO: need better detection
  */
 #if defined(__clang__)
 
-# define _DEPRECATED_BY(...)                                    \
-    __attribute__((deprecated("use " #__VA_ARGS__ " instead")))
+# define _DEPRECATED_BY(_text, _version)        \
+    _ADORNED_DEPRECATION(_text, _version)
 # define _DEPRECATED                            \
     __attribute__((deprecated))
 
@@ -37,8 +40,8 @@
 /* GCC has extended attribute syntax from 4.5 onward */
 
 # if (__GNUC__ >= 5) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 5)
-#  define _DEPRECATED_BY(...)                                   \
-    __attribute__((deprecated("use " #__VA_ARGS__ " instead")))
+#  define _DEPRECATED_BY(_text, _version)       \
+    _ADORNED_DEPRECATION(_text, _version)
 # else
 #  define _DEPRECATED_BY(...)                   \
     _DEPRECATED

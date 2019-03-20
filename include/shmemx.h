@@ -343,6 +343,218 @@ extern "C"
 
     int shmemx_query_interoperability(int property);
 
+#define APIX_DECL_TEST_ALL(_opname, _type)                              \
+    int                                                                 \
+    shmemx_##_opname##_test_all(_type *ivars, size_t nelems,            \
+                                int cmp, _type cmp_value)
+
+    APIX_DECL_TEST_ALL(short, short);
+    APIX_DECL_TEST_ALL(int, int);
+    APIX_DECL_TEST_ALL(long, long);
+    APIX_DECL_TEST_ALL(longlong, long long);
+    APIX_DECL_TEST_ALL(ushort, unsigned short);
+    APIX_DECL_TEST_ALL(uint, unsigned int);
+    APIX_DECL_TEST_ALL(ulong, unsigned long);
+    APIX_DECL_TEST_ALL(ulonglong, unsigned long long);
+    APIX_DECL_TEST_ALL(int32, int32_t);
+    APIX_DECL_TEST_ALL(int64, int64_t);
+    APIX_DECL_TEST_ALL(uint32, uint32_t);
+    APIX_DECL_TEST_ALL(uint64, uint64_t);
+    APIX_DECL_TEST_ALL(size, size_t);
+    APIX_DECL_TEST_ALL(ptrdiff, ptrdiff_t);
+
+#define APIX_DECL_TEST_ANY(_opname, _type)                              \
+    size_t                                                              \
+    shmemx_##_opname##_test_any(_type *ivars, size_t nelems,            \
+                                int *status,                            \
+                                int cmp, _type cmp_value)
+
+    APIX_DECL_TEST_ANY(short, short);
+    APIX_DECL_TEST_ANY(int, int);
+    APIX_DECL_TEST_ANY(long, long);
+    APIX_DECL_TEST_ANY(longlong, long long);
+    APIX_DECL_TEST_ANY(ushort, unsigned short);
+    APIX_DECL_TEST_ANY(uint, unsigned int);
+    APIX_DECL_TEST_ANY(ulong, unsigned long);
+    APIX_DECL_TEST_ANY(ulonglong, unsigned long long);
+    APIX_DECL_TEST_ANY(int32, int32_t);
+    APIX_DECL_TEST_ANY(int64, int64_t);
+    APIX_DECL_TEST_ANY(uint32, uint32_t);
+    APIX_DECL_TEST_ANY(uint64, uint64_t);
+    APIX_DECL_TEST_ANY(size, size_t);
+    APIX_DECL_TEST_ANY(ptrdiff, ptrdiff_t);
+
+#define APIX_DECL_TEST_SOME(_opname, _type)                             \
+    size_t                                                              \
+    shmemx_##_opname##_test_some(_type *ivars, size_t nelems,           \
+                                 size_t *indices,                       \
+                                 int *status,                           \
+                                 int cmp, _type cmp_value)
+
+    APIX_DECL_TEST_SOME(short, short);
+    APIX_DECL_TEST_SOME(int, int);
+    APIX_DECL_TEST_SOME(long, long);
+    APIX_DECL_TEST_SOME(longlong, long long);
+    APIX_DECL_TEST_SOME(ushort, unsigned short);
+    APIX_DECL_TEST_SOME(uint, unsigned int);
+    APIX_DECL_TEST_SOME(ulong, unsigned long);
+    APIX_DECL_TEST_SOME(ulonglong, unsigned long long);
+    APIX_DECL_TEST_SOME(int32, int32_t);
+    APIX_DECL_TEST_SOME(int64, int64_t);
+    APIX_DECL_TEST_SOME(uint32, uint32_t);
+    APIX_DECL_TEST_SOME(uint64, uint64_t);
+    APIX_DECL_TEST_SOME(size, size_t);
+    APIX_DECL_TEST_SOME(ptrdiff, ptrdiff_t);
+
+#if SHMEM_HAS_C11
+
+#define shmemx_test_all(_ivars, _nelems,                            \
+                        _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_test_all,                          \
+             int: shmemx_int_test_all,                              \
+             long: shmemx_long_test_all,                            \
+             long long: shmemx_longlong_test_all,                   \
+             unsigned short: shmemx_ushort_test_all,                \
+             unsigned int: shmemx_uint_test_all,                    \
+             unsigned long: shmemx_ulong_test_all,                  \
+             unsigned long long: shmemx_ulonglong_test_all          \
+             )(_ivars, _nelems, _cmp, _cmp_value)
+
+#define shmemx_test_any(_ivars, _nelems, _status,                   \
+                        _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_test_any,                          \
+             int: shmemx_int_test_any,                              \
+             long: shmemx_long_test_any,                            \
+             long long: shmemx_longlong_test_any,                   \
+             unsigned short: shmemx_ushort_test_any,                \
+             unsigned int: shmemx_uint_test_any,                    \
+             unsigned long: shmemx_ulong_test_any,                  \
+             unsigned long long: shmemx_ulonglong_test_any          \
+             )(_ivars, _nelems, _status, _cmp, _cmp_value)
+
+#define shmemx_test_some(_ivars, _nelems, _indices, _status,         \
+                         _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                               \
+             short: shmemx_short_test_some,                          \
+             int: shmemx_int_test_some,                              \
+             long: shmemx_long_test_some,                            \
+             long long: shmemx_longlong_test_some,                   \
+             unsigned short: shmemx_ushort_test_some,                \
+             unsigned int: shmemx_uint_test_some,                    \
+             unsigned long: shmemx_ulong_test_some,                  \
+             unsigned long long: shmemx_ulonglong_test_some          \
+             )(_ivars, _nelems, _indices, _status, _cmp, _cmp_value)
+
+#endif /* SHMEM_HAS_C11 */
+
+#define APIX_DECL_WAIT_UNTIL_ALL(_opname, _type)                        \
+    void                                                                \
+    shmemx_##_opname##_wait_until_all(_type *ivars, size_t nelems,      \
+                                      int cmp, _type cmp_value)
+
+    APIX_DECL_WAIT_UNTIL_ALL(short, short);
+    APIX_DECL_WAIT_UNTIL_ALL(int, int);
+    APIX_DECL_WAIT_UNTIL_ALL(long, long);
+    APIX_DECL_WAIT_UNTIL_ALL(longlong, long long);
+    APIX_DECL_WAIT_UNTIL_ALL(ushort, unsigned short);
+    APIX_DECL_WAIT_UNTIL_ALL(uint, unsigned int);
+    APIX_DECL_WAIT_UNTIL_ALL(ulong, unsigned long);
+    APIX_DECL_WAIT_UNTIL_ALL(ulonglong, unsigned long long);
+    APIX_DECL_WAIT_UNTIL_ALL(int32, int32_t);
+    APIX_DECL_WAIT_UNTIL_ALL(int64, int64_t);
+    APIX_DECL_WAIT_UNTIL_ALL(uint32, uint32_t);
+    APIX_DECL_WAIT_UNTIL_ALL(uint64, uint64_t);
+    APIX_DECL_WAIT_UNTIL_ALL(size, size_t);
+    APIX_DECL_WAIT_UNTIL_ALL(ptrdiff, ptrdiff_t);
+
+#define APIX_DECL_WAIT_UNTIL_ANY(_opname, _type)                        \
+    size_t                                                              \
+    shmemx_##_opname##_wait_until_any(_type *ivars, size_t nelems,      \
+                                      int *status,                      \
+                                      int cmp, _type cmp_value)
+
+    APIX_DECL_WAIT_UNTIL_ANY(short, short);
+    APIX_DECL_WAIT_UNTIL_ANY(int, int);
+    APIX_DECL_WAIT_UNTIL_ANY(long, long);
+    APIX_DECL_WAIT_UNTIL_ANY(longlong, long long);
+    APIX_DECL_WAIT_UNTIL_ANY(ushort, unsigned short);
+    APIX_DECL_WAIT_UNTIL_ANY(uint, unsigned int);
+    APIX_DECL_WAIT_UNTIL_ANY(ulong, unsigned long);
+    APIX_DECL_WAIT_UNTIL_ANY(ulonglong, unsigned long long);
+    APIX_DECL_WAIT_UNTIL_ANY(int32, int32_t);
+    APIX_DECL_WAIT_UNTIL_ANY(int64, int64_t);
+    APIX_DECL_WAIT_UNTIL_ANY(uint32, uint32_t);
+    APIX_DECL_WAIT_UNTIL_ANY(uint64, uint64_t);
+    APIX_DECL_WAIT_UNTIL_ANY(size, size_t);
+    APIX_DECL_WAIT_UNTIL_ANY(ptrdiff, ptrdiff_t);
+
+#define APIX_DECL_WAIT_UNTIL_SOME(_opname, _type)                       \
+    size_t                                                              \
+    shmemx_##_opname##_wait_until_some(_type *ivars, size_t nelems,     \
+                                       size_t *indices,                 \
+                                       int *status,                     \
+                                       int cmp, _type cmp_value)
+
+    APIX_DECL_WAIT_UNTIL_SOME(short, short);
+    APIX_DECL_WAIT_UNTIL_SOME(int, int);
+    APIX_DECL_WAIT_UNTIL_SOME(long, long);
+    APIX_DECL_WAIT_UNTIL_SOME(longlong, long long);
+    APIX_DECL_WAIT_UNTIL_SOME(ushort, unsigned short);
+    APIX_DECL_WAIT_UNTIL_SOME(uint, unsigned int);
+    APIX_DECL_WAIT_UNTIL_SOME(ulong, unsigned long);
+    APIX_DECL_WAIT_UNTIL_SOME(ulonglong, unsigned long long);
+    APIX_DECL_WAIT_UNTIL_SOME(int32, int32_t);
+    APIX_DECL_WAIT_UNTIL_SOME(int64, int64_t);
+    APIX_DECL_WAIT_UNTIL_SOME(uint32, uint32_t);
+    APIX_DECL_WAIT_UNTIL_SOME(uint64, uint64_t);
+    APIX_DECL_WAIT_UNTIL_SOME(size, size_t);
+    APIX_DECL_WAIT_UNTIL_SOME(ptrdiff, ptrdiff_t);
+
+#if SHMEM_HAS_C11
+
+#define shmemx_wait_until_all(_ivars, _nelems,                      \
+                              _cmp, _cmp_value)                     \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_wait_until_all,                    \
+             int: shmemx_int_wait_until_all,                        \
+             long: shmemx_long_wait_until_all,                      \
+             long long: shmemx_longlong_wait_until_all,             \
+             unsigned short: shmemx_ushort_wait_until_all,          \
+             unsigned int: shmemx_uint_wait_until_all,              \
+             unsigned long: shmemx_ulong_wait_until_all,            \
+             unsigned long long: shmemx_ulonglong_wait_until_all    \
+             )(_ivars, _nelems, _cmp, _cmp_value)
+
+#define shmemx_wait_until_any(_ivars, _nelems, _status,             \
+                              _cmp, _cmp_value)                     \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_wait_until_any,                    \
+             int: shmemx_int_wait_until_any,                        \
+             long: shmemx_long_wait_until_any,                      \
+             long long: shmemx_longlong_wait_until_any,             \
+             unsigned short: shmemx_ushort_wait_until_any,          \
+             unsigned int: shmemx_uint_wait_until_any,              \
+             unsigned long: shmemx_ulong_wait_until_any,            \
+             unsigned long long: shmemx_ulonglong_wait_until_any    \
+             )(_ivars, _nelems, _status, _cmp, _cmp_value)
+
+#define shmemx_wait_until_some(_ivars, _nelems, _indices, _status,      \
+                               _cmp, _cmp_value)                        \
+    _Generic(* _ivars,                                                  \
+             short: shmemx_short_wait_until_some,                       \
+             int: shmemx_int_wait_until_some,                           \
+             long: shmemx_long_wait_until_some,                         \
+             long long: shmemx_longlong_wait_until_some,                \
+             unsigned short: shmemx_ushort_wait_until_some,             \
+             unsigned int: shmemx_uint_wait_until_some,                 \
+             unsigned long: shmemx_ulong_wait_until_some,               \
+             unsigned long long: shmemx_ulonglong_wait_until_some       \
+             )(_ivars, _nelems, _indices, _status, _cmp, _cmp_value)
+
+#endif /* SHMEM_HAS_C11 */
+
 #ifdef __cplusplus
 }
 #endif  /* __cplusplus */

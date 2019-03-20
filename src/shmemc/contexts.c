@@ -159,13 +159,11 @@ context_deregister(shmemc_context_h ch)
 }
 
 /*
- * fill in context
- *
- * Return 0 on success, non-0 on failure
+ * fill in context from provided options
  */
 
-static void
-shmemc_context_set_options(long options, shmemc_context_h ch)
+inline static void
+context_set_options(long options, shmemc_context_h ch)
 {
     ch->attr.serialized = options & SHMEM_CTX_SERIALIZED;
     ch->attr.private    = options & SHMEM_CTX_PRIVATE;
@@ -186,17 +184,18 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
     shmemc_context_h ch = proc.comms.ctxts[idx];
 
     /* set SHMEM context behavior */
-    shmemc_context_set_options(options, ch);
+    context_set_options(options, ch);
 
     /* is this reclaimed from free list or do we have to set up? */
     if (! reuse) {
-        const int ret = shmemc_context_progress(ch);
+        const int ret = shmemc_ucx_context_progress(ch);
 
         if (shmemu_unlikely(ret != 0)) {
             free(ch);
             return ret;
             /* NOT REACHED */
         }
+        shmemc_ucx_make_eps(ch);
     }
 
     ch->creator_thread = threadwrap_thread_id();
@@ -256,14 +255,14 @@ shmemc_context_id(shmem_ctx_t ctx)
  * Return 0 if successful, non-0 otherwise
  */
 shmemc_context_t shmemc_default_context;
+shmemc_context_h defcp = & shmemc_default_context;
 
 int
-shmemc_init_default_context(void)
+shmemc_context_init_default(void)
 {
-    shmemc_context_h ch = &shmemc_default_context;
+    context_set_options(0L, defcp);
 
-    shmemc_context_set_options(0L, ch);
-    shmemc_context_progress(ch);
+    shmemc_ucx_context_progress(defcp);
 
-    return shmemc_context_default_set_info(ch);
+    return shmemc_ucx_context_default_set_info();
 }

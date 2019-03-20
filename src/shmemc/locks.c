@@ -71,7 +71,7 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
         shmemc_put(&(node->d.next), &(me), sizeof(me), t.d.next);
 
         /* sit here until unlocked */
-        shmemc_wait_eq_until16(&(node->d.locked), 0);
+        shmemc_wait_until_eq16(&(node->d.locked), 0);
     }
 }
 
@@ -95,7 +95,7 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
             /* NOT REACHED */
         }
 
-        shmemc_wait_ge_until16(&(node->d.next), 0);
+        shmemc_wait_until_ge16(&(node->d.next), 0);
     }
 
     shmemc_put(&(node->d.locked), &zero, sizeof(zero), node->d.next);

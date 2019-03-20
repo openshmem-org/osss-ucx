@@ -13,6 +13,8 @@
 
 #include "allocator/memalloc.h"
 
+#include "api.h"
+
 #include <stdlib.h>             /* getenv */
 #include <string.h>
 #include <strings.h>
@@ -38,28 +40,10 @@ deallocate_xworkers_table(void)
 }
 
 /*
- * endpoint tables
- */
-inline static void
-allocate_endpoints_table(void)
-{
-    proc.comms.eps = (ucp_ep_h *)
-        calloc(proc.nranks, sizeof(*(proc.comms.eps)));
-    shmemu_assert(proc.comms.eps != NULL,
-                  "can't allocate memory for endpoints");
-}
-
-inline static void
-deallocate_endpoints_table(void)
-{
-    free(proc.comms.eps);
-}
-
-/*
  * Context management
  */
 inline static void
-allocate_contexts_table(void)
+contexts_table_init(void)
 {
     /*
      * no new SHMEM contexts created yet
@@ -69,24 +53,47 @@ allocate_contexts_table(void)
 }
 
 inline static void
-deallocate_contexts_table(void)
+teardown_context(shmemc_context_h ch)
 {
-    shmemc_context_h def = (shmemc_context_h) SHMEM_CTX_DEFAULT;
-    size_t c;
+    size_t r;
+    int pe;
 
-    /*
-     * special release case for default context
-     */
-    ucp_worker_release_address(def->w,
-                               proc.comms.xchg_wrkr_info[proc.rank].addr);
-    ucp_worker_destroy(def->w);
+    if (! proc.env.teardown_kludge) {
+        shmemc_ucx_disconnect_all_eps(ch);
+    }
+    shmemc_ucx_deallocate_eps_table(ch);
+    ucp_worker_destroy(ch->w);
+
+    /* release remote access memory */
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        for (pe = 0; pe < proc.nranks; ++pe) {
+            ucp_rkey_destroy(ch->racc[r].rinfo[pe].rkey);
+        }
+        free(ch->racc[r].rinfo);
+    }
+    free(ch->racc);
+}
+
+inline static void
+contexts_table_finalize(void)
+{
+    size_t c;
 
     /*
      * clear up each allocated SHMEM context
      */
     for (c = 0; c < proc.comms.nctxts; ++c) {
-        ucp_worker_destroy(proc.comms.ctxts[c]->w);
+        teardown_context(proc.comms.ctxts[c]);
     }
+
+    /*
+     * special release case for default context
+     */
+    ucp_worker_release_address(defcp->w,
+                               proc.comms.xchg_wrkr_info[proc.rank].addr);
+    teardown_context(defcp);
+
+    free(proc.comms.ctxts);
 }
 
 /*
@@ -112,6 +119,7 @@ register_globals()
     mp.address = (void *) g_base;
     mp.length = len;
     mp.flags =
+        UCP_MEM_MAP_NONBLOCK |
         UCP_MEM_MAP_ALLOCATE |
         UCP_MEM_MAP_FIXED;
 
@@ -119,7 +127,7 @@ register_globals()
     globals->end  = globals->base + len;
     globals->len  = len;
 
-    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->mh);
     shmemu_assert(s == UCS_OK, "can't map global memory");
 
     /* don't need allocator, variables already there */
@@ -130,7 +138,7 @@ deregister_globals(void)
 {
     ucs_status_t s;
 
-    s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->racc.mh);
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->mh);
     shmemu_assert(s == UCS_OK, "can't unmap global memory");
 }
 
@@ -159,9 +167,10 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     mp.length = proc.env.heaps.heapsize[heapno];
 
     mp.flags =
+        UCP_MEM_MAP_NONBLOCK |
         UCP_MEM_MAP_ALLOCATE;
 
-    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->racc.mh);
+    s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->mh);
     shmemu_assert(s == UCS_OK,
                   "can't map memory for symmetric heap #%lu",
                   hn);
@@ -178,7 +187,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
 
-    s = ucp_mem_query(mip->racc.mh, &attr);
+    s = ucp_mem_query(mip->mh, &attr);
     shmemu_assert(s == UCS_OK,
                   "can't query extent of memory for symmetric heap #%lu",
                   hn);
@@ -200,90 +209,48 @@ deregister_symmetric_heap(mem_info_t *mip)
 
     NO_WARN_UNUSED(hn);
 
-    s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->racc.mh);
+    s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->mh);
     shmemu_assert(s == UCS_OK,
                   "can't unmap memory for symmetric heap #%lu",
                   hn);
 }
 
 /*
- * Fire off the EP disconnect process
- */
-
-inline static ucs_status_ptr_t
-ep_disconnect_nb(ucp_ep_h ep)
-{
-    ucs_status_ptr_t req;
-
-    if (ep == NULL) {
-        return NULL;
-        /* NOT REACHED */
-    }
-
-#ifdef HAVE_UCP_EP_CLOSE_NB
-    req = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
-#else
-    req = ucp_disconnect_nb(ep);
-#endif  /* HAVE_UCP_EP_CLOSE_NB */
-
-    return req;
-}
-
-/*
- * Complete the EP disconnect process
- */
-
-inline static void
-ep_wait(ucs_status_ptr_t req)
-{
-    ucs_status_t s;
-
-    if (req == UCS_OK || UCS_PTR_IS_ERR(req)) {
-        return;
-        /* NOT REACHED */
-    }
-
-    do {
-        shmemc_progress();
-
-#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
-        s = ucp_request_check_status(req);
-#else
-        s = ucp_request_test(req, NULL);
-#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
-    } while (s == UCS_INPROGRESS);
-
-    ucp_request_free(req);
-}
-
-/*
- * Start the disconnects for all PEs, and then wait for completion
- */
-
-inline static void
-disconnect_all_endpoints(void)
-{
-    ucs_status_ptr_t *req;
-    int i;
-
-    req = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*req));
-    shmemu_assert(req != NULL,
-                  "failed to allocate memory for UCP endpoint disconnect");
-
-    for (i = 0; i < proc.nranks; ++i) {
-        req[i] = ep_disconnect_nb(proc.comms.eps[i]);
-    }
-
-    for (i = 0; i < proc.nranks; ++i) {
-        ep_wait(req[i]);
-    }
-
-    free(req);
-}
-
-/*
  * create backing for memory regions (heaps & globals)
  */
+
+inline static void
+opaque_rkeys_init(void)
+{
+    size_t r;
+
+    proc.comms.orks = (mem_opaque_t *)
+        calloc(proc.comms.nregions, sizeof(mem_opaque_t));
+    shmemu_assert(proc.comms.orks != NULL,
+                  "can't allocate memory for opaque rkeys");
+
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        proc.comms.orks[r].rkeys =
+            (mem_opaque_rkey_t *) calloc(proc.nranks,
+                                         sizeof(mem_opaque_rkey_t));
+        shmemu_assert(proc.comms.orks[r].rkeys != NULL,
+                      "can't allocate memory for opaque rkeys");
+    }
+}
+
+inline static void
+opaque_rkeys_finalize(void)
+{
+    size_t r;
+    int pe;
+
+    /* clear opaque rkeys */
+    for (r = 0; r < proc.comms.nregions; ++r) {
+        for (pe = 0; pe < proc.nranks; ++pe) {
+            free(proc.comms.orks[r].rkeys[pe].data);
+        }
+    }
+}
 
 inline static void
 init_memory_regions(void)
@@ -355,35 +322,6 @@ deregister_memory_regions(void)
  * API
  *
  **/
-
-void
-shmemc_ucx_make_remote_endpoints(void)
-{
-    ucs_status_t s;
-    shmemc_context_h ch = (shmemc_context_h) SHMEM_CTX_DEFAULT;
-    ucp_ep_params_t epm;
-    int i;
-
-    for (i = 0; i < proc.nranks; ++i) {
-        const int pe = SHIFT(i);
-
-        epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
-        epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
-
-        s = ucp_ep_create(ch->w, &epm, &proc.comms.eps[pe]);
-
-        /*
-         * this can fail if we have e.g. mlx4 and not mlx5 infiniband.
-         * I can tell it's failed, but I don't really know why...
-         */
-        if (s != UCS_OK) {
-            shmemu_fatal("Unable to create remote endpoints: %s",
-                         ucs_status_string(s)
-                         );
-            /* NOT REACHED */
-        }
-    }
-}
 
 
 /*
@@ -459,8 +397,6 @@ ucx_cleanup(void)
 void
 shmemc_ucx_init(void)
 {
-    int n;
-
     ucx_init_ready();
 
     /* user-supplied setup */
@@ -470,15 +406,16 @@ shmemc_ucx_init(void)
     init_memory_regions();
     register_memory_regions();
 
+    /* master copy of exchanged rkeys */
+    opaque_rkeys_init();
+
     /* Create exchange workers and space for EPs */
     allocate_xworkers_table();
-    allocate_endpoints_table();
+
+    shmemc_ucx_allocate_eps_table(defcp);
 
     /* prep contexts, allocate first one (default) */
-    allocate_contexts_table();
-
-    n = shmemc_init_default_context();
-    shmemu_assert(n == 0, "couldn't initialize default context");
+    contexts_table_init();
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
@@ -499,17 +436,15 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
-    if (! proc.env.xpmem_kludge) {
-        disconnect_all_endpoints();
-    }
-    deallocate_endpoints_table();
+    contexts_table_finalize();
 
-    deallocate_contexts_table();
     deallocate_xworkers_table();
 
     /* free up internal sync variables */
     FREE_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
     FREE_INTERNAL_SYMM_VAR(shmemc_sync_all_psync);
+
+    opaque_rkeys_finalize();
 
     deregister_memory_regions();
 

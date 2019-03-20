@@ -60,7 +60,7 @@ extern "C"
      *
      */
     void start_pes(int npes)
-        _DEPRECATED_BY(shmem_init);
+        _DEPRECATED_BY(shmem_init, 1.2);
 
     /**
      * @brief initializes the OpenSHMEM environment on the calling PE.
@@ -173,7 +173,7 @@ extern "C"
      *
      */
     int _my_pe(void)
-        _WUR _DEPRECATED_BY(shmem_my_pe);
+        _WUR _DEPRECATED_BY(shmem_my_pe, 1.2);
 
     /**
      * @brief returns the "rank" or identity of the calling PE
@@ -208,7 +208,7 @@ extern "C"
      *
      */
     int _num_pes(void)
-        _WUR _DEPRECATED_BY(shmem_n_pes);
+        _WUR _DEPRECATED_BY(shmem_n_pes, 1.2);
 
     /**
      * @brief returns the number of PEs in the program
@@ -939,7 +939,7 @@ extern "C"
      *
      */
     void *shmalloc(size_t size)
-        _WUR _DEPRECATED_BY(shmem_malloc);
+        _WUR _DEPRECATED_BY(shmem_malloc, 1.2);
 
     /**
      * @brief dynamically allocates symmetric memory
@@ -948,7 +948,7 @@ extern "C"
      *
      */
     void shfree(void *ptr)
-        _DEPRECATED_BY(shmem_free);
+        _DEPRECATED_BY(shmem_free, 1.2);
 
     /**
      * @brief dynamically allocates symmetric memory
@@ -957,7 +957,7 @@ extern "C"
      *
      */
     void *shrealloc(void *ptr, size_t size)
-        _WUR _DEPRECATED_BY(shmem_realloc);
+        _WUR _DEPRECATED_BY(shmem_realloc, 1.2);
 
     /**
      * @brief dynamically allocates symmetric memory
@@ -966,7 +966,7 @@ extern "C"
      *
      */
     void *shmemalign(size_t alignment, size_t size)
-        _WUR _DEPRECATED_BY(shmem_align);
+        _WUR _DEPRECATED_BY(shmem_align, 1.2);
 
     /**
      * @brief dynamically allocates symmetric memory
@@ -1124,12 +1124,8 @@ extern "C"
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint, unsigned int)
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulong, unsigned long)
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulonglong, unsigned long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int8, int8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int16, int16_t)
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, int32, int32_t)
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, int64, int64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint8, uint8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint16, uint16_t)
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint32, uint32_t)
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint64, uint64_t)
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, size, size_t)
@@ -1172,12 +1168,8 @@ extern "C"
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ulong, unsigned long)
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ulonglong,
                                  unsigned long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int8, int8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int16, int16_t)
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int32, int32_t)
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int64, int64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint8, uint8_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint16, uint16_t)
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint32, uint32_t)
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint64, uint64_t)
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, size, size_t)
@@ -1216,7 +1208,7 @@ extern "C"
     void shmem_##_name##_##wait(_type *ivar,                            \
                                 _type cmp_value)                        \
         _DEPRECATED_BY(shmem_##_name##_wait_until with compare          \
-                       operator SHMEM_CMP_NE);
+                       operator SHMEM_CMP_NE, 1.4);
 
     API_DECL_WAIT(longdouble, long double)
     API_DECL_WAIT(schar, signed char)
@@ -1230,12 +1222,8 @@ extern "C"
     API_DECL_WAIT(uint, unsigned int)
     API_DECL_WAIT(ulong, unsigned long)
     API_DECL_WAIT(ulonglong, unsigned long long)
-    API_DECL_WAIT(int8, int8_t)
-    API_DECL_WAIT(int16, int16_t)
     API_DECL_WAIT(int32, int32_t)
     API_DECL_WAIT(int64, int64_t)
-    API_DECL_WAIT(uint8, uint8_t)
-    API_DECL_WAIT(uint16, uint16_t)
     API_DECL_WAIT(uint32, uint32_t)
     API_DECL_WAIT(uint64, uint64_t)
     API_DECL_WAIT(size, size_t)
@@ -1296,16 +1284,16 @@ extern "C"
 #undef API_CTX_DECL_SWAP
 
     long shmem_long_swap(long *target, long value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_swap) _WUR;
+        _DEPRECATED_BY(shmem_long_atomic_swap, 1.4) _WUR;
     int shmem_int_swap(int *target, int value, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_swap) _WUR;
+        _DEPRECATED_BY(shmem_int_atomic_swap, 1.4) _WUR;
     long long shmem_longlong_swap(long long *target, long long value,
                                   int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_swap) _WUR;
+        _DEPRECATED_BY(shmem_longlong_atomic_swap, 1.4) _WUR;
     float shmem_float_swap(float *target, float value, int pe)
-        _DEPRECATED_BY(shmem_float_atomic_swap) _WUR;
+        _DEPRECATED_BY(shmem_float_atomic_swap, 1.4) _WUR;
     double shmem_double_swap(double *target, double value, int pe)
-        _DEPRECATED_BY(shmem_double_atomic_swap) _WUR;
+        _DEPRECATED_BY(shmem_double_atomic_swap, 1.4) _WUR;
 
     /**
      * @brief conditionally swap value into symmetric variable, fetch
@@ -1365,16 +1353,16 @@ extern "C"
     long shmem_long_cswap(long *target,
                           long cond, long value,
                           int pe)
-        _DEPRECATED_BY(shmem_long_atomic_compare_swap) _WUR;
+        _DEPRECATED_BY(shmem_long_atomic_compare_swap, 1.4) _WUR;
     int shmem_int_cswap(int *target,
                         int cond, int value,
                         int pe)
-        _DEPRECATED_BY(shmem_int_atomic_compare_swap) _WUR;
+        _DEPRECATED_BY(shmem_int_atomic_compare_swap, 1.4) _WUR;
     long long shmem_longlong_cswap(long long *target,
                                    long long cond,
                                    long long value,
                                    int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_compare_swap) _WUR;
+        _DEPRECATED_BY(shmem_longlong_atomic_compare_swap, 1.4) _WUR;
 
     /**
      * atomic fetch-{add,inc} & add,inc
@@ -1428,12 +1416,12 @@ extern "C"
     SHMEM_DECL_AMO2(fetch_add, ptrdiff, ptrdiff_t)
 
     long shmem_long_fadd(long *target, long value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_fetch_add) _WUR;
+        _DEPRECATED_BY(shmem_long_atomic_fetch_add, 1.4) _WUR;
     int shmem_int_fadd(int *target, int value, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_fetch_add) _WUR;
+        _DEPRECATED_BY(shmem_int_atomic_fetch_add, 1.4) _WUR;
     long long shmem_longlong_fadd(long long *target, long long value,
                                   int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_fetch_add) _WUR;
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch_add, 1.4) _WUR;
 
     /**
      * @brief increment symmetric variable, fetch back old value
@@ -1483,11 +1471,11 @@ extern "C"
     SHMEM_DECL_AMO1(fetch_inc, ptrdiff, ptrdiff_t)
 
     long shmem_long_finc(long *target, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_fetch_inc) _WUR;
+        _DEPRECATED_BY(shmem_long_atomic_fetch_inc, 1.4) _WUR;
     int shmem_int_finc(int *target, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_fetch_inc) _WUR;
+        _DEPRECATED_BY(shmem_int_atomic_fetch_inc, 1.4) _WUR;
     long long shmem_longlong_finc(long long *target, int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_fetch_inc) _WUR;
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch_inc, 1.4) _WUR;
 
     /**
      * @brief add value to symmetric variable
@@ -1537,11 +1525,11 @@ extern "C"
     SHMEM_DECL_VOID_AMO2(add, ptrdiff, ptrdiff_t)
 
     void shmem_long_add(long *target, long value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_add);
+        _DEPRECATED_BY(shmem_long_atomic_add, 1.4);
     void shmem_int_add(int *target, int value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_add);
+        _DEPRECATED_BY(shmem_long_atomic_add, 1.4);
     void shmem_longlong_add(long long *target, long long value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_add);
+        _DEPRECATED_BY(shmem_long_atomic_add, 1.4);
 
     /**
      * @brief These routines perform an atomic "or" operation
@@ -1929,11 +1917,11 @@ extern "C"
     SHMEM_DECL_VOID_AMO1(inc, ptrdiff, ptrdiff_t)
 
     void shmem_long_inc(long *target, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_inc);
+        _DEPRECATED_BY(shmem_long_atomic_inc, 1.4);
     void shmem_int_inc(int *target, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_inc);
+        _DEPRECATED_BY(shmem_int_atomic_inc, 1.4);
     void shmem_longlong_inc(long long *target, int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_inc);
+        _DEPRECATED_BY(shmem_longlong_atomic_inc, 1.4);
 
     /**
      * @brief These routines perform an atomic fetch from a remote PE
@@ -2019,15 +2007,15 @@ extern "C"
     SHMEM_DECL_AMO1(fetch, ptrdiff, ptrdiff_t)
 
     int shmem_int_fetch(const int *dest, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_int_atomic_fetch, 1.4) _WUR;
     long shmem_long_fetch(const long *dest, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_long_atomic_fetch, 1.4) _WUR;
     long long shmem_longlong_fetch(const long long *dest, int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch, 1.4) _WUR;
     float shmem_float_fetch(const float *dest, int pe)
-        _DEPRECATED_BY(shmem_float_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_float_atomic_fetch, 1.4) _WUR;
     double shmem_double_fetch(const double *dest, int pe)
-        _DEPRECATED_BY(shmem_double_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_double_atomic_fetch, 1.4) _WUR;
 
     /**
      * @brief These routines perform an atomic set of a variable on a
@@ -2134,11 +2122,11 @@ extern "C"
     SHMEM_DECL_VOID_AMO1(inc, ptrdiff, ptrdiff_t)
 
     void shmem_long_inc(long *target, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_inc);
+        _DEPRECATED_BY(shmem_long_atomic_inc, 1.4);
     void shmem_int_inc(int *target, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_inc);
+        _DEPRECATED_BY(shmem_int_atomic_inc, 1.4);
     void shmem_longlong_inc(long long *target, int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_inc);
+        _DEPRECATED_BY(shmem_longlong_atomic_inc, 1.4);
 
     /**
      * @brief These routines perform an atomic fetch from a remote PE
@@ -2224,15 +2212,15 @@ extern "C"
     SHMEM_DECL_AMO1(fetch, ptrdiff, ptrdiff_t)
 
     int shmem_int_fetch(const int *dest, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_int_atomic_fetch, 1.4) _WUR;
     long shmem_long_fetch(const long *dest, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_long_atomic_fetch, 1.4) _WUR;
     long long shmem_longlong_fetch(const long long *dest, int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_longlong_atomic_fetch, 1.4) _WUR;
     float shmem_float_fetch(const float *dest, int pe)
-        _DEPRECATED_BY(shmem_float_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_float_atomic_fetch, 1.4) _WUR;
     double shmem_double_fetch(const double *dest, int pe)
-        _DEPRECATED_BY(shmem_double_atomic_fetch) _WUR;
+        _DEPRECATED_BY(shmem_double_atomic_fetch, 1.4) _WUR;
 
     /**
      * @brief These routines perform an atomic set of a variable on a
@@ -2322,15 +2310,15 @@ extern "C"
     SHMEM_DECL_VOID_AMO2(set, ptrdiff, ptrdiff_t)
 
     void shmem_int_set(int *dest, int value, int pe)
-        _DEPRECATED_BY(shmem_int_atomic_set);
+        _DEPRECATED_BY(shmem_int_atomic_set, 1.4);
     void shmem_long_set(long *dest, long value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_set);
+        _DEPRECATED_BY(shmem_long_atomic_set, 1.4);
     void shmem_longlong_set(long long *dest, long long value, int pe)
-        _DEPRECATED_BY(shmem_longlong_atomic_set);
+        _DEPRECATED_BY(shmem_longlong_atomic_set, 1.4);
     void shmem_float_set(float *dest, float value, int pe)
-        _DEPRECATED_BY(shmem_float_atomic_set);
+        _DEPRECATED_BY(shmem_float_atomic_set, 1.4);
     void shmem_double_set(double *dest, double value, int pe)
-        _DEPRECATED_BY(shmem_double_atomic_set);
+        _DEPRECATED_BY(shmem_double_atomic_set, 1.4);
 
     /*
      * locks/critical section

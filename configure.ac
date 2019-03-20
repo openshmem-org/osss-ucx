@@ -8,7 +8,7 @@ m4_define([pkg_major],      [1])
 m4_define([pkg_minor],      [0])
 m4_define([pkg_version],    [pkg_major.pkg_minor])
 m4_define([pkg_bugreport],  [anthony.curtis@stonybrook.edu])
-m4_define([pkg_url],        [https://bitbucket.org/sbuopenshmem/osss-ucx.git])
+m4_define([pkg_url],        [https://bitbucket.org/tony-curtis/osss-ucx.git])
 
 m4_define([spec_major_version],     [1])
 m4_define([spec_minor_version],     [4])
@@ -183,6 +183,7 @@ AC_CONFIG_FILES([
 	src/shmemc/Makefile
 	src/shmemc/osh_common
 	src/shmemu/Makefile
+	src/shmemt/Makefile
         ])
 
 AC_OUTPUT

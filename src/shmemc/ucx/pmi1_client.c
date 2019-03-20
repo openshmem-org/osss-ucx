@@ -366,7 +366,7 @@ shmemc_pmi_client_init(void)
 void
 shmemc_pmi_client_finalize(void)
 {
-    pmix_status_t ps;
+    int ps;
     int pe;
 
     ps = PMI_Finalize();
@@ -396,7 +396,7 @@ shmemc_pmi_client_finalize(void)
 void
 shmemc_pmi_client_abort(const char *msg, int status)
 {
-    pmix_status_t ps;
+    int ps;
 
     ps = PMI_Abort(status, msg);
     shmemu_assert(ps == PMI_SUCCESS,

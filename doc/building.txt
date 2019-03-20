@@ -1,97 +1,94 @@
 # For license: see LICENSE file at top-level
 
-Prerequisites
-=============
+# Prerequisites
 
-PMIx
-====
+## PMIx
 
 v1.2.x, or newer, release; or from github master:
 
-    PMIx      : https://github.com/pmix/pmix/
+[Get PMIx](https://github.com/pmix/pmix/)
 
-Sample author config
---------------------
+### Sample author config
 
-    .../configure --prefix=/path/to/install/pmix
+```sh
+$ .../configure --prefix=/path/to/install/pmix
+```
 
-UCX
-===
+## UCX
 
 Tested with all releases and from github master:
 
-    UCX       : https://github.com/openucx/ucx/
+[Get UCX](https://github.com/openucx/ucx/)
 
 If you want to build threading support, UCX should be installed with
+`--enable-mt`.
 
-    --enable-mt
-
-SHCOLL
-======
+## SHCOLL
 
 The OpenSHMEM Collectives Library.
 
 Tested with github master:
 
-    SHCOLL    : https://github.com/tonycurtis/OpenSHMEM-Collective-Routines
+[Get SHCOLL](https://github.com/tonycurtis/OpenSHMEM-Collective-Routines)
 
 SHCOLL is also bundled with the OSSS-UCX distribution to avoid
 requiring an external installation, and will be used by default.
 
-Sample author config
---------------------
+### Sample author config
 
-    .../configure \
+```sh
+.../configure \
         --prefix=/path/to/install/shcoll
+```
 
-OpenMPI
-=======
+## OpenMPI
 
 For PMIx-aware "mpiexec" launcher:
 
-    OpenMPI downloads : https://www.open-mpi.org/software/ompi/
+[Get OpenMPI](https://www.open-mpi.org/software/ompi/)
 
-Sample author config
---------------------
+### Sample author config
 
-    .../configure \
+```sh
+.../configure \
         --prefix=/path/to/install/openmpi \
         --with-knem \
         --with-ucx=/path/to/install/ucx \
         --with-tm
+```
 
-Combinations
-============
+## Combinations
 
 For all users, any version of UCX is fine.
 
 The interaction with most impact is that of PMIx and Open-MPI:
 
-  o For end-users, the most stable combinations are
-      o PMIx 1.2.5 and Open-MPI 2.1.3
-      o PMIx 2.1.1 and Open-MPI 3.1.0
-  o For developers, the github master versions throughout will track
-    all the latest updates.
+* For end-users, the most stable combinations are
+    * PMIx 1.2.5 and Open-MPI 2.1.3
+    * PMIx 2.1.1 and Open-MPI 3.1.0, 4.0.0
+* For developers, the github master versions throughout will track
+  all the latest updates.
 
 A PRRTE-based launcher is in development, but as PRRTE is in flux,
-this will not be documented here for now, see prrte.txt for more
-information.
+this will not be documented here for now, see [prrte.txt](./prrte.txt)
+for more information.
 
-Building Sequence
-=================
+## Building Sequence
 
-1. In the top-level source directory, run ./autogen.sh
+In the top-level source directory, run
 
-2. You can build this package either in-source-tree or
-   out-of-source-tree
+```sh
+./autogen.sh
+```
 
-3. configure script can be told where PMIx and UCX live, and other
-   options
+You can build this package either in-source-tree or
+out-of-source-tree.
 
-   Sample author config
-   --------------------
+The configure script can be told where PMIx and UCX live, and other
+options, e.g.
 
-   .../configure \
+ ```sh
+ .../configure \
        --prefix=/path/to/install/osss-ucx \
        --with-pmix=/path/to/install/pmix \
        --with-ucx=/path/to/install/ucx \
@@ -100,5 +97,9 @@ Building Sequence
        --enable-logging \
        --enable-threads
        --with-heap-size=8G
-   
-4. make install
+ ```
+Then
+
+```sh
+$ make install
+```

@@ -6,7 +6,9 @@
 
 #include "thispe.h"
 #include "shmemu.h"
+#include "shmemc.h"
 #include "state.h"
+#include "ucx/api.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,10 +68,9 @@ publish_one_rkeys(pmix_info_t *rip, size_t r)
     void *packed_rkey;
     size_t rkey_len;
     const ucs_status_t s =
-        ucp_rkey_pack(proc.comms.ucx_ctxt,
-                      proc.comms.regions[r].minfo[proc.rank].racc.mh,
-                      &packed_rkey, &rkey_len
-                      );
+        shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.rank].mh,
+                             &packed_rkey, &rkey_len
+                             );
     shmemu_assert(s == UCS_OK, "can't pack rkey");
 
     snprintf(rip->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
@@ -177,6 +178,8 @@ shmemc_pmi_exchange_workers(void)
 inline static void
 exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
 {
+    uint64_t base;
+    size_t len;
     pmix_status_t ps;
 
     snprintf(hdp[0].key, PMIX_MAX_KEYLEN,
@@ -196,14 +199,14 @@ exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap size");
 #endif /* PMIX_VERSION_MAJOR */
-    proc.comms.regions[r].minfo[pe].base =
-        hdp[0].value.data.uint64;
-    proc.comms.regions[r].minfo[pe].len =
-        hdp[1].value.data.size;
+
+    base = hdp[0].value.data.uint64;
+    len  = hdp[1].value.data.size;
+
+    proc.comms.regions[r].minfo[pe].base = base;
+    proc.comms.regions[r].minfo[pe].len = len;
     /* slightly redundant storage, but useful */
-    proc.comms.regions[r].minfo[pe].end =
-        proc.comms.regions[r].minfo[pe].base +
-        hdp[1].value.data.size;
+    proc.comms.regions[r].minfo[pe].end = base + len;
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
@@ -212,18 +215,18 @@ exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
 {
     pmix_status_t ps;
     const pmix_byte_object_t *bop = & rdp->value.data.bo;
-    ucs_status_t s;
 
     snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
     ps = PMIx_Lookup(rdp, 1, &waiter, 1);
     shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
 
-    s = ucp_ep_rkey_unpack(proc.comms.eps[pe],
-                           bop->bytes,
-                           &proc.comms.regions[r].minfo[pe].racc.rkey
-                           );
-    shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
+    proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
+
+    shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,
+                  "couldn't allocate memory for rkey data");
+
+    memcpy(proc.comms.orks[r].rkeys[pe].data, bop->bytes, bop->size);
 }
 
 inline static void
@@ -346,25 +349,17 @@ pmix_finalize_wrapper(void)
  * get the PMIx client-side up and running
  */
 
-void
-shmemc_pmi_client_init(void)
+inline static void
+init_ranks(void)
 {
-    pmix_value_t v;
-    pmix_value_t *vp = &v;      /* holds things we get from PMIx */
+    pmix_value_t *vp;           /* holds things we get from PMIx */
     pmix_status_t ps;
-
-    ps = pmix_init_wrapper(&my_proc);
-
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't initialize (%s)",
-                  PMIx_Error_string(ps));
 
     /* we can get our own rank immediately */
     proc.rank = (int) my_proc.rank;
     shmemu_assert(proc.rank >= 0,
-                  "PMIx PE rank %d is not valid (%s)",
-                  proc.rank,
-                  PMIx_Error_string(ps));
+                  "PMIx PE rank %d must be >= 0",
+                  proc.rank);
 
     /* make a new proc to query things not linked to a specific rank */
     PMIX_PROC_CONSTRUCT(&wc_proc);
@@ -395,6 +390,13 @@ shmemc_pmi_client_init(void)
     shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
                   "PMIx PE rank %d is not valid",
                   proc.rank);
+}
+
+inline static void
+init_peers(void)
+{
+    pmix_value_t *vp;           /* holds things we get from PMIx */
+    pmix_status_t ps;
 
     /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
@@ -420,6 +422,21 @@ shmemc_pmi_client_init(void)
         NO_WARN_UNUSED(n);
         shmemu_assert(s > 0, "Unable to parse peer PE numbers");
     }
+}
+
+void
+shmemc_pmi_client_init(void)
+{
+    pmix_status_t ps;
+
+    ps = pmix_init_wrapper(&my_proc);
+
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't initialize (%s)",
+                  PMIx_Error_string(ps));
+
+    init_ranks();
+    init_peers();
 
     make_waiter();
 }
@@ -432,23 +449,12 @@ void
 shmemc_pmi_client_finalize(void)
 {
     pmix_status_t ps;
-    int pe;
 
     ps = pmix_finalize_wrapper();
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't finalize (%s)",
                   PMIx_Error_string(ps));
-
-    for (pe = 0; pe < proc.nranks; ++pe) {
-        size_t r;
-
-        /* clean up allocations for exchanged buffers */
-        free(proc.comms.xchg_wrkr_info[pe].buf);
-        for (r = 0; r < proc.comms.nregions; ++r) {
-            ucp_rkey_destroy(proc.comms.regions[r].minfo[pe].racc.rkey);
-        }
-    }
 
     release_waiter();
 
