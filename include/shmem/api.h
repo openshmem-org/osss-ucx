@@ -163,7 +163,7 @@ extern "C"
      * None.
      *
      */
-    SHMEM_NORETURN void shmem_global_exit(int status);
+    void shmem_global_exit(int status);
 
     /**
      * @brief returns the "rank" or identity of the calling PE
