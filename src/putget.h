@@ -5,8 +5,9 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
-
 #include "shmem_mutex.h"
+
+#include "putget_complex.h"
 
 #define SHMEM_CTX_TYPED_PUT(_name, _type)                           \
     void                                                            \
