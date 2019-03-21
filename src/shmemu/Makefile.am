@@ -1,6 +1,7 @@
 # For license: see LICENSE file at top-level
 
 OTHER_CPPFLAGS            = -I../../include \
+				-I$(top_srcdir)/include \
 				-I$(srcdir)/.. \
 				-I$(srcdir)/../shmemc \
 				-I$(srcdir)/../shmemt

@@ -2,7 +2,9 @@
 
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 				-I$(srcdir)/../shmemt \
-				-I../../include -I$(srcdir)/..
+				-I../../include \
+				-I$(top_srcdir)/include \
+				-I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				globalexit.c \
