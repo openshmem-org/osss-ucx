@@ -11,7 +11,7 @@
 #ifdef ENABLE_THREADS
 
 #include "state.h"
-
+#include "shmem_mutex.h"
 #include "shmem/defs.h"
 #include "threading.h"
 
