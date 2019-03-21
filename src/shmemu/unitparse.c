@@ -64,7 +64,7 @@ parse_unit(char u, size_t *sp)
  */
 
 int
-shmemu_parse_size(char *size_str, size_t *bytes_p)
+shmemu_parse_size(const char *size_str, size_t *bytes_p)
 {
     char *units;                /* scaling factor if given */
     double bytes;
