@@ -9,6 +9,7 @@
 #include "shmemc.h"
 #include "state.h"
 #include "ucx/api.h"
+#include "pmi_client.h"
 
 #include <stdio.h>
 #include <stdlib.h>

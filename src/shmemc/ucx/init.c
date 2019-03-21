@@ -101,11 +101,15 @@ contexts_table_finalize(void)
  */
 static mem_info_t *globals;
 
+/*
+ * from the executable
+ */
+extern char data_start;
+extern char end;
+
 inline static void
 register_globals()
 {
-    extern char data_start; /* from the executable */
-    extern char end; /* from the executable */
     uint64_t g_base = (uint64_t) &data_start;
     uint64_t g_end = (uint64_t) &end;
     const size_t len = g_end - g_base;

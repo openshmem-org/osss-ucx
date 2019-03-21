@@ -7,6 +7,7 @@
 #include "state.h"
 #include "shmemc.h"
 #include "shmemu.h"
+#include "ucx/api.h"
 
 #include <stdlib.h>
 #include <string.h>

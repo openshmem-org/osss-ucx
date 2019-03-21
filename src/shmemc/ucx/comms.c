@@ -877,7 +877,7 @@ SHMEMC_CTX_CSWAP(64)
 #define SHMEMC_CTX_FETCH(_size)                                 \
     uint64_t                                                    \
     shmemc_ctx_fetch##_size(shmem_ctx_t ctx,                    \
-                            void *t, int pe)                    \
+                            const void *t, int pe)              \
     {                                                           \
         shmemc_context_h ch = (shmemc_context_h) ctx;           \
                                                                 \
