@@ -8,6 +8,7 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
+#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_set_lock = pshmem_set_lock

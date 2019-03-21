@@ -8,7 +8,7 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
-#include "shmem/defs.h"
+#include "shmem/api.h"
 
 #include <bits/wordsize.h>
 #include <sys/types.h>
@@ -58,6 +58,14 @@
     {                                                   \
         deprecate(__func__, DEPR_SINCE);                \
         return shmemc_##_op##_size(target, pe);         \
+    }
+
+#define SHMEM_DEPRECATE_CONST_AMO1(_op, _name, _type, _size)    \
+    _type                                                       \
+    shmem_##_name##_##_op(const _type *target, int pe)          \
+    {                                                           \
+        deprecate(__func__, DEPR_SINCE);                        \
+        return shmemc_##_op##_size(target, pe);                 \
     }
 
 #define SHMEM_DEPRECATE_AMO2(_op, _name, _type, _size)          \
@@ -136,11 +144,11 @@ SHMEM_DEPRECATE_VOID_AMO2(add, longlong, long long, 64)
 #define shmem_double_fetch pshmem_double_fetch
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_AMO1(fetch, int, int, 32)
-SHMEM_DEPRECATE_AMO1(fetch, long, long, 64)
-SHMEM_DEPRECATE_AMO1(fetch, longlong, long long, 64)
-SHMEM_DEPRECATE_AMO1(fetch, float, float, 32)
-SHMEM_DEPRECATE_AMO1(fetch, double, double, 64)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, int, int, 32)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, long, long, 64)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, longlong, long long, 64)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, float, float, 32)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, double, double, 64)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_finc = pshmem_int_finc

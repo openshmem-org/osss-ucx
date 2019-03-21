@@ -19,6 +19,7 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "threading.h"
+#include "progress.h"
 
 #include <stdio.h>
 #include <stdlib.h>
