@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemc.h"
+
 #include <unistd.h>
 
 /*
