@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "shmemx.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmemx_wtime = pshmemx_wtime
