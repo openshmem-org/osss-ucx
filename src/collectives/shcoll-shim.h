@@ -7,6 +7,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem.h"
+
 #include <shcoll.h>
 
 #ifdef ENABLE_PSHMEM
