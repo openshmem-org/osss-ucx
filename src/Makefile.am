@@ -26,6 +26,7 @@ MY_SOURCES             = \
 				accessible.c \
 				atomics.c \
 				contexts.c \
+				fence.c \
 				globalexit.c \
 				info.c \
 				init.c \

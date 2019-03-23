@@ -86,6 +86,7 @@ int shmemu_parse_csv(char *str, int **out, size_t *nout);
 #define LOG_MEMORY     "MEMORY"
 #define LOG_RMA        "RMA"
 #define LOG_FENCE      "FENCE"
+#define LOG_QUIET      "QUIET"
 #define LOG_HEAPS      "HEAPS"
 #define LOG_CONTEXTS   "CONTEXTS"
 #define LOG_RANKS      "RANKS"
