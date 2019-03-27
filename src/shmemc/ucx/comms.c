@@ -222,7 +222,7 @@ check_wait_for_request(shmemc_context_h ch, void *req)
         ucs_status_t s;
 
         do {
-            ucp_worker_progress(defcp->w);
+            ucp_worker_progress(ch->w);
 
             s = UCX_REQUEST_CHECK(req);
         } while (s == UCS_INPROGRESS);
