@@ -149,7 +149,7 @@ get_remote_key_and_addr(shmemc_context_h ch,
             shmemc_context_h ch = (shmemc_context_h) ctx;               \
                                                                         \
             if (! ch->attr.nostore) {                                   \
-                const ucs_status_t s = ucp_worker_##_ucp_op(defcp->w);  \
+                const ucs_status_t s = ucp_worker_##_ucp_op(ch->w);     \
                                                                         \
                 shmemu_assert(s == UCS_OK,                              \
                               "%s() failed (status: %s)", #_op,         \
@@ -215,7 +215,7 @@ check_wait_for_request(shmemc_context_h ch, void *req)
         return UCS_OK;
     }
     else if (UCS_PTR_IS_ERR(req)) {
-        ucp_request_cancel(defcp->w, req);
+        ucp_request_cancel(ch->w, req);
         return UCS_PTR_STATUS(req);
     }
     else {                      /* wait for completion */
