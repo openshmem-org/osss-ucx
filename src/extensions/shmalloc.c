@@ -7,7 +7,6 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem/api.h"
-#include "shmemx.h"
 
 #include "shmem_mutex.h"
 #include "allocator/xmemalloc.h"
