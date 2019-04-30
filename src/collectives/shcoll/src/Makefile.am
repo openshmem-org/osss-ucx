@@ -21,9 +21,9 @@ lib_LTLIBRARIES         = libshcoll.la
 libshcoll_la_SOURCES    = $(SOURCES)
 libshcoll_la_CFLAGS     = $(BUILD_CFLAGS)
 
-lib_LIBRARIES           = libshcoll.a
-libshcoll_a_SOURCES     = $(SOURCES)
-libshcoll_a_CFLAGS      = $(BUILD_CFLAGS)
+# lib_LIBRARIES           = libshcoll.a
+# libshcoll_a_SOURCES     = $(SOURCES)
+# libshcoll_a_CFLAGS      = $(BUILD_CFLAGS)
 
 nobase_include_HEADERS  = shcoll.h \
 				shcoll/alltoall.h \

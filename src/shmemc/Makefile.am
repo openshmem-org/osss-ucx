@@ -38,9 +38,9 @@ lib_LTLIBRARIES           = libshmemc-ucx.la
 libshmemc_ucx_la_SOURCES  = $(LIBSHMEMC_SOURCES)
 libshmemc_ucx_la_CFLAGS   = $(UCX_CFLAGS) $(EXTRA_CFLAGS) $(OTHER_CPPFLAGS)
 
-lib_LIBRARIES             = libshmemc-ucx.a
-libshmemc_ucx_a_SOURCES   = $(LIBSHMEMC_SOURCES)
-libshmemc_ucx_a_CFLAGS    = $(UCX_CFLAGS) $(EXTRA_CFLAGS) $(OTHER_CPPFLAGS)
+# lib_LIBRARIES             = libshmemc-ucx.a
+# libshmemc_ucx_a_SOURCES   = $(LIBSHMEMC_SOURCES)
+# libshmemc_ucx_a_CFLAGS    = $(UCX_CFLAGS) $(EXTRA_CFLAGS) $(OTHER_CPPFLAGS)
 
 # support C by default, plus something to run it with
 

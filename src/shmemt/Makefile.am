@@ -14,6 +14,6 @@ libshmemt_la_CFLAGS    = $(AM_CFLAGS)
 libshmemt_la_CPPFLAGS  = $(MY_INCLUDE)
 libshmemt_la_LDFLAGS   = -version-info 0:0:0
 
-lib_LIBRARIES          = libshmemt.a
-libshmemt_a_SOURCES    = $(MY_SOURCES)
-libshmemt_a_CPPFLAGS   = $(MY_INCLUDE)
+# lib_LIBRARIES          = libshmemt.a
+# libshmemt_a_SOURCES    = $(MY_SOURCES)
+# libshmemt_a_CPPFLAGS   = $(MY_INCLUDE)
