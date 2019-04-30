@@ -89,7 +89,6 @@ init_thread_helper(int requested, int *provided)
     /* set up comms, read environment */
     shmemc_init();
     /* utiltiies */
-    shmemt_init();
     shmemu_init();
     progress_init();
 
@@ -136,6 +135,9 @@ init_thread_helper(int requested, int *provided)
     }
 
     proc.td.invoking_thread = threadwrap_thread_id();
+
+    /* we now the thread level, set up internal support */
+    shmemt_init();
 
     if (shmemc_my_pe() == 0) {
         if (proc.env.print_version) {
