@@ -66,6 +66,7 @@ finalize_helper(void)
 
     progress_finalize();
     shmemc_finalize();
+    /* don't need a shmemt_finalize() */
     shmemu_finalize();
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -86,29 +87,6 @@ init_thread_helper(int requested, int *provided)
         return 0;
     }
 
-    /* set up comms, read environment */
-    shmemc_init();
-    /* utiltiies */
-    shmemu_init();
-    progress_init();
-
-#ifdef ENABLE_EXPERIMENTAL
-    shmemxa_init(proc.env.heaps.nheaps);
-#endif  /* ENABLE_EXPERIMENTAL */
-
-    s = atexit(finalize_helper);
-    if (s != 0) {
-        logger(LOG_FATAL,
-               "unable to register atexit() handler: %s",
-               strerror(errno)
-               );
-        /* NOT REACHED */
-    }
-
-    proc.status = SHMEMC_PE_RUNNING;
-
-    ++proc.refcount;
-
     /* for now */
     switch(requested) {
     case SHMEM_THREAD_SINGLE:
@@ -128,7 +106,7 @@ init_thread_helper(int requested, int *provided)
         break;
     }
 
-    /* save and return */
+    /* save and return thread level */
     proc.td.osh_tl = requested;
     if (provided != NULL) {
         *provided = proc.td.osh_tl;
@@ -136,8 +114,29 @@ init_thread_helper(int requested, int *provided)
 
     proc.td.invoking_thread = threadwrap_thread_id();
 
-    /* we now the thread level, set up internal support */
+    /* set up comms, read environment */
+    shmemc_init();
+    /* utiltiies */
     shmemt_init();
+    shmemu_init();
+    progress_init();
+
+#ifdef ENABLE_EXPERIMENTAL
+    shmemxa_init(proc.env.heaps.nheaps);
+#endif  /* ENABLE_EXPERIMENTAL */
+
+    s = atexit(finalize_helper);
+    if (s != 0) {
+        logger(LOG_FATAL,
+               "unable to register atexit() handler: %s",
+               strerror(errno)
+               );
+        /* NOT REACHED */
+    }
+
+    proc.status = SHMEMC_PE_RUNNING;
+
+    ++proc.refcount;
 
     if (shmemc_my_pe() == 0) {
         if (proc.env.print_version) {
