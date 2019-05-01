@@ -17,7 +17,7 @@
 inline static void
 yielder(void)
 {
-#ifdef HAVE_SCHED_YIELDER
+#ifdef HAVE_SCHED_YIELD
     sched_yield();
 #elif HAVE_NANOSLEEP
     const struct timespec req = { 0, 100 };
