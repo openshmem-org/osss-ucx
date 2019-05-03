@@ -7,6 +7,8 @@
 #include "shmemu.h"
 #include "shmemc.h"
 
+#include "yielder.h"
+
 #include <ucp/api/ucp.h>
 
 #if 0
@@ -22,6 +24,7 @@
         shmemc_context_h ch = (shmemc_context_h) ctx;                   \
                                                                         \
         do {                                                            \
+            shmemc_progress(); yielder();                               \
             ucp_worker_wait_mem(ch->w, var);                            \
         } while (shmemc_ctx_test_##_opname##_size(ctx, var, value) == 0); \
     }
@@ -62,6 +65,7 @@ COMMS_CTX_WAIT_SIZE(64, ge)
                                                                         \
         do {                                                            \
             for (i = 0; i < nelems; ++i) {                              \
+                shmemc_progress(); yielder();                           \
                 if (shmemc_ctx_test_##_opname##_size(ctx,               \
                                                      &(vars[i]),        \
                                                      value) != 0) {     \
@@ -111,7 +115,7 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
                 if ( (status != NULL) && ( status[i] != 0) ) {          \
                     continue;                                           \
                 }                                                       \
-                                                                        \
+                shmemc_progress(); yielder();                           \
                 if (shmemc_ctx_test_##_opname##_size(ctx,               \
                                                      &(vars[i]),        \
                                                      value) != 0) {     \
@@ -173,6 +177,7 @@ COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge, >=)
             if ( (status != NULL) && ( status[i] != 0) ) {              \
                 continue;                                               \
             }                                                           \
+            shmemc_progress(); yielder();                               \
             if (shmemc_ctx_test_##_opname##_size(ctx,                   \
                                                  &(vars[i]),            \
                                                  value) != 0) {         \
