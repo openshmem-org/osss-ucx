@@ -16,11 +16,23 @@ void shmemt_mutex_destroy(void);
 void shmemt_mutex_lock(void);
 void shmemt_mutex_unlock(void);
 
+#if 0
+
+/*
+ * TESTING
+ */
+
 #define SHMEMT_MUTEX_PROTECT(_fn)               \
     do {                                        \
         shmemt_mutex_lock();                    \
         _fn;                                    \
         shmemt_mutex_unlock();                  \
+    } while (0)
+#endif
+
+#define SHMEMT_MUTEX_PROTECT(_fn)               \
+    do {                                        \
+        _fn;                                    \
     } while (0)
 
 #else
