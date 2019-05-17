@@ -49,7 +49,7 @@
                                  int cmp,                               \
                                  _type cmp_value)                       \
     {                                                                   \
-        SHMEMT_MUTEX_PROTECT                                            \
+        SHMEMT_MUTEX_NOPROTECT                                          \
             (                                                           \
              switch (cmp) {                                             \
              case SHMEM_CMP_EQ:                                         \
