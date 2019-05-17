@@ -37,6 +37,7 @@ lookup_rkey(shmemc_context_h ch, size_t region, int pe)
     return ch->racc[region].rinfo[pe].rkey;
 }
 
+#ifndef ENABLE_ALIGNED_ADDRESSES
 /*
  * where the heap lives on PE "pe"
  */
@@ -45,6 +46,7 @@ get_base(size_t region, int pe)
 {
     return proc.comms.regions[region].minfo[pe].base;
 }
+#endif  /* ENABLE_ALIGNED_ADDRESSES */
 
 /*
  * -- translation helpers ---------------------------------------------------
