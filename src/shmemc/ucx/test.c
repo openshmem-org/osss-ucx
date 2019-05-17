@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "shmemc.h"
 
 /*
  * return 1 if the memory location changed w.r.t "value", otherwise 0
@@ -17,6 +18,8 @@
                                      int##_size##_t value)              \
     {                                                                   \
         NO_WARN_UNUSED(ctx);                                            \
+                                                                        \
+        shmemc_progress();                                              \
                                                                         \
         return ( (*var) _op (value) ) ? 1 : 0;                          \
     }
