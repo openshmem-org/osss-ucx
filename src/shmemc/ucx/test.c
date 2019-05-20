@@ -19,9 +19,13 @@
     {                                                                   \
         NO_WARN_UNUSED(ctx);                                            \
                                                                         \
-        shmemc_progress();                                              \
+        int ret = ( (*var) _op (value) ) ? 1 : 0;                       \
                                                                         \
-        return ( (*var) _op (value) ) ? 1 : 0;                          \
+        if (ret == 0) {                                                 \
+            shmemc_progress();                                          \
+        }                                                               \
+                                                                        \
+        return ret;                                                     \
     }
 
 COMMS_CTX_TEST_SIZE(16, eq, ==)
