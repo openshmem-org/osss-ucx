@@ -20,7 +20,7 @@ shmem_ctx_fence(shmem_ctx_t ctx)
 {
     logger(LOG_FENCE, "%s(ctx=%lu)", __func__, shmemc_context_id(ctx));
 
-    SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(ctx));
+    SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fence(ctx));
 }
 
 #ifdef ENABLE_PSHMEM
@@ -33,7 +33,7 @@ shmem_fence(void)
 {
     logger(LOG_FENCE, "%s()", __func__);
 
-    SHMEMT_MUTEX_PROTECT(shmemc_ctx_fence(SHMEM_CTX_DEFAULT));
+    SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fence(SHMEM_CTX_DEFAULT));
 }
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -48,7 +48,7 @@ shmemx_ctx_fence_test(shmem_ctx_t ctx)
 {
     int s;
 
-    SHMEMT_MUTEX_PROTECT(s = shmemc_ctx_fence_test(ctx));
+    SHMEMT_MUTEX_NOPROTECT(s = shmemc_ctx_fence_test(ctx));
 
     logger(LOG_FENCE,
            "%s(ctx=%lu) -> %d",
@@ -64,7 +64,7 @@ shmemx_fence_test(void)
 {
     int s;
 
-    SHMEMT_MUTEX_PROTECT(s = shmemc_ctx_fence_test(SHMEM_CTX_DEFAULT));
+    SHMEMT_MUTEX_NOPROTECT(s = shmemc_ctx_fence_test(SHMEM_CTX_DEFAULT));
 
     return s;
 }
