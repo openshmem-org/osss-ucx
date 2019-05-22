@@ -382,7 +382,15 @@ ucx_init_ready(void)
     pm.estimated_num_eps = proc.nranks;
 
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
-    shmemu_assert(s == UCS_OK, "can't initialize UCX");
+    if (s != UCS_OK) {
+        shmemu_fatal("can't initialize UCX: %s",
+                     ucs_status_string(s));
+    }
+
+    /* sanity check that we got a context */
+    if (proc.comms.ucx_ctxt == NULL) {
+        shmemu_fatal("UCX was initialized, but context is nil");
+    }
 }
 
 inline static void
