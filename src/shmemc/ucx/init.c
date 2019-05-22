@@ -374,8 +374,7 @@ ucx_init_ready(void)
     pm.features =
         UCP_FEATURE_RMA      |  /* put/get */
         UCP_FEATURE_AMO32    |  /* 32-bit atomics */
-        UCP_FEATURE_AMO64    |  /* 64-bit atomics */
-        UCP_FEATURE_WAKEUP;     /* events (not used, but looking ahead) */
+        UCP_FEATURE_AMO64;      /* 64-bit atomics */
 
     pm.mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
 
