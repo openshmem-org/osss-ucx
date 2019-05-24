@@ -9,7 +9,6 @@
 #include "shmemc.h"
 #include "state.h"
 #include "ucx/api.h"
-#include "pmi_client.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,9 +25,16 @@
  * Persistent local state
  */
 
-static pmix_info_t waiter;      /* control lookups */
 static pmix_proc_t my_proc;     /* about me */
 static pmix_proc_t wc_proc;     /* wildcard lookups */
+static pmix_proc_t ex_proc;     /* internal exchanges */
+
+static pmix_key_t k1;           /* re-usable key spaces */
+#ifndef ENABLE_ALIGNED_ADDRESSES
+static pmix_key_t k2;
+#endif /* ENABLE_ALIGNED_ADDRESSES */
+
+static pmix_status_t ps;        /* re-usable pmix status */
 
 /*
  * Make local info avaialable to PMIx
@@ -39,33 +45,25 @@ static const char *wrkr_exch_fmt   = "wrkr:%d";     /* pe */
 void
 shmemc_pmi_publish_worker(void)
 {
-    pmix_status_t ps;
-    pmix_info_t pi;
-    pmix_byte_object_t *bop = & pi.value.data.bo; /* shortcut */
-
-    PMIX_INFO_CONSTRUCT(&pi);
+    pmix_value_t v;
 
     /* everyone publishes their info */
-    snprintf(pi.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
-    pi.value.type = PMIX_BYTE_OBJECT;
-    bop->bytes = (char *) proc.comms.xchg_wrkr_info[proc.rank].addr;
-    bop->size = proc.comms.xchg_wrkr_info[proc.rank].len;
-    ps = PMIx_Publish(&pi, 1);
+    snprintf(k1, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
+
+    v.type = PMIX_BYTE_OBJECT;
+    v.data.bo.bytes = (char *) proc.comms.xchg_wrkr_info[proc.rank].addr;
+    v.data.bo.size = proc.comms.xchg_wrkr_info[proc.rank].len;
+
+    ps = PMIx_Put(PMIX_GLOBAL, k1, &v);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish worker blob");
 }
 
 static const char *rkey_exch_fmt   = "rkey:%lu:%d"; /* region, pe */
 
-#ifndef ENABLE_ALIGNED_ADDRESSES
-static const char *region_base_fmt = "base:%lu:%d"; /* region, pe */
-static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
-
 inline static void
-publish_one_rkeys(pmix_info_t *rip, size_t r)
+publish_one_rkeys(size_t r)
 {
-    pmix_status_t ps;
-    pmix_byte_object_t *bop = & rip->value.data.bo;
+    pmix_value_t v;
     void *packed_rkey;
     size_t rkey_len;
     const ucs_status_t s =
@@ -74,74 +72,58 @@ publish_one_rkeys(pmix_info_t *rip, size_t r)
                              );
     shmemu_assert(s == UCS_OK, "can't pack rkey");
 
-    snprintf(rip->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
-    rip->value.type = PMIX_BYTE_OBJECT;
-    bop->bytes = (char *) packed_rkey;
-    bop->size = rkey_len;
-    ps = PMIx_Publish(rip, 1);
+    snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
+
+    v.type = PMIX_BYTE_OBJECT;
+    v.data.bo.bytes = (char *) packed_rkey;
+    v.data.bo.size = rkey_len;
+
+    ps = PMIx_Put(PMIX_GLOBAL, k1, &v);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
 
     ucp_rkey_buffer_release(packed_rkey);
 }
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
+static const char *region_base_fmt = "base:%lu:%d"; /* region, pe */
+static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
+#endif /* ! ENABLE_ALIGNED_ADDRESSES */
+
+#ifndef ENABLE_ALIGNED_ADDRESSES
 inline static void
-publish_one_heap(pmix_info_t hip[2], size_t r)
+publish_one_heap(size_t r)
 {
-    pmix_status_t ps;
+    pmix_value_t vb, vs;
 
-    snprintf(hip[0].key, PMIX_MAX_KEYLEN,
-             region_base_fmt, r, proc.rank);
-    hip[0].value.type = PMIX_UINT64;
-    hip[0].value.data.uint64 =
-        (uint64_t) proc.comms.regions[r].minfo[proc.rank].base;
+    snprintf(k1, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.rank);
+    snprintf(k2, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.rank);
 
-    snprintf(hip[1].key, PMIX_MAX_KEYLEN,
-             region_size_fmt, r, proc.rank);
-    hip[1].value.type = PMIX_SIZE;
-    hip[1].value.data.size =
-        proc.comms.regions[r].minfo[proc.rank].len;
+    vb.type = PMIX_UINT64;
+    vb.data.uint64 = proc.comms.regions[r].minfo[proc.rank].base;
+    vs.type = PMIX_SIZE;
+    vs.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
-    /* newer PMIx should be able to do this at one go */
-#if PMIX_VERSION_MAJOR > 2
-    ps = PMIx_Publish(hip, 2);
-    shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base/size");
-#else /* PMIX_VERSION_MAJOR */
-    ps = PMIx_Publish(&hip[0], 1);
+    ps = PMIx_Put(PMIX_GLOBAL, k1, &vb);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
-    ps = PMIx_Publish(&hip[1], 1);
+    ps = PMIx_Put(PMIX_GLOBAL, k2, &vs);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
-#endif  /* PMIX_VERSION_MAJOR */
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 void
 shmemc_pmi_publish_rkeys_and_heaps(void)
 {
-    pmix_info_t ri;
-#ifndef ENABLE_ALIGNED_ADDRESSES
-    pmix_info_t *hip;
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
     size_t r;
 
-    PMIX_INFO_CONSTRUCT(&ri);
-#ifndef ENABLE_ALIGNED_ADDRESSES
-    PMIX_INFO_CREATE(hip, 2);
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
-
-    publish_one_rkeys(&ri, 0);
+    publish_one_rkeys(0);
 
     for (r = 1; r < proc.comms.nregions; ++r) {
-        publish_one_rkeys(&ri, r);
+        publish_one_rkeys(r);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-        publish_one_heap(hip, r);
+        publish_one_heap(r);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
     }
-
-#ifndef ENABLE_ALIGNED_ADDRESSES
-    PMIX_INFO_FREE(hip, 2);
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
 }
 
 /* -------------------------------------------------------------- */
@@ -153,111 +135,109 @@ shmemc_pmi_publish_rkeys_and_heaps(void)
 void
 shmemc_pmi_exchange_workers(void)
 {
-    pmix_status_t ps;
-    pmix_pdata_t fetch;
-    pmix_byte_object_t *bop = & fetch.value.data.bo;
+    pmix_value_t *vp = NULL;
     int pe;
 
-    PMIX_PDATA_CONSTRUCT(&fetch);
-
     for (pe = 0; pe < proc.nranks; ++pe) {
-        const int i = SHIFT(pe);
+        pmix_byte_object_t *bop;
 
-        snprintf(fetch.key, PMIX_MAX_KEYLEN, wrkr_exch_fmt, i);
-        ps = PMIx_Lookup(&fetch, 1, &waiter, 1);
+        snprintf(k1, PMIX_MAX_KEYLEN, wrkr_exch_fmt, pe);
+        ex_proc.rank = pe;
+
+        ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vp);
         shmemu_assert(ps == PMIX_SUCCESS, "can't find remote worker blob");
 
+        bop = & vp->data.bo;
+
         /* save published worker */
-        proc.comms.xchg_wrkr_info[i].buf = (char *) malloc(bop->size);
-        shmemu_assert(proc.comms.xchg_wrkr_info[i].buf != NULL,
+        proc.comms.xchg_wrkr_info[pe].buf = (char *) malloc(bop->size);
+        shmemu_assert(proc.comms.xchg_wrkr_info[pe].buf != NULL,
                       "can't allocate memory for remote workers");
-        memcpy(proc.comms.xchg_wrkr_info[i].buf, bop->bytes, bop->size);
+        memcpy(proc.comms.xchg_wrkr_info[pe].buf, bop->bytes, bop->size);
     }
+    PMIX_VALUE_RELEASE(vp);
 }
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
 inline static void
-exchange_one_heap(pmix_pdata_t hdp[2], size_t r, int pe)
+exchange_one_heap(size_t r, int pe)
 {
+    pmix_value_t *vpb = NULL;
+    pmix_value_t *vps = NULL;
     uint64_t base;
     size_t len;
-    pmix_status_t ps;
 
-    snprintf(hdp[0].key, PMIX_MAX_KEYLEN,
-             region_base_fmt, r, pe);
-    snprintf(hdp[1].key, PMIX_MAX_KEYLEN,
-             region_size_fmt, r, pe);
+    ex_proc.rank = pe;
 
-#if PMIX_VERSION_MAJOR > 2
-    ps = PMIx_Lookup(hdp, 2, &waiter, 1);
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch heap base/size");
-#else /* PMIX_VERSION_MAJOR */
-    ps = PMIx_Lookup(&hdp[0], 1, &waiter, 1);
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch heap base");
-    ps = PMIx_Lookup(&hdp[1], 1, &waiter, 1);
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch heap size");
-#endif /* PMIX_VERSION_MAJOR */
+    snprintf(k1, PMIX_MAX_KEYLEN, region_base_fmt, r, pe);
+    snprintf(k2, PMIX_MAX_KEYLEN, region_size_fmt, r, pe);
 
-    base = hdp[0].value.data.uint64;
-    len  = hdp[1].value.data.size;
+    ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vpb);
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't fetch heap base from PE %d", pe);
+
+    ps = PMIx_Get(&ex_proc, k2, NULL, 0, &vps);
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't fetch heap size from PE %d", pe);
+
+    base = vpb->data.uint64;
+    len  = vps->data.size;
 
     proc.comms.regions[r].minfo[pe].base = base;
     proc.comms.regions[r].minfo[pe].len = len;
     /* slightly redundant storage, but useful */
     proc.comms.regions[r].minfo[pe].end = base + len;
+
+    PMIX_VALUE_RELEASE(vps);
+    PMIX_VALUE_RELEASE(vpb);
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 inline static void
-exchange_one_rkeys(pmix_pdata_t *rdp, size_t r, int pe)
+exchange_one_rkeys(size_t r, int pe)
 {
-    pmix_status_t ps;
-    const pmix_byte_object_t *bop = & rdp->value.data.bo;
+    pmix_value_t *vp = NULL;
+    pmix_byte_object_t *bop;
 
-    snprintf(rdp->key, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
+    ex_proc.rank = pe;
 
-    ps = PMIx_Lookup(rdp, 1, &waiter, 1);
+    snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
+
+    ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
 
-    proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
+    bop = & vp->data.bo;
 
+    /* opaque rkey */
+    proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
     shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,
                   "couldn't allocate memory for rkey data");
 
     memcpy(proc.comms.orks[r].rkeys[pe].data, bop->bytes, bop->size);
+
+    PMIX_VALUE_RELEASE(vp);
 }
 
 inline static void
-exchange_all_rkeys(pmix_pdata_t *rdp, size_t r)
+exchange_all_rkeys(size_t r)
 {
     int pe;
 
     for (pe = 0; pe < proc.nranks; ++pe) {
-        const int i = SHIFT(pe);
-
-        exchange_one_rkeys(rdp, r, i);
+        exchange_one_rkeys(r, pe);
     }
 }
 
 inline static void
-exchange_one_rkeys_and_heaps(pmix_pdata_t *rdp,
-                             pmix_pdata_t hdp[2],
-                             size_t r)
+exchange_one_rkeys_and_heaps(size_t r)
 {
     int pe;
 
-    NO_WARN_UNUSED(hdp);
-
     for (pe = 0; pe < proc.nranks; ++pe) {
-        const int i = SHIFT(pe);
-
-        exchange_one_rkeys(rdp, r, i);
+        exchange_one_rkeys(r, pe);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-        exchange_one_heap(hdp, r, i);
+        exchange_one_heap(r, pe);
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
     }  /* PE loop */
 }
@@ -266,40 +246,14 @@ void
 shmemc_pmi_exchange_rkeys_and_heaps(void)
 {
     size_t r;
-    pmix_pdata_t rd;
-    pmix_pdata_t *hdp;
-
-    PMIX_PDATA_CONSTRUCT(&rd);
-    PMIX_PDATA_CREATE(hdp, 2);
 
     /* global rkeys */
-    exchange_all_rkeys(&rd, 0);
+    exchange_all_rkeys(0);
 
     /* now everything else */
     for (r = 1; r < proc.comms.nregions; ++r) {
-        exchange_one_rkeys_and_heaps(&rd, hdp, r);
+        exchange_one_rkeys_and_heaps(r);
     }
-
-#ifndef ENABLE_ALIGNED_ADDRESSES
-    PMIX_PDATA_FREE(hdp, 2);
-#endif /* ! ENABLE_ALIGNED_ADDRESSES */
-}
-
-/* -------------------------------------------------------------- */
-
-inline static void
-make_waiter(void)
-{
-    int all = 0;
-
-    PMIX_INFO_CONSTRUCT(&waiter);
-    PMIX_INFO_LOAD(&waiter, PMIX_WAIT, &all, PMIX_INT);
-}
-
-inline static void
-release_waiter(void)
-{
-    return;                     /* nothing needed */
 }
 
 /* -------------------------------------------------------------- */
@@ -309,9 +263,29 @@ release_waiter(void)
  * with SHMEM/UCX
  */
 void
-shmemc_pmi_barrier_all(void)
+shmemc_pmi_barrier_all(bool collect_data)
 {
-    PMIx_Fence(NULL, 0, NULL, 0);
+    /* put all info out there */
+    ps = PMIx_Commit();
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx_Commit() failed: %s",
+                  PMIx_Error_string(ps));
+
+    if (collect_data) {
+        pmix_info_t cd;             /* collect data? */
+
+        PMIX_INFO_CONSTRUCT(&cd);
+        PMIX_INFO_LOAD(&cd, PMIX_COLLECT_DATA, &collect_data, PMIX_BOOL);
+        ps = PMIx_Fence(NULL, 0, &cd, 1);
+    }
+    else {
+        ps = PMIx_Fence(NULL, 0, NULL, 0);
+    }
+
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx_Fence() [collect=%s] failed: %s",
+                  collect_data ? "true" : "false",
+                  PMIx_Error_string(ps));
 }
 
 /*
@@ -321,8 +295,6 @@ shmemc_pmi_barrier_all(void)
 inline static pmix_status_t
 pmix_init_wrapper(pmix_proc_t *pp)
 {
-    pmix_status_t ps;
-
 #ifdef HAVE_PMIX_NO_INIT_HINTS
     ps = PMIx_Init(pp);
 #else
@@ -335,8 +307,6 @@ pmix_init_wrapper(pmix_proc_t *pp)
 inline static pmix_status_t
 pmix_finalize_wrapper(void)
 {
-    pmix_status_t ps;
-
 #ifdef HAVE_PMIX_NO_INIT_HINTS
     ps = PMIx_Finalize();
 #else
@@ -354,7 +324,6 @@ inline static void
 init_ranks(void)
 {
     pmix_value_t *vp;           /* holds things we get from PMIx */
-    pmix_status_t ps;
 
     /* we can get our own rank immediately */
     proc.rank = (int) my_proc.rank;
@@ -374,6 +343,8 @@ init_ranks(void)
 
     proc.nranks = (int) vp->data.uint32; /* number of ranks/PEs */
 
+    PMIX_VALUE_RELEASE(vp);
+
     ps = PMIx_Get(&wc_proc, PMIX_UNIV_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't get universe size (%s)",
@@ -391,13 +362,14 @@ init_ranks(void)
     shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
                   "PMIx PE rank %d is not valid",
                   proc.rank);
+
+    PMIX_VALUE_RELEASE(vp);
 }
 
 inline static void
 init_peers(void)
 {
-    pmix_value_t *vp;           /* holds things we get from PMIx */
-    pmix_status_t ps;
+    pmix_value_t *vp = NULL;    /* holds things we get from PMIx */
 
     /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
@@ -414,6 +386,8 @@ init_peers(void)
                   "PMIx PE's peer count %d bigger than program %d",
                   proc.npeers, proc.nranks);
 
+    PMIX_VALUE_RELEASE(vp);
+
     /* look for peers; leave empty if can't find them */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
     if (ps == PMIX_SUCCESS) {
@@ -423,23 +397,25 @@ init_peers(void)
         NO_WARN_UNUSED(n);
         shmemu_assert(s > 0, "Unable to parse peer PE numbers");
     }
+
+    PMIX_VALUE_RELEASE(vp);
 }
 
 void
 shmemc_pmi_client_init(void)
 {
-    pmix_status_t ps;
-
     ps = pmix_init_wrapper(&my_proc);
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't initialize (%s)",
                   PMIx_Error_string(ps));
 
+    /* init proc for exchange use */
+    PMIX_PROC_CONSTRUCT(&ex_proc);
+    strncpy(ex_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
+
     init_ranks();
     init_peers();
-
-    make_waiter();
 }
 
 /*
@@ -449,15 +425,11 @@ shmemc_pmi_client_init(void)
 void
 shmemc_pmi_client_finalize(void)
 {
-    pmix_status_t ps;
-
     ps = pmix_finalize_wrapper();
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't finalize (%s)",
                   PMIx_Error_string(ps));
-
-    release_waiter();
 
     /* clean up memory recording peer PEs */
     free(proc.peers);

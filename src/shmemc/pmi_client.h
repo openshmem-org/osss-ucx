@@ -9,7 +9,7 @@ void shmemc_pmi_client_init(void);
 void shmemc_pmi_client_finalize(void);
 void shmemc_pmi_client_abort(const char *msg, int status);
 
-void shmemc_pmi_barrier_all(void);
+void shmemc_pmi_barrier_all(bool collect_data);
 
 /*
  * pub

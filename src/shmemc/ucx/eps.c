@@ -1,3 +1,4 @@
+
 /* For license: see LICENSE file at top-level */
 
 #ifdef HAVE_CONFIG_H
