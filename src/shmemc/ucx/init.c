@@ -132,7 +132,8 @@ register_globals()
     globals->len  = len;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->mh);
-    shmemu_assert(s == UCS_OK, "can't map global memory");
+    shmemu_assert(s == UCS_OK, "can't map global memory: %s",
+                  ucs_status_string(s));
 
     /* don't need allocator, variables already there */
 }
@@ -143,7 +144,8 @@ deregister_globals(void)
     ucs_status_t s;
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->mh);
-    shmemu_assert(s == UCS_OK, "can't unmap global memory");
+    shmemu_assert(s == UCS_OK, "can't unmap global memory: %s",
+                  ucs_status_string(s));
 }
 
 /*
@@ -176,8 +178,8 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->mh);
     shmemu_assert(s == UCS_OK,
-                  "can't map memory for symmetric heap #%lu",
-                  hn);
+                  "can't map memory for symmetric heap #%lu: %s",
+                  hn, ucs_status_string(s));
 
     mip->id = hn;
 
@@ -193,8 +195,8 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
 
     s = ucp_mem_query(mip->mh, &attr);
     shmemu_assert(s == UCS_OK,
-                  "can't query extent of memory for symmetric heap #%lu",
-                  hn);
+                  "can't query extent of memory for symmetric heap #%lu: %s",
+                  hn, ucs_status_string(s));
 
     /* tell the PE what was given */
     mip->base = (uint64_t) attr.address;
@@ -215,8 +217,8 @@ deregister_symmetric_heap(mem_info_t *mip)
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->mh);
     shmemu_assert(s == UCS_OK,
-                  "can't unmap memory for symmetric heap #%lu",
-                  hn);
+                  "can't unmap memory for symmetric heap #%lu: %s",
+                  hn, ucs_status_string(s));
 }
 
 /*
@@ -364,7 +366,8 @@ ucx_init_ready(void)
     ucp_params_t pm;
 
     s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
-    shmemu_assert(s == UCS_OK, "can't read UCX config");
+    shmemu_assert(s == UCS_OK, "can't read UCX config: %s",
+                  ucs_status_string(s));
 
     pm.field_mask =
         UCP_PARAM_FIELD_FEATURES |
