@@ -331,11 +331,6 @@ init_ranks(void)
                   "PMIx PE rank %d must be >= 0",
                   proc.rank);
 
-    /* make a new proc to query things not linked to a specific rank */
-    PMIX_PROC_CONSTRUCT(&wc_proc);
-    STRNCPY_SAFE(wc_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
-    wc_proc.rank = PMIX_RANK_WILDCARD;
-
     ps = PMIx_Get(&wc_proc, PMIX_JOB_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't get program size (%s)",
@@ -414,7 +409,12 @@ shmemc_pmi_client_init(void)
                   "PMIx can't initialize (%s)",
                   PMIx_Error_string(ps));
 
-    /* init proc for exchange use */
+    /* make a new proc to query things not linked to a specific rank */
+    PMIX_PROC_CONSTRUCT(&wc_proc);
+    STRNCPY_SAFE(wc_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
+    wc_proc.rank = PMIX_RANK_WILDCARD;
+
+    /* init proc for exchange use, rank filled in as needed */
     PMIX_PROC_CONSTRUCT(&ex_proc);
     strncpy(ex_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
 
