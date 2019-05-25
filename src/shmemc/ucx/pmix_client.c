@@ -446,8 +446,6 @@ shmemc_pmi_client_finalize(void)
 void
 shmemc_pmi_client_abort(const char *msg, int status)
 {
-    pmix_status_t ps;
-
     ps = PMIx_Abort(status, msg, NULL, 0);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't abort (%s)",
