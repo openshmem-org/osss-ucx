@@ -79,7 +79,9 @@ publish_one_rkeys(size_t r)
     v.data.bo.size = rkey_len;
 
     ps = PMIx_Put(PMIX_GLOBAL, k1, &v);
-    shmemu_assert(ps == PMIX_SUCCESS, "can't publish rkey");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't publish rkey for memory region %lu",
+                  r);
 
     ucp_rkey_buffer_release(packed_rkey);
 }
@@ -104,9 +106,13 @@ publish_one_heap(size_t r)
     vs.data.size = proc.comms.regions[r].minfo[proc.rank].len;
 
     ps = PMIx_Put(PMIX_GLOBAL, k1, &vb);
-    shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap base");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't publish heap base for memory region %lu",
+                  r);
     ps = PMIx_Put(PMIX_GLOBAL, k2, &vs);
-    shmemu_assert(ps == PMIX_SUCCESS, "can't publish heap size");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't publish heap size for memory region %lu",
+                  r);
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
@@ -174,11 +180,13 @@ exchange_one_heap(size_t r, int pe)
 
     ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vpb);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch heap base from PE %d", pe);
+                  "can't fetch heap base for memory region %lu from PE %d",
+                  r, pe);
 
     ps = PMIx_Get(&ex_proc, k2, NULL, 0, &vps);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch heap size from PE %d", pe);
+                  "can't fetch heap size for memory region %lu from PE %d",
+                  r, pe);
 
     base = vpb->data.uint64;
     len  = vps->data.size;
@@ -204,14 +212,18 @@ exchange_one_rkeys(size_t r, int pe)
     snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
     ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vp);
-    shmemu_assert(ps == PMIX_SUCCESS, "can't fetch remote rkey");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "can't fetch remote rkey for memory region %lu from PE %d",
+                  r, pe);
 
     bop = & vp->data.bo;
 
     /* opaque rkey */
     proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
     shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,
-                  "couldn't allocate memory for rkey data");
+                  "can't allocate memory for rkey data"
+                  " for memory region %lu from PE %d",
+                  r, pe);
 
     memcpy(proc.comms.orks[r].rkeys[pe].data, bop->bytes, bop->size);
 
