@@ -25,6 +25,9 @@
 
 void shmemc_init(void);
 void shmemc_finalize(void);
+
+void shmemc_globalexit_init(void);
+void shmemc_globalexit_finalize(void);
 void shmemc_global_exit(int status);
 
 inline static int shmemc_my_pe(void) { return proc.rank; }
@@ -34,6 +37,8 @@ void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);
 int shmemc_addr_accessible(const void *addr, int pe);
 
+void shmemc_env_init(void);
+void shmemc_env_finalize(void);
 void shmemc_print_env_vars(FILE *stream, const char *prefix);
 
 /*
@@ -138,7 +143,7 @@ SHMEMC_CTX_DECL_FETCH_INC(64)
 
 #define SHMEMC_CTX_DECL_FETCH(_size)                        \
     uint64_t shmemc_ctx_fetch##_size(shmem_ctx_t ctx,       \
-                                     void *target, int pe);
+                                     const void *target, int pe);
 
 SHMEMC_CTX_DECL_FETCH(32)
 SHMEMC_CTX_DECL_FETCH(64)

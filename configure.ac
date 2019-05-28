@@ -172,7 +172,7 @@ AC_CONFIG_FILES([
 	man/man1/oshcc.1 man/man1/oshcxx.1 man/man1/oshfort.1
 	man/man1/oshrun.1 man/man1/osh_info.1 man/man1/osh_intro.1
 	include/Makefile
-	include/shmem/defs.h
+	include/shmem/defs_subst.h
 	include/shmem/defs.fh
 	pkgconfig/Makefile
 	pkgconfig/osss-ucx.pc

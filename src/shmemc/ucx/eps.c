@@ -1,3 +1,4 @@
+
 /* For license: see LICENSE file at top-level */
 
 #ifdef HAVE_CONFIG_H
@@ -7,6 +8,7 @@
 #include "state.h"
 #include "shmemc.h"
 #include "shmemu.h"
+#include "ucx/api.h"
 
 #include <stdlib.h>
 #include <string.h>

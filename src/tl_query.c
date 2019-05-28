@@ -6,6 +6,7 @@
 
 #include "shmemu.h"
 #include "state.h"
+#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_query_thread = pshmem_query_thread

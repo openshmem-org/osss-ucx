@@ -23,9 +23,17 @@ void shmemt_mutex_unlock(void);
         shmemt_mutex_unlock();                  \
     } while (0)
 
+#define SHMEMT_MUTEX_NOPROTECT(_fn)             \
+    do {                                        \
+        _fn;                                    \
+    } while (0)
+
 #else
 
+#define shmemt_init()
+
 #define SHMEMT_MUTEX_PROTECT(_fn) _fn
+#define SHMEMT_MUTEX_NOPROTECT(_fn) _fn
 
 #endif  /* ENABLE_THREADS */
 

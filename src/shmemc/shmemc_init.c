@@ -12,25 +12,31 @@
 void
 shmemc_init(void)
 {
+
     /* find launch info */
     shmemc_pmi_client_init();
 
-    /* launch and connect me to network resources */
+    /* launch and connect my heap to network resources */
     shmemc_ucx_init();
 
-    /* prep default context */
     shmemc_context_init_default();
 
-    /* exchange default worker info */
+    /* now heap registered... */
+
+    /* publish worker info, everyone has it and exchanges */
     shmemc_pmi_publish_worker();
+    shmemc_pmi_barrier_all(true);
     shmemc_pmi_exchange_workers();
 
-    /* exchange memory keys and (if needed) heap info */
+    /* publish rkeys (& maybe heaps), everyone has it and exchanges */
     shmemc_pmi_publish_rkeys_and_heaps();
+    shmemc_pmi_barrier_all(true);
     shmemc_pmi_exchange_rkeys_and_heaps();
 
-    /* populate endpoints of default context */
-    shmemc_ucx_make_eps(&shmemc_default_context);
+    shmemc_ucx_make_eps(defcp);
+
+    /* just sync, no collect */
+    shmemc_pmi_barrier_all(false);
 }
 
 void

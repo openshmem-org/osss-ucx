@@ -2,6 +2,8 @@
 
 #include "dlmalloc.h"
 
+#include "memalloc.h"
+
 /**
  * the memory area we manage in this unit.
  *

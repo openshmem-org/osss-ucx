@@ -4,6 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
 #include "state.h"
 
 #include <stdio.h>

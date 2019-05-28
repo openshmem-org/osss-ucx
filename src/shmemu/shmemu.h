@@ -70,9 +70,9 @@ double shmemu_timer(void);
  * number manipulators
  */
 char *shmemu_gethostname(void);
-int shmemu_parse_size(char *size_str, size_t *bytes_p);
+int shmemu_parse_size(const char *size_str, size_t *bytes_p);
 int shmemu_human_number(double bytes, char *buf, size_t buflen);
-char *shmemu_human_option(int v);
+const char *shmemu_human_option(int v);
 int shmemu_parse_csv(char *str, int **out, size_t *nout);
 
 /*
@@ -86,6 +86,7 @@ int shmemu_parse_csv(char *str, int **out, size_t *nout);
 #define LOG_MEMORY     "MEMORY"
 #define LOG_RMA        "RMA"
 #define LOG_FENCE      "FENCE"
+#define LOG_QUIET      "QUIET"
 #define LOG_HEAPS      "HEAPS"
 #define LOG_CONTEXTS   "CONTEXTS"
 #define LOG_RANKS      "RANKS"

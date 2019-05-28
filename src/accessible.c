@@ -7,6 +7,8 @@
 #include "shmemu.h"
 #include "shmemc.h"
 
+#include "shmem/api.h"
+
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_pe_accessible = pshmem_pe_accessible
 #define shmem_pe_accessible pshmem_pe_accessible

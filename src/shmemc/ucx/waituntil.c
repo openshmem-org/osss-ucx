@@ -23,11 +23,10 @@
     {                                                                   \
         shmemc_context_h ch = (shmemc_context_h) ctx;                   \
                                                                         \
-        do {                                                            \
-            shmemc_progress();                                          \
-            yielder();                                                  \
+        while (shmemc_ctx_test_##_opname##_size(ctx, var, value) == 0) { \
             ucp_worker_wait_mem(ch->w, var);                            \
-        } while (shmemc_ctx_test_##_opname##_size(ctx, var, value) == 0); \
+            yielder();                                                  \
+        }                                                               \
     }
 
 COMMS_CTX_WAIT_SIZE(16, eq)
@@ -66,13 +65,12 @@ COMMS_CTX_WAIT_SIZE(64, ge)
                                                                         \
         do {                                                            \
             for (i = 0; i < nelems; ++i) {                              \
-                shmemc_progress();                                      \
-                yielder();                                              \
                 if (shmemc_ctx_test_##_opname##_size(ctx,               \
                                                      &(vars[i]),        \
                                                      value) != 0) {     \
                     ++n;                                                \
                 }                                                       \
+                yielder();                                              \
             }                                                           \
         } while (n < nelems);                                           \
    }
@@ -117,9 +115,6 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
                 if ( (status != NULL) && ( status[i] != 0) ) {          \
                     continue;                                           \
                 }                                                       \
-                                                                        \
-                shmemc_progress();                                      \
-                yielder();                                              \
                 if (shmemc_ctx_test_##_opname##_size(ctx,               \
                                                      &(vars[i]),        \
                                                      value) != 0) {     \
@@ -127,6 +122,7 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
                     goto ret;                                           \
                     /* NOT REACHED */                                   \
                 }                                                       \
+                yielder();                                              \
             }                                                           \
         }                                                               \
                                                                         \
@@ -187,6 +183,7 @@ COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge, >=)
                 idxs[hits] = i;                                         \
                 ++hits;                                                 \
             }                                                           \
+            yielder();                                                  \
         }                                                               \
         return hits;                                                    \
     }

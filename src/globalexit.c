@@ -6,6 +6,7 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
+#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_global_exit = pshmem_global_exit

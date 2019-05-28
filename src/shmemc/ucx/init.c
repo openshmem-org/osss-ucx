@@ -101,11 +101,15 @@ contexts_table_finalize(void)
  */
 static mem_info_t *globals;
 
+/*
+ * from the executable
+ */
+extern char data_start;
+extern char end;
+
 inline static void
 register_globals()
 {
-    extern char data_start; /* from the executable */
-    extern char end; /* from the executable */
     uint64_t g_base = (uint64_t) &data_start;
     uint64_t g_end = (uint64_t) &end;
     const size_t len = g_end - g_base;
@@ -128,7 +132,8 @@ register_globals()
     globals->len  = len;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->mh);
-    shmemu_assert(s == UCS_OK, "can't map global memory");
+    shmemu_assert(s == UCS_OK, "can't map global memory: %s",
+                  ucs_status_string(s));
 
     /* don't need allocator, variables already there */
 }
@@ -139,7 +144,8 @@ deregister_globals(void)
     ucs_status_t s;
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->mh);
-    shmemu_assert(s == UCS_OK, "can't unmap global memory");
+    shmemu_assert(s == UCS_OK, "can't unmap global memory: %s",
+                  ucs_status_string(s));
 }
 
 /*
@@ -172,8 +178,8 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->mh);
     shmemu_assert(s == UCS_OK,
-                  "can't map memory for symmetric heap #%lu",
-                  hn);
+                  "can't map memory for symmetric heap #%lu: %s",
+                  hn, ucs_status_string(s));
 
     mip->id = hn;
 
@@ -189,8 +195,8 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
 
     s = ucp_mem_query(mip->mh, &attr);
     shmemu_assert(s == UCS_OK,
-                  "can't query extent of memory for symmetric heap #%lu",
-                  hn);
+                  "can't query extent of memory for symmetric heap #%lu: %s",
+                  hn, ucs_status_string(s));
 
     /* tell the PE what was given */
     mip->base = (uint64_t) attr.address;
@@ -211,8 +217,8 @@ deregister_symmetric_heap(mem_info_t *mip)
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->mh);
     shmemu_assert(s == UCS_OK,
-                  "can't unmap memory for symmetric heap #%lu",
-                  hn);
+                  "can't unmap memory for symmetric heap #%lu: %s",
+                  hn, ucs_status_string(s));
 }
 
 /*
@@ -360,7 +366,8 @@ ucx_init_ready(void)
     ucp_params_t pm;
 
     s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
-    shmemu_assert(s == UCS_OK, "can't read UCX config");
+    shmemu_assert(s == UCS_OK, "can't read UCX config: %s",
+                  ucs_status_string(s));
 
     pm.field_mask =
         UCP_PARAM_FIELD_FEATURES |
@@ -370,15 +377,22 @@ ucx_init_ready(void)
     pm.features =
         UCP_FEATURE_RMA      |  /* put/get */
         UCP_FEATURE_AMO32    |  /* 32-bit atomics */
-        UCP_FEATURE_AMO64    |  /* 64-bit atomics */
-        UCP_FEATURE_WAKEUP;     /* events (not used, but looking ahead) */
+        UCP_FEATURE_AMO64;      /* 64-bit atomics */
 
     pm.mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
 
     pm.estimated_num_eps = proc.nranks;
 
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
-    shmemu_assert(s == UCS_OK, "can't initialize UCX");
+    if (s != UCS_OK) {
+        shmemu_fatal("can't initialize UCX: %s",
+                     ucs_status_string(s));
+    }
+
+    /* sanity check that we got a context */
+    if (proc.comms.ucx_ctxt == NULL) {
+        shmemu_fatal("UCX was initialized, but context is nil");
+    }
 }
 
 inline static void

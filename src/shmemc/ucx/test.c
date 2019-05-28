@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "shmemc.h"
 
 /*
  * return 1 if the memory location changed w.r.t "value", otherwise 0
@@ -18,7 +19,13 @@
     {                                                                   \
         NO_WARN_UNUSED(ctx);                                            \
                                                                         \
-        return ( (*var) _op (value) ) ? 1 : 0;                          \
+        int ret = ( (*var) _op (value) ) ? 1 : 0;                       \
+                                                                        \
+        if (ret == 0) {                                                 \
+            shmemc_progress();                                          \
+        }                                                               \
+                                                                        \
+        return ret;                                                     \
     }
 
 COMMS_CTX_TEST_SIZE(16, eq, ==)

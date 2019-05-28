@@ -20,5 +20,6 @@
 
 void progress_init(void);
 void progress_finalize(void);
+void progress_set_delay(long newdelay);
 
 #endif  /* ! _SHMEM_PROGRESS_H 1 */

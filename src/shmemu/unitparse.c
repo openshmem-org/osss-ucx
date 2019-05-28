@@ -4,6 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemu.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -16,7 +18,7 @@
  *
  */
 
-static char *units_string = "KMGTPE";
+static const char units_string[] = "KMGTPE";
 static const size_t multiplier = 1024;
 
 /**
@@ -29,7 +31,7 @@ static int
 parse_unit(char u, size_t *sp)
 {
     int foundit = 0;
-    char *usp = units_string;
+    char *usp = (char *) units_string;
     size_t bytes = multiplier;
 
     u = toupper(u);
@@ -62,7 +64,7 @@ parse_unit(char u, size_t *sp)
  */
 
 int
-shmemu_parse_size(char *size_str, size_t *bytes_p)
+shmemu_parse_size(const char *size_str, size_t *bytes_p)
 {
     char *units;                /* scaling factor if given */
     double bytes;
@@ -102,7 +104,7 @@ shmemu_parse_size(char *size_str, size_t *bytes_p)
 int
 shmemu_human_number(double bytes, char *buf, size_t buflen)
 {
-    char *walk = units_string;
+    char *walk = (char *) units_string;
     unsigned wc = 0;            /* walk count */
     size_t divvy = multiplier;
     double b = bytes;
@@ -134,7 +136,7 @@ shmemu_human_number(double bytes, char *buf, size_t buflen)
  * human-readable option setting
  */
 
-char *
+const char *
 shmemu_human_option(int v)
 {
     return (v == 0) ? "no" : "yes";

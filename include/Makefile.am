@@ -2,6 +2,7 @@
 
 SHMEM_HDRS             =  \
 				shmem/defs.h \
+				shmem/defs_subst.h \
 				shmem/depr.h \
 				shmem/cache.h \
 				shmem/api.h \

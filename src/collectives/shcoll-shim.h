@@ -7,6 +7,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmem/api.h"
+
 #include <shcoll.h>
 
 #ifdef ENABLE_PSHMEM
@@ -56,8 +58,8 @@
     }
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_collect64 = pshmem_collect64
-#define shmem_collect64 pshmem_collect64
+#pragma weak shmem_collect32 = pshmem_collect32
+#define shmem_collect32 pshmem_collect32
 #pragma weak shmem_collect64 = pshmem_collect64
 #define shmem_collect64 pshmem_collect64
 #endif /* ENABLE_PSHMEM */

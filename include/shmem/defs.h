@@ -3,6 +3,8 @@
 #ifndef _SHMEM_DEFINES_H
 #define _SHMEM_DEFINES_H 1
 
+#include "shmem/defs_subst.h"
+
 #include <sys/types.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -53,11 +55,6 @@
 #else
 # define _WUR
 #endif
-
-#define SHMEM_MAJOR_VERSION @SHMEM_MAJOR_VERSION@
-#define SHMEM_MINOR_VERSION @SHMEM_MINOR_VERSION@
-#define SHMEM_MAX_NAME_LEN @SHMEM_MAX_NAME_LEN@
-#define SHMEM_VENDOR_STRING "@SHMEM_VENDOR_STRING@"
 
 enum shmem_fortran_errors {
     SHMEM_MALLOC_OK                  = (0L),

@@ -66,6 +66,7 @@ finalize_helper(void)
 
     progress_finalize();
     shmemc_finalize();
+    /* don't need a shmemt_finalize() */
     shmemu_finalize();
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -85,6 +86,33 @@ init_thread_helper(int requested, int *provided)
     if (proc.refcount > 0) {
         return 0;
     }
+
+    /* for now */
+    switch(requested) {
+    case SHMEM_THREAD_SINGLE:
+        break;
+    case SHMEM_THREAD_FUNNELED:
+        break;
+    case SHMEM_THREAD_SERIALIZED:
+        break;
+    case SHMEM_THREAD_MULTIPLE:
+        break;
+    default:
+        logger(LOG_FATAL,
+               "unknown thread level %d requested",
+               requested
+               );
+        /* NOT REACHED */
+        break;
+    }
+
+    /* save and return thread level */
+    proc.td.osh_tl = requested;
+    if (provided != NULL) {
+        *provided = proc.td.osh_tl;
+    }
+
+    proc.td.invoking_thread = threadwrap_thread_id();
 
     /* set up comms, read environment */
     shmemc_init();
@@ -109,33 +137,6 @@ init_thread_helper(int requested, int *provided)
     proc.status = SHMEMC_PE_RUNNING;
 
     ++proc.refcount;
-
-    /* for now */
-    switch(requested) {
-    case SHMEM_THREAD_SINGLE:
-        break;
-    case SHMEM_THREAD_FUNNELED:
-        break;
-    case SHMEM_THREAD_SERIALIZED:
-        break;
-    case SHMEM_THREAD_MULTIPLE:
-        break;
-    default:
-        logger(LOG_FATAL,
-               "unknown thread level %d requested",
-               requested
-               );
-        /* NOT REACHED */
-        break;
-    }
-
-    /* save and return */
-    proc.td.osh_tl = requested;
-    if (provided != NULL) {
-        *provided = proc.td.osh_tl;
-    }
-
-    proc.td.invoking_thread = threadwrap_thread_id();
 
     if (shmemc_my_pe() == 0) {
         if (proc.env.print_version) {

@@ -8,6 +8,7 @@
 
 #include "shmemu.h"
 #include "shmemc.h"
+#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_set_lock = pshmem_set_lock
@@ -23,7 +24,7 @@ shmem_set_lock(long *lock)
 {
     logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
-    SHMEMT_MUTEX_PROTECT(shmemc_set_lock(lock));
+    SHMEMT_MUTEX_NOPROTECT(shmemc_set_lock(lock));
 }
 
 void
@@ -31,7 +32,7 @@ shmem_clear_lock(long *lock)
 {
     logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
-    SHMEMT_MUTEX_PROTECT(shmemc_clear_lock(lock));
+    SHMEMT_MUTEX_NOPROTECT(shmemc_clear_lock(lock));
 }
 
 int
@@ -41,7 +42,7 @@ shmem_test_lock(long *lock)
 
     logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
-    SHMEMT_MUTEX_PROTECT(s = shmemc_test_lock(lock));
+    SHMEMT_MUTEX_NOPROTECT(s = shmemc_test_lock(lock));
 
     return s;
 }

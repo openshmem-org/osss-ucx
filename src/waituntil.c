@@ -5,10 +5,9 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem_mutex.h"
-
 #include "shmemu.h"
 #include "shmemc.h"
-#include "shmem/defs.h"
+#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_short_wait_until = pshmem_short_wait_until
@@ -50,7 +49,7 @@
                                  int cmp,                               \
                                  _type cmp_value)                       \
     {                                                                   \
-        SHMEMT_MUTEX_PROTECT                                            \
+        SHMEMT_MUTEX_NOPROTECT                                          \
             (                                                           \
              switch (cmp) {                                             \
              case SHMEM_CMP_EQ:                                         \

@@ -6,6 +6,7 @@
 
 #include "state.h"
 #include "shmemu.h"
+#include "shmemc.h"
 #include "boolean.h"
 
 #include <stdio.h>
