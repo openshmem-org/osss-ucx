@@ -81,6 +81,12 @@ Name of program to use for underlying launcher.  Default behavior is
 to search for PRRTE or a PMIx-aware MPI launcher.  Can also be set by
 configure.
 .RE
+.RS 4
+.IP "SHMEM_PROGRESS_THREADS (default: unset)"
+If we need extra progress for transports that don't provide it,
+activate progress threads on "all" PEs, or on named ones, e.g. "0",
+"1-3", "2,4,6".
+.RE
 .\"
 .RE
 .\"
