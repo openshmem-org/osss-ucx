@@ -13,6 +13,10 @@ compile-time options, build system, supported features.
 only show the version of this OpenSHMEM pacakage.
 .IP "-h | --help"
 show a usage message summarizing these options.
+.SH NOTES
+.LP
+This program is not part of the OpenSHMEM specification.  It is
+supplied as part of the Reference Library for convenience.
 .SH SEE ALSO
 osh_intro(1).
 .SH OPENSHMEM
