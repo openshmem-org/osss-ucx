@@ -151,14 +151,17 @@ shmemc_pmi_exchange_workers(void)
         ex_proc.rank = pe;
 
         ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vp);
-        shmemu_assert(ps == PMIX_SUCCESS, "can't find remote worker blob");
+        shmemu_assert(ps == PMIX_SUCCESS,
+                      "can't find remote worker blob for PE %d",
+                      pe);
 
         bop = & vp->data.bo;
 
         /* save published worker */
         proc.comms.xchg_wrkr_info[pe].buf = (char *) malloc(bop->size);
         shmemu_assert(proc.comms.xchg_wrkr_info[pe].buf != NULL,
-                      "can't allocate memory for remote workers");
+                      "can't allocate memory for remote workers for PE %d",
+                      pe);
         memcpy(proc.comms.xchg_wrkr_info[pe].buf, bop->bytes, bop->size);
     }
     PMIX_VALUE_RELEASE(vp);
@@ -345,7 +348,7 @@ init_ranks(void)
 
     ps = PMIx_Get(&wc_proc, PMIX_JOB_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't get program size (%s)",
+                  "PMIx can't get program size: %s",
                   PMIx_Error_string(ps));
 
     proc.nranks = (int) vp->data.uint32; /* number of ranks/PEs */
@@ -354,21 +357,21 @@ init_ranks(void)
 
     ps = PMIx_Get(&wc_proc, PMIX_UNIV_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't get universe size (%s)",
+                  "PMIx can't get universe size: %s",
                   PMIx_Error_string(ps));
 
     proc.maxranks = (int) vp->data.uint32; /* total ranks available */
 
     /* is the world a sane size? */
     shmemu_assert(proc.nranks > 0,
-                  "PMIx count of PE ranks %d is not valid",
+                  "PMIx PE count is %d, but must be > 0",
                   proc.nranks);
     shmemu_assert(proc.maxranks > 0,
-                  "PMIx PE universe size %d is not valid",
+                  "PMIx universe size is %d, but must be > 0",
                   proc.maxranks);
     shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
-                  "PMIx PE rank %d is not valid",
-                  proc.rank);
+                  "PMIx PE rank %d is not in range [0...%d)",
+                  proc.rank, proc.nranks);
 
     PMIX_VALUE_RELEASE(vp);
 }
@@ -381,7 +384,7 @@ init_peers(void)
     /* what's on this node? */
     ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't find PE's peers (%s)",
+                  "PMIx can't look up PE's peers: %s",
                   PMIx_Error_string(ps));
 
     proc.npeers = (int) vp->data.uint32;
@@ -390,7 +393,7 @@ init_peers(void)
                   "PMIx PE's peer count %d must be >= 0",
                   proc.npeers);
     shmemu_assert(proc.npeers <= proc.nranks,
-                  "PMIx PE's peer count %d bigger than program %d",
+                  "PMIx PE's peer count %d bigger than program size %d",
                   proc.npeers, proc.nranks);
 
     PMIX_VALUE_RELEASE(vp);
@@ -418,7 +421,7 @@ shmemc_pmi_client_init(void)
     ps = pmix_init_wrapper(&my_proc);
 
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't initialize (%s)",
+                  "PMIx can't initialize: %s",
                   PMIx_Error_string(ps));
 
     /* make a new proc to query things not linked to a specific rank */
@@ -444,7 +447,7 @@ shmemc_pmi_client_finalize(void)
     ps = pmix_finalize_wrapper();
 
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't finalize (%s)",
+                  "PMIx can't finalize: %s",
                   PMIx_Error_string(ps));
 
     /* clean up memory recording peer PEs */
@@ -460,6 +463,6 @@ shmemc_pmi_client_abort(const char *msg, int status)
 {
     ps = PMIx_Abort(status, msg, NULL, 0);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't abort (%s)",
+                  "PMIx can't abort: %s",
                   PMIx_Error_string(ps));
 }
