@@ -104,8 +104,8 @@ runs the ping-pong code from
 \f(CRhttps://github.com/openshmem-org/openshmem-examples\fP
 .RE
 .LP
-on 4 processing elements, and passes the arguments "-e" and "8192"
-through to the OpenSHMEM program.
+on 4 processing elements, and passes the command-line arguments "-e"
+and "8192" through to the OpenSHMEM program.
 .SH NOTES
 .LP
 The OpenSHMEM specification does not say anything normative about how
