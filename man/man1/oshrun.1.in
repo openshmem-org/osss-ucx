@@ -84,8 +84,9 @@ configure.
 .RS 4
 .IP "SHMEM_PROGRESS_THREADS (default: unset)"
 If we need extra progress for transports that don't provide it,
-activate progress threads on "all" PEs, or on named ones, e.g. "0",
-"1-3", "2,4,6".
+activate progress threads on the named PEs, e.g. "0", "1-3", "2,4,6";
+or on all PEs if the variable's (case-insensitive) value is "y[es]" or
+"a[ll]".
 .RE
 .\"
 .RE
@@ -103,8 +104,8 @@ runs the ping-pong code from
 \f(CRhttps://github.com/openshmem-org/openshmem-examples\fP
 .RE
 .LP
-on 4 processing elements, and passes the arguments "-e" and "8192"
-through to the OpenSHMEM program.
+on 4 processing elements, and passes the command-line arguments "-e"
+and "8192" through to the OpenSHMEM program.
 .SH NOTES
 .LP
 The OpenSHMEM specification does not say anything normative about how

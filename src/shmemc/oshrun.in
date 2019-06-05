@@ -157,10 +157,10 @@ sub zap {                       # clean up after signal
   my $s;
 
   for (1 .. 2) {
-    kill TERM => $pid;
-    sleep 1;
+    debug("launch: signaling termination to $pid");
 
-    debug("launch: signalled termination to $pid");
+    kill TERM => $pid;
+    sleep 3;
 
     $s = kill 0 => $pid;
     if ($s == 1) {              # got it!

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
 
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 199309
@@ -84,15 +85,19 @@ check_if_progress_required(void)
     int *res = NULL;
     size_t nres;
     int s;
-    int ret = 0;
     char *copy;
+    char first;
+    int ret = 0;
 
     if (proc.env.progress_threads == NULL) {
         goto out;
         /* NOT REACHED */
     }
 
-    if (strncasecmp(proc.env.progress_threads, "all", 3) == 0) {
+    first = tolower(*proc.env.progress_threads);
+
+    /* something like "yes" or "all"? */
+    if ( (first == 'y') || (first == 'a') ) {
         ret = 1;
         goto out;
         /* NOT REACHED */
