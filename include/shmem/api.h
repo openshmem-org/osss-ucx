@@ -3408,6 +3408,7 @@ extern "C"
              int *: shmem_int_wait,                             \
              long *: shmem_long_wait,                           \
              long long *: shmem_longlong_wait,                  \
+             unsigned short *: shmem_ushort_wait,               \
              unsigned int *: shmem_uint_wait,                   \
              unsigned long *: shmem_ulong_wait,                 \
              unsigned long long *: shmem_ulonglong_wait         \
@@ -3420,6 +3421,7 @@ extern "C"
              int *: shmem_int_wait_until,                       \
              long *: shmem_long_wait_until,                     \
              long long *: shmem_longlong_wait_until,            \
+             unsigned short *: shmem_ushort_wait_until,         \
              unsigned int *: shmem_uint_wait_until,             \
              unsigned long *: shmem_ulong_wait_until,           \
              unsigned long long *: shmem_ulonglong_wait_until   \
@@ -3432,6 +3434,7 @@ extern "C"
              int *: shmem_int_test,                             \
              long *: shmem_long_test,                           \
              long long *: shmem_longlong_test,                  \
+             unsigned short *: shmem_ushort_test,               \
              unsigned int *: shmem_uint_test,                   \
              unsigned long *: shmem_ulong_test,                 \
              unsigned long long *: shmem_ulonglong_test         \
