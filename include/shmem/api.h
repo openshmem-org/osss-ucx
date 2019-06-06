@@ -3325,54 +3325,54 @@ extern "C"
              )(__VA_ARGS__)
 
 
-    /* see \ref shmem_long_fetch() */
-#define shmem_fetch(...)                                                \
+    /* see \ref shmem_long_atomic_fetch() */
+#define shmem_atomic_fetch(...)                                         \
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
              shmem_ctx_t:                                               \
              _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_fetch,                   \
-                      double *: shmem_ctx_double_fetch,                 \
-                      int *: shmem_ctx_int_fetch,                       \
-                      long *: shmem_ctx_long_fetch,                     \
-                      long long *: shmem_ctx_longlong_fetch,            \
-                      unsigned int *: shmem_ctx_uint_fetch,             \
-                      unsigned long *: shmem_ctx_ulong_fetch,           \
-                      unsigned long long *: shmem_ctx_ulonglong_fetch,  \
+                      float *: shmem_ctx_float_atomic_fetch,            \
+                      double *: shmem_ctx_double_atomic_fetch,          \
+                      int *: shmem_ctx_int_atomic_fetch,                \
+                      long *: shmem_ctx_long_atomic_fetch,              \
+                      long long *: shmem_ctx_longlong_atomic_fetch,     \
+                      unsigned int *: shmem_ctx_uint_atomic_fetch,      \
+                      unsigned long *: shmem_ctx_ulong_atomic_fetch,    \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_fetch, \
                       default: shmem_atomic_ignore                      \
                       ),                                                \
-             float *: shmem_float_fetch,                                \
-             double *: shmem_double_fetch,                              \
-             int *: shmem_int_fetch,                                    \
-             long *: shmem_long_fetch,                                  \
-             long long *: shmem_longlong_fetch,                         \
-             unsigned int *: shmem_uint_fetch,                          \
-             unsigned long *: shmem_ulong_fetch,                        \
-             unsigned long long *: shmem_ulonglong_fetch                \
+             float *: shmem_float_atomic_fetch,                         \
+             double *: shmem_double_atomic_fetch,                       \
+             int *: shmem_int_atomic_fetch,                             \
+             long *: shmem_long_atomic_fetch,                           \
+             long long *: shmem_longlong_atomic_fetch,                  \
+             unsigned int *: shmem_uint_atomic_fetch,                   \
+             unsigned long *: shmem_ulong_atomic_fetch,                 \
+             unsigned long long *: shmem_ulonglong_atomic_fetch         \
              )(__VA_ARGS__)
 
-    /* see \ref shmem_long_set() */
-#define shmem_set(...)                                                  \
+    /* see \ref shmem_long_atomic_set() */
+#define shmem_atomic_set(...)                                           \
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
              shmem_ctx_t:                                               \
              _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_set,                     \
-                      double *: shmem_ctx_double_set,                   \
-                      int *: shmem_ctx_int_set,                         \
-                      long *: shmem_ctx_long_set,                       \
-                      long long *: shmem_ctx_longlong_set,              \
-                      unsigned int *: shmem_ctx_uint_set,               \
-                      unsigned long *: shmem_ctx_ulong_set,             \
-                      unsigned long long *: shmem_ctx_ulonglong_set,    \
+                      float *: shmem_ctx_float_atomic_set,              \
+                      double *: shmem_ctx_double_atomic_set,            \
+                      int *: shmem_ctx_int_atomic_set,                  \
+                      long *: shmem_ctx_long_atomic_set,                \
+                      long long *: shmem_ctx_longlong_atomic_set,       \
+                      unsigned int *: shmem_ctx_uint_atomic_set,        \
+                      unsigned long *: shmem_ctx_ulong_atomic_set,      \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_set, \
                       default: shmem_atomic_ignore                      \
                       ),                                                \
-             float *: shmem_float_set,                                  \
-             double *: shmem_double_set,                                \
-             int *: shmem_int_set,                                      \
-             long *: shmem_long_set,                                    \
-             long long *: shmem_longlong_set,                           \
-             unsigned int *: shmem_uint_set,                            \
-             unsigned long *: shmem_ulong_set,                          \
-             unsigned long long *: shmem_ulonglong_set                  \
+             float *: shmem_float_atomic_set,                           \
+             double *: shmem_double_atomic_set,                         \
+             int *: shmem_int_atomic_set,                               \
+             long *: shmem_long_atomic_set,                             \
+             long long *: shmem_longlong_atomic_set,                    \
+             unsigned int *: shmem_uint_atomic_set,                     \
+             unsigned long *: shmem_ulong_atomic_set,                   \
+             unsigned long long *: shmem_ulonglong_atomic_set           \
              )(__VA_ARGS__)
 
 /* waits and test have no context-based counterparts */
