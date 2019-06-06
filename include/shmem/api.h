@@ -3315,7 +3315,7 @@ extern "C"
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
              shmem_ctx_t:                                               \
              _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int32_t *: shmem_ct_int32_atomic_or,              \
+                      int32_t *: shmem_ctx_int32_atomic_or,             \
                       int64_t *: shmem_ctx_int64_atomic_or,             \
                       unsigned int *: shmem_ctx_uint_atomic_or,         \
                       unsigned long *: shmem_ctx_ulong_atomic_or,       \
