@@ -9,16 +9,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/*
- * C and C++ do complex numbers differently
- *
- */
-#ifdef __cplusplus
-# include <complex>
-# define COMPLEXIFY(T) std::complex<T>
-#else  /* _cplusplus */
+#include <complex.h>
 # define COMPLEXIFY(T) T _Complex
-#endif  /* __cplusplus */
 
 /*
  * does compiler support C11 ?
