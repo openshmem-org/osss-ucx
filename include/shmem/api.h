@@ -3194,12 +3194,16 @@ extern "C"
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
              shmem_ctx_t:                                               \
              _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
+                      int32_t *: shmem_ctx_int32_atomic_fetch_and,      \
+                      int64_t *: shmem_ctx_int64_atomic_fetch_and,      \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_and,  \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_and, \
                       unsigned long long *:                             \
                       shmem_ctx_ulonglong_atomic_fetch_and,             \
                       default: shmem_atomic_ignore                      \
                       ),                                                \
+             int32_t *: shmem_int32_atomic_fetch_and,                   \
+             int64_t *: shmem_int64_atomic_fetch_and,                   \
              unsigned int *: shmem_uint_atomic_fetch_and,               \
              unsigned long *: shmem_ulong_atomic_fetch_and,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_and     \
@@ -3210,12 +3214,16 @@ extern "C"
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
              shmem_ctx_t:                                               \
              _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
+                      int32_t *: shmem_ctx_int32_atomic_fetch_or,       \
+                      int64_t *: shmem_ctx_int64_atomic_fetch_or,       \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_or,   \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_or, \
                       unsigned long long *:                             \
                       shmem_ctx_ulonglong_atomic_fetch_or,              \
                       default: shmem_atomic_ignore                      \
                       ),                                                \
+             int32_t *: shmem_int32_atomic_fetch_or,                    \
+             int64_t *: shmem_int64_atomic_fetch_or,                    \
              unsigned int *: shmem_uint_atomic_fetch_or,                \
              unsigned long *: shmem_ulong_atomic_fetch_or,              \
              unsigned long long *: shmem_ulonglong_atomic_fetch_or      \
@@ -3226,12 +3234,16 @@ extern "C"
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
              shmem_ctx_t:                                               \
              _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
+                      int32_t *: shmem_ctx_int32_atomic_fetch_xor,      \
+                      int64_t *: shmem_ctx_int64_atomic_fetch_xor,      \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_xor,  \
                       unsigned long *: shmem_ctx_ulong_atomic_fetch_xor, \
                       unsigned long long *:                             \
                       shmem_ctx_ulonglong_atomic_fetch_xor,             \
                       default: shmem_atomic_ignore                      \
                       ),                                                \
+             int32_t *: shmem_int32_atomic_fetch_xor,                   \
+             int64_t *: shmem_int64_atomic_fetch_xor,                   \
              unsigned int *: shmem_uint_atomic_fetch_xor,               \
              unsigned long *: shmem_ulong_atomic_fetch_xor,             \
              unsigned long long *: shmem_ulonglong_atomic_fetch_xor     \
