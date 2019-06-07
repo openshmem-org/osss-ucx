@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemc.h"
+#include "pmi_client.h"
 
 #include <unistd.h>
 
@@ -24,17 +25,8 @@ shmemc_globalexit_finalize(void)
 {
 }
 
-#ifdef HAVE__EXIT
-# define EXIT _exit
-#elif defined(HAVE_EXIT)
-# define EXIT exit
-#else
-# error "no exit() routine found"
-#endif
-
 void
 shmemc_global_exit(int status)
 {
-    /* just forcing an exit locally should abort the PMIx launcher */
-    EXIT(status);
+    shmemc_pmi_client_abort("global_exit", status);
 }
