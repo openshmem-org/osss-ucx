@@ -501,7 +501,32 @@ init_event_handler(void)
     while (active == -1) {}
 
     shmemu_assert(active == 0,
-                  "global eixt event handler registration failed");
+                  "global exit event handler registration failed");
+}
+
+/*
+ * crunch out if something fatal happens
+ */
+
+void
+shmemc_pmi_client_abort(const char *msg, int status)
+{
+    pmix_info_t si;
+
+    NO_WARN_UNUSED(msg);
+
+    PMIX_INFO_CONSTRUCT(&si);
+    PMIX_INFO_LOAD(&si, PMIX_EXIT_CODE, &status, PMIX_INT);
+
+    ps = PMIx_Notify_event(PMIX_ERR_PROC_REQUESTED_ABORT,
+                           &my_proc,
+                           PMIX_RANGE_GLOBAL,
+                           &si, 1,
+                           NULL, NULL);
+
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't notify global exit: %s",
+                  PMIx_Error_string(ps));
 }
 
 /*
@@ -547,29 +572,4 @@ shmemc_pmi_client_init(void)
     init_peers();
 
     init_event_handler();
-}
-
-/*
- * crunch out if something fatal happens
- */
-
-void
-shmemc_pmi_client_abort(const char *msg, int status)
-{
-    pmix_info_t si;
-
-    NO_WARN_UNUSED(msg);
-
-    PMIX_INFO_CONSTRUCT(&si);
-    PMIX_INFO_LOAD(&si, PMIX_EXIT_CODE, &status, PMIX_INT);
-
-    ps = PMIx_Notify_event(PMIX_ERR_PROC_REQUESTED_ABORT,
-                           &my_proc,
-                           PMIX_RANGE_GLOBAL,
-                           &si, 1,
-                           NULL, NULL);
-
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't notify global exit: %s",
-                  PMIx_Error_string(ps));
 }
