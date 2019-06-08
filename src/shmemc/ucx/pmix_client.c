@@ -415,6 +415,141 @@ init_peers(void)
     PMIX_VALUE_RELEASE(vp);
 }
 
+/*
+ * -- register event handler for global exit --
+ */
+
+/*
+ * track completion of registration
+ */
+static volatile int active;
+
+#ifdef HAVE__EXIT
+# define EXIT _exit
+#elif defined(HAVE_EXIT)
+# define EXIT exit
+#else
+# error "no exit() routine found"
+#endif
+
+/*
+ * called when global exit happens
+ */
+static void
+notification_fn(size_t evhdlr_registration_id,
+                pmix_status_t status,
+                const pmix_proc_t *source,
+                pmix_info_t info[], size_t ninfo,
+                pmix_info_t results[], size_t nresults,
+                pmix_event_notification_cbfunc_fn_t cbfunc,
+                void *cbdata)
+{
+    /* unpack passed PMIx info for exit code */
+    const int ret = info[0].value.data.integer;
+
+    NO_WARN_UNUSED(evhdlr_registration_id);
+    NO_WARN_UNUSED(status);
+    NO_WARN_UNUSED(source);
+    NO_WARN_UNUSED(ninfo);
+    NO_WARN_UNUSED(results); NO_WARN_UNUSED(nresults);
+
+    ps = PMIx_Abort(ret, "global_exit", NULL, 0);
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't abort: %s",
+                  PMIx_Error_string(ps));
+
+    if (cbfunc != NULL) {
+        cbfunc(PMIX_EVENT_ACTION_COMPLETE,
+               NULL, 0,
+               NULL, NULL,
+               cbdata);
+    }
+
+    EXIT(ret);
+}
+
+/*
+ * registration happened
+ */
+static void
+evhandler_reg_callbk(pmix_status_t status,
+                     size_t evhandler_ref,
+                     void *cbdata)
+{
+    volatile int *act = (volatile int *) cbdata;
+
+    NO_WARN_UNUSED(evhandler_ref);
+
+    shmemu_assert(status == PMIX_SUCCESS,
+                  "couldn't register event handler for global exit");
+
+    *act = status;
+}
+
+static void
+init_event_handler(void)
+{
+    pmix_status_t sp = PMIX_ERR_PROC_REQUESTED_ABORT;
+
+    active = -1;
+    PMIx_Register_event_handler(&sp, 1,
+                                NULL, 0,
+                                notification_fn,
+                                evhandler_reg_callbk,
+                                (void *) &active);
+
+    while (active == -1) {}
+
+    shmemu_assert(active == 0,
+                  "global exit event handler registration failed");
+}
+
+/*
+ * crunch out if something fatal happens
+ */
+
+void
+shmemc_pmi_client_abort(const char *msg, int status)
+{
+    pmix_info_t si;
+
+    NO_WARN_UNUSED(msg);
+
+    PMIX_INFO_CONSTRUCT(&si);
+    PMIX_INFO_LOAD(&si, PMIX_EXIT_CODE, &status, PMIX_INT);
+
+    ps = PMIx_Notify_event(PMIX_ERR_PROC_REQUESTED_ABORT,
+                           &my_proc,
+                           PMIX_RANGE_GLOBAL,
+                           &si, 1,
+                           NULL, NULL);
+
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't notify global exit: %s",
+                  PMIx_Error_string(ps));
+}
+
+/*
+ * shut down PMIx client-side cleanly
+ */
+
+void
+shmemc_pmi_client_finalize(void)
+{
+    ps = pmix_finalize_wrapper();
+
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "PMIx can't finalize: %s",
+                  PMIx_Error_string(ps));
+
+    /* clean up memory recording peer PEs */
+    free(proc.peers);
+}
+
+/*
+ * fire up PMIx client layer
+ */
+
 void
 shmemc_pmi_client_init(void)
 {
@@ -435,34 +570,6 @@ shmemc_pmi_client_init(void)
 
     init_ranks();
     init_peers();
-}
 
-/*
- * shut down PMIx client-side
- */
-
-void
-shmemc_pmi_client_finalize(void)
-{
-    ps = pmix_finalize_wrapper();
-
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't finalize: %s",
-                  PMIx_Error_string(ps));
-
-    /* clean up memory recording peer PEs */
-    free(proc.peers);
-}
-
-/*
- * crunch out if fatal error
- */
-
-void
-shmemc_pmi_client_abort(const char *msg, int status)
-{
-    ps = PMIx_Abort(status, msg, NULL, 0);
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't abort: %s",
-                  PMIx_Error_string(ps));
+    init_event_handler();
 }
