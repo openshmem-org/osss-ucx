@@ -185,3 +185,36 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
 
     /* TODO free racc memory on teardown */
 }
+
+inline ucs_status_t
+shmemc_ucx_worker_wireup(shmemc_context_h ch)
+{
+    ucs_status_ptr_t req;
+
+    req = ucp_worker_flush_nb(ch->w, 0, noop_callback);
+
+    if (req == UCS_OK) {
+        return UCS_OK;
+    }
+    else if (UCS_PTR_IS_ERR(req)) {
+        return UCS_PTR_STATUS(req);
+    }
+    else {
+        ucs_status_t s;
+
+        do {
+            shmemc_ctx_progress(ch);
+            shmemc_ctx_progress(defcp);
+
+#ifdef HAVE_UCP_REQUEST_CHECK_STATUS
+            s = ucp_request_check_status(req);
+#else
+            s = ucp_request_test(req, NULL);
+#endif  /* HAVE_UCP_REQUEST_CHECK_STATUS */
+        } while (s == UCS_INPROGRESS);
+
+        ucp_request_free(req);
+
+        return s;
+    }
+}

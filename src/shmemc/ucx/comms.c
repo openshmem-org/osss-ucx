@@ -185,11 +185,7 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 
 #endif  /* ENABLE_EXPERIMENTAL */
 
-/*
- * a dummy callback that does nothing
- */
-
-static void
+void
 noop_callback(void *request, ucs_status_t status)
 {
     NO_WARN_UNUSED(request);
