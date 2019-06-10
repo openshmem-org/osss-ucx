@@ -188,6 +188,8 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 
     /* is this reclaimed from free list or do we have to set up? */
     if (! reuse) {
+        ucs_status_t s;
+
         const int ret = shmemc_ucx_context_progress(ch);
 
         if (shmemu_unlikely(ret != 0)) {
@@ -196,6 +198,14 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
             /* NOT REACHED */
         }
         shmemc_ucx_make_eps(ch);
+
+        s = shmemc_ucx_worker_wireup(ch);
+
+        if (shmemu_unlikely(s != UCS_OK)) {
+            logger(LOG_FATAL,
+                   "cannot complete new context worker wireup"
+                   );
+        }
     }
 
     ch->creator_thread = threadwrap_thread_id();
