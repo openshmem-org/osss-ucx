@@ -1,4 +1,5 @@
 #!/bin/sh
+# Emacs: -*- mode: sh -*-
 # For license: see LICENSE file at top-level
 
 compiler="${OSH_CXX-g++}"
