@@ -185,6 +185,11 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_ALIGNED_ADDRESSES */
            );
 
+#ifdef SHMEM_DEFAULT_HEAP_SIZE
+    output(strm, "Default symmetric heap size",
+           SHMEM_DEFAULT_HEAP_SIZE);
+#endif /* SHMEM_DEFAULT_HEAP_SIZE */
+
     output(strm, "Thread support",
 #ifdef ENABLE_THREADS
            "on"
@@ -249,6 +254,14 @@ info_output_comms(FILE *strm)
            PACKAGE_STRING
 #else
            SHCOLL_DIR
-#endif
+#endif  /* HAVE_SHCOLL_INTERNAL */
+           );
+
+    output(strm, "Using launcher",
+#ifdef SHMEM_LAUNCHER
+           SHMEM_LAUNCHER
+#else
+           "default"
+#endif /* SHMEM_LAUNCHER */
            );
 }
