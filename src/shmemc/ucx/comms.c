@@ -594,7 +594,7 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
     shmemc_context_h ch = (shmemc_context_h) ctx;
     ucs_status_t s;
 
-    retp = vp;                  /* prime the value */
+    memcpy(retp, vp, vs);       /* prime the value */
 
     s = helper_fetching_amo(ch,
                             UCP_ATOMIC_FETCH_OP_CSWAP,

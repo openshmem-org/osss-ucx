@@ -91,8 +91,7 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
 
         shmemc_cswap(&(lock->blob),
                      SHMEM_LOCK_RESET,
-                     &(t.blob),
-                     sizeof(t.blob),
+                     &(t.blob), sizeof(t.blob),
                      lock_owner(lock),
                      &(t.blob));
         if (t.d.next == proc.rank) {
