@@ -50,7 +50,7 @@
  * swap
  */
 
-#define SHMEM_CTX_TYPE_SWAP(_name, _type, _size)                        \
+#define SHMEM_CTX_TYPE_SWAP(_name, _type)                               \
     _type                                                               \
     shmem_ctx_##_name##_atomic_swap(shmem_ctx_t ctx,                    \
                                     _type *target, _type value, int pe) \
@@ -60,36 +60,27 @@
         SHMEMU_CHECK_INIT();                                            \
         SHMEMU_CHECK_SYMMETRIC(target, 2);                              \
                                                                         \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, value, pe                \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(v = shmemc_ctx_swap##_size(ctx,          \
-                                                          target, value, \
-                                                          pe));         \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_swap(ctx,                     \
+                                               target,                  \
+                                               &value, sizeof(value),   \
+                                               pe, &v));                \
         return v;                                                       \
     }
 
-SHMEM_CTX_TYPE_SWAP(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_SWAP(long, long, 64)
-#else
-SHMEM_CTX_TYPE_SWAP(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_SWAP(longlong, long long, 64)
-SHMEM_CTX_TYPE_SWAP(float, float, 32)
-SHMEM_CTX_TYPE_SWAP(double, double, 64)
-SHMEM_CTX_TYPE_SWAP(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_SWAP(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_SWAP(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_SWAP(int32, int32_t, 32)
-SHMEM_CTX_TYPE_SWAP(int64, int64_t, 64)
-SHMEM_CTX_TYPE_SWAP(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_SWAP(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_SWAP(size, size_t, 64)
-SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_SWAP(int, int)
+SHMEM_CTX_TYPE_SWAP(long, long)
+SHMEM_CTX_TYPE_SWAP(longlong, long long)
+SHMEM_CTX_TYPE_SWAP(float, float)
+SHMEM_CTX_TYPE_SWAP(double, double)
+SHMEM_CTX_TYPE_SWAP(uint, unsigned int)
+SHMEM_CTX_TYPE_SWAP(ulong, unsigned long)
+SHMEM_CTX_TYPE_SWAP(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_SWAP(int32, int32_t)
+SHMEM_CTX_TYPE_SWAP(int64, int64_t)
+SHMEM_CTX_TYPE_SWAP(uint32, uint32_t)
+SHMEM_CTX_TYPE_SWAP(uint64, uint64_t)
+SHMEM_CTX_TYPE_SWAP(size, size_t)
+SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_int_atomic_compare_swap = pshmem_ctx_int_atomic_compare_swap
@@ -122,7 +113,7 @@ SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
  * conditional swap
  */
 
-#define SHMEM_CTX_TYPE_CSWAP(_name, _type, _size)                       \
+#define SHMEM_CTX_TYPE_CSWAP(_name, _type)                              \
     _type                                                               \
     shmem_ctx_##_name##_atomic_compare_swap(shmem_ctx_t ctx,            \
                                             _type *target,              \
@@ -131,34 +122,26 @@ SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, cond=%lu, value=%lu, pe=%d)",    \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, cond, value, pe          \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(v = shmemc_ctx_cswap##_size(ctx,         \
-                                                           target, cond, \
-                                                           value, pe)); \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_cswap(ctx,                    \
+                                                target,                 \
+                                                cond,                   \
+                                                &value, sizeof(value),  \
+                                                pe, &v));               \
         return v;                                                       \
     }
 
-SHMEM_CTX_TYPE_CSWAP(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_CSWAP(long, long, 64)
-#else
-SHMEM_CTX_TYPE_CSWAP(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_CSWAP(longlong, long long, 64)
-SHMEM_CTX_TYPE_CSWAP(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_CSWAP(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_CSWAP(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_CSWAP(int32, int32_t, 32)
-SHMEM_CTX_TYPE_CSWAP(int64, int64_t, 64)
-SHMEM_CTX_TYPE_CSWAP(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_CSWAP(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_CSWAP(size, size_t, 64)
-SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_CSWAP(int, int)
+SHMEM_CTX_TYPE_CSWAP(long, long)
+SHMEM_CTX_TYPE_CSWAP(longlong, long long)
+SHMEM_CTX_TYPE_CSWAP(uint, unsigned int)
+SHMEM_CTX_TYPE_CSWAP(ulong, unsigned long)
+SHMEM_CTX_TYPE_CSWAP(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_CSWAP(int32, int32_t)
+SHMEM_CTX_TYPE_CSWAP(int64, int64_t)
+SHMEM_CTX_TYPE_CSWAP(uint32, uint32_t)
+SHMEM_CTX_TYPE_CSWAP(uint64, uint64_t)
+SHMEM_CTX_TYPE_CSWAP(size, size_t)
+SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t)
 
 #undef SHMEM_CTX_TYPE_CSWAP
 
@@ -193,7 +176,7 @@ SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
  * fetch-and-add
  */
 
-#define SHMEM_CTX_TYPE_FADD(_name, _type, _size)                        \
+#define SHMEM_CTX_TYPE_FADD(_name, _type)                               \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch_add(shmem_ctx_t ctx,               \
                                          _type *target,                 \
@@ -201,34 +184,25 @@ SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, value, pe                \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(v = shmemc_ctx_fadd##_size(ctx,          \
-                                                          target, value, \
-                                                          pe));         \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fadd(ctx,                     \
+                                               target,                  \
+                                               &value, sizeof(value),   \
+                                               pe, &v));                \
         return v;                                                       \
     }
 
-SHMEM_CTX_TYPE_FADD(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_FADD(long, long, 64)
-#else
-SHMEM_CTX_TYPE_FADD(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_FADD(longlong, long long, 64)
-SHMEM_CTX_TYPE_FADD(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_FADD(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_FADD(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_FADD(int32, int32_t, 32)
-SHMEM_CTX_TYPE_FADD(int64, int64_t, 64)
-SHMEM_CTX_TYPE_FADD(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_FADD(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_FADD(size, size_t, 64)
-SHMEM_CTX_TYPE_FADD(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_FADD(int, int)
+SHMEM_CTX_TYPE_FADD(long, long)
+SHMEM_CTX_TYPE_FADD(longlong, long long)
+SHMEM_CTX_TYPE_FADD(uint, unsigned int)
+SHMEM_CTX_TYPE_FADD(ulong, unsigned long)
+SHMEM_CTX_TYPE_FADD(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_FADD(int32, int32_t)
+SHMEM_CTX_TYPE_FADD(int64, int64_t)
+SHMEM_CTX_TYPE_FADD(uint32, uint32_t)
+SHMEM_CTX_TYPE_FADD(uint64, uint64_t)
+SHMEM_CTX_TYPE_FADD(size, size_t)
+SHMEM_CTX_TYPE_FADD(ptrdiff, ptrdiff_t)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_int_atomic_fetch_inc = pshmem_ctx_int_atomic_fetch_inc
@@ -261,41 +235,31 @@ SHMEM_CTX_TYPE_FADD(ptrdiff, ptrdiff_t, 64)
  * fetch-and-increment
  */
 
-#define SHMEM_CTX_TYPE_FINC(_name, _type, _size)                        \
+#define SHMEM_CTX_TYPE_FINC(_name, _type)                               \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch_inc(shmem_ctx_t ctx,               \
                                          _type *target, int pe)         \
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, pe=%d)",                         \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, pe                       \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(v = shmemc_ctx_finc##_size(ctx,          \
-                                                          target, pe)); \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_finc(ctx,                     \
+                                               target, pe, &v));        \
                                                                         \
         return v;                                                       \
     }
 
-SHMEM_CTX_TYPE_FINC(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_FINC(long, long, 64)
-#else
-SHMEM_CTX_TYPE_FINC(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_FINC(longlong, long long, 64)
-SHMEM_CTX_TYPE_FINC(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_FINC(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_FINC(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_FINC(int32, int32_t, 32)
-SHMEM_CTX_TYPE_FINC(int64, int64_t, 64)
-SHMEM_CTX_TYPE_FINC(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_FINC(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_FINC(size, size_t, 64)
-SHMEM_CTX_TYPE_FINC(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_FINC(int, int)
+SHMEM_CTX_TYPE_FINC(long, long)
+SHMEM_CTX_TYPE_FINC(longlong, long long)
+SHMEM_CTX_TYPE_FINC(uint, unsigned int)
+SHMEM_CTX_TYPE_FINC(ulong, unsigned long)
+SHMEM_CTX_TYPE_FINC(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_FINC(int32, int32_t)
+SHMEM_CTX_TYPE_FINC(int64, int64_t)
+SHMEM_CTX_TYPE_FINC(uint32, uint32_t)
+SHMEM_CTX_TYPE_FINC(uint64, uint64_t)
+SHMEM_CTX_TYPE_FINC(size, size_t)
+SHMEM_CTX_TYPE_FINC(ptrdiff, ptrdiff_t)
 
 #undef SHMEM_CTX_TYPE_FINC
 
@@ -330,38 +294,29 @@ SHMEM_CTX_TYPE_FINC(ptrdiff, ptrdiff_t, 64)
  * add
  */
 
-#define SHMEM_CTX_TYPE_ADD(_name, _type, _size)                         \
+#define SHMEM_CTX_TYPE_ADD(_name, _type)                                \
     void                                                                \
     shmem_ctx_##_name##_atomic_add(shmem_ctx_t ctx,                     \
                                    _type *target, _type value, int pe)  \
     {                                                                   \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, value, pe                \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_add##_size(ctx,               \
-                                                     target, value,     \
-                                                     pe));              \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_add(ctx,                      \
+                                              target,                   \
+                                              &value, sizeof(value),    \
+                                              pe));                     \
     }
 
-SHMEM_CTX_TYPE_ADD(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_ADD(long, long, 64)
-#else
-SHMEM_CTX_TYPE_ADD(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_ADD(longlong, long long, 64)
-SHMEM_CTX_TYPE_ADD(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_ADD(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_ADD(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_ADD(int32, int32_t, 32)
-SHMEM_CTX_TYPE_ADD(int64, int64_t, 64)
-SHMEM_CTX_TYPE_ADD(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_ADD(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_ADD(size, size_t, 64)
-SHMEM_CTX_TYPE_ADD(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_ADD(int, int)
+SHMEM_CTX_TYPE_ADD(long, long)
+SHMEM_CTX_TYPE_ADD(longlong, long long)
+SHMEM_CTX_TYPE_ADD(uint, unsigned int)
+SHMEM_CTX_TYPE_ADD(ulong, unsigned long)
+SHMEM_CTX_TYPE_ADD(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_ADD(int32, int32_t)
+SHMEM_CTX_TYPE_ADD(int64, int64_t)
+SHMEM_CTX_TYPE_ADD(uint32, uint32_t)
+SHMEM_CTX_TYPE_ADD(uint64, uint64_t)
+SHMEM_CTX_TYPE_ADD(size, size_t)
+SHMEM_CTX_TYPE_ADD(ptrdiff, ptrdiff_t)
 
 #undef SHMEM_CTX_TYPE_ADD
 
@@ -396,36 +351,26 @@ SHMEM_CTX_TYPE_ADD(ptrdiff, ptrdiff_t, 64)
  * increment
  */
 
-#define SHMEM_CTX_TYPE_INC(_name, _type, _size)                         \
+#define SHMEM_CTX_TYPE_INC(_name, _type)                                \
     void                                                                \
     shmem_ctx_##_name##_atomic_inc(shmem_ctx_t ctx,                     \
                                    _type *target, int pe)               \
     {                                                                   \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, pe=%d)",                         \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, pe                       \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_inc##_size(ctx, target, pe)); \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_inc(ctx, target, pe));        \
     }
 
-SHMEM_CTX_TYPE_INC(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_INC(long, long, 64)
-#else
-SHMEM_CTX_TYPE_INC(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_INC(longlong, long long, 64)
-SHMEM_CTX_TYPE_INC(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_INC(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_INC(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_INC(int32, int32_t, 32)
-SHMEM_CTX_TYPE_INC(int64, int64_t, 64)
-SHMEM_CTX_TYPE_INC(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_INC(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_INC(size, size_t, 64)
-SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_INC(int, int)
+SHMEM_CTX_TYPE_INC(long, long)
+SHMEM_CTX_TYPE_INC(longlong, long long)
+SHMEM_CTX_TYPE_INC(uint, unsigned int)
+SHMEM_CTX_TYPE_INC(ulong, unsigned long)
+SHMEM_CTX_TYPE_INC(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_INC(int32, int32_t)
+SHMEM_CTX_TYPE_INC(int64, int64_t)
+SHMEM_CTX_TYPE_INC(uint32, uint32_t)
+SHMEM_CTX_TYPE_INC(uint64, uint64_t)
+SHMEM_CTX_TYPE_INC(size, size_t)
+SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t)
 
 #undef SHMEM_CTX_TYPE_INC
 
@@ -464,42 +409,32 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t, 64)
  * fetch
  */
 
-#define SHMEM_CTX_TYPE_FETCH(_name, _type, _size)                       \
+#define SHMEM_CTX_TYPE_FETCH(_name, _type)                              \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch(shmem_ctx_t ctx,                   \
                                      _type *target, int pe)             \
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, pe=%d)",                         \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, pe                       \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(v = shmemc_ctx_fetch##_size(ctx, target, \
-                                                           pe));        \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fetch(ctx, (_type *) target,  \
+                                                pe, &v));               \
         return v;                                                       \
     }
 
-SHMEM_CTX_TYPE_FETCH(float, float, 32)
-SHMEM_CTX_TYPE_FETCH(double, double, 64)
-SHMEM_CTX_TYPE_FETCH(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_FETCH(long, long, 64)
-#else
-SHMEM_CTX_TYPE_FETCH(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_FETCH(longlong, long long, 64)
-SHMEM_CTX_TYPE_FETCH(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_FETCH(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_FETCH(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_FETCH(int32, int32_t, 32)
-SHMEM_CTX_TYPE_FETCH(int64, int64_t, 64)
-SHMEM_CTX_TYPE_FETCH(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_FETCH(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_FETCH(size, size_t, 64)
-SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_FETCH(float, float)
+SHMEM_CTX_TYPE_FETCH(double, double)
+SHMEM_CTX_TYPE_FETCH(int, int)
+SHMEM_CTX_TYPE_FETCH(long, long)
+SHMEM_CTX_TYPE_FETCH(longlong, long long)
+SHMEM_CTX_TYPE_FETCH(uint, unsigned int)
+SHMEM_CTX_TYPE_FETCH(ulong, unsigned long)
+SHMEM_CTX_TYPE_FETCH(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_FETCH(int32, int32_t)
+SHMEM_CTX_TYPE_FETCH(int64, int64_t)
+SHMEM_CTX_TYPE_FETCH(uint32, uint32_t)
+SHMEM_CTX_TYPE_FETCH(uint64, uint64_t)
+SHMEM_CTX_TYPE_FETCH(size, size_t)
+SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_int_atomic_set = pshmem_ctx_int_atomic_set
@@ -536,39 +471,30 @@ SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t, 64)
  * set
  */
 
-#define SHMEM_CTX_TYPE_SET(_name, _type, _size)                         \
+#define SHMEM_CTX_TYPE_SET(_name, _type)                                \
     void                                                                \
     shmem_ctx_##_name##_atomic_set(shmem_ctx_t ctx,                     \
                                    _type *target, _type value, int pe)  \
     {                                                                   \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, value, pe                \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_set##_size(ctx, target,       \
-                                                     value, pe));       \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_set(ctx, target,              \
+                                              &value, sizeof(value),    \
+                                              pe));                     \
     }
 
-SHMEM_CTX_TYPE_SET(float, float, 32)
-SHMEM_CTX_TYPE_SET(double, double, 64)
-SHMEM_CTX_TYPE_SET(int, int, 32)
-#if __WORDSIZE == 64
-SHMEM_CTX_TYPE_SET(long, long, 64)
-#else
-SHMEM_CTX_TYPE_SET(long, long, 32)
-#endif
-SHMEM_CTX_TYPE_SET(longlong, long long, 64)
-SHMEM_CTX_TYPE_SET(uint, unsigned int, 32)
-SHMEM_CTX_TYPE_SET(ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_SET(ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_SET(int32, int32_t, 32)
-SHMEM_CTX_TYPE_SET(int64, int64_t, 64)
-SHMEM_CTX_TYPE_SET(uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_SET(uint64, uint64_t, 64)
-SHMEM_CTX_TYPE_SET(size, size_t, 64)
-SHMEM_CTX_TYPE_SET(ptrdiff, ptrdiff_t, 64)
+SHMEM_CTX_TYPE_SET(float, float)
+SHMEM_CTX_TYPE_SET(double, double)
+SHMEM_CTX_TYPE_SET(int, int)
+SHMEM_CTX_TYPE_SET(long, long)
+SHMEM_CTX_TYPE_SET(longlong, long long)
+SHMEM_CTX_TYPE_SET(uint, unsigned int)
+SHMEM_CTX_TYPE_SET(ulong, unsigned long)
+SHMEM_CTX_TYPE_SET(ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_SET(int32, int32_t)
+SHMEM_CTX_TYPE_SET(int64, int64_t)
+SHMEM_CTX_TYPE_SET(uint32, uint32_t)
+SHMEM_CTX_TYPE_SET(uint64, uint64_t)
+SHMEM_CTX_TYPE_SET(size, size_t)
+SHMEM_CTX_TYPE_SET(ptrdiff, ptrdiff_t)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_uint_atomic_xor = pshmem_ctx_uint_atomic_xor
@@ -621,45 +547,40 @@ SHMEM_CTX_TYPE_SET(ptrdiff, ptrdiff_t, 64)
  * bitwise
  */
 
-#define SHMEM_CTX_TYPE_BITWISE(_opname, _name, _type, _size)            \
+#define SHMEM_CTX_TYPE_BITWISE(_opname, _name, _type)                   \
     void                                                                \
     shmem_ctx_##_name##_atomic_##_opname(shmem_ctx_t ctx,               \
                                          _type *target,                 \
                                          _type value, int pe)           \
     {                                                                   \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, value, pe                \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_##_opname##_size(ctx, target, \
-                                                           value, pe)); \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_##_opname(ctx, target,        \
+                                                    &value, sizeof(value), \
+                                                    pe));               \
     }
 
-SHMEM_CTX_TYPE_BITWISE(xor, uint, unsigned int, 32)
-SHMEM_CTX_TYPE_BITWISE(xor, ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_BITWISE(xor, ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_BITWISE(xor, int32, int32_t, 32)
-SHMEM_CTX_TYPE_BITWISE(xor, int64, int64_t, 64)
-SHMEM_CTX_TYPE_BITWISE(xor, uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_BITWISE(xor, uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_BITWISE(xor, uint, unsigned int)
+SHMEM_CTX_TYPE_BITWISE(xor, ulong, unsigned long)
+SHMEM_CTX_TYPE_BITWISE(xor, ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_BITWISE(xor, int32, int32_t)
+SHMEM_CTX_TYPE_BITWISE(xor, int64, int64_t)
+SHMEM_CTX_TYPE_BITWISE(xor, uint32, uint32_t)
+SHMEM_CTX_TYPE_BITWISE(xor, uint64, uint64_t)
 
-SHMEM_CTX_TYPE_BITWISE(or, uint, unsigned int, 32)
-SHMEM_CTX_TYPE_BITWISE(or, ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_BITWISE(or, ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_BITWISE(or, int32, int32_t, 32)
-SHMEM_CTX_TYPE_BITWISE(or, int64, int64_t, 64)
-SHMEM_CTX_TYPE_BITWISE(or, uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_BITWISE(or, uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_BITWISE(or, uint, unsigned int)
+SHMEM_CTX_TYPE_BITWISE(or, ulong, unsigned long)
+SHMEM_CTX_TYPE_BITWISE(or, ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_BITWISE(or, int32, int32_t)
+SHMEM_CTX_TYPE_BITWISE(or, int64, int64_t)
+SHMEM_CTX_TYPE_BITWISE(or, uint32, uint32_t)
+SHMEM_CTX_TYPE_BITWISE(or, uint64, uint64_t)
 
-SHMEM_CTX_TYPE_BITWISE(and, uint, unsigned int, 32)
-SHMEM_CTX_TYPE_BITWISE(and, ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_BITWISE(and, ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_BITWISE(and, int32, int32_t, 32)
-SHMEM_CTX_TYPE_BITWISE(and, int64, int64_t, 64)
-SHMEM_CTX_TYPE_BITWISE(and, uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_BITWISE(and, uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_BITWISE(and, uint, unsigned int)
+SHMEM_CTX_TYPE_BITWISE(and, ulong, unsigned long)
+SHMEM_CTX_TYPE_BITWISE(and, ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_BITWISE(and, int32, int32_t)
+SHMEM_CTX_TYPE_BITWISE(and, int64, int64_t)
+SHMEM_CTX_TYPE_BITWISE(and, uint32, uint32_t)
+SHMEM_CTX_TYPE_BITWISE(and, uint64, uint64_t)
 
 
 #ifdef ENABLE_PSHMEM
@@ -713,7 +634,7 @@ SHMEM_CTX_TYPE_BITWISE(and, uint64, uint64_t, 64)
  * fetch-bitwise
  */
 
-#define SHMEM_CTX_TYPE_FETCH_BITWISE(_opname, _name, _type, _size)      \
+#define SHMEM_CTX_TYPE_FETCH_BITWISE(_opname, _name, _type)             \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch_##_opname(shmem_ctx_t ctx,         \
                                                _type *target,           \
@@ -721,42 +642,37 @@ SHMEM_CTX_TYPE_BITWISE(and, uint64, uint64_t, 64)
     {                                                                   \
         _type v;                                                        \
                                                                         \
-        logger(LOG_ATOMICS,                                             \
-               "%s(ctx=%lu, target=%p, value=%lu, pe=%d)",              \
-               __func__,                                                \
-               shmemc_context_id(ctx), target, value, pe                \
-               );                                                       \
-                                                                        \
-        SHMEMT_MUTEX_NOPROTECT(v = shmemc_ctx_fetch_##_opname##_size(ctx, \
-                                                                     target, \
-                                                                     value, \
-                                                                     pe)); \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fetch_##_opname(ctx,          \
+                                                          target,       \
+                                                          &value,       \
+                                                          sizeof(value), \
+                                                          pe, &v));     \
         return v;                                                       \
     }
 
-SHMEM_CTX_TYPE_FETCH_BITWISE(xor, uint, unsigned int, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(xor, ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(xor, ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(xor, int32, int32_t, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(xor, int64, int64_t, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(xor, uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(xor, uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_FETCH_BITWISE(xor, uint, unsigned int)
+SHMEM_CTX_TYPE_FETCH_BITWISE(xor, ulong, unsigned long)
+SHMEM_CTX_TYPE_FETCH_BITWISE(xor, ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_FETCH_BITWISE(xor, int32, int32_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(xor, int64, int64_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(xor, uint32, uint32_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(xor, uint64, uint64_t)
 
-SHMEM_CTX_TYPE_FETCH_BITWISE(or, uint, unsigned int, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(or, ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(or, ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(or, int32, int32_t, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(or, int64, int64_t, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(or, uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(or, uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_FETCH_BITWISE(or, uint, unsigned int)
+SHMEM_CTX_TYPE_FETCH_BITWISE(or, ulong, unsigned long)
+SHMEM_CTX_TYPE_FETCH_BITWISE(or, ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_FETCH_BITWISE(or, int32, int32_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(or, int64, int64_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(or, uint32, uint32_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(or, uint64, uint64_t)
 
-SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint, unsigned int, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(and, ulong, unsigned long, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(and, ulonglong, unsigned long long, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(and, int32, int32_t, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(and, int64, int64_t, 64)
-SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint32, uint32_t, 32)
-SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint64, uint64_t, 64)
+SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint, unsigned int)
+SHMEM_CTX_TYPE_FETCH_BITWISE(and, ulong, unsigned long)
+SHMEM_CTX_TYPE_FETCH_BITWISE(and, ulonglong, unsigned long long)
+SHMEM_CTX_TYPE_FETCH_BITWISE(and, int32, int32_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(and, int64, int64_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint32, uint32_t)
+SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint64, uint64_t)
 
 
 /* ------------------------------------------------------------------------ */

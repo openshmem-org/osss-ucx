@@ -185,11 +185,7 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 
 #endif  /* ENABLE_EXPERIMENTAL */
 
-/*
- * a dummy callback that does nothing
- */
-
-static void
+void
 noop_callback(void *request, ucs_status_t status)
 {
     NO_WARN_UNUSED(request);
@@ -233,319 +229,50 @@ check_wait_for_request(shmemc_context_h ch, void *req)
     }
 }
 
-/*
- *  -- helpers for atomics -----------------------------------------------
- */
-
-/*
- * post-or-fetch-and-wait AMO to target address "t" on PE "pe" with
- * value "v"
- */
-
-inline static ucs_status_t
-ucx_atomic_post_op(ucp_atomic_post_op_t uapo,
-                   shmemc_context_h ch,
-                   uint64_t t,
-                   uint64_t v,    /* encapsulate 32/64-bit value */
-                   size_t vs,     /* actual size of value */
-                   int pe)
+static ucs_status_t
+helper_posted_amo(shmemc_context_h ch,
+                  ucp_atomic_post_op_t uapo,
+                  void *t, void *vp, size_t vs,
+                  int pe)
 {
     uint64_t r_t;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
+    uint64_t rv = *(uint64_t *) vp;
 
-    get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);
+    get_remote_key_and_addr(ch, (uint64_t) t, pe, &r_key, &r_t);
     ep = lookup_ucp_ep(ch, pe);
 
-    return ucp_atomic_post(ep, uapo, v, vs, r_t, r_key);
+    return ucp_atomic_post(ep, uapo, rv, vs, r_t, r_key);
 }
 
-inline static ucs_status_t
-ucx_atomic_fetch_op(ucp_atomic_fetch_op_t uafo,
-                    shmemc_context_h ch,
-                    uint64_t t,
-                    uint64_t v,    /* encapsulate 32/64-bit value */
-                    size_t vs,     /* actual size of value */
+/*
+ * fetching AMOs: target t, (optional) condition c, value v
+ */
+
+static ucs_status_t
+helper_fetching_amo(shmemc_context_h ch,
+                    ucp_atomic_fetch_op_t op,
+                    void *t, void *vp, size_t vs,
                     int pe,
-                    uint64_t *result)
+                    void *retp)
 {
-    uint64_t r_t;
     ucp_rkey_h r_key;
+    uint64_t r_t;
     ucp_ep_h ep;
+    uint64_t rv = *(uint64_t *) vp;
     ucs_status_ptr_t sp;
 
-    get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);
+    get_remote_key_and_addr(ch, (uint64_t) t, pe, &r_key, &r_t);
     ep = lookup_ucp_ep(ch, pe);
 
-    sp = ucp_atomic_fetch_nb(ep, uafo, v, result, vs, r_t, r_key,
-                             noop_callback);
+    sp = ucp_atomic_fetch_nb(ep,
+                             op,
+                             rv, retp, vs,
+                             r_t, r_key, noop_callback);
 
     return check_wait_for_request(ch, sp);
 }
-
-/*
- * adds
- */
-
-#define HELPER_FADD(_size)                                          \
-    inline static uint##_size##_t                                   \
-    helper_atomic_fetch_add##_size(shmemc_context_h ch,             \
-                                   uint64_t t, uint##_size##_t v,   \
-                                   int pe)                          \
-    {                                                               \
-        uint##_size##_t ret = 0;                                    \
-        ucs_status_t s;                                             \
-        uint64_t r_t;                                               \
-        ucp_rkey_h r_key;                                           \
-        ucp_ep_h ep;                                                \
-                                                                    \
-        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);           \
-        ep = lookup_ucp_ep(ch, pe);                                 \
-                                                                    \
-        s = ucp_atomic_fadd##_size(ep, v, r_t, r_key, &ret);        \
-        /* value came back? */                                      \
-        shmemu_assert(s == UCS_OK,                                  \
-                      "AMO fetch-add failed (status: %s)",          \
-                      ucs_status_string(s));                        \
-                                                                    \
-        return ret;                                                 \
-    }
-
-HELPER_FADD(32)
-HELPER_FADD(64)
-
-#define HELPER_ADD(_size)                                       \
-    inline static void                                          \
-    helper_atomic_add##_size(shmemc_context_h ch,               \
-                             uint64_t t, uint##_size##_t v,     \
-                             int pe)                            \
-    {                                                           \
-        ucs_status_t s;                                         \
-        uint64_t r_t;                                           \
-        ucp_rkey_h r_key;                                       \
-        ucp_ep_h ep;                                            \
-                                                                \
-        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);       \
-        ep = lookup_ucp_ep(ch, pe);                             \
-                                                                \
-        s = ucp_atomic_add##_size(ep, v, r_t, r_key);           \
-        /* could still be in flight */                          \
-        shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),   \
-                      "AMO add op failed (status: %s)",         \
-                      ucs_status_string(s));                    \
-    }
-
-HELPER_ADD(32)
-HELPER_ADD(64)
-
-/*
- * increments use add
- */
-
-#define HELPER_FINC(_size)                                      \
-    inline static uint##_size##_t                               \
-    helper_atomic_fetch_inc##_size(shmemc_context_h ch,         \
-                                   uint64_t t, int pe)          \
-    {                                                           \
-        return helper_atomic_fetch_add##_size(ch, t, 1, pe);    \
-    }
-
-HELPER_FINC(32)
-HELPER_FINC(64)
-
-#define HELPER_INC(_size)                                       \
-    inline static void                                          \
-    helper_atomic_inc##_size(shmemc_context_h ch,               \
-                             uint64_t t, int pe)                \
-    {                                                           \
-        helper_atomic_add##_size(ch, t, 1, pe);                 \
-    }
-
-HELPER_INC(32)
-HELPER_INC(64)
-
-/*
- * swaps
- */
-
-#define HELPER_SWAP(_size)                                      \
-    inline static uint##_size##_t                               \
-    helper_atomic_swap##_size(shmemc_context_h ch,              \
-                              uint64_t t, uint##_size##_t v,    \
-                              int pe)                           \
-    {                                                           \
-        uint64_t r_t;                                           \
-        ucp_rkey_h r_key;                                       \
-        uint##_size##_t ret = 0;                                \
-        ucp_ep_h ep;                                            \
-        ucs_status_t s;                                         \
-                                                                \
-        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);       \
-        ep = lookup_ucp_ep(ch, pe);                             \
-                                                                \
-        s = ucp_atomic_swap##_size(ep, v, r_t, r_key, &ret);    \
-        shmemu_assert(s == UCS_OK,                              \
-                      "AMO swap failed (status: %s)",           \
-                      ucs_status_string(s));                    \
-                                                                \
-        return ret;                                             \
-    }
-
-HELPER_SWAP(32)
-HELPER_SWAP(64)
-
-#define HELPER_CSWAP(_size)                                             \
-    inline static uint##_size##_t                                       \
-    helper_atomic_cswap##_size(shmemc_context_h ch,                     \
-                               uint64_t t,                              \
-                               uint##_size##_t c, uint##_size##_t v,    \
-                               int pe)                                  \
-    {                                                                   \
-        uint64_t r_t;                                                   \
-        ucp_rkey_h r_key;                                               \
-        uint##_size##_t ret = 0;                                        \
-        ucp_ep_h ep;                                                    \
-        ucs_status_t s;                                                 \
-                                                                        \
-        get_remote_key_and_addr(ch, t, pe, &r_key, &r_t);               \
-        ep = lookup_ucp_ep(ch, pe);                                     \
-                                                                        \
-        s = ucp_atomic_cswap##_size(ep, c, v, r_t, r_key, &ret);        \
-        shmemu_assert(s == UCS_OK,                                      \
-                      "AMO conditional swap failed (status: %s)",       \
-                      ucs_status_string(s));                            \
-                                                                        \
-        return ret;                                                     \
-    }
-
-HELPER_CSWAP(32)
-HELPER_CSWAP(64)
-
-/*
- * bitwise helpers
- *
- * Newer versions of UCX now have native support for bitwise atomics:
- * we detect this during configure.
- *
- */
-
-#ifdef HAVE_UCP_BITWISE_ATOMICS
-
-#define MAKE_UCP_FETCH_OP(_op)     UCP_ATOMIC_FETCH_OP_F##_op
-#define MAKE_UCP_POST_OP(_op)      UCP_ATOMIC_POST_OP_##_op
-
-#define HELPER_BITWISE_FETCH_ATOMIC(_ucp_op, _opname, _size)            \
-    inline static uint##_size##_t                                       \
-    helper_atomic_fetch_##_opname##_size(shmemc_context_h ch,           \
-                                         uint64_t t, uint##_size##_t v, \
-                                         int pe)                        \
-    {                                                                   \
-        uint64_t ret = 0;                                               \
-        const ucs_status_t s =                                          \
-            ucx_atomic_fetch_op(MAKE_UCP_FETCH_OP(_ucp_op),             \
-                                ch,                                     \
-                                t,                                      \
-                                v, sizeof(v),                           \
-                                pe,                                     \
-                                &ret);                                  \
-                                                                        \
-        /* value came back? */                                          \
-        shmemu_assert(s == UCS_OK,                                      \
-                      "AMO fetch op \"%s\" failed (status: %s)",        \
-                      #_opname, ucs_status_string(s));                  \
-                                                                        \
-        return (uint##_size##_t) ret;                                   \
-    }
-
-HELPER_BITWISE_FETCH_ATOMIC(AND, and, 32)
-HELPER_BITWISE_FETCH_ATOMIC(AND, and, 64)
-HELPER_BITWISE_FETCH_ATOMIC(OR,  or,  32)
-HELPER_BITWISE_FETCH_ATOMIC(OR,  or,  64)
-HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 32)
-HELPER_BITWISE_FETCH_ATOMIC(XOR, xor, 64)
-
-#define HELPER_BITWISE_ATOMIC(_ucp_op, _opname, _size)              \
-    inline static void                                              \
-    helper_atomic_##_opname##_size(shmemc_context_h ch,             \
-                                   uint64_t t, uint##_size##_t v,   \
-                                   int pe)                          \
-    {                                                               \
-        const ucs_status_t s =                                      \
-            ucx_atomic_post_op(MAKE_UCP_POST_OP(_ucp_op),           \
-                               ch,                                  \
-                               t,                                   \
-                               v, sizeof(v),                        \
-                               pe);                                 \
-                                                                    \
-        shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),       \
-                      "AMO post op \"%s\" failed (status: %s)",     \
-                      #_opname, ucs_status_string(s));              \
-    }
-
-HELPER_BITWISE_ATOMIC(AND, and, 32)
-HELPER_BITWISE_ATOMIC(AND, and, 64)
-HELPER_BITWISE_ATOMIC(OR,  or,  32)
-HELPER_BITWISE_ATOMIC(OR,  or,  64)
-HELPER_BITWISE_ATOMIC(XOR, xor, 32)
-HELPER_BITWISE_ATOMIC(XOR, xor, 64)
-
-#else  /* ! HAVE_UCP_BITWISE_ATOMICS */
-
-#define HELPER_BITWISE_FETCH_ATOMIC(_op, _opname, _size)                \
-    inline static uint##_size##_t                                       \
-    helper_atomic_fetch_##_opname##_size(shmemc_context_h ch,           \
-                                         uint64_t t, uint##_size##_t v, \
-                                         int pe)                        \
-    {                                                                   \
-        uint##_size##_t ret = 0;                                        \
-        uint##_size##_t rval, rval_orig;                                \
-        ucs_status_t s;                                                 \
-        uint64_t r_t;                                                   \
-        ucp_rkey_h r_key;                                               \
-        ucp_ep_h ep;                                                    \
-                                                                        \
-        get_remote_key_and_addr(t, pe, &r_key, &r_t);                   \
-        ep = lookup_ucp_ep(ch, pe);                                     \
-                                                                        \
-        do {                                                            \
-            s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
-                        r_t, r_key);                                    \
-            shmemu_assert(s == UCS_OK,                                  \
-                          "AMO fetch failed in CAS (status: %s)",       \
-                          ucs_status_string(s));                        \
-            rval = (rval_orig) _op v;                                   \
-                                                                        \
-            s = ucp_atomic_cswap##_size(ep, rval_orig, rval,            \
-                                        r_t, r_key, &ret);              \
-        } while (ret != rval_orig);                                     \
-                                                                        \
-        return ret;                                                     \
-    }
-
-HELPER_BITWISE_FETCH_ATOMIC(|, or,  32)
-HELPER_BITWISE_FETCH_ATOMIC(|, or,  64)
-HELPER_BITWISE_FETCH_ATOMIC(&, and, 32)
-HELPER_BITWISE_FETCH_ATOMIC(&, and, 64)
-HELPER_BITWISE_FETCH_ATOMIC(^, xor, 32)
-HELPER_BITWISE_FETCH_ATOMIC(^, xor, 64)
-
-#define HELPER_BITWISE_ATOMIC(_op, _opname, _size)                      \
-    inline static void                                                  \
-    helper_atomic_##_opname##_size(shmemc_context_h ch,                 \
-                                   uint64_t t, uint##_size##_t v,       \
-                                   int pe)                              \
-    {                                                                   \
-        (void) helper_atomic_fetch_##_opname##_size(ch, t, v, pe);      \
-    }
-
-HELPER_BITWISE_ATOMIC(|, or,  32)
-HELPER_BITWISE_ATOMIC(|, or,  64)
-HELPER_BITWISE_ATOMIC(&, and, 32)
-HELPER_BITWISE_ATOMIC(&, and, 64)
-HELPER_BITWISE_ATOMIC(^, xor, 32)
-HELPER_BITWISE_ATOMIC(^, xor, 64)
-
-#endif  /* HAVE_UCP_BITWISE_ATOMICS */
 
 /**
  * API
@@ -775,177 +502,298 @@ SHMEMC_PUTGET_SIGNAL(get)
  * add
  */
 
-#define SHMEMC_CTX_ADD(_size)                               \
-    void                                                    \
-    shmemc_ctx_add##_size(shmem_ctx_t ctx,                  \
-                          void *t, uint64_t v, int pe)      \
-    {                                                       \
-        shmemc_context_h ch = (shmemc_context_h) ctx;       \
-                                                            \
-        helper_atomic_add##_size(ch, (uint64_t) t, v, pe);  \
-    }
+void
+shmemc_ctx_add(shmem_ctx_t ctx,
+               void *t, void *vp, size_t vs,
+               int pe)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
 
-SHMEMC_CTX_ADD(32)
-SHMEMC_CTX_ADD(64)
+    helper_posted_amo(ch, UCP_ATOMIC_POST_OP_ADD, t, vp, vs, pe);
+}
 
 /*
  * inc
  */
 
-#define SHMEMC_CTX_INC(_size)                           \
-    void                                                \
-    shmemc_ctx_inc##_size(shmem_ctx_t ctx,              \
-                          void *t, int pe)              \
-    {                                                   \
-        shmemc_context_h ch = (shmemc_context_h) ctx;   \
-                                                        \
-        helper_atomic_inc##_size(ch, (uint64_t) t, pe); \
-    }
+void
+shmemc_ctx_inc(shmem_ctx_t ctx, void *t, int pe)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    int n = 1;
 
-SHMEMC_CTX_INC(32)
-SHMEMC_CTX_INC(64)
+    helper_posted_amo(ch, UCP_ATOMIC_POST_OP_ADD, t,
+                     &n, sizeof(n),
+                     pe);
+}
 
 /*
  * fetch-and-add
  */
 
-#define SHMEMC_CTX_FADD(_size)                                  \
-    uint64_t                                                    \
-    shmemc_ctx_fadd##_size(shmem_ctx_t ctx,                     \
-                           void *t, uint64_t v, int pe)         \
-    {                                                           \
-        shmemc_context_h ch = (shmemc_context_h) ctx;           \
-                                                                \
-        return helper_atomic_fetch_add##_size(ch, (uint64_t) t, \
-                                              v, pe);           \
-    }
+void
+shmemc_ctx_fadd(shmem_ctx_t ctx,
+                void *t, void *vp, size_t vs,
+                int pe,
+                void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
 
-SHMEMC_CTX_FADD(32)
-SHMEMC_CTX_FADD(64)
+    helper_fetching_amo(ch,
+                        UCP_ATOMIC_FETCH_OP_FADD,
+                        t, vp, vs, pe, retp);
+}
 
 /*
  * fetch-and-inc
  */
 
-#define SHMEMC_CTX_FINC(_size)                                  \
-    uint64_t                                                    \
-    shmemc_ctx_finc##_size(shmem_ctx_t ctx,                     \
-                           void *t, int pe)                     \
-    {                                                           \
-        shmemc_context_h ch = (shmemc_context_h) ctx;           \
-                                                                \
-        return helper_atomic_fetch_inc##_size(ch, (uint64_t) t, \
-                                              pe);              \
-    }
+void
+shmemc_ctx_finc(shmem_ctx_t ctx,
+                void *t, int pe,
+                void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    int n = 1;
 
-SHMEMC_CTX_FINC(32)
-SHMEMC_CTX_FINC(64)
+    helper_fetching_amo(ch,
+                        UCP_ATOMIC_FETCH_OP_FADD,
+                        t, &n, sizeof(n),
+                        pe, retp);
+}
 
 /*
  * swaps
  */
 
-#define SHMEMC_CTX_SWAP(_size)                                      \
-    uint64_t                                                        \
-    shmemc_ctx_swap##_size(shmem_ctx_t ctx,                         \
-                           void *t, uint64_t v, int pe)             \
-    {                                                               \
-        shmemc_context_h ch = (shmemc_context_h) ctx;               \
-                                                                    \
-        return helper_atomic_swap##_size(ch, (uint64_t) t, v, pe);  \
-    }
+void
+shmemc_ctx_swap(shmem_ctx_t ctx,
+                void *t, void *vp, size_t vs,
+                int pe,
+                void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    ucs_status_t s;
 
-SHMEMC_CTX_SWAP(32)
-SHMEMC_CTX_SWAP(64)
+    s = helper_fetching_amo(ch,
+                            UCP_ATOMIC_FETCH_OP_SWAP,
+                            t, vp, vs,
+                            pe,
+                            retp);
+    shmemu_assert(s == UCS_OK,
+                  "AMO swap failed (status: %s)",
+                  ucs_status_string(s));
+}
 
-#define SHMEMC_CTX_CSWAP(_size)                                         \
-    uint64_t                                                            \
-    shmemc_ctx_cswap##_size(shmem_ctx_t ctx,                            \
-                            void *t, uint64_t c, uint64_t v, int pe)    \
-    {                                                                   \
-        shmemc_context_h ch = (shmemc_context_h) ctx;                   \
-                                                                        \
-        return helper_atomic_cswap##_size(ch, (uint64_t) t, c, v, pe);  \
-    }
+void
+shmemc_ctx_cswap(shmem_ctx_t ctx,
+                 void *t, uint64_t c, void *vp, size_t vs,
+                 int pe,
+                 void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    ucs_status_t s;
 
-SHMEMC_CTX_CSWAP(32)
-SHMEMC_CTX_CSWAP(64)
+    memcpy(retp, vp, vs);       /* prime the value */
+
+    s = helper_fetching_amo(ch,
+                            UCP_ATOMIC_FETCH_OP_CSWAP,
+                            t, &c, vs,
+                            pe,
+                            retp);
+    shmemu_assert(s == UCS_OK,
+                  "AMO conditional swap failed (status: %s)",
+                  ucs_status_string(s));
+}
 
 /*
  * fetch & set
  *
  */
 
-#define SHMEMC_CTX_FETCH(_size)                                 \
-    uint64_t                                                    \
-    shmemc_ctx_fetch##_size(shmem_ctx_t ctx,                    \
-                            const void *t, int pe)              \
-    {                                                           \
-        shmemc_context_h ch = (shmemc_context_h) ctx;           \
-                                                                \
-        return helper_atomic_fetch_add##_size(ch, (uint64_t) t, \
-                                              0, pe);           \
-    }
+void
+shmemc_ctx_fetch(shmem_ctx_t ctx,
+                 void *t, int pe,
+                 void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    int zero = 0;
 
-SHMEMC_CTX_FETCH(32)
-SHMEMC_CTX_FETCH(64)
+    helper_fetching_amo(ch,
+                        UCP_ATOMIC_FETCH_OP_FADD,
+                        t, &zero, sizeof(zero),
+                        pe,
+                        retp);
+}
 
 /*
  * set/fetch
  */
-#define SHMEMC_CTX_SET(_size)                                       \
-    void                                                            \
-    shmemc_ctx_set##_size(shmem_ctx_t ctx,                          \
-                          void *t, uint64_t v, int pe)              \
-    {                                                               \
-        shmemc_context_h ch = (shmemc_context_h) ctx;               \
-                                                                    \
-        (void) helper_atomic_swap##_size(ch, (uint64_t) t, v, pe);  \
+
+void
+shmemc_ctx_set(shmem_ctx_t ctx,
+               void *t, void *vp, size_t vs,
+               int pe)
+{
+    shmemc_ctx_swap(ctx,
+                    t, vp, vs,
+                    pe,
+                    NULL);
+}
+
+
+
+/*
+ * bitwise helpers
+ *
+ * Newer versions of UCX now have native support for bitwise atomics:
+ * we detect this during configure.
+ *
+ */
+
+#ifdef HAVE_UCP_BITWISE_ATOMICS
+
+#define MAKE_UCP_FETCH_OP(_op)     UCP_ATOMIC_FETCH_OP_F##_op
+#define MAKE_UCP_POST_OP(_op)      UCP_ATOMIC_POST_OP_##_op
+
+#if 0
+#define HELPER_BITWISE_FETCH_ATOMIC(_ucp_op, _opname)                   \
+    inline static void                                                  \
+    helper_atomic_fetch_##_opname(shmemc_context_h ch,                  \
+                                  void *t, void *vp, size_t vs,         \
+                                  int pe,                               \
+                                  void *retp)                           \
+    {                                                                   \
+        const ucs_status_t s =                                          \
+            helper_fetching_amo(ch,                                     \
+                                MAKE_UCP_FETCH_OP(_ucp_op),             \
+                                t, vp, vs,                              \
+                                pe,                                     \
+                                retp);                                  \
+                                                                        \
+        /* value came back? */                                          \
+        shmemu_assert(s == UCS_OK,                                      \
+                      "AMO fetch op \"%s\" failed (status: %s)",        \
+                      #_opname, ucs_status_string(s));                  \
     }
 
-SHMEMC_CTX_SET(32)
-SHMEMC_CTX_SET(64)
+HELPER_BITWISE_FETCH_ATOMIC(AND, and)
+HELPER_BITWISE_FETCH_ATOMIC(OR,  or)
+HELPER_BITWISE_FETCH_ATOMIC(XOR, xor)
+#endif
+
+#define HELPER_BITWISE_ATOMIC(_ucp_op, _opname)                         \
+    inline static void                                                  \
+    helper_atomic_##_opname(shmemc_context_h ch,                        \
+                            void *t, void *vp, size_t vs,               \
+                            int pe)                                     \
+    {                                                                   \
+        const ucs_status_t s =                                          \
+            helper_posted_amo(ch,                                       \
+                              MAKE_UCP_POST_OP(_ucp_op),                \
+                              t, vp, vs,                                \
+                              pe);                                      \
+                                                                        \
+        shmemu_assert(s == UCS_OK,                                      \
+                      "AMO post op \"%s\" failed (status: %s)",         \
+                      #_opname, ucs_status_string(s));                  \
+    }
+
+HELPER_BITWISE_ATOMIC(AND, and)
+HELPER_BITWISE_ATOMIC(OR,  or)
+HELPER_BITWISE_ATOMIC(XOR, xor)
+
+#else  /* ! HAVE_UCP_BITWISE_ATOMICS */
+
+#define HELPER_BITWISE_FETCH_ATOMIC(_op, _opname)                       \
+    inline static void                                                  \
+    helper_atomic_fetch_##_opname(shmemc_context_h ch,                  \
+                                  void *t, void *vp, size_t vs,         \
+                                  int pe,                               \
+                                  void *retp)                           \
+    {                                                                   \
+        uint64_t ret = 0;                                               \
+        uint64_t rval, rval_orig;                                       \
+        ucs_status_t s;                                                 \
+        uint64_t r_t;                                                   \
+        ucp_rkey_h r_key;                                               \
+        ucp_ep_h ep;                                                    \
+                                                                        \
+        get_remote_key_and_addr(t, pe, &r_key, &r_t);                   \
+        ep = lookup_ucp_ep(ch, pe);                                     \
+                                                                        \
+        do {                                                            \
+            s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
+                        r_t, r_key);                                    \
+            shmemu_assert(s == UCS_OK,                                  \
+                          "AMO fetch failed in CAS (status: %s)",       \
+                          ucs_status_string(s));                        \
+            rval = (rval_orig) _op v;                                   \
+                                                                        \
+            s = ucp_atomic_cswap64(ep, rval_orig, rval,                 \
+                                        r_t, r_key, &ret);              \
+        } while (ret != rval_orig);                                     \
+                                                                        \
+        *retp = ret;                                                    \
+    }
+
+HELPER_BITWISE_FETCH_ATOMIC(|, or)
+HELPER_BITWISE_FETCH_ATOMIC(&, and)
+HELPER_BITWISE_FETCH_ATOMIC(^, xor)
+
+#define HELPER_BITWISE_ATOMIC(_opname)                                  \
+    inline static void                                                  \
+    helper_atomic_##_opname(shmemc_context_h ch,                        \
+                            void *t, void *vp, size_t vs,               \
+                            int pe)                                     \
+    {                                                                   \
+        (void) helper_atomic_fetch_##_opname(ch, t, vp, vs, pe);        \
+    }
+
+HELPER_BITWISE_ATOMIC(or)
+HELPER_BITWISE_ATOMIC(and)
+HELPER_BITWISE_ATOMIC(xor)
+
+#endif  /* HAVE_UCP_BITWISE_ATOMICS */
 
 /*
  * fetched-bitwise
  */
 
-#define SHMEMC_CTX_FETCH_BITWISE(_op, _size)                        \
-    uint64_t                                                        \
-    shmemc_ctx_fetch_##_op##_size(shmem_ctx_t ctx,                  \
-                                  void *t, uint64_t v, int pe)      \
-    {                                                               \
-        shmemc_context_h ch = (shmemc_context_h) ctx;               \
-                                                                    \
-        return helper_atomic_fetch_##_op##_size(ch, (uint64_t) t,   \
-                                                v, pe);             \
+#define SHMEMC_CTX_FETCH_BITWISE(_op)                                   \
+    void                                                                \
+    shmemc_ctx_fetch_##_op(shmem_ctx_t ctx,                             \
+                           void *t, void *vp, size_t vs,                \
+                           int pe,                                      \
+                           void *retp)                                  \
+    {                                                                   \
+        shmemc_context_h ch = (shmemc_context_h) ctx;                   \
+                                                                        \
+        helper_fetching_amo(ch,                                         \
+                            UCP_ATOMIC_FETCH_OP_FAND,                   \
+                            t, vp, vs,                                  \
+                            pe,                                         \
+                            retp);                                      \
     }
 
-SHMEMC_CTX_FETCH_BITWISE(and, 32)
-SHMEMC_CTX_FETCH_BITWISE(and, 64)
-SHMEMC_CTX_FETCH_BITWISE(or,  32)
-SHMEMC_CTX_FETCH_BITWISE(or,  64)
-SHMEMC_CTX_FETCH_BITWISE(xor, 32)
-SHMEMC_CTX_FETCH_BITWISE(xor, 64)
+SHMEMC_CTX_FETCH_BITWISE(and)
+SHMEMC_CTX_FETCH_BITWISE(or)
+SHMEMC_CTX_FETCH_BITWISE(xor)
 
 /*
  * bitwise
  */
 
-#define SHMEMC_CTX_BITWISE(_op, _size)                      \
-    void                                                    \
-    shmemc_ctx_##_op##_size(shmem_ctx_t ctx,                \
-                            void *t, uint64_t v, int pe)    \
-    {                                                       \
-        shmemc_context_h ch = (shmemc_context_h) ctx;       \
-                                                            \
-        helper_atomic_##_op##_size(ch, (uint64_t) t,        \
-                                   v, pe);                  \
+#define SHMEMC_CTX_BITWISE(_op)                                     \
+    void                                                            \
+    shmemc_ctx_##_op(shmem_ctx_t ctx,                               \
+                     void *t, void *vp, size_t vs, int pe)          \
+    {                                                               \
+        shmemc_context_h ch = (shmemc_context_h) ctx;               \
+                                                                    \
+        helper_atomic_##_op(ch, t, vp, vs, pe);                     \
     }
 
-SHMEMC_CTX_BITWISE(and, 32)
-SHMEMC_CTX_BITWISE(and, 64)
-SHMEMC_CTX_BITWISE(or,  32)
-SHMEMC_CTX_BITWISE(or,  64)
-SHMEMC_CTX_BITWISE(xor, 32)
-SHMEMC_CTX_BITWISE(xor, 64)
+SHMEMC_CTX_BITWISE(and)
+SHMEMC_CTX_BITWISE(or)
+SHMEMC_CTX_BITWISE(xor)
