@@ -89,106 +89,76 @@ void shmemc_ctx_get_signal(shmem_ctx_t ctx,
  * swappity
  */
 
-#define SHMEMC_CTX_DECL_SWAP(_size)                                     \
-    uint64_t shmemc_ctx_swap##_size(shmem_ctx_t ctx,                    \
-                                    void *target, uint64_t value, int pe);
+void shmemc_ctx_swap(shmem_ctx_t ctx,
+                     void *target, void *value, size_t vals,
+                     int pe,
+                     void *retp);
 
-SHMEMC_CTX_DECL_SWAP(32)
-SHMEMC_CTX_DECL_SWAP(64)
-
-#define SHMEMC_CTX_DECL_CSWAP(_size)                                \
-    uint64_t shmemc_ctx_cswap##_size(shmem_ctx_t ctx,               \
-                                     void *target,                  \
-                                     uint64_t cond, uint64_t value, \
-                                     int pe);
-
-SHMEMC_CTX_DECL_CSWAP(32)
-SHMEMC_CTX_DECL_CSWAP(64)
+void shmemc_ctx_cswap(shmem_ctx_t ctx,
+                      void *target, uint64_t cond,
+                      void *value, size_t vals,
+                      int pe,
+                      void *retp);
 
 /*
  * adds and incs
  */
 
-#define SHMEMC_CTX_DECL_ADD(_size)                                      \
-    void shmemc_ctx_add##_size(shmem_ctx_t ctx,                         \
-                               void *target, uint64_t value, int pe);
+void shmemc_ctx_add(shmem_ctx_t ctx,
+                    void *target, void *value, size_t vals,
+                    int pe);
+void shmemc_ctx_inc(shmem_ctx_t ctx,
+                    void *target,
+                    int pe);
 
-#define SHMEMC_CTX_DECL_INC(_size)                      \
-    void shmemc_ctx_inc##_size(shmem_ctx_t ctx,         \
-                               void *target, int pe);
-
-SHMEMC_CTX_DECL_ADD(32)
-SHMEMC_CTX_DECL_ADD(64)
-
-SHMEMC_CTX_DECL_INC(32)
-SHMEMC_CTX_DECL_INC(64)
-
-#define SHMEMC_CTX_DECL_FETCH_ADD(_size)                                \
-    uint64_t shmemc_ctx_fadd##_size(shmem_ctx_t ctx,                    \
-                                    void *target, uint64_t value, int pe);
-
-#define SHMEMC_CTX_DECL_FETCH_INC(_size)                    \
-    uint64_t shmemc_ctx_finc##_size(shmem_ctx_t ctx,        \
-                                    void *target, int pe);
-
-SHMEMC_CTX_DECL_FETCH_ADD(32)
-SHMEMC_CTX_DECL_FETCH_ADD(64)
-
-SHMEMC_CTX_DECL_FETCH_INC(32)
-SHMEMC_CTX_DECL_FETCH_INC(64)
+void shmemc_ctx_fadd(shmem_ctx_t ctx,
+                    void *target, void *value, size_t vals,
+                    int pe,
+                    void *retp);
+void shmemc_ctx_finc(shmem_ctx_t ctx,
+                    void *target,
+                    int pe,
+                    void *retp);
 
 /*
  * fetch and set
  */
 
-#define SHMEMC_CTX_DECL_FETCH(_size)                        \
-    uint64_t shmemc_ctx_fetch##_size(shmem_ctx_t ctx,       \
-                                     const void *target, int pe);
+void shmemc_ctx_fetch(shmem_ctx_t ctx,
+                      void *target,
+                      int pe,
+                      void *retp);
 
-SHMEMC_CTX_DECL_FETCH(32)
-SHMEMC_CTX_DECL_FETCH(64)
-
-#define SHMEMC_CTX_DECL_SET(_size)                                      \
-    void shmemc_ctx_set##_size(shmem_ctx_t ctx,                         \
-                               void *target, uint64_t value, int pe);
-
-SHMEMC_CTX_DECL_SET(32)
-SHMEMC_CTX_DECL_SET(64)
+void shmemc_ctx_set(shmem_ctx_t ctx,
+                    void *target, void *vp, size_t vs,
+                    int pe);
 
 /*
  * bitwise
  */
 
-#define SHMEMC_CTX_DECL_BITWISE(_op, _size)                             \
-    void shmemc_ctx_##_op##_size(shmem_ctx_t ctx,                       \
-                                 void *target, uint64_t value, int pe);
+#define SHMEMC_CTX_DECL_BITWISE(_op)                                    \
+    void shmemc_ctx_##_op(shmem_ctx_t ctx,                              \
+                          void *target, void *value, size_t vals,       \
+                          int pe);
 
-SHMEMC_CTX_DECL_BITWISE(and, 32)
-SHMEMC_CTX_DECL_BITWISE(and, 64)
-
-SHMEMC_CTX_DECL_BITWISE(or, 32)
-SHMEMC_CTX_DECL_BITWISE(or, 64)
-
-SHMEMC_CTX_DECL_BITWISE(xor, 32)
-SHMEMC_CTX_DECL_BITWISE(xor, 64)
+SHMEMC_CTX_DECL_BITWISE(and)
+SHMEMC_CTX_DECL_BITWISE(or)
+SHMEMC_CTX_DECL_BITWISE(xor)
 
 /*
  * fetch-bitwise
  */
 
-#define SHMEMC_CTX_DECL_FETCH_BITWISE(_op, _size)                       \
-    uint64_t shmemc_ctx_fetch_##_op##_size(shmem_ctx_t ctx,             \
-                                           void *target,                \
-                                           uint64_t value, int pe);
+#define SHMEMC_CTX_DECL_FETCH_BITWISE(_op)                              \
+    void shmemc_ctx_fetch_##_op(shmem_ctx_t ctx,                        \
+                                void *target, void *value, size_t vals, \
+                                int pe,                                 \
+                                void *retp);
 
-SHMEMC_CTX_DECL_FETCH_BITWISE(and, 32)
-SHMEMC_CTX_DECL_FETCH_BITWISE(and, 64)
-
-SHMEMC_CTX_DECL_FETCH_BITWISE(or, 32)
-SHMEMC_CTX_DECL_FETCH_BITWISE(or, 64)
-
-SHMEMC_CTX_DECL_FETCH_BITWISE(xor, 32)
-SHMEMC_CTX_DECL_FETCH_BITWISE(xor, 64)
+SHMEMC_CTX_DECL_FETCH_BITWISE(and)
+SHMEMC_CTX_DECL_FETCH_BITWISE(or)
+SHMEMC_CTX_DECL_FETCH_BITWISE(xor)
 
 /*
  * locks
@@ -546,75 +516,47 @@ SHMEMC_DECL_COLLECT_SIZE(64)
 #define shmemc_get_nbi(...)                             \
     shmemc_ctx_get_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_swap32(...)                              \
-    shmemc_ctx_swap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_swap64(...)                              \
-    shmemc_ctx_swap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_swap(...)                              \
+    shmemc_ctx_swap(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_cswap32(...)                             \
-    shmemc_ctx_cswap32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_cswap64(...)                             \
-    shmemc_ctx_cswap64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_cswap(...)                             \
+    shmemc_ctx_cswap(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_add32(...)                               \
-    shmemc_ctx_add32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_add64(...)                               \
-    shmemc_ctx_add64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_add(...)                               \
+    shmemc_ctx_add(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_inc32(...)                               \
-    shmemc_ctx_inc32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_inc64(...)                               \
-    shmemc_ctx_inc64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_inc(...)                               \
+    shmemc_ctx_inc(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fadd32(...)                              \
-    shmemc_ctx_fadd32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_fadd64(...)                              \
-    shmemc_ctx_fadd64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fadd(...)                              \
+    shmemc_ctx_fadd(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_finc32(...)                              \
-    shmemc_ctx_finc32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_finc64(...)                              \
-    shmemc_ctx_finc64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_finc(...)                              \
+    shmemc_ctx_finc(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fetch32(...)                             \
-    shmemc_ctx_fetch32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_fetch64(...)                             \
-    shmemc_ctx_fetch64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch(...)                             \
+    shmemc_ctx_fetch(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_set32(...)                               \
-    shmemc_ctx_set32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_set64(...)                               \
-    shmemc_ctx_set64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_set(...)                               \
+    shmemc_ctx_set(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_and32(...)                               \
-    shmemc_ctx_and32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_and64(...)                               \
-    shmemc_ctx_and64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_and(...)                               \
+    shmemc_ctx_and(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_or32(...)                            \
-    shmemc_ctx_or32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_or64(...)                            \
-    shmemc_ctx_or64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_or(...)                            \
+    shmemc_ctx_or(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_xor32(...)                               \
-    shmemc_ctx_xor32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_xor64(...)                               \
-    shmemc_ctx_xor64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_xor(...)                               \
+    shmemc_ctx_xor(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fetch_and32(...)                             \
-    shmemc_ctx_fetch_and32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_fetch_and64(...)                             \
-    shmemc_ctx_fetch_and64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_and(...)                             \
+    shmemc_ctx_fetch_and(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fetch_or32(...)                              \
-    shmemc_ctx_fetch_or32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_fetch_or64(...)                              \
-    shmemc_ctx_fetch_or64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_or(...)                              \
+    shmemc_ctx_fetch_or(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fetch_xor32(...)                             \
-    shmemc_ctx_fetch_xor32(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-#define shmemc_fetch_xor64(...)                             \
-    shmemc_ctx_fetch_xor64(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_xor(...)                             \
+    shmemc_ctx_fetch_xor(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #define shmemc_test_eq16(...)                         \
     shmemc_ctx_test_eq16(SHMEM_CTX_DEFAULT, __VA_ARGS__)

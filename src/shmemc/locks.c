@@ -56,7 +56,10 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
     t.d.locked = 1;
     t.d.next = proc.rank;
 
-    t.blob = shmemc_swap32(&(lock->blob), t.blob, lock_owner(lock));
+    shmemc_swap(&(lock->blob),
+                &(t.blob), sizeof(t.blob),
+                lock_owner(lock),
+                &(t.blob));
 
     if (t.blob == SHMEM_LOCK_FREE) {
         t.blob = SHMEM_LOCK_RESET;
@@ -86,10 +89,12 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
         t.d.locked = 1;
         t.d.next = proc.rank;
 
-        t.blob = shmemc_cswap32(&(lock->blob),
-                                t.blob,
-                                SHMEM_LOCK_RESET,
-                                lock_owner(lock));
+        shmemc_cswap(&(lock->blob),
+                     SHMEM_LOCK_RESET,
+                     &(t.blob),
+                     sizeof(t.blob),
+                     lock_owner(lock),
+                     &(t.blob));
         if (t.d.next == proc.rank) {
             return;
             /* NOT REACHED */

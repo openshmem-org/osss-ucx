@@ -26,64 +26,76 @@
 
 #define DEPR_SINCE 1.4
 
-#define SHMEM_DEPRECATE_VOID_AMO1(_op, _name, _type, _size) \
+#define SHMEM_DEPRECATE_VOID_AMO1(_op, _name, _type)        \
     void                                                    \
     shmem_##_name##_##_op(_type *target, int pe)            \
     {                                                       \
         deprecate(__func__, DEPR_SINCE);                    \
-        shmemc_##_op##_size(target, pe);                    \
+        shmemc_##_op(target, pe);                           \
     }
 
-#define SHMEM_DEPRECATE_VOID_AMO2(_op, _name, _type, _size)     \
+#define SHMEM_DEPRECATE_VOID_AMO2(_op, _name, _type)            \
     void                                                        \
     shmem_##_name##_##_op(_type *target, _type value, int pe)   \
     {                                                           \
         deprecate(__func__, DEPR_SINCE);                        \
-        shmemc_##_op##_size(target, value, pe);                 \
+        shmemc_##_op(target, &value, sizeof(value), pe);        \
     }
 
-#define SHMEM_DEPRECATE_VOID_AMO3(_op, _name, _type, _soze) \
-    void                                                    \
-    shmem_##_name##_##_op(_type *target,                    \
-                          _type cond, _type value,          \
-                          int pe)                           \
-    {                                                       \
-        deprecate(__func__, DEPR_SINCE);                    \
-        shmemc_##_op##_size(target, cond, value, pe);       \
-    }
-
-#define SHMEM_DEPRECATE_AMO1(_op, _name, _type, _size)  \
-    _type                                               \
-    shmem_##_name##_##_op(_type *target, int pe)        \
-    {                                                   \
-        deprecate(__func__, DEPR_SINCE);                \
-        return shmemc_##_op##_size(target, pe);         \
-    }
-
-#define SHMEM_DEPRECATE_CONST_AMO1(_op, _name, _type, _size)    \
-    _type                                                       \
-    shmem_##_name##_##_op(const _type *target, int pe)          \
-    {                                                           \
-        deprecate(__func__, DEPR_SINCE);                        \
-        return shmemc_##_op##_size(target, pe);                 \
-    }
-
-#define SHMEM_DEPRECATE_AMO2(_op, _name, _type, _size)          \
-    _type                                                       \
-    shmem_##_name##_##_op(_type *target, _type value, int pe)   \
-    {                                                           \
-        deprecate(__func__, DEPR_SINCE);                        \
-        return shmemc_##_op##_size(target, value, pe);          \
-    }
-
-#define SHMEM_DEPRECATE_AMO3(_op, _name, _type, _size)          \
-    _type                                                       \
+#define SHMEM_DEPRECATE_VOID_AMO3(_op, _name, _type)            \
+    void                                                        \
     shmem_##_name##_##_op(_type *target,                        \
                           _type cond, _type value,              \
                           int pe)                               \
     {                                                           \
         deprecate(__func__, DEPR_SINCE);                        \
-        return shmemc_##_op##_size(target, cond, value, pe);    \
+        shmemc_##_op(target, cond, &value, sizeof(value), pe);  \
+    }
+
+#define SHMEM_DEPRECATE_AMO1(_op, _name, _type)         \
+    _type                                               \
+    shmem_##_name##_##_op(_type *target, int pe)        \
+    {                                                   \
+        _type v;                                        \
+                                                        \
+        deprecate(__func__, DEPR_SINCE);                \
+        shmemc_##_op(target, pe, &v);                   \
+        return v;                                       \
+    }
+
+#define SHMEM_DEPRECATE_CONST_AMO1(_op, _name, _type)   \
+    _type                                               \
+    shmem_##_name##_##_op(const _type *target, int pe)  \
+    {                                                   \
+        _type v;                                        \
+                                                        \
+        deprecate(__func__, DEPR_SINCE);                \
+        shmemc_##_op((_type *) target, pe, &v);         \
+        return v;                                       \
+    }
+
+#define SHMEM_DEPRECATE_AMO2(_op, _name, _type)                     \
+    _type                                                           \
+    shmem_##_name##_##_op(_type *target, _type value, int pe)       \
+    {                                                               \
+        _type v;                                                    \
+                                                                    \
+        deprecate(__func__, DEPR_SINCE);                            \
+        shmemc_##_op(target, &value, sizeof(value), pe, &v);        \
+        return v;                                                   \
+    }
+
+#define SHMEM_DEPRECATE_AMO3(_op, _name, _type)                     \
+    _type                                                           \
+    shmem_##_name##_##_op(_type *target,                            \
+                          _type cond, _type value,                  \
+                          int pe)                                   \
+    {                                                               \
+        _type v;                                                    \
+                                                                    \
+        deprecate(__func__, DEPR_SINCE);                            \
+        shmemc_##_op(target, cond, &value, sizeof(value), pe, &v);  \
+        return v;                                                   \
     }
 
 #ifdef ENABLE_PSHMEM
@@ -99,11 +111,11 @@
 #define shmem_double_set pshmem_double_set
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_VOID_AMO2(set, int, int, 32)
-SHMEM_DEPRECATE_VOID_AMO2(set, long, long, 64)
-SHMEM_DEPRECATE_VOID_AMO2(set, longlong, long long, 64)
-SHMEM_DEPRECATE_VOID_AMO2(set, float, float, 32)
-SHMEM_DEPRECATE_VOID_AMO2(set, double, double, 64)
+SHMEM_DEPRECATE_VOID_AMO2(set, int, int)
+SHMEM_DEPRECATE_VOID_AMO2(set, long, long)
+SHMEM_DEPRECATE_VOID_AMO2(set, longlong, long long)
+SHMEM_DEPRECATE_VOID_AMO2(set, float, float)
+SHMEM_DEPRECATE_VOID_AMO2(set, double, double)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_inc = pshmem_int_inc
@@ -114,9 +126,9 @@ SHMEM_DEPRECATE_VOID_AMO2(set, double, double, 64)
 #define shmem_longlong_inc pshmem_longlong_inc
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_VOID_AMO1(inc, int, int, 32)
-SHMEM_DEPRECATE_VOID_AMO1(inc, long, long, 64)
-SHMEM_DEPRECATE_VOID_AMO1(inc, longlong, long long, 64)
+SHMEM_DEPRECATE_VOID_AMO1(inc, int, int)
+SHMEM_DEPRECATE_VOID_AMO1(inc, long, long)
+SHMEM_DEPRECATE_VOID_AMO1(inc, longlong, long long)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_add = pshmem_int_add
@@ -127,9 +139,9 @@ SHMEM_DEPRECATE_VOID_AMO1(inc, longlong, long long, 64)
 #define shmem_longlong_add pshmem_longlong_add
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_VOID_AMO2(add, int, int, 32)
-SHMEM_DEPRECATE_VOID_AMO2(add, long, long, 64)
-SHMEM_DEPRECATE_VOID_AMO2(add, longlong, long long, 64)
+SHMEM_DEPRECATE_VOID_AMO2(add, int, int)
+SHMEM_DEPRECATE_VOID_AMO2(add, long, long)
+SHMEM_DEPRECATE_VOID_AMO2(add, longlong, long long)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_fetch = pshmem_int_fetch
@@ -144,11 +156,11 @@ SHMEM_DEPRECATE_VOID_AMO2(add, longlong, long long, 64)
 #define shmem_double_fetch pshmem_double_fetch
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_CONST_AMO1(fetch, int, int, 32)
-SHMEM_DEPRECATE_CONST_AMO1(fetch, long, long, 64)
-SHMEM_DEPRECATE_CONST_AMO1(fetch, longlong, long long, 64)
-SHMEM_DEPRECATE_CONST_AMO1(fetch, float, float, 32)
-SHMEM_DEPRECATE_CONST_AMO1(fetch, double, double, 64)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, int, int)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, long, long)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, longlong, long long)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, float, float)
+SHMEM_DEPRECATE_CONST_AMO1(fetch, double, double)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_finc = pshmem_int_finc
@@ -159,9 +171,9 @@ SHMEM_DEPRECATE_CONST_AMO1(fetch, double, double, 64)
 #define shmem_longlong_finc pshmem_longlong_finc
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_AMO1(finc, int, int, 32)
-SHMEM_DEPRECATE_AMO1(finc, long, long, 64)
-SHMEM_DEPRECATE_AMO1(finc, longlong, long long, 64)
+SHMEM_DEPRECATE_AMO1(finc, int, int)
+SHMEM_DEPRECATE_AMO1(finc, long, long)
+SHMEM_DEPRECATE_AMO1(finc, longlong, long long)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_fadd = pshmem_int_fadd
@@ -172,9 +184,9 @@ SHMEM_DEPRECATE_AMO1(finc, longlong, long long, 64)
 #define shmem_longlong_fadd pshmem_longlong_fadd
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_AMO2(fadd, int, int, 32)
-SHMEM_DEPRECATE_AMO2(fadd, long, long, 64)
-SHMEM_DEPRECATE_AMO2(fadd, longlong, long long, 64)
+SHMEM_DEPRECATE_AMO2(fadd, int, int)
+SHMEM_DEPRECATE_AMO2(fadd, long, long)
+SHMEM_DEPRECATE_AMO2(fadd, longlong, long long)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_float_swap = pshmem_float_swap
@@ -189,11 +201,11 @@ SHMEM_DEPRECATE_AMO2(fadd, longlong, long long, 64)
 #define shmem_longlong_swap pshmem_longlong_swap
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_AMO2(swap, int, int, 32)
-SHMEM_DEPRECATE_AMO2(swap, long, long, 64)
-SHMEM_DEPRECATE_AMO2(swap, longlong, long long, 64)
-SHMEM_DEPRECATE_AMO2(swap, float, float, 32)
-SHMEM_DEPRECATE_AMO2(swap, double, double, 64)
+SHMEM_DEPRECATE_AMO2(swap, int, int)
+SHMEM_DEPRECATE_AMO2(swap, long, long)
+SHMEM_DEPRECATE_AMO2(swap, longlong, long long)
+SHMEM_DEPRECATE_AMO2(swap, float, float)
+SHMEM_DEPRECATE_AMO2(swap, double, double)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_cswap = pshmem_int_cswap
@@ -204,6 +216,6 @@ SHMEM_DEPRECATE_AMO2(swap, double, double, 64)
 #define shmem_longlong_cswap pshmem_longlong_cswap
 #endif /* ENABLE_PSHMEM */
 
-SHMEM_DEPRECATE_AMO3(cswap, int, int, 32)
-SHMEM_DEPRECATE_AMO3(cswap, long, long, 64)
-SHMEM_DEPRECATE_AMO3(cswap, longlong, long long, 64)
+SHMEM_DEPRECATE_AMO3(cswap, int, int)
+SHMEM_DEPRECATE_AMO3(cswap, long, long)
+SHMEM_DEPRECATE_AMO3(cswap, longlong, long long)
