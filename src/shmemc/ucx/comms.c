@@ -656,6 +656,7 @@ shmemc_ctx_set(shmem_ctx_t ctx,
 #define MAKE_UCP_FETCH_OP(_op)     UCP_ATOMIC_FETCH_OP_F##_op
 #define MAKE_UCP_POST_OP(_op)      UCP_ATOMIC_POST_OP_##_op
 
+#if 0
 #define HELPER_BITWISE_FETCH_ATOMIC(_ucp_op, _opname)                   \
     inline static void                                                  \
     helper_atomic_fetch_##_opname(shmemc_context_h ch,                  \
@@ -679,6 +680,7 @@ shmemc_ctx_set(shmem_ctx_t ctx,
 HELPER_BITWISE_FETCH_ATOMIC(AND, and)
 HELPER_BITWISE_FETCH_ATOMIC(OR,  or)
 HELPER_BITWISE_FETCH_ATOMIC(XOR, xor)
+#endif
 
 #define HELPER_BITWISE_ATOMIC(_ucp_op, _opname)                         \
     inline static void                                                  \
@@ -739,7 +741,7 @@ HELPER_BITWISE_FETCH_ATOMIC(|, or)
 HELPER_BITWISE_FETCH_ATOMIC(&, and)
 HELPER_BITWISE_FETCH_ATOMIC(^, xor)
 
-#define HELPER_BITWISE_ATOMIC(_op, _opname)                             \
+#define HELPER_BITWISE_ATOMIC(_opname)                                  \
     inline static void                                                  \
     helper_atomic_##_opname(shmemc_context_h ch,                        \
                             void *t, void *vp, size_t vs,               \
@@ -748,9 +750,9 @@ HELPER_BITWISE_FETCH_ATOMIC(^, xor)
         (void) helper_atomic_fetch_##_opname(ch, t, vp, vs, pe);        \
     }
 
-HELPER_BITWISE_ATOMIC(|, or)
-HELPER_BITWISE_ATOMIC(&, and)
-HELPER_BITWISE_ATOMIC(^, xor)
+HELPER_BITWISE_ATOMIC(or)
+HELPER_BITWISE_ATOMIC(and)
+HELPER_BITWISE_ATOMIC(xor)
 
 #endif  /* HAVE_UCP_BITWISE_ATOMICS */
 
