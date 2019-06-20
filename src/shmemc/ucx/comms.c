@@ -513,19 +513,8 @@ shmemc_ctx_add(shmem_ctx_t ctx,
 }
 
 /*
- * inc
+ * inc = add 1
  */
-
-void
-shmemc_ctx_inc(shmem_ctx_t ctx, void *t, int pe)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    uint64_t n = 1;
-
-    helper_posted_amo(ch, UCP_ATOMIC_POST_OP_ADD, t,
-                     &n, sizeof(n),
-                     pe);
-}
 
 /*
  * fetch-and-add
@@ -545,22 +534,8 @@ shmemc_ctx_fadd(shmem_ctx_t ctx,
 }
 
 /*
- * fetch-and-inc
+ * fetch-and-inc: finc = fadd 1
  */
-
-void
-shmemc_ctx_finc(shmem_ctx_t ctx,
-                void *t, int pe,
-                void *retp)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    uint64_t n = 1;
-
-    helper_fetching_amo(ch,
-                        UCP_ATOMIC_FETCH_OP_FADD,
-                        t, &n, sizeof(n),
-                        pe, retp);
-}
 
 /*
  * swaps
