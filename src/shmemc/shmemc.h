@@ -95,8 +95,8 @@ void shmemc_ctx_swap(shmem_ctx_t ctx,
                      void *retp);
 
 void shmemc_ctx_cswap(shmem_ctx_t ctx,
-                      void *target, uint64_t cond,
-                      void *value, size_t vals,
+                      void *target,
+                      void *cond, void *value, size_t vals,
                       int pe,
                       void *retp);
 
@@ -107,16 +107,9 @@ void shmemc_ctx_cswap(shmem_ctx_t ctx,
 void shmemc_ctx_add(shmem_ctx_t ctx,
                     void *target, void *value, size_t vals,
                     int pe);
-void shmemc_ctx_inc(shmem_ctx_t ctx,
-                    void *target,
-                    int pe);
 
 void shmemc_ctx_fadd(shmem_ctx_t ctx,
                     void *target, void *value, size_t vals,
-                    int pe,
-                    void *retp);
-void shmemc_ctx_finc(shmem_ctx_t ctx,
-                    void *target,
                     int pe,
                     void *retp);
 

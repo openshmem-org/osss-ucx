@@ -124,7 +124,7 @@ SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t)
                                                                         \
         SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_cswap(ctx,                    \
                                                 target,                 \
-                                                cond,                   \
+                                                &cond,                  \
                                                 &value, sizeof(value),  \
                                                 pe, &v));               \
         return v;                                                       \
@@ -149,7 +149,7 @@ SHMEM_CTX_TYPE_CSWAP(ptrdiff, ptrdiff_t)
 #pragma weak shmem_ctx_int_atomic_fetch_add = pshmem_ctx_int_atomic_fetch_add
 #define shmem_ctx_int_atomic_fetch_add pshmem_ctx_int_atomic_fetch_add
 #pragma weak shmem_ctx_long_atomic_fetch_add = pshmem_ctx_long_atomic_fetch_add
-#define shmem_ctx_long_atomic_fetch_add pshmem_ctx_long_atomic_fetch_add
+define shmem_ctx_long_atomic_fetch_add pshmem_ctx_long_atomic_fetch_add
 #pragma weak shmem_ctx_longlong_atomic_fetch_add = pshmem_ctx_longlong_atomic_fetch_add
 #define shmem_ctx_longlong_atomic_fetch_add pshmem_ctx_longlong_atomic_fetch_add
 #pragma weak shmem_ctx_uint_atomic_fetch_add = pshmem_ctx_uint_atomic_fetch_add
@@ -238,13 +238,16 @@ SHMEM_CTX_TYPE_FADD(ptrdiff, ptrdiff_t)
 #define SHMEM_CTX_TYPE_FINC(_name, _type)                               \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch_inc(shmem_ctx_t ctx,               \
-                                         _type *target, int pe)         \
+                                         _type *target,                 \
+                                         int pe)                        \
     {                                                                   \
+        _type one = 1;                                                  \
         _type v;                                                        \
                                                                         \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_finc(ctx,                     \
-                                               target, pe, &v));        \
-                                                                        \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fadd(ctx,                     \
+                                               target,                  \
+                                               &one, sizeof(one),       \
+                                               pe, &v));                \
         return v;                                                       \
     }
 
@@ -354,9 +357,15 @@ SHMEM_CTX_TYPE_ADD(ptrdiff, ptrdiff_t)
 #define SHMEM_CTX_TYPE_INC(_name, _type)                                \
     void                                                                \
     shmem_ctx_##_name##_atomic_inc(shmem_ctx_t ctx,                     \
-                                   _type *target, int pe)               \
+                                   _type *target,                       \
+                                   int pe)                              \
     {                                                                   \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_inc(ctx, target, pe));        \
+        _type one = 1;                                                  \
+                                                                        \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_add(ctx,                      \
+                                              target,                   \
+                                              &one, sizeof(one),        \
+                                              pe));                     \
     }
 
 SHMEM_CTX_TYPE_INC(int, int)
@@ -412,7 +421,7 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t)
 #define SHMEM_CTX_TYPE_FETCH(_name, _type)                              \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch(shmem_ctx_t ctx,                   \
-                                     _type *target, int pe)             \
+                                     const _type *target, int pe)       \
     {                                                                   \
         _type v;                                                        \
                                                                         \
@@ -677,6 +686,13 @@ SHMEM_CTX_TYPE_FETCH_BITWISE(and, uint64, uint64_t)
 
 /* ------------------------------------------------------------------------ */
 
+#define API_DEF_CONST_AMO1(_op, _name, _type)                           \
+    _type shmem_##_name##_atomic_##_op(const _type *target, int pe)     \
+    {                                                                   \
+        return shmem_ctx_##_name##_atomic_##_op(SHMEM_CTX_DEFAULT,      \
+                                                target, pe);            \
+    }
+
 #define API_DEF_AMO1(_op, _name, _type)                                 \
     _type shmem_##_name##_atomic_##_op(_type *target, int pe)           \
     {                                                                   \
@@ -873,20 +889,20 @@ API_DEF_VOID_AMO2(add, ptrdiff, ptrdiff_t)
 #define shmem_ptrdiff_atomic_fetch pshmem_ptrdiff_atomic_fetch
 #endif /* ENABLE_PSHMEM */
 
-API_DEF_AMO1(fetch, float, float)
-API_DEF_AMO1(fetch, double, double)
-API_DEF_AMO1(fetch, int, int)
-API_DEF_AMO1(fetch, long, long)
-API_DEF_AMO1(fetch, longlong, long long)
-API_DEF_AMO1(fetch, uint, unsigned int)
-API_DEF_AMO1(fetch, ulong, unsigned long)
-API_DEF_AMO1(fetch, ulonglong, unsigned long long)
-API_DEF_AMO1(fetch, int32, int32_t)
-API_DEF_AMO1(fetch, int64, int64_t)
-API_DEF_AMO1(fetch, uint32, uint32_t)
-API_DEF_AMO1(fetch, uint64, uint64_t)
-API_DEF_AMO1(fetch, size, size_t)
-API_DEF_AMO1(fetch, ptrdiff, ptrdiff_t)
+API_DEF_CONST_AMO1(fetch, float, float)
+API_DEF_CONST_AMO1(fetch, double, double)
+API_DEF_CONST_AMO1(fetch, int, int)
+API_DEF_CONST_AMO1(fetch, long, long)
+API_DEF_CONST_AMO1(fetch, longlong, long long)
+API_DEF_CONST_AMO1(fetch, uint, unsigned int)
+API_DEF_CONST_AMO1(fetch, ulong, unsigned long)
+API_DEF_CONST_AMO1(fetch, ulonglong, unsigned long long)
+API_DEF_CONST_AMO1(fetch, int32, int32_t)
+API_DEF_CONST_AMO1(fetch, int64, int64_t)
+API_DEF_CONST_AMO1(fetch, uint32, uint32_t)
+API_DEF_CONST_AMO1(fetch, uint64, uint64_t)
+API_DEF_CONST_AMO1(fetch, size, size_t)
+API_DEF_CONST_AMO1(fetch, ptrdiff, ptrdiff_t)
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_int_atomic_fetch_inc = pshmem_int_atomic_fetch_inc

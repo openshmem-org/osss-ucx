@@ -513,19 +513,8 @@ shmemc_ctx_add(shmem_ctx_t ctx,
 }
 
 /*
- * inc
+ * inc = add 1
  */
-
-void
-shmemc_ctx_inc(shmem_ctx_t ctx, void *t, int pe)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    int n = 1;
-
-    helper_posted_amo(ch, UCP_ATOMIC_POST_OP_ADD, t,
-                     &n, sizeof(n),
-                     pe);
-}
 
 /*
  * fetch-and-add
@@ -545,22 +534,8 @@ shmemc_ctx_fadd(shmem_ctx_t ctx,
 }
 
 /*
- * fetch-and-inc
+ * fetch-and-inc: finc = fadd 1
  */
-
-void
-shmemc_ctx_finc(shmem_ctx_t ctx,
-                void *t, int pe,
-                void *retp)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    int n = 1;
-
-    helper_fetching_amo(ch,
-                        UCP_ATOMIC_FETCH_OP_FADD,
-                        t, &n, sizeof(n),
-                        pe, retp);
-}
 
 /*
  * swaps
@@ -580,6 +555,7 @@ shmemc_ctx_swap(shmem_ctx_t ctx,
                             t, vp, vs,
                             pe,
                             retp);
+
     shmemu_assert(s == UCS_OK,
                   "AMO swap failed (status: %s)",
                   ucs_status_string(s));
@@ -587,7 +563,7 @@ shmemc_ctx_swap(shmem_ctx_t ctx,
 
 void
 shmemc_ctx_cswap(shmem_ctx_t ctx,
-                 void *t, uint64_t c, void *vp, size_t vs,
+                 void *t, void *c, void *vp, size_t vs,
                  int pe,
                  void *retp)
 {
@@ -598,9 +574,10 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
 
     s = helper_fetching_amo(ch,
                             UCP_ATOMIC_FETCH_OP_CSWAP,
-                            t, &c, vs,
+                            t, c, vs,
                             pe,
                             retp);
+
     shmemu_assert(s == UCS_OK,
                   "AMO conditional swap failed (status: %s)",
                   ucs_status_string(s));
@@ -635,10 +612,11 @@ shmemc_ctx_set(shmem_ctx_t ctx,
                void *t, void *vp, size_t vs,
                int pe)
 {
-    shmemc_ctx_swap(ctx,
-                    t, vp, vs,
-                    pe,
-                    NULL);
+    uint64_t zap;
+
+    NO_WARN_UNUSED(zap);
+
+    shmemc_ctx_swap(ctx, t, vp, vs, pe, &zap);
 }
 
 

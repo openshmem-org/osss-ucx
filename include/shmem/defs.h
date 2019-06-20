@@ -121,6 +121,12 @@ extern shmem_ctx_t SHMEM_CTX_DEFAULT;
 /*
  * to declare AMOs
  */
+#define SHMEM_DECL_CONST_AMO1(_op, _name, _type)                        \
+    _type shmem_##_name##_atomic_##_op(const _type *target, int pe) _WUR; \
+    _type shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,             \
+                                           const _type *target,         \
+                                           int pe) _WUR;
+
 #define SHMEM_DECL_AMO1(_op, _name, _type)                              \
     _type shmem_##_name##_atomic_##_op(_type *target, int pe) _WUR;     \
     _type shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,             \

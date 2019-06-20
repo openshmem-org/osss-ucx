@@ -1527,9 +1527,9 @@ extern "C"
     void shmem_long_add(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_add, 1.4);
     void shmem_int_add(int *target, int value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_add, 1.4);
+        _DEPRECATED_BY(shmem_int_atomic_add, 1.4);
     void shmem_longlong_add(long long *target, long long value, int pe)
-        _DEPRECATED_BY(shmem_long_atomic_add, 1.4);
+        _DEPRECATED_BY(shmem_longlong_atomic_add, 1.4);
 
     /**
      * @brief These routines perform an atomic "or" operation
@@ -1978,33 +1978,33 @@ extern "C"
      * The value stored at address "dest" on PE pe.
      *
      */
-    SHMEM_DECL_AMO1(fetch, long, long)
+    SHMEM_DECL_CONST_AMO1(fetch, long, long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, int, int)
+    SHMEM_DECL_CONST_AMO1(fetch, int, int)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, float, float)
+    SHMEM_DECL_CONST_AMO1(fetch, float, float)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, double, double)
+    SHMEM_DECL_CONST_AMO1(fetch, double, double)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, longlong, long long)
+    SHMEM_DECL_CONST_AMO1(fetch, longlong, long long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, uint, unsigned int)
+    SHMEM_DECL_CONST_AMO1(fetch, uint, unsigned int)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, ulong, unsigned long)
+    SHMEM_DECL_CONST_AMO1(fetch, ulong, unsigned long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, ulonglong, unsigned long long)
+    SHMEM_DECL_CONST_AMO1(fetch, ulonglong, unsigned long long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, int32, int32_t)
+    SHMEM_DECL_CONST_AMO1(fetch, int32, int32_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, int64, int64_t)
+    SHMEM_DECL_CONST_AMO1(fetch, int64, int64_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, uint32, uint32_t)
+    SHMEM_DECL_CONST_AMO1(fetch, uint32, uint32_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, uint64, uint64_t)
+    SHMEM_DECL_CONST_AMO1(fetch, uint64, uint64_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, size, size_t)
+    SHMEM_DECL_CONST_AMO1(fetch, size, size_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, ptrdiff, ptrdiff_t)
+    SHMEM_DECL_CONST_AMO1(fetch, ptrdiff, ptrdiff_t)
 
     int shmem_int_fetch(const int *dest, int pe)
         _DEPRECATED_BY(shmem_int_atomic_fetch, 1.4) _WUR;
@@ -2183,33 +2183,33 @@ extern "C"
      * The value stored at address "dest" on PE pe.
      *
      */
-    SHMEM_DECL_AMO1(fetch, long, long)
+    SHMEM_DECL_CONST_AMO1(fetch, long, long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, int, int)
+    SHMEM_DECL_CONST_AMO1(fetch, int, int)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, float, float)
+    SHMEM_DECL_CONST_AMO1(fetch, float, float)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, double, double)
+    SHMEM_DECL_CONST_AMO1(fetch, double, double)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, longlong, long long)
+    SHMEM_DECL_CONST_AMO1(fetch, longlong, long long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, uint, unsigned int)
+    SHMEM_DECL_CONST_AMO1(fetch, uint, unsigned int)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, ulong, unsigned long)
+    SHMEM_DECL_CONST_AMO1(fetch, ulong, unsigned long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, ulonglong, unsigned long long)
+    SHMEM_DECL_CONST_AMO1(fetch, ulonglong, unsigned long long)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, int32, int32_t)
+    SHMEM_DECL_CONST_AMO1(fetch, int32, int32_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, int64, int64_t)
+    SHMEM_DECL_CONST_AMO1(fetch, int64, int64_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, uint32, uint32_t)
+    SHMEM_DECL_CONST_AMO1(fetch, uint32, uint32_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, uint64, uint64_t)
+    SHMEM_DECL_CONST_AMO1(fetch, uint64, uint64_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, size, size_t)
+    SHMEM_DECL_CONST_AMO1(fetch, size, size_t)
     /* see \ref shmem_long_atomic_fetch() */
-    SHMEM_DECL_AMO1(fetch, ptrdiff, ptrdiff_t)
+    SHMEM_DECL_CONST_AMO1(fetch, ptrdiff, ptrdiff_t)
 
     int shmem_int_fetch(const int *dest, int pe)
         _DEPRECATED_BY(shmem_int_atomic_fetch, 1.4) _WUR;
