@@ -584,22 +584,6 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
 }
 
 /*
- * set/fetch
- */
-
-void
-shmemc_ctx_set(shmem_ctx_t ctx,
-               void *t, void *vp, size_t vs,
-               int pe)
-{
-    uint64_t zap;
-
-    NO_WARN_UNUSED(zap);
-
-    shmemc_ctx_swap(ctx, t, vp, vs, pe, &zap);
-}
-
-/*
  * fetch handled via typed-0-swap
  */
 
