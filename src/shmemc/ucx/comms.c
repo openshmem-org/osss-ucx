@@ -584,42 +584,8 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
 }
 
 /*
- * fetch & set
- *
+ * fetch handled via typed-0-swap
  */
-
-void
-shmemc_ctx_fetch(shmem_ctx_t ctx,
-                 void *t, int pe,
-                 void *retp)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    int zero = 0;
-
-    helper_fetching_amo(ch,
-                        UCP_ATOMIC_FETCH_OP_FADD,
-                        t, &zero, sizeof(zero),
-                        pe,
-                        retp);
-}
-
-/*
- * set/fetch
- */
-
-void
-shmemc_ctx_set(shmem_ctx_t ctx,
-               void *t, void *vp, size_t vs,
-               int pe)
-{
-    uint64_t zap;
-
-    NO_WARN_UNUSED(zap);
-
-    shmemc_ctx_swap(ctx, t, vp, vs, pe, &zap);
-}
-
-
 
 /*
  * bitwise helpers

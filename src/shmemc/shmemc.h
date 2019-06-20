@@ -114,19 +114,6 @@ void shmemc_ctx_fadd(shmem_ctx_t ctx,
                     void *retp);
 
 /*
- * fetch and set
- */
-
-void shmemc_ctx_fetch(shmem_ctx_t ctx,
-                      void *target,
-                      int pe,
-                      void *retp);
-
-void shmemc_ctx_set(shmem_ctx_t ctx,
-                    void *target, void *vp, size_t vs,
-                    int pe);
-
-/*
  * bitwise
  */
 
@@ -526,12 +513,6 @@ SHMEMC_DECL_COLLECT_SIZE(64)
 
 #define shmemc_finc(...)                              \
     shmemc_ctx_finc(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
-#define shmemc_fetch(...)                             \
-    shmemc_ctx_fetch(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
-#define shmemc_set(...)                               \
-    shmemc_ctx_set(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #define shmemc_and(...)                               \
     shmemc_ctx_and(SHMEM_CTX_DEFAULT, __VA_ARGS__)

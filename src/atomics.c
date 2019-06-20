@@ -423,10 +423,12 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t)
     shmem_ctx_##_name##_atomic_fetch(shmem_ctx_t ctx,                   \
                                      const _type *target, int pe)       \
     {                                                                   \
+        _type one = 1;                                                  \
         _type v;                                                        \
                                                                         \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fetch(ctx, (_type *) target,  \
-                                                pe, &v));               \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fadd(ctx, (_type *) target,   \
+                                               &one, sizeof(one), pe,   \
+                                               &v));                    \
         return v;                                                       \
     }
 
@@ -485,9 +487,13 @@ SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t)
     shmem_ctx_##_name##_atomic_set(shmem_ctx_t ctx,                     \
                                    _type *target, _type value, int pe)  \
     {                                                                   \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_set(ctx, target,              \
-                                              &value, sizeof(value),    \
-                                              pe));                     \
+        _type zap;                                                      \
+                                                                        \
+        NO_WARN_UNUSED(zap);                                            \
+                                                                        \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_swap(ctx, target,             \
+                                               &value, sizeof(value),   \
+                                               pe, &zap));              \
     }
 
 SHMEM_CTX_TYPE_SET(float, float)
