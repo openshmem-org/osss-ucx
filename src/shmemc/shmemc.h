@@ -114,13 +114,8 @@ void shmemc_ctx_fadd(shmem_ctx_t ctx,
                     void *retp);
 
 /*
- * fetch and set
+ * set
  */
-
-void shmemc_ctx_fetch(shmem_ctx_t ctx,
-                      void *target,
-                      int pe,
-                      void *retp);
 
 void shmemc_ctx_set(shmem_ctx_t ctx,
                     void *target, void *vp, size_t vs,
