@@ -8,11 +8,11 @@ OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				globalexit.c \
-				locks.c \
 				readenv.c \
 				shmemc_init.c \
 				state.c
 
+#
 # -- begin: UCX sources --
 #
 LIBSHMEMC_SOURCES        += \

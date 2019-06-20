@@ -124,7 +124,7 @@ SHMEM_CTX_TYPE_SWAP(ptrdiff, ptrdiff_t)
                                                                         \
         SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_cswap(ctx,                    \
                                                 target,                 \
-                                                cond,                   \
+                                                &cond,                  \
                                                 &value, sizeof(value),  \
                                                 pe, &v));               \
         return v;                                                       \

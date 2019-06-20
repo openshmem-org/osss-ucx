@@ -94,7 +94,7 @@
         _type v;                                                    \
                                                                     \
         deprecate(__func__, DEPR_SINCE);                            \
-        shmemc_##_op(target, cond, &value, sizeof(value), pe, &v);  \
+        shmemc_##_op(target, &cond, &value, sizeof(value), pe, &v); \
         return v;                                                   \
     }
 

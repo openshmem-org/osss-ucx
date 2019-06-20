@@ -49,10 +49,11 @@ inline static void
 set_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
     shmem_lock_t t;
+    int16_t prev, locked;
 
     node->d.next = SHMEM_LOCK_FREE;
-    LOAD_STORE_FENCE();
 
+    /* request for ownership */
     t.d.locked = 1;
     t.d.next = proc.rank;
 
@@ -65,13 +66,15 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
         t.blob = SHMEM_LOCK_RESET;
     }
 
-    if (t.d.locked) {
+    prev = t.d.next;
+    locked = t.d.locked;
+
+    if (locked) {
         int16_t me = proc.rank;
 
         node->d.locked = 1;
-        LOAD_STORE_FENCE();
 
-        shmemc_put(&(node->d.next), &(me), sizeof(me), t.d.next);
+        shmemc_put(&(node->d.next), &(me), sizeof(me), prev);
 
         /* sit here until unlocked */
         shmemc_wait_until_eq16(&(node->d.locked), 0);
@@ -85,24 +88,29 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
 
     if (node->d.next == SHMEM_LOCK_FREE) {
         shmem_lock_t t;
+        int32_t r = SHMEM_LOCK_RESET;
 
         t.d.locked = 1;
         t.d.next = proc.rank;
 
         shmemc_cswap(&(lock->blob),
-                     SHMEM_LOCK_RESET,
-                     &(t.blob), sizeof(t.blob),
+                     &(t.blob),
+                     &r, sizeof(r),
                      lock_owner(lock),
                      &(t.blob));
+
         if (t.d.next == proc.rank) {
+            // fprintf(stderr, "DEBUG(%d): alone, just return\n", proc.rank);
             return;
             /* NOT REACHED */
         }
 
-        shmemc_wait_until_ge16(&(node->d.next), 0);
+        /* wait for a chainer PE to appear */
+        shmemc_wait_until_ne16(&(node->d.next), SHMEM_LOCK_FREE);
     }
 
     shmemc_put(&(node->d.locked), &zero, sizeof(zero), node->d.next);
+    // fprintf(stderr, "DEBUG(%d): leave %s\n", proc.rank, __func__);
 }
 
 inline static int
