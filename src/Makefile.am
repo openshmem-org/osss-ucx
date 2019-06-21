@@ -84,6 +84,9 @@ liballocator_a_SOURCES += allocator/xmemalloc.c
 endif # experimental
 
 liballocator_a_CFLAGS  = \
+			-DFOOTERS=1 \
+			-DCORRUPTION_ERROR_ACTION=report_corruption \
+			-DUSAGE_ERROR_ACTION=report_usage_error \
 			-DONLY_MSPACES=1 \
 			-DHAVE_MORECORE=0 \
 			-DHAVE_MMAP=0 \
