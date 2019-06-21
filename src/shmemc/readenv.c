@@ -182,7 +182,7 @@ shmemc_env_init(void)
         proc.env.prealloc_contexts = (size_t) n;
     }
 
-    proc.env.memfatal = false;
+    proc.env.memfatal = true;
 
     CHECK_ENV(e, MEMERR_FATAL);
     if (e != NULL) {
