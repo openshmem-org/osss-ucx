@@ -78,6 +78,7 @@ typedef struct env_info {
     char *progress_threads;     /**< do we need to start our own? */
 
     size_t prealloc_contexts;   /**< set up this many at start */
+    bool memfatal;              /**< force exit on memory usage error? */
 } env_info_t;
 
 /*
