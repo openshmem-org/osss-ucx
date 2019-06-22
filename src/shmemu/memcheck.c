@@ -6,10 +6,12 @@
 
 #include "dlmalloc.h"
 #include "shmemu.h"
+#include "shmemc.h"
 #include "state.h"
-#include "shmem/api.h"
 
-#include <stdio.h>
+/*
+ * This is the handler for mspace corruption in dlmalloc.
+ */
 
 int
 report_corruption(mspace m)
@@ -18,11 +20,15 @@ report_corruption(mspace m)
            "CORRUPTION DETECTED IN SPACE %p",
            m);
     if (proc.env.memfatal) {
-        shmem_global_exit(1);
+        shmemc_global_exit(1);
         /* NOT REACHED */
     }
     return 1;
 }
+
+/*
+ * This is the handler for mspace bad usage, like allocation overflow.
+ */
 
 int
 report_usage_error(mspace m, void *p)
@@ -31,7 +37,7 @@ report_usage_error(mspace m, void *p)
            "USAGE ERROR DETECTED IN SPACE %p, ADDRESS %p",
            m, p);
     if (proc.env.memfatal) {
-        shmem_global_exit(1);
+        shmemc_global_exit(1);
         /* NOT REACHED */
     }
     return 1;
