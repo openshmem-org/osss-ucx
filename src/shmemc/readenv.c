@@ -181,6 +181,13 @@ shmemc_env_init(void)
         }
         proc.env.prealloc_contexts = (size_t) n;
     }
+
+    proc.env.memfatal = true;
+
+    CHECK_ENV(e, MEMERR_FATAL);
+    if (e != NULL) {
+        proc.env.memfatal = option_enabled_test(e);
+    }
 }
 
 #undef CHECK_ENV
@@ -303,7 +310,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
                 var_width, "SHMEM_" #_envvar "_ALGO",                   \
                 val_width,                                              \
                 proc.env.coll._name ? proc.env.coll._name : "unset",    \
-                "Algorithm for \"" #_name "\" routine");                \
+                "algorithm for \"" #_name "\" routine");                \
     } while (0)
 
     DESCRIBE_COLLECTIVE(barrier, BARRIER);
@@ -319,12 +326,17 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "SHMEM_PROGRESS_THREADS",
             val_width,
             proc.env.progress_threads ? proc.env.progress_threads : "no",
-            "Do we manage our own progress?");
+            "do we manage our own progress?");
     fprintf(stream, "%s%-*s %-*lu %s\n",
             prefix,
             var_width, "SHMEM_PREALLOC_CTXS",
             val_width, (unsigned long) proc.env.prealloc_contexts,
             "pre-allocate contexts at startup");
+    fprintf(stream, "%s%-*s %-*s %s\n",
+            prefix,
+            var_width, "SHMEM_MEMERR_FATAL",
+            val_width, proc.env.memfatal ? "yes" : "no",
+            "abort if symmetric memory corruption");
 
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",

@@ -4,11 +4,13 @@ OTHER_CPPFLAGS            = -I../../include \
 				-I$(top_srcdir)/include \
 				-I$(srcdir)/.. \
 				-I$(srcdir)/../shmemc \
-				-I$(srcdir)/../shmemt
+				-I$(srcdir)/../shmemt \
+				-I$(srcdir)/../allocator
 
 LIBSHMEMU_SOURCES         = shmemu_init.c \
 				hostname.c \
 				fatal.c \
+				memcheck.c \
 				parse_csv.c \
 				timer.c \
 				unitparse.c

@@ -87,6 +87,13 @@ If we need extra progress for transports that don't provide it,
 activate progress threads on the named PEs, e.g. "0", "1-3", "2,4,6";
 or on all PEs if the variable's (case-insensitive) value is "y[es]" or
 "a[ll]".
+.RS 4
+.IP "SHMEM_MEMERR_FATAL (bool, default: true)"
+If set to true, symmetric memory corruption or overflow is treated as
+a fatal condition, and the program exits.  If unset or false, the
+issue will be logged (see SHMEM_LOGGING and
+SHMEM_LOGGING_EVENTS=memory above), but the program will try to
+continue.  (This will likely lead to undefined behavior.)
 .RE
 .\"
 .RE
