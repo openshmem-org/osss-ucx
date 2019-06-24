@@ -13,7 +13,7 @@
  * This is the handler for mspace corruption in dlmalloc.
  */
 
-int
+void
 report_corruption(mspace m)
 {
     logger(LOG_MEMORY,
@@ -23,14 +23,13 @@ report_corruption(mspace m)
         shmemc_global_exit(1);
         /* NOT REACHED */
     }
-    return 1;
 }
 
 /*
  * This is the handler for mspace bad usage, like allocation overflow.
  */
 
-int
+void
 report_usage_error(mspace m, void *p)
 {
     logger(LOG_MEMORY,
@@ -40,5 +39,4 @@ report_usage_error(mspace m, void *p)
         shmemc_global_exit(1);
         /* NOT REACHED */
     }
-    return 1;
 }
