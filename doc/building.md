@@ -87,7 +87,7 @@ out-of-source-tree.
 The configure script can be told where PMIx and UCX live, and other
 options, e.g.
 
- ```sh
+```sh
  .../configure \
        --prefix=/path/to/install/osss-ucx \
        --with-pmix=/path/to/install/pmix \
