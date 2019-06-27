@@ -22,7 +22,7 @@ You can set up a modulefile (http://modules.sourceforge.net/) to
 simplify this process and set up other SHMEM environment variables
 that might be of interest, e.g. something like:
 
-<pre>
+```sh
 #%Module1.0#############################################
 
 set             openmpi_root      /path/to/install/openmpi
@@ -36,7 +36,7 @@ prepend-path    MANPATH           $shmem_root/share/man
 prepend-path    PKG_CONFIG_PATH   $shmem_root/lib/pkgconfig
 
 setenv          SHMEM_INFO        yes
-</pre>
+```
 
 
 The details of actually running an OpenSHMEM program with OSSS-UCX
