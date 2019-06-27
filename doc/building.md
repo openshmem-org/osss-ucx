@@ -95,12 +95,10 @@ options, e.g.
        --with-shcoll=/path/to/install/shcoll \
        --enable-debug \
        --enable-logging \
-       --enable-threads
        --with-heap-size=8G
  ```
 
 Then
-
 
 ```sh
 $ make install
