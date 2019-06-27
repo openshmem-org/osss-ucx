@@ -77,16 +77,17 @@ main(int argc, char *argv[])
 
     if (just_version) {
         info_output_package_version(out, just_version);
+        return EXIT_SUCCESS;
+        /* NOT REACHED */
     }
-    else {
-        info_output_package_name(out);
-        info_output_package_version(out, just_version);
-        info_output_package_contact(out);
-        info_output_spec_version(out);
-        info_output_build_env(out);
-        info_output_features(out);
-        info_output_comms(out);
-    }
+
+    info_output_package_name(out);
+    info_output_package_version(out, just_version);
+    info_output_package_contact(out);
+    info_output_spec_version(out);
+    info_output_build_env(out);
+    info_output_features(out);
+    info_output_comms(out);
 
     return EXIT_SUCCESS;
 }

@@ -1,7 +1,7 @@
 # For license: see LICENSE file at top-level
 
 At a minimum, make sure OSSS-UCX, and a suitable Open-MPI (see
-building.txt) are on your PATH in that priority:
+building.md) are on your PATH in that priority:
 
 ```sh
 $ export PATH=/path/to/install/openmpi/bin:$PATH
@@ -22,7 +22,7 @@ You can set up a modulefile (http://modules.sourceforge.net/) to
 simplify this process and set up other SHMEM environment variables
 that might be of interest, e.g. something like:
 
-<pre>
+```sh
 #%Module1.0#############################################
 
 set             openmpi_root      /path/to/install/openmpi
@@ -36,7 +36,7 @@ prepend-path    MANPATH           $shmem_root/share/man
 prepend-path    PKG_CONFIG_PATH   $shmem_root/lib/pkgconfig
 
 setenv          SHMEM_INFO        yes
-</pre>
+```
 
 
 The details of actually running an OpenSHMEM program with OSSS-UCX

@@ -70,7 +70,7 @@ The interaction with most impact is that of PMIx and Open-MPI:
   all the latest updates.
 
 A PRRTE-based launcher is in development, but as PRRTE is in flux,
-this will not be documented here for now, see [prrte.txt](./prrte.txt)
+this will not be documented here for now, see [prrte.md](./prrte.md)
 for more information.
 
 ## Building Sequence
@@ -87,7 +87,7 @@ out-of-source-tree.
 The configure script can be told where PMIx and UCX live, and other
 options, e.g.
 
- ```sh
+```sh
  .../configure \
        --prefix=/path/to/install/osss-ucx \
        --with-pmix=/path/to/install/pmix \
@@ -95,9 +95,9 @@ options, e.g.
        --with-shcoll=/path/to/install/shcoll \
        --enable-debug \
        --enable-logging \
-       --enable-threads
        --with-heap-size=8G
- ```
+```
+
 Then
 
 ```sh

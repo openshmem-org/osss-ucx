@@ -2773,6 +2773,11 @@ static void reset_on_error(mstate m);
 
 #else /* PROCEED_ON_ERROR */
 
+/*
+ * OSSS-UCX addition to define external reporter funcctions
+ */
+#include "memcheck.h"
+
 #ifndef CORRUPTION_ERROR_ACTION
 #define CORRUPTION_ERROR_ACTION(m) ABORT
 #endif /* CORRUPTION_ERROR_ACTION */

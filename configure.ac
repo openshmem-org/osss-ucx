@@ -192,6 +192,11 @@ AC_OUTPUT
 # Courtesy info
 #
 
+AS_IF([test "$fortran_happy" = "yes"], [
+	AS_BOX([** FORTRAN SUPPORT WILL BE REMOVED STARTING WITH OpenSHMEM 1.5 **])
+	]
+	)
+
 echo
 echo "Summary"
 echo "-------"
