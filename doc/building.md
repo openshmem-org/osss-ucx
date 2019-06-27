@@ -72,6 +72,7 @@ For PMIx-aware "mpiexec" launcher:
 .../configure \
         --prefix=/path/to/install/openmpi \
         --with-knem \
+	--without-verbs \
         --with-ucx=/path/to/install/ucx \
         --with-tm
 ```
