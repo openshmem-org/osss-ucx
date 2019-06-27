@@ -4,8 +4,9 @@ Prerequisites
 =============
 
 To use this OpenSHMEM implemntation on a single machine (laptop,
-desktop, VM etc.) you will need to set up
+desktop, VM etc.) you can use XPMEM and/or KNEM, but this is not
+compulsory in newer UCX versions:
 
     https://github.com/hjelmn/xpmem
 
-and build UCX with XPMEM support.
+   http://knem.gforge.inria.fr/
