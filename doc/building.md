@@ -70,7 +70,7 @@ The interaction with most impact is that of PMIx and Open-MPI:
   all the latest updates.
 
 A PRRTE-based launcher is in development, but as PRRTE is in flux,
-this will not be documented here for now, see [prrte.txt](./prrte.txt)
+this will not be documented here for now, see [prrte.txt](./prrte.md)
 for more information.
 
 ## Building Sequence

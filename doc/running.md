@@ -1,7 +1,7 @@
 # For license: see LICENSE file at top-level
 
 At a minimum, make sure OSSS-UCX, and a suitable Open-MPI (see
-building.txt) are on your PATH in that priority:
+building.md) are on your PATH in that priority:
 
 ```sh
 $ export PATH=/path/to/install/openmpi/bin:$PATH
