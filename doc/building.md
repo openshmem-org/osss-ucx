@@ -96,7 +96,7 @@ options, e.g.
        --enable-debug \
        --enable-logging \
        --with-heap-size=8G
- ```
+```
 
 Then
 
