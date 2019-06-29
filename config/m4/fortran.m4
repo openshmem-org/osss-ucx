@@ -23,6 +23,7 @@ fi
 AS_IF([test "x$fortran_happy" = "xyes"],
 	[AC_DEFINE([ENABLE_FORTRAN], [1], [Enable Fortran API])
 	 AC_SUBST([ENABLE_FORTRAN], [1])
+	 AC_SUBST([FC], [$FC])
 	],
 	[AC_SUBST([ENABLE_FORTRAN], [0])]
 	)

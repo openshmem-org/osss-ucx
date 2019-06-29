@@ -19,7 +19,8 @@ AC_ARG_ENABLE([cxx],
 
 AS_IF([test "x$cxx_happy" = "xyes" -a "x$enable_cxx" != "xno"],
 	[AC_DEFINE([ENABLE_CXX], [1], [Enable C++ compiler])
-	 AC_SUBST([ENABLE_CXX], [1])],
+	 AC_SUBST([ENABLE_CXX], [1])
+	 AC_SUBST([CXX], $CXX)],
 	[AC_SUBST([ENABLE_CXX], [0])
 	 cxx_happy=no
 	]
