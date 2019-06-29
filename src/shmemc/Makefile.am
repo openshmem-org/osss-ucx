@@ -100,20 +100,26 @@ bin_SCRIPTS               = $(MY_WRAPPERS)
 # to build wrapper scripts
 #
 
-COMPILER_SED_SCRIPT = 's%\@PTHREAD_CC\@%@PTHREAD_CC@%g'
+CC_SED_SCRIPT  = 's,\@PTHREAD_CC\@,@PTHREAD_CC@,g'
 
 oshcc:	oshcc.in	osh_common
-	cat $^ | sed -e $(COMPILER_SED_SCRIPT) > $@
+	cat $^ | sed -e $(CC_SED_SCRIPT) > $@
 
 if ENABLE_CXX
+
+CXX_SED_SCRIPT = 's,\@CXX\@,@CXX@,g'
+
 oshcxx:	oshcxx.in	osh_common
-	cat $^ > $@
+	cat $^ | sed -e $(CXX_SED_SCRIPT) > $@
 endif # c++
 
 if ENABLE_FORTRAN
+
+FC_SED_SCRIPT = 's,\@FC\@,@FC@,g'
+
 oshfort:	oshfort.in	osh_common
-	cat $^ > $@
+	cat $^ | sed -e $(FC_SED_SCRIPT) > $@
 endif # fortran
 
 oshrun:	oshrun.in
-	sed -e 's%\@SHMEM_LAUNCHER\@%@SHMEM_LAUNCHER@%g' < $^ > $@
+	sed -e 's,\@SHMEM_LAUNCHER\@,@SHMEM_LAUNCHER@,g' < $^ > $@
