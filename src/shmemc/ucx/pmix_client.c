@@ -456,12 +456,10 @@ notification_fn(size_t evhdlr_registration_id,
     NO_WARN_UNUSED(ninfo);
     NO_WARN_UNUSED(results); NO_WARN_UNUSED(nresults);
 
-#if 0
     ps = PMIx_Abort(ret, "global_exit", NULL, 0);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't abort: %s",
                   PMIx_Error_string(ps));
-#endif
 
     if (cbfunc != NULL) {
         cbfunc(PMIX_EVENT_ACTION_COMPLETE,
