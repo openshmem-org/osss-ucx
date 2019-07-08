@@ -419,6 +419,9 @@ init_peers(void)
  * -- register event handler for global exit --
  */
 
+static const pmix_status_t ERROR_TO_REPORT =
+    PMIX_ERR_PROC_REQUESTED_ABORT;
+
 /*
  * track completion of registration
  */
@@ -453,10 +456,12 @@ notification_fn(size_t evhdlr_registration_id,
     NO_WARN_UNUSED(ninfo);
     NO_WARN_UNUSED(results); NO_WARN_UNUSED(nresults);
 
+#if 0
     ps = PMIx_Abort(ret, "global_exit", NULL, 0);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't abort: %s",
                   PMIx_Error_string(ps));
+#endif
 
     if (cbfunc != NULL) {
         cbfunc(PMIX_EVENT_ACTION_COMPLETE,
@@ -489,7 +494,7 @@ evhandler_reg_callbk(pmix_status_t status,
 static void
 init_event_handler(void)
 {
-    pmix_status_t sp = PMIX_ERR_PROC_REQUESTED_ABORT;
+    pmix_status_t sp = ERROR_TO_REPORT;
 
     active = -1;
     PMIx_Register_event_handler(&sp, 1,
@@ -518,9 +523,9 @@ shmemc_pmi_client_abort(const char *msg, int status)
     PMIX_INFO_CONSTRUCT(&si);
     PMIX_INFO_LOAD(&si, PMIX_EXIT_CODE, &status, PMIX_INT);
 
-    ps = PMIx_Notify_event(PMIX_ERR_PROC_REQUESTED_ABORT,
+    ps = PMIx_Notify_event(ERROR_TO_REPORT,
                            &my_proc,
-                           PMIX_RANGE_GLOBAL,
+                           PMIX_RANGE_NAMESPACE,
                            &si, 1,
                            NULL, NULL);
 
