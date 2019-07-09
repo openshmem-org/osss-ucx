@@ -37,17 +37,6 @@ lookup_rkey(shmemc_context_h ch, size_t region, int pe)
     return ch->racc[region].rinfo[pe].rkey;
 }
 
-#ifndef ENABLE_ALIGNED_ADDRESSES
-/*
- * where the heap lives on PE "pe"
- */
-inline static uint64_t
-get_base(size_t region, int pe)
-{
-    return proc.comms.regions[region].minfo[pe].base;
-}
-#endif  /* ENABLE_ALIGNED_ADDRESSES */
-
 /*
  * -- translation helpers ---------------------------------------------------
  */
@@ -57,18 +46,18 @@ get_base(size_t region, int pe)
  * not.
  */
 inline static int
-in_region(uint64_t addr, size_t region, int pe)
+in_region(uint64_t addr, size_t region)
 {
-    const mem_info_t mi = proc.comms.regions[region].minfo[pe];
+    const mem_info_t *mip = & proc.comms.regions[region].minfo[proc.rank];
 
-    return (mi.base <= addr) && (addr < mi.end);
+    return (mip->base <= addr) && (addr < mip->end);
 }
 
 /*
  * find memory region that ADDR is in, or -1 if none
  */
 inline static long
-lookup_region(uint64_t addr, int pe)
+lookup_region(uint64_t addr)
 {
     long r;
 
@@ -77,8 +66,8 @@ lookup_region(uint64_t addr, int pe)
      * assumption most data in heaps and newest one is most likely
      * (may need to revisit)
      */
-    for (r = proc.comms.nregions - 1; r >= 0; r -= 1) {
-        if (in_region(addr, (size_t) r, pe)) {
+    for (r = proc.comms.nregions - 1; r >= 0; --r) {
+        if (in_region(addr, (size_t) r)) {
             return r;
             /* NOT REACHED */
         }
@@ -95,28 +84,45 @@ lookup_region(uint64_t addr, int pe)
  * otherwise globals are always aligned, but translate shmalloc'ed
  * variables
  */
-inline static uint64_t
-translate_address(uint64_t local_addr, size_t region, int pe)
-{
 #ifdef ENABLE_ALIGNED_ADDRESSES
-    NO_WARN_UNUSED(region);
-    NO_WARN_UNUSED(pe);
-
-    return local_addr;
+# define translate_region_address(_local_addr, _region, _pe) (_local_addr)
+# define translate_address(_local_addr, _pe) (_local_addr)
 #else
+
+/*
+ * where the heap lives on PE "pe"
+ */
+# define get_base(_region, _pe) proc.comms.regions[_region].minfo[_pe].base
+
+inline static uint64_t
+translate_region_address(uint64_t local_addr, size_t region, int pe)
+{
     if (region == 0) {
         return local_addr;
     }
     else {
-        const uint64_t my_offset =
-            local_addr - get_base(region, proc.rank);
-        const uint64_t remote_addr =
-            my_offset + get_base(region, pe);
+        const long my_offset = local_addr - get_base(region, proc.rank);
 
-        return remote_addr;
+        if (my_offset < 0) {
+            return 0;
+        }
+
+        return my_offset + get_base(region, pe);
     }
-#endif /* ENABLE_ALIGNED_ADDRESSES */
 }
+
+inline static uint64_t
+translate_address(uint64_t local_addr, int pe)
+{
+    long r = lookup_region(local_addr);
+
+    if (r < 0) {
+        return 0;
+    }
+
+    return translate_region_address(local_addr, r, pe);
+}
+#endif  /* ENABLE_ALIGNED_ADDRESSES */
 
 /*
  * All ops here need to find remote keys and addresses
@@ -126,12 +132,14 @@ get_remote_key_and_addr(shmemc_context_h ch,
                         uint64_t local_addr, int pe,
                         ucp_rkey_h *rkey_p, uint64_t *raddr_p)
 {
-    const long r = lookup_region(local_addr, proc.rank);
+    const long r = lookup_region(local_addr);
 
-    shmemu_assert(r >= 0, "can't find memory region for %p", local_addr);
+    shmemu_assert(r >= 0,
+                  "can't find memory region for %p",
+                  (void *) local_addr);
 
     *rkey_p = lookup_rkey(ch, r, pe);
-    *raddr_p = translate_address(local_addr, r, pe);
+    *raddr_p = translate_region_address(local_addr, r, pe);
 }
 
 /*
@@ -339,12 +347,16 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 }
 
 /*
- * Return non-zero if adddress is remotely accessible, 0 otherwise
+ * Return non-zero if adddress is remotely accessible, 0 otherwise.
+ *
  */
 int
 shmemc_addr_accessible(const void *addr, int pe)
 {
-    return lookup_region((uint64_t) addr, pe) >= 0;
+    // return lookup_region((uint64_t) addr, pe) >= 0;
+    uint64_t uaddr = (uint64_t) addr;
+
+    return translate_address(uaddr, pe) > 0;
 }
 
 /*
