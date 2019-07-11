@@ -353,8 +353,9 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 int
 shmemc_addr_accessible(const void *addr, int pe)
 {
-    // return lookup_region((uint64_t) addr, pe) >= 0;
     uint64_t uaddr = (uint64_t) addr;
+
+    NO_WARN_UNUSED(pe);         /* if aligned addresses */
 
     return translate_address(uaddr, pe) > 0;
 }
