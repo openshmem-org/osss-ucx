@@ -61,9 +61,6 @@ teardown_context(shmemc_context_h ch)
     if (! proc.env.teardown_kludge) {
         shmemc_ucx_disconnect_all_eps(ch);
     }
-    shmemc_ucx_deallocate_eps_table(ch);
-    ucp_worker_destroy(ch->w);
-
     /* release remote access memory */
     for (r = 0; r < proc.comms.nregions; ++r) {
         for (pe = 0; pe < proc.nranks; ++pe) {
@@ -72,6 +69,9 @@ teardown_context(shmemc_context_h ch)
         free(ch->racc[r].rinfo);
     }
     free(ch->racc);
+
+    shmemc_ucx_deallocate_eps_table(ch);
+    ucp_worker_destroy(ch->w);
 }
 
 inline static void
