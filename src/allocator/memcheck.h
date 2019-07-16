@@ -4,7 +4,7 @@
 #define _MEMCHECK_H 1
 
 /*
- * This is pulled into dlmalloc.c:2779 to define our customized
+ * This is pulled into internal-malloc.c:2519 to define our customized
  * handlers, which prevents implicit declaration warnings.
  */
 

@@ -3,7 +3,7 @@
 #include "xmemalloc.h"
 #include "klib/khash.h"
 
-#include "dlmalloc.h"
+#include "internal-malloc.h"
 
 #include <stdio.h>
 #include <assert.h>
