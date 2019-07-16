@@ -101,6 +101,10 @@ contexts_table_finalize(void)
  */
 static mem_info_t *globals;
 
+#ifdef __linux__
+
+# ifdef __ELF__
+
 /*
  * from the executable
  */
@@ -108,17 +112,39 @@ extern char data_start;
 extern char end;
 
 inline static void
+get_globals_address_range(uint64_t *base_p, uint64_t *end_p)
+{
+    *base_p = (uint64_t) &data_start;
+    *end_p  = (uint64_t) &end;
+}
+
+# else
+
+#  error "unsupported Linux binary format"
+
+#endif /* Linux __ELF__ */
+
+#else
+
+# error "unsupported OS binary format"
+
+#endif /* __linux__ */
+
+inline static void
 register_globals()
 {
-    uint64_t g_base = (uint64_t) &data_start;
-    uint64_t g_end = (uint64_t) &end;
-    const size_t len = g_end - g_base;
+    uint64_t g_base;
+    uint64_t g_end;
+    size_t len;
     ucp_mem_map_params_t mp;
     ucs_status_t s;
 
     mp.field_mask =
         UCP_MEM_MAP_PARAM_FIELD_ADDRESS |
         UCP_MEM_MAP_PARAM_FIELD_LENGTH;
+
+    get_globals_address_range(&g_base, &g_end);
+    len = g_end - g_base;
 
     mp.address = (void *) g_base;
     mp.length = len;
@@ -128,11 +154,12 @@ register_globals()
         UCP_MEM_MAP_FIXED;
 
     globals->base = g_base;
-    globals->end  = globals->base + len;
+    globals->end  = g_end;
     globals->len  = len;
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->mh);
-    shmemu_assert(s == UCS_OK, "can't map global memory: %s",
+    shmemu_assert(s == UCS_OK,
+                  "can't map global variables memory: %s",
                   ucs_status_string(s));
 
     /* don't need allocator, variables already there */
