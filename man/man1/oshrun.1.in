@@ -62,14 +62,14 @@ This implementation also has:
 .IP "SHMEM_LOGGING (bool: default false)"
 enable message logging (if configured).
 .IP "SHMEM_LOGGING_EVENTS (string: default none)"
-A comma-separated list of events that select logging messages (if
+A comma-separated list of events that selects logging messages (if
 logging enabled, v.i.): fatal, init, finalize, memory, heaps,
 contexts, info, reductions, barriers, deprecate, locks, atomics; or
-"all", which selects all of the above.
+"all".
 .RE
 .RS 4
 .IP "SHMEM_LOGGING_FILE (string: default none)"
-file to receive logging information.
+filename to receive logging information.
 .RE
 .RS 4
 .IP "SHMEM_BARRIER_ALGO (string: default tree)"
@@ -104,7 +104,7 @@ If set to true, symmetric memory corruption or overflow is treated as
 a fatal condition, and the program exits.  If unset or false, the
 issue will be logged (see SHMEM_LOGGING and
 SHMEM_LOGGING_EVENTS=memory above), but the program will try to
-continue.  (This will likely lead to undefined behavior.)
+continue, which will likely lead to undefined behavior.
 .RE
 .\"
 .RE

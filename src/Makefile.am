@@ -77,7 +77,7 @@ MY_SOURCES            += collectives/shcoll-shim.c
 #
 # separate out the memory allocation routines
 #
-liballocator_a_SOURCES = allocator/dlmalloc.c allocator/memalloc.c
+liballocator_a_SOURCES = allocator/internal-malloc.c allocator/memalloc.c
 
 if ENABLE_EXPERIMENTAL
 liballocator_a_SOURCES += allocator/xmemalloc.c

@@ -4,7 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "dlmalloc.h"
+#include "internal-malloc.h"
 #include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"

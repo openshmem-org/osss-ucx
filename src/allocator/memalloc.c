@@ -1,6 +1,6 @@
 /* For license: see LICENSE file at top-level */
 
-#include "dlmalloc.h"
+#include "internal-malloc.h"
 
 #include "memalloc.h"
 
