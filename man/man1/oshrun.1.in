@@ -63,7 +63,7 @@ This implementation also has:
 enable message logging (if configured).
 .IP "SHMEM_LOGGING_EVENTS (string: default none)"
 A comma-separated list of events that selects logging messages (if
-logging enabled, v.i.): fatal, init, finalize, memory, heaps,
+logging enabled, see above): fatal, init, finalize, memory, heaps,
 contexts, info, reductions, barriers, deprecate, locks, atomics; or
 "all".
 .RE
