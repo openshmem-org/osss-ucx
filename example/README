@@ -19,7 +19,7 @@ Running
 -------
 
     host$ oshrun -n 4 ./a.out
+    host: Hello from PE    2 of    4
     host: Hello from PE    0 of    4
     host: Hello from PE    1 of    4
-    host: Hello from PE    2 of    4
     host: Hello from PE    3 of    4
