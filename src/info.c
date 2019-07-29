@@ -153,14 +153,6 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_CXX */
            );
 
-    output(strm, "Fortran API and compiler",
-#ifdef ENABLE_FORTRAN
-           "on"
-#else
-           "off"
-#endif /* ENABLE_FORTRAN */
-           );
-
     output(strm, "Debug checks",
 #ifdef ENABLE_DEBUG
            "on"
