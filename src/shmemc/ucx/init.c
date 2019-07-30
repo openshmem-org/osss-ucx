@@ -101,12 +101,10 @@ contexts_table_finalize(void)
  */
 static mem_info_t *globals;
 
-#ifdef __linux__
-
-# ifdef __ELF__
-
 /*
  * from the executable
+ *
+ * N.B. this will be extended when FreeBSD support is on the table.
  */
 extern char data_start;
 extern char end;
@@ -117,18 +115,6 @@ get_globals_address_range(uint64_t *base_p, uint64_t *end_p)
     *base_p = (uint64_t) &data_start;
     *end_p  = (uint64_t) &end;
 }
-
-# else
-
-#  error "unsupported Linux binary format"
-
-#endif /* Linux __ELF__ */
-
-#else
-
-# error "unsupported OS binary format"
-
-#endif /* __linux__ */
 
 inline static void
 register_globals()
