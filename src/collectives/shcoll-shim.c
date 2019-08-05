@@ -14,8 +14,8 @@
  * color_pairwise_exchange_counter
  *
  */
-SHIM_ALLTOALL(xor_pairwise_exchange_barrier, 32)
-SHIM_ALLTOALL(xor_pairwise_exchange_barrier, 64)
+SHIM_ALLTOALL(color_pairwise_exchange_counter, 32)
+SHIM_ALLTOALL(color_pairwise_exchange_counter, 64)
 
 /*
  * alltoalls:
@@ -34,8 +34,8 @@ SHIM_ALLTOALL(xor_pairwise_exchange_barrier, 64)
  * color_pairwise_exchange_counter_nbi
  *
  */
-SHIM_ALLTOALLS(xor_pairwise_exchange_barrier, 32)
-SHIM_ALLTOALLS(xor_pairwise_exchange_barrier, 64)
+SHIM_ALLTOALLS(color_pairwise_exchange_counter, 32)
+SHIM_ALLTOALLS(color_pairwise_exchange_counter, 64)
 
 /*
  * collect:
