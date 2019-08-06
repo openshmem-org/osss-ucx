@@ -83,7 +83,9 @@ SHIM_FCOLLECT(bruck_inplace, 64)
  *
  */
 SHIM_BARRIER(binomial_tree)
+SHIM_BARRIER_ALL(binomial_tree)
 SHIM_SYNC(binomial_tree)
+SHIM_SYNC_ALL(binomial_tree)
 
 /*
  * broadcast:

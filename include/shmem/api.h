@@ -926,10 +926,6 @@ extern "C"
      * symmetric memory management
      */
 
-#if 0
-    long malloc_error;
-#endif  /* not present in SGI version */
-
     /* deprecated calls from 1.2 ++ */
 
     /**
