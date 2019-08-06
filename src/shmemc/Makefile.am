@@ -50,10 +50,6 @@ if ENABLE_CXX
 MY_WRAPPERS              += oshcxx
 endif # c++
 
-if ENABLE_FORTRAN
-MY_WRAPPERS              += oshfort
-endif # fortran
-
 #
 # create alternate name for C++ compiler wrapper
 # (if configured)
@@ -112,14 +108,6 @@ CXX_SED_SCRIPT = 's,\@CXX\@,@CXX@,g'
 oshcxx:	oshcxx.in	osh_common
 	cat $^ | sed -e $(CXX_SED_SCRIPT) > $@
 endif # c++
-
-if ENABLE_FORTRAN
-
-FC_SED_SCRIPT = 's,\@FC\@,@FC@,g'
-
-oshfort:	oshfort.in	osh_common
-	cat $^ | sed -e $(FC_SED_SCRIPT) > $@
-endif # fortran
 
 oshrun:	oshrun.in
 	sed -e 's,\@SHMEM_LAUNCHER\@,@SHMEM_LAUNCHER@,g' < $^ > $@

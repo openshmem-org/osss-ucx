@@ -33,9 +33,3 @@ uninstall-run-alt:
 install-data-hook:	install-cxx-alt	install-run-alt
 
 uninstall-local:	uninstall-cxx-alt	uninstall-run-alt
-
-if ENABLE_FORTRAN
-
-man1_MANS       += oshfort.1
-
-endif # fortran

@@ -1,8 +1,0 @@
-!     For license: see LICENSE file at top-level
-
-      include 'shmem/defs.fh'
-
-      logical shmem_pe_accessible
-      logical shmem_addr_accessible
-
-      integer*8 shmem_ptr
