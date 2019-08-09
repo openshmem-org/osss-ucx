@@ -9,7 +9,7 @@ LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				globalexit.c \
 				readenv.c \
-				shmemc_init.c \
+				init.c \
 				state.c
 
 #
