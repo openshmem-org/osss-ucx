@@ -97,10 +97,6 @@ liballocator_la_CFLAGS  = $(liballocator_a_CFLAGS)
 noinst_LIBRARIES       = liballocator.a
 noinst_LTLIBRARIES     = liballocator.la
 
-if ENABLE_FORTRAN
-MY_SOURCES            += deprecated/fortran.c
-endif # fortran
-
 if ENABLE_EXPERIMENTAL
 
 MY_SOURCES            += \

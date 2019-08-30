@@ -7,8 +7,6 @@
 #include "shmemc.h"
 #include "shmem_mutex.h"
 
-#include "putget_complex.h"
-
 #include <values.h>
 
 #define BITS2BYTES(_n) ((_n) / CHARBITS)

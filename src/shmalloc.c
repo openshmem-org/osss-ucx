@@ -15,8 +15,6 @@
 #include <sys/types.h>
 #include <stdlib.h>
 
-int malloc_error = SHMEM_MALLOC_OK;
-
 /*
  * -- API --------------------------------------------------------------------
  */

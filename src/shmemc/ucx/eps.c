@@ -182,8 +182,6 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
                           ucs_status_string(s));
         }
     }
-
-    /* TODO free racc memory on teardown */
 }
 
 ucs_status_t

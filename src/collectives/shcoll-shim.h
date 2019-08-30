@@ -101,21 +101,12 @@
                                          pSync);                \
     }
 
-extern long *shmemc_barrier_all_psync;
-
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_barrier_all = pshmem_barrier_all
-#define shmem_barrier_all pshmem_barrier_all
 #pragma weak shmem_barrier = pshmem_barrier
 #define shmem_barrier pshmem_barrier
 #endif /* ENABLE_PSHMEM */
 
 #define SHIM_BARRIER(_name)                                     \
-    void                                                        \
-    shmem_barrier_all(void)                                     \
-    {                                                           \
-        shcoll_barrier_all_##_name(shmemc_barrier_all_psync);   \
-    }                                                           \
     void                                                        \
     shmem_barrier(int PE_start, int logPE_stride,               \
                   int PE_size, long *pSync)                     \
@@ -124,27 +115,46 @@ extern long *shmemc_barrier_all_psync;
                                PE_size, pSync);                 \
     }
 
-extern long *shmemc_sync_all_psync;
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_barrier_all = pshmem_barrier_all
+#define shmem_barrier_all pshmem_barrier_all
+#endif /* ENABLE_PSHMEM */
+
+extern long *shmemc_barrier_all_psync;
+
+#define SHIM_BARRIER_ALL(_name)                                 \
+    void                                                        \
+    shmem_barrier_all(void)                                     \
+    {                                                           \
+        shcoll_barrier_all_##_name(shmemc_barrier_all_psync);   \
+    }
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_sync_all = pshmem_sync_all
-#define shmem_sync_all pshmem_sync_all
 #pragma weak shmem_sync = pshmem_sync
 #define shmem_sync pshmem_sync
 #endif /* ENABLE_PSHMEM */
 
 #define SHIM_SYNC(_name)                                \
     void                                                \
-    shmem_sync_all(void)                                \
-    {                                                   \
-        shcoll_sync_all_##_name(shmemc_sync_all_psync); \
-    }                                                   \
-    void                                                \
     shmem_sync(int PE_start, int logPE_stride,          \
                int PE_size, long *pSync)                \
     {                                                   \
         shcoll_sync_##_name(PE_start, logPE_stride,     \
                             PE_size, pSync);            \
+    }
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_sync_all = pshmem_sync_all
+#define shmem_sync_all pshmem_sync_all
+#endif /* ENABLE_PSHMEM */
+
+extern long *shmemc_sync_all_psync;
+
+#define SHIM_SYNC_ALL(_name)                            \
+    void                                                \
+    shmem_sync_all(void)                                \
+    {                                                   \
+        shcoll_sync_all_##_name(shmemc_sync_all_psync); \
     }
 
 #ifdef ENABLE_PSHMEM

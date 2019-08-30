@@ -14,23 +14,10 @@ SHMEM_HDRS             =  \
 SHMEM_HDRS             += mpp/shmem.h mpp/shmemx.h
 
 #
-# must install if fortran requested
-#
-if ENABLE_FORTRAN
-SHMEM_HDRS             += shmem/defs.fh shmem.fh
-SHMEM_HDRS             += mpp/shmem.fh
-endif # fortran
-
-#
 # add profiling interface if requested
 #
 if ENABLE_PSHMEM
 SHMEM_HDRS             += pshmem.h
-
-if ENABLE_FORTRAN
-SHMEM_HDRS             += pshmem.fh
-endif # fortran
-
 endif # pshmem
 
 #

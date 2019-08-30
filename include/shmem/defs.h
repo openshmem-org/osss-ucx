@@ -48,6 +48,7 @@
 # define _WUR
 #endif
 
+#if 0
 enum shmem_fortran_errors {
     SHMEM_MALLOC_OK                  = (0L),
     SHMEM_MALLOC_BAD_SIZE            = (-1L),
@@ -59,6 +60,7 @@ enum shmem_fortran_errors {
     SHMEM_MALLOC_REALLOC_FAILED      = (-12L),
     SHMEM_MALLOC_SYMMSIZE_FAILED     = (-10L)
 };
+#endif
 
 enum shmem_cmp_constants {
     SHMEM_CMP_EQ = 0,

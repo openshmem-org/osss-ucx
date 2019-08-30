@@ -84,9 +84,6 @@ m4_include([config/m4/attribute_checks.m4])
 # c++ -specific checks
 m4_include([config/m4/cxx.m4])
 
-# Fortran-specific checks
-m4_include([config/m4/fortran.m4])
-
 # static and shared library detection
 AS_IF([test "x$enable_static" = "xyes"],
 	    [AC_DEFINE([ENABLE_STATIC], [1], [Enable static libraries])]
@@ -169,11 +166,10 @@ AC_CONFIG_FILES([
 	Makefile
 	man/Makefile
 	man/man1/Makefile
-	man/man1/oshcc.1 man/man1/oshcxx.1 man/man1/oshfort.1
+	man/man1/oshcc.1 man/man1/oshcxx.1
 	man/man1/oshrun.1 man/man1/osh_info.1 man/man1/osh_intro.1
 	include/Makefile
 	include/shmem/defs_subst.h
-	include/shmem/defs.fh
 	pkgconfig/Makefile
 	pkgconfig/osss-ucx.pc
 	src/Makefile
@@ -191,11 +187,6 @@ AC_OUTPUT
 #
 # Courtesy info
 #
-
-AS_IF([test "$fortran_happy" = "yes"], [
-	AS_BOX([** FORTRAN SUPPORT WILL BE REMOVED STARTING WITH OpenSHMEM 1.5 **])
-	]
-	)
 
 echo
 echo "Summary"
