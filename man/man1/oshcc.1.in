@@ -23,14 +23,9 @@ $ oshcc -g -o foo.exe foo.c
 .LP
 compiles foo.c into the OpenSHMEM executable foo.exe.
 .SH ENVIRONMENT
-The underlying compiler/linker invoked by this wrapper is determined
-when the OpenSHMEM library is built.  To override, set the
-.LP
-.RS 4
-\f(CROSH_CC\fP
-.RE
-.LP
-environment variable.
+.IP \f(CROSH_CC\fP 4
+Overrides the underlying compiler/linker invoked by this wrapper.  The
+default is determined when the OpenSHMEM library is built.
 .SH NOTES
 The OpenSHMEM specification does not say anything normative about how
 OpenSHMEM programs are compiled, linked and launched.  These wrapper

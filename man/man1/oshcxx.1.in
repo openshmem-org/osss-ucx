@@ -23,11 +23,9 @@ $ oshcxx -g -o foo.exe foo.cxx
 .LP
 compiles C++ source code foo.cxx into the OpenSHMEM executable foo.exe.
 .SH ENVIRONMENT
-The underlying compiler/linker invoked by this wrapper is determined
-when the OpenSHMEM library is built.  To override, set the
-.LP
-.RS 4
-\f(CROSH_CXX\fP
+.IP \f(CROSH_CXX\fP 4
+Overrides the underlying compiler/linker invoked by this wrapper.  The
+default is determined when the OpenSHMEM library is built.
 .RE
 .LP
 environment variable.
