@@ -210,6 +210,10 @@ shmemc_env_finalize(void)
     free(proc.env.heaps.heapsize);
 }
 
+/*
+ * all terminals are 80 columns, right? :)
+ */
+
 static const int var_width = 22;
 static const int val_width = 10;
 static const int hr_width  = 74;
