@@ -16,17 +16,12 @@
 #include <strings.h>
 
 /*
- * internal helpers
- */
-
-/*
  * for string formatting
  */
-
 #define BUFSIZE 16
 
 /*
- * return non-zero if option enabled, 0 if not
+ * detect whether option enabled
  */
 
 static bool
@@ -34,13 +29,17 @@ option_enabled_test(char *str)
 {
     if (str == NULL) {
         return false;
-        /* NOT REACHED */
     }
-
-    return
-        (tolower(*str) == 'y') ||
-        (strncasecmp(str, "on", 2) == 0) ||
-        (strtol(str, NULL, 10) > 0L);
+    if (tolower(*str) == 'y') {
+        return true;
+    }
+    if (strncasecmp(str, "on", 2) == 0) {
+        return true;
+    }
+    if (strtol(str, NULL, 10) > 0L) {
+        return true;
+    }
+    return false;
 }
 
 /*
