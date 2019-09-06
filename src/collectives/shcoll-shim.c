@@ -60,7 +60,6 @@ SHIM_COLLECT(bruck, 64)
  * all_linear
  * all_linear1
  * rec_dbl
- * rec_dbl_signal
  * ring
  * bruck
  * bruck_no_rotate
