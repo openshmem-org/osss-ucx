@@ -73,6 +73,7 @@ endif
 # But we need the shim no matter what
 
 MY_SOURCES            += collectives/shcoll-shim.c
+MY_SOURCES            += collectives/table.c
 
 #
 # separate out the memory allocation routines

@@ -1,104 +1,222 @@
 /* For license: see LICENSE file at top-level */
 
-#include "collectives/shcoll-shim.h"
+#include "thispe.h"
+#include "shmemu.h"
+#include "collectives/table.h"
+
+void
+collectives_init(void)
+{
+    int s = 0;
+
+    s += register_alltoall(proc.env.coll.alltoall);
+    s += register_alltoalls(proc.env.coll.alltoalls);
+    s += register_collect(proc.env.coll.collect);
+    s += register_fcollect(proc.env.coll.fcollect);
+    s += register_barrier(proc.env.coll.barrier);
+    s += register_barrier_all(proc.env.coll.barrier_all);
+    s += register_sync(proc.env.coll.sync);
+    s += register_sync_all(proc.env.coll.sync_all);
+    s += register_broadcast(proc.env.coll.broadcast);
+    /* TODO reductions */
+
+    if (s != 0) {
+        shmemu_fatal("couldn't register collectives (s = %d)", s);
+    }
+}
+
+void
+collectives_finalize(void)
+{
+    return;
+}
 
 /*
- * alltoall:
- *
- * shift_exchange_barrier
- * shift_exchange_counter
- * shift_exchange_signal
- * xor_pairwise_exchange_barrier
- * color_pairwise_exchange_signal
- * color_pairwise_exchange_barrier
- * color_pairwise_exchange_counter
- *
+ * hand off the SHMEM API to the dispatchers
  */
-SHIM_ALLTOALL(color_pairwise_exchange_counter, 32)
-SHIM_ALLTOALL(color_pairwise_exchange_counter, 64)
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_alltoall32 = pshmem_alltoall32
+#define shmem_alltoall32 pshmem_alltoall32
+#pragma weak shmem_alltoall64 = pshmem_alltoall64
+#define shmem_alltoall64 pshmem_alltoall64
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_alltoall32(void *target, const void *source, size_t nelems,
+                 int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.alltoall.f32(target, source, nelems,
+                       PE_start, logPE_stride, PE_size, pSync);
+}
+
+void
+shmem_alltoall64(void *target, const void *source, size_t nelems,
+                 int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.alltoall.f64(target, source, nelems,
+                       PE_start, logPE_stride, PE_size, pSync);
+}
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_alltoalls32 = pshmem_alltoalls32
+#define shmem_alltoalls32 pshmem_alltoalls32
+#pragma weak shmem_alltoalls64 = pshmem_alltoalls64
+#define shmem_alltoalls64 pshmem_alltoalls64
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_alltoalls32(void *target, const void *source,
+                  ptrdiff_t dst, ptrdiff_t sst, size_t nelems,
+                  int PE_start, int logPE_stride, int PE_size,
+                  long *pSync)
+{
+    colls.alltoalls.f32(target, source,
+                        dst, sst, nelems,
+                        PE_start, logPE_stride, PE_size,
+                        pSync);
+}
+
+void
+shmem_alltoalls64(void *target, const void *source,
+                  ptrdiff_t dst, ptrdiff_t sst, size_t nelems,
+                  int PE_start, int logPE_stride, int PE_size,
+                  long *pSync)
+{
+    colls.alltoalls.f64(target, source,
+                        dst, sst, nelems,
+                        PE_start, logPE_stride, PE_size,
+                        pSync);
+}
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_collect32 = pshmem_collect32
+#define shmem_collect32 pshmem_collect32
+#pragma weak shmem_collect64 = pshmem_collect64
+#define shmem_collect64 pshmem_collect64
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_collect32(void *target, const void *source, size_t nelems,
+                int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.collect.f32(target, source, nelems,
+                      PE_start, logPE_stride, PE_size, pSync);
+}
+
+void
+shmem_collect64(void *target, const void *source, size_t nelems,
+                int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.collect.f64(target, source, nelems,
+                      PE_start, logPE_stride, PE_size, pSync);
+}
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_fcollect32 = pshmem_fcollect32
+#define shmem_fcollect32 pshmem_fcollect32
+#pragma weak shmem_fcollect64 = pshmem_fcollect64
+#define shmem_fcollect64 pshmem_fcollect64
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_fcollect32(void *target, const void *source, size_t nelems,
+                 int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.fcollect.f32(target, source, nelems,
+                       PE_start, logPE_stride, PE_size, pSync);
+}
+
+void
+shmem_fcollect64(void *target, const void *source, size_t nelems,
+                 int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.fcollect.f64(target, source, nelems,
+                       PE_start, logPE_stride, PE_size, pSync);
+}
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_barrier = pshmem_barrier
+#define shmem_barrier pshmem_barrier
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_barrier(int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.barrier.f(PE_start, logPE_stride, PE_size, pSync);
+}
 
 /*
- * alltoalls:
- *
- * shift_exchange_barrier
- * shift_exchange_counter
- * shift_exchange_barrier_nbi
- * shift_exchange_counter_nbi
- * xor_pairwise_exchange_barrier
- * xor_pairwise_exchange_counter
- * xor_pairwise_exchange_barrier_nbi
- * xor_pairwise_exchange_counter_nbi
- * color_pairwise_exchange_barrier
- * color_pairwise_exchange_counter
- * color_pairwise_exchange_barrier_nbi
- * color_pairwise_exchange_counter_nbi
- *
+ * sync variables supplied by me
  */
-SHIM_ALLTOALLS(color_pairwise_exchange_counter, 32)
-SHIM_ALLTOALLS(color_pairwise_exchange_counter, 64)
+extern long *shmemc_barrier_all_psync;
+extern long *shmemc_sync_all_psync;
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_barrier_all = pshmem_barrier_all
+#define shmem_barrier_all pshmem_barrier_all
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_barrier_all(void)
+{
+    colls.barrier_all.f(shmemc_barrier_all_psync);
+}
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_sync = pshmem_sync
+#define shmem_sync pshmem_sync
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_sync(int PE_start, int logPE_stride, int PE_size, long *pSync)
+{
+    colls.sync.f(PE_start, logPE_stride, PE_size, pSync);
+}
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_sync_all = pshmem_sync_all
+#define shmem_sync_all pshmem_sync_all
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_sync_all(void)
+{
+    colls.sync_all.f(shmemc_sync_all_psync);
+}
+
+#ifdef ENABLE_PSHMEM
+#pragma weak shmem_broadcast32 = pshmem_broadcast32
+#define shmem_broadcast32 pshmem_broadcast32
+#pragma weak shmem_broadcast64 = pshmem_broadcast64
+#define shmem_broadcast64 pshmem_broadcast64
+#endif /* ENABLE_PSHMEM */
+
+void
+shmem_broadcast32(void *target, const void *source,
+                  size_t nelems, int PE_root, int PE_start,
+                  int logPE_stride, int PE_size, long *pSync)
+{
+    colls.broadcast.f32(target, source,
+                        nelems, PE_root, PE_start,
+                        logPE_stride, PE_size, pSync);
+}
+
+void
+shmem_broadcast64(void *target, const void *source,
+                  size_t nelems, int PE_root, int PE_start,
+                  int logPE_stride, int PE_size, long *pSync)
+{
+    colls.broadcast.f64(target, source,
+                        nelems, PE_root, PE_start,
+                        logPE_stride, PE_size, pSync);
+}
 
 /*
- * collect:
- *
- * linear
- * all_linear
- * all_linear1
- * rec_dbl
- * rec_dbl_signal
- * ring
- * bruck
- * bruck_no_rotate
- *
+ * -- WIP ----------------------------------------------------------
  */
-SHIM_COLLECT(bruck, 32)
-SHIM_COLLECT(bruck, 64)
 
-/*
- * fcollect:
- *
- * linear
- * all_linear
- * all_linear1
- * rec_dbl
- * ring
- * bruck
- * bruck_no_rotate
- * bruck_signal
- * bruck_inplace
- * neighbor_exchange
- *
- */
-SHIM_FCOLLECT(bruck_inplace, 32)
-SHIM_FCOLLECT(bruck_inplace, 64)
-
-/*
- * barrier/sync:
- *
- * linear
- * complete_tree
- * binomial_tree
- * knomial_tree
- * dissemination
- *
- */
-SHIM_BARRIER(binomial_tree)
-SHIM_BARRIER_ALL(binomial_tree)
-SHIM_SYNC(binomial_tree)
-SHIM_SYNC_ALL(binomial_tree)
-
-/*
- * broadcast:
- *
- * linear
- * complete_tree
- * binomial_tree
- * knomial_tree
- * knomial_tree_signal
- * scatter_collect
- *
- */
-SHIM_BROADCAST(binomial_tree, 32)
-SHIM_BROADCAST(binomial_tree, 64)
+#include "collectives/reductions.h"
 
 /*
  * reductions:

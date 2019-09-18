@@ -1,7 +1,7 @@
 /* For license: see LICENSE file at top-level */
 
-#ifndef _SHMEM_SHCOLL_SHIM_H
-#define _SHMEM_SHCOLL_SHIM_H 1
+#ifndef _REDUCTIONS_H
+#define _REDUCTIONS_H 1
 
 #ifdef HAVE_CONFIG_H
 # include "config.h"
@@ -10,174 +10,6 @@
 #include "shmem/api.h"
 
 #include <shcoll.h>
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_alltoall32 = pshmem_alltoall32
-#define shmem_alltoall32 pshmem_alltoall32
-#pragma weak shmem_alltoall64 = pshmem_alltoall64
-#define shmem_alltoall64 pshmem_alltoall64
-#endif /* ENABLE_PSHMEM */
-
-#define SHIM_ALLTOALL(_name, _size)                             \
-    void                                                        \
-    shmem_alltoall##_size(void *dest, const void *source,       \
-                          size_t nelems,                        \
-                          int PE_start,                         \
-                          int logPE_stride, int PE_size,        \
-                          long *pSync)                          \
-    {                                                           \
-        shcoll_alltoall##_size##_##_name(dest, source,          \
-                                         nelems,                \
-                                         PE_start,              \
-                                         logPE_stride, PE_size, \
-                                         pSync);                \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_alltoalls32 = pshmem_alltoalls32
-#define shmem_alltoalls32 pshmem_alltoalls32
-#pragma weak shmem_alltoalls64 = pshmem_alltoalls64
-#define shmem_alltoalls64 pshmem_alltoalls64
-#endif /* ENABLE_PSHMEM */
-
-#define SHIM_ALLTOALLS(_name, _size)                                \
-    void                                                            \
-    shmem_alltoalls##_size(void *dest, const void *source,          \
-                           ptrdiff_t tst, ptrdiff_t sst,            \
-                           size_t nelems,                           \
-                           int PE_start,                            \
-                           int logPE_stride, int PE_size,           \
-                           long *pSync)                             \
-    {                                                               \
-        shcoll_alltoalls##_size##_##_name(dest, source,             \
-                                          tst, sst,                 \
-                                          nelems,                   \
-                                          PE_start,                 \
-                                          logPE_stride, PE_size,    \
-                                          pSync);                   \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_collect32 = pshmem_collect32
-#define shmem_collect32 pshmem_collect32
-#pragma weak shmem_collect64 = pshmem_collect64
-#define shmem_collect64 pshmem_collect64
-#endif /* ENABLE_PSHMEM */
-
-#define SHIM_COLLECT(_name, _size)                              \
-    void                                                        \
-    shmem_collect##_size(void *dest, const void *source,        \
-                         size_t nelems,                         \
-                         int PE_start,                          \
-                         int logPE_stride, int PE_size,         \
-                         long *pSync)                           \
-    {                                                           \
-        shcoll_collect##_size##_##_name(dest, source,           \
-                                        nelems,                 \
-                                        PE_start,               \
-                                        logPE_stride, PE_size,  \
-                                        pSync);                 \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_fcollect32 = pshmem_fcollect32
-#define shmem_fcollect32 pshmem_fcollect32
-#pragma weak shmem_fcollect64 = pshmem_fcollect64
-#define shmem_fcollect64 pshmem_fcollect64
-#endif /* ENABLE_PSHMEM */
-
-#define SHIM_FCOLLECT(_name, _size)                             \
-    void                                                        \
-    shmem_fcollect##_size(void *dest, const void *source,       \
-                          size_t nelems,                        \
-                          int PE_start,                         \
-                          int logPE_stride, int PE_size,        \
-                          long *pSync)                          \
-    {                                                           \
-        shcoll_fcollect##_size##_##_name(dest, source,          \
-                                         nelems,                \
-                                         PE_start,              \
-                                         logPE_stride, PE_size, \
-                                         pSync);                \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_barrier = pshmem_barrier
-#define shmem_barrier pshmem_barrier
-#endif /* ENABLE_PSHMEM */
-
-#define SHIM_BARRIER(_name)                                     \
-    void                                                        \
-    shmem_barrier(int PE_start, int logPE_stride,               \
-                  int PE_size, long *pSync)                     \
-    {                                                           \
-        shcoll_barrier_##_name(PE_start, logPE_stride,          \
-                               PE_size, pSync);                 \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_barrier_all = pshmem_barrier_all
-#define shmem_barrier_all pshmem_barrier_all
-#endif /* ENABLE_PSHMEM */
-
-extern long *shmemc_barrier_all_psync;
-
-#define SHIM_BARRIER_ALL(_name)                                 \
-    void                                                        \
-    shmem_barrier_all(void)                                     \
-    {                                                           \
-        shcoll_barrier_all_##_name(shmemc_barrier_all_psync);   \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_sync = pshmem_sync
-#define shmem_sync pshmem_sync
-#endif /* ENABLE_PSHMEM */
-
-#define SHIM_SYNC(_name)                                \
-    void                                                \
-    shmem_sync(int PE_start, int logPE_stride,          \
-               int PE_size, long *pSync)                \
-    {                                                   \
-        shcoll_sync_##_name(PE_start, logPE_stride,     \
-                            PE_size, pSync);            \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_sync_all = pshmem_sync_all
-#define shmem_sync_all pshmem_sync_all
-#endif /* ENABLE_PSHMEM */
-
-extern long *shmemc_sync_all_psync;
-
-#define SHIM_SYNC_ALL(_name)                            \
-    void                                                \
-    shmem_sync_all(void)                                \
-    {                                                   \
-        shcoll_sync_all_##_name(shmemc_sync_all_psync); \
-    }
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmem_broadcast32 = pshmem_broadcast32
-#define shmem_broadcast32 pshmem_broadcast32
-#pragma weak shmem_broadcast64 = pshmem_broadcast64
-#define shmem_broadcast64 pshmem_broadcast64
-#endif /* ENABLE_PSHMEM */
-
-#define SHIM_BROADCAST(_name, _size)                                \
-    void                                                            \
-    shmem_broadcast##_size(void *dest, const void *source,          \
-                           size_t nelems,                           \
-                           int PE_root, int PE_start,               \
-                           int logPE_stride, int PE_size,           \
-                           long *pSync)                             \
-    {                                                               \
-        shcoll_broadcast##_size##_##_name(dest, source,             \
-                                          nelems,                   \
-                                          PE_root, PE_start,        \
-                                          logPE_stride, PE_size,    \
-                                          pSync);                   \
-    }
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_complexd_sum_to_all = pshmem_complexd_sum_to_all
@@ -326,4 +158,4 @@ extern long *shmemc_sync_all_psync;
         SHIM_REDUCE_MINMAX_ALL(_algo)           \
         SHIM_REDUCE_ARITH_ALL(_algo)
 
-#endif /* ! _SHIM_SHCOLL_SHIM_H */
+#endif /* ! _REDUCTIONS_H */

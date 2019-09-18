@@ -8,6 +8,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "boolean.h"
+#include "collectives/defaults.h"
 
 #include <stdio.h>
 #include <stdlib.h>             /* getenv */
@@ -125,42 +126,49 @@ shmemc_env_init(void)
         proc.env.teardown_kludge = option_enabled_test(e);
     }
 
-    proc.env.coll.barrier   = NULL;
-    proc.env.coll.broadcast = NULL;
-    proc.env.coll.collect   = NULL;
-    proc.env.coll.fcollect  = NULL;
-    proc.env.coll.alltoall  = NULL;
-    proc.env.coll.alltoalls = NULL;
-    proc.env.coll.reduce    = NULL;
+    proc.env.coll.barrier       = NULL;
+    proc.env.coll.barrier_all   = NULL;
+    proc.env.coll.sync          = NULL;
+    proc.env.coll.sync_all      = NULL;
+    proc.env.coll.broadcast     = NULL;
+    proc.env.coll.collect       = NULL;
+    proc.env.coll.fcollect      = NULL;
+    proc.env.coll.alltoall      = NULL;
+    proc.env.coll.alltoalls     = NULL;
+    proc.env.coll.reductions    = NULL;
 
     CHECK_ENV(e, BARRIER_ALGO);
-    if (e != NULL) {
-        proc.env.coll.barrier = strdup(e); /* free@end */
-    }
+    proc.env.coll.barrier =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER );
+    CHECK_ENV(e, BARRIER_ALL_ALGO);
+    proc.env.coll.barrier_all =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER_ALL );
+    CHECK_ENV(e, SYNC_ALGO);
+    proc.env.coll.sync =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC );
+    CHECK_ENV(e, SYNC_ALL_ALGO);
+    proc.env.coll.sync_all =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC_ALL );
     CHECK_ENV(e, BROADCAST_ALGO);
-    if (e != NULL) {
-        proc.env.coll.broadcast = strdup(e); /* free@end */
-    }
-    CHECK_ENV(e, COLLLECT_ALGO);
-    if (e != NULL) {
-        proc.env.coll.collect = strdup(e); /* free@end */
-    }
-    CHECK_ENV(e, FCOLLLECT_ALGO);
-    if (e != NULL) {
-        proc.env.coll.fcollect = strdup(e); /* free@end */
-    }
+    proc.env.coll.broadcast =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BROADCAST );
+    CHECK_ENV(e, COLLECT_ALGO);
+    proc.env.coll.collect =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_COLLECT );
+    CHECK_ENV(e, FCOLLECT_ALGO);
+    proc.env.coll.fcollect =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_FCOLLECT );
     CHECK_ENV(e, ALLTOALL_ALGO);
-    if (e != NULL) {
-        proc.env.coll.alltoall = strdup(e); /* free@end */
-    }
+    proc.env.coll.alltoall =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALL );
     CHECK_ENV(e, ALLTOALLS_ALGO);
-    if (e != NULL) {
-        proc.env.coll.alltoalls = strdup(e); /* free@end */
-    }
+    proc.env.coll.alltoalls =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALLS );
     CHECK_ENV(e, REDUCE_ALGO);
-    if (e != NULL) {
-        proc.env.coll.reduce = strdup(e); /* free@end */
-    }
+    /* TODO currently ignored */
+    proc.env.coll.reductions =
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_REDUCTIONS );
+    /* collectives to free@end */
 
     proc.env.progress_threads = NULL;
 
@@ -197,11 +205,14 @@ shmemc_env_finalize(void)
     free(proc.env.logging_file);
     free(proc.env.logging_events);
 
-    free(proc.env.coll.reduce);
+    free(proc.env.coll.reductions);
     free(proc.env.coll.alltoalls);
     free(proc.env.coll.alltoall);
     free(proc.env.coll.fcollect);
     free(proc.env.coll.collect);
+    free(proc.env.coll.sync_all);
+    free(proc.env.coll.sync);
+    free(proc.env.coll.barrier_all);
     free(proc.env.coll.barrier);
     free(proc.env.coll.broadcast);
 
@@ -308,7 +319,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
 
 #define DESCRIBE_COLLECTIVE(_name, _envvar)                             \
     do {                                                                \
-        fprintf(stream, "%s%-*s %-*s %s\n",                             \
+        fprintf(stream, "%s%-*s %-*s: %s\n",                            \
                 prefix,                                                 \
                 var_width, "SHMEM_" #_envvar "_ALGO",                   \
                 val_width,                                              \
@@ -317,12 +328,15 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
     } while (0)
 
     DESCRIBE_COLLECTIVE(barrier, BARRIER);
+    DESCRIBE_COLLECTIVE(barrier_all, BARRIER_ALL);
+    DESCRIBE_COLLECTIVE(sync, SYNC);
+    DESCRIBE_COLLECTIVE(sync_all, SYNC_ALL);
     DESCRIBE_COLLECTIVE(broadcast, BROADCAST);
     DESCRIBE_COLLECTIVE(collect, COLLECT);
     DESCRIBE_COLLECTIVE(fcollect, FCOLLECT);
     DESCRIBE_COLLECTIVE(alltoall, ALLTOALL);
     DESCRIBE_COLLECTIVE(alltoalls, ALLTOALLS);
-    DESCRIBE_COLLECTIVE(reduce, REDUCE);
+    DESCRIBE_COLLECTIVE(reductions, REDUCE);
 
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,

@@ -11,6 +11,7 @@
 #include "threading.h"
 #include "shmem_mutex.h"
 #include "progress.h"
+#include "collectives/collectives.h"
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
@@ -66,6 +67,7 @@ finalize_helper(void)
 
     progress_finalize();
     shmemc_finalize();
+    collectives_finalize();
     /* don't need a shmemt_finalize() */
     shmemu_finalize();
 
@@ -119,6 +121,7 @@ init_thread_helper(int requested, int *provided)
     /* utiltiies */
     shmemt_init();
     shmemu_init();
+    collectives_init();
     progress_init();
 
 #ifdef ENABLE_EXPERIMENTAL

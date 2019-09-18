@@ -98,6 +98,9 @@ continue, which will likely lead to undefined behavior.
 .RE
 .LP
 Collectives:
+.LP
+The possible values for the different algorithms are those implemented
+in SHCOLL, q.v.
 .RS 2
 .IP "SHMEM_{BARRIER,BARRIER_ALL}__ALGO (string: binomial_tree)"
 Algorithm name to use for barriers.
@@ -148,6 +151,8 @@ programs are supplied as part of the Reference Library for
 convenience.
 .SH SEE ALSO
 osh_intro(1).
+.LP
+SHCOLL \f(CRhttps://github.com/srki/shcoll\fP.
 .SH OPENSHMEM
 \f(CRhttp://www.openshmem.org/\fP
 .br

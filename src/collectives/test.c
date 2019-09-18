@@ -5,17 +5,20 @@
 int
 main(int argc, char *argv[])
 {
-    int i;
+    int i, r;
 
     for (i = 1; i < argc; ++i) {
-        void *ba;
-        void *b32, *b64;
+        printf("barrier_all: %s -> ", argv[i]);
 
-        barrier_all_lookup(argv[i], &ba);
-        printf("barrier_all: %s -> %p\n", argv[i], ba);
+        r = register_alltoalls(argv[i]);
+        if (r == 0) {
+            printf("registered OK");
+        }
+        else {
+            printf("unknown (returned %d)", r);
+        }
+        printf("\n");
 
-        broadcast_lookup(argv[i], &b32, &b64);
-        printf("broadcast: %s -> { 32: %p, 64: %p }\n", argv[i], b32, b64);
     }
 
     return 0;
