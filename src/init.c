@@ -12,6 +12,9 @@
 #include "shmem_mutex.h"
 #include "progress.h"
 #include "collectives/collectives.h"
+#ifdef ENABLE_ALIGNED_ADDRESSES
+# include "asr.h"
+#endif /* ENABLE_ALIGNED_ADDRESSES */
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
@@ -123,6 +126,10 @@ init_thread_helper(int requested, int *provided)
     shmemu_init();
     collectives_init();
     progress_init();
+
+#ifdef ENABLE_ALIGNED_ADDRESSES
+    test_asr_mismatch();
+#endif /* ENABLE_ALIGNED_ADDRESSES */
 
 #ifdef ENABLE_EXPERIMENTAL
     shmemxa_init(proc.env.heaps.nheaps);

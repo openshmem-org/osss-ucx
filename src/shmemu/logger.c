@@ -25,7 +25,6 @@
 
 static FILE *log_stream = NULL;
 static char *host = NULL;
-static int fatal_len;           /* speed up strncmp */
 
 /*
  * output formatting
@@ -133,6 +132,8 @@ shmemu_logger_init(void)
     events = kh_init(events_hash);
 
     event_set(LOG_FATAL,      true);
+    event_set(LOG_WARN,       true);
+
     event_set(LOG_INIT,       false);
     event_set(LOG_FINALIZE,   false);
     event_set(LOG_MEMORY,     false);
@@ -150,8 +151,6 @@ shmemu_logger_init(void)
     event_set(LOG_ATOMICS,    false);
 
     parse_log_events();
-
-    fatal_len = strlen(LOG_FATAL);
 
     mypid = (int) getpid();
 }
@@ -209,7 +208,7 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
         /* make sure this all goes out in 1 burst */
         fflush(log_stream);
 
-        if (strncmp(evt, LOG_FATAL, fatal_len) == 0) {
+        if (strncmp(evt, LOG_FATAL, strlen(LOG_FATAL)) == 0) {
             shmemc_global_exit(1);
             /* NOT REACHED */
         }

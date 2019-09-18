@@ -81,6 +81,7 @@ int shmemu_parse_csv(char *str, int **out, size_t *nout);
 
 #define LOG_ALL        "ALL"
 #define LOG_FATAL      "FATAL"
+#define LOG_WARN       "WARN"
 #define LOG_INIT       "INIT"
 #define LOG_FINALIZE   "FINALIZE"
 #define LOG_MEMORY     "MEMORY"
