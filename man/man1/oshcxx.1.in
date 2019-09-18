@@ -4,7 +4,7 @@
 \fBoshcxx | oshc++\fP \- compile an OpenSHMEM C++ program
 .SH SYNOPSIS
 \fBoshcxx | oshc++\fP
-.RS 4
+.RS 2
 .br
 [ underlying compiler flags ]
 .br
@@ -17,13 +17,13 @@ the user.
 .SH EXAMPLES
 The command
 .LP
-.RS 4
+.RS 2
 $ oshcxx -g -o foo.exe foo.cxx
 .RE
 .LP
 compiles C++ source code foo.cxx into the OpenSHMEM executable foo.exe.
 .SH ENVIRONMENT
-.IP \f(CROSH_CXX\fP 4
+.IP \f(CROSH_CXX\fP 2
 Overrides the underlying compiler/linker invoked by this wrapper.  The
 default is determined when the OpenSHMEM library is built.
 .RE

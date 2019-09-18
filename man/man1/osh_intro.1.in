@@ -12,24 +12,24 @@ Source Software Solutions (OSSS) Reference Implementation.
 .LP
 .SH TOOLS
 .IP COMPILERS
-.RS 4
-.IP "C" 8
+.RS 2
+.IP "C" 4
 This is the core interface that is always present.
 C programs can be compiled/linked using oshcc(1).
-.IP "C++" 8
+.IP "C++" 4
 If this interface has been enabled, C++ programs can be
 compiled/linked using oshcxx(1).
 .RE
 .IP LAUNCHER
-.RS 4
+.RS 2
 In this implementation, OpenSHMEM programs can be launched via
 oshrun(1).  Job scheduling systems, such as PBS/Torque, SLURM, and
 LSF, may provide compatible launchers as well (e.g. srun in SLURM,
 aprun in ALPS).
 .RE
 .IP INFORMATION
-.RS 4
-.IP osh_info 4
+.RS 2
+.IP osh_info 2
 A utility that describes configuration settings of this
 implementation, osh_info(1).
 .RE
