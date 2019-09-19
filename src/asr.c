@@ -39,7 +39,7 @@ test_asr_mismatch(void)
         return;                 /* can't read file, carry on */
     }
 
-    if (inp != '0') {
+    if (inp == '0') {
         return;                 /* file starts with "0", ASR turned off */
     }
 
