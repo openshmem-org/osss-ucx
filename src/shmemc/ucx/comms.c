@@ -667,9 +667,8 @@ HELPER_BITWISE_ATOMIC(XOR, xor)
                                   int pe,                               \
                                   void *retp)                           \
     {                                                                   \
-        uint64_t ret = 0;                                               \
-        uint64_t rval, rval_orig;                                       \
-        uint64_t vcomp = 0;                                             \
+        /* make sure zeroed for smaller types */                        \
+        uint64_t ret = 0, rval = 0, rval_orig = 0, vcomp = 0;           \
         ucs_status_t s;                                                 \
         uint64_t r_t;                                                   \
         ucp_rkey_h r_key;                                               \
