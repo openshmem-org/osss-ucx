@@ -12,7 +12,8 @@
 #include <sys/file.h>
 
 /*
- * if we said ASR isn't here, but it actually is, let's say something
+ * if we claimed ASR isn't here, but it actually is, let's say
+ * something
  *
  * Linux specific at moment
  *   (see https://wiki.freebsd.org/ASLR)
@@ -38,15 +39,20 @@ test_asr_mismatch(void)
         return;                 /* can't read file, carry on */
     }
 
-    if (inp == '0') {
+    if (inp != '0') {
         return;                 /* file starts with "0", ASR turned off */
     }
 
-    logger(LOG_WARN,
-           "aligned addresses requested, "
-           "but this node appears to have ASR enabled "
-           "(%s = %c)",
-           RAND_VARIABLE, inp);
+    /* only first PE per node reports */
+    if ( (proc.npeers > 0) &&
+         (proc.rank > proc.peers[0])) {
+        return;
+    }
+
+    shmemu_warn("aligned addresses requested, "
+                "but this node (%s) appears to have ASR enabled "
+                "(%s = %c)",
+                shmemu_gethostname(), RAND_VARIABLE, inp);
 }
 
 #endif /* ENABLE_ALIGNED_ADDRESSES */

@@ -132,7 +132,6 @@ shmemu_logger_init(void)
     events = kh_init(events_hash);
 
     event_set(LOG_FATAL,      true);
-    event_set(LOG_WARN,       true);
 
     event_set(LOG_INIT,       false);
     event_set(LOG_FINALIZE,   false);

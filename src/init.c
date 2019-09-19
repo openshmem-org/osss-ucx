@@ -127,10 +127,6 @@ init_thread_helper(int requested, int *provided)
     collectives_init();
     progress_init();
 
-#ifdef ENABLE_ALIGNED_ADDRESSES
-    test_asr_mismatch();
-#endif /* ENABLE_ALIGNED_ADDRESSES */
-
 #ifdef ENABLE_EXPERIMENTAL
     shmemxa_init(proc.env.heaps.nheaps);
 #endif  /* ENABLE_EXPERIMENTAL */
@@ -162,6 +158,10 @@ init_thread_helper(int requested, int *provided)
            __func__,
            requested, proc.td.osh_tl
            );
+
+#ifdef ENABLE_ALIGNED_ADDRESSES
+    test_asr_mismatch();
+#endif /* ENABLE_ALIGNED_ADDRESSES */
 
     /* make sure all symmetric memory ready */
     shmem_barrier_all();
