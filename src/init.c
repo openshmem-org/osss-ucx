@@ -148,7 +148,7 @@ init_thread_helper(int requested, int *provided)
 
     ++proc.refcount;
 
-    if (shmemc_my_pe() == 0) {
+    if (proc.rank == 0) {
         if (proc.env.print_version) {
             info_output_package_version(stdout, 0);
         }
