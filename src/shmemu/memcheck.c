@@ -16,9 +16,8 @@
 void
 report_corruption(mspace m)
 {
-    logger(LOG_MEMORY,
-           "CORRUPTION DETECTED IN SPACE %p",
-           m);
+    shmemu_warn("SYMMETRIC HEAP CORRUPTION DETECTED IN SPACE %p", m);
+
     if (proc.env.memfatal) {
         shmemc_global_exit(1);
         /* NOT REACHED */
@@ -32,9 +31,9 @@ report_corruption(mspace m)
 void
 report_usage_error(mspace m, void *p)
 {
-    logger(LOG_MEMORY,
-           "USAGE ERROR DETECTED IN SPACE %p, ADDRESS %p",
-           m, p);
+    shmemu_warn("SYMMETRIC HEAP ERROR DETECTED IN SPACE %p, ADDRESS %p",
+                m, p);
+
     if (proc.env.memfatal) {
         shmemc_global_exit(1);
         /* NOT REACHED */

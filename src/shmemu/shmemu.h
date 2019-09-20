@@ -99,9 +99,11 @@ int shmemu_parse_csv(char *str, int **out, size_t *nout);
 #define LOG_UNKNOWN    "UNKNOWN"
 
 /*
- * bail out on major problems early/late on during setup/finalize
+ * bail out on major problems early/late on during setup/finalize,
+ * also report unconditional warnings
  */
 void shmemu_fatal(const char *fmt, ...);
+void shmemu_warn(const char *fmt, ...);
 
 #ifdef ENABLE_LOGGING
 

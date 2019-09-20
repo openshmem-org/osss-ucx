@@ -9,7 +9,7 @@ OTHER_CPPFLAGS            = -I../../include \
 
 LIBSHMEMU_SOURCES         = shmemu_init.c \
 				hostname.c \
-				fatal.c \
+				carp.c \
 				memcheck.c \
 				parse_csv.c \
 				timer.c \

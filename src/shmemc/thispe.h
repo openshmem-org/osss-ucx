@@ -25,12 +25,15 @@
 
 typedef struct collectives {
     char *barrier;
+    char *barrier_all;
+    char *sync;
+    char *sync_all;
     char *broadcast;
     char *collect;
     char *fcollect;
     char *alltoall;
     char *alltoalls;
-    char *reduce;
+    char *reductions;
 } shmemc_coll_t;
 
 /*

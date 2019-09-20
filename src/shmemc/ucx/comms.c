@@ -613,7 +613,6 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
 #define MAKE_UCP_FETCH_OP(_op)     UCP_ATOMIC_FETCH_OP_F##_op
 #define MAKE_UCP_POST_OP(_op)      UCP_ATOMIC_POST_OP_##_op
 
-#if 0
 #define HELPER_BITWISE_FETCH_ATOMIC(_ucp_op, _opname)                   \
     inline static void                                                  \
     helper_atomic_fetch_##_opname(shmemc_context_h ch,                  \
@@ -637,7 +636,6 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
 HELPER_BITWISE_FETCH_ATOMIC(AND, and)
 HELPER_BITWISE_FETCH_ATOMIC(OR,  or)
 HELPER_BITWISE_FETCH_ATOMIC(XOR, xor)
-#endif
 
 #define HELPER_BITWISE_ATOMIC(_ucp_op, _opname)                         \
     inline static void                                                  \
@@ -669,14 +667,15 @@ HELPER_BITWISE_ATOMIC(XOR, xor)
                                   int pe,                               \
                                   void *retp)                           \
     {                                                                   \
-        uint64_t ret = 0;                                               \
-        uint64_t rval, rval_orig;                                       \
+        /* make sure zeroed for smaller types */                        \
+        uint64_t ret = 0, rval = 0, rval_orig = 0, vcomp = 0;           \
         ucs_status_t s;                                                 \
         uint64_t r_t;                                                   \
         ucp_rkey_h r_key;                                               \
         ucp_ep_h ep;                                                    \
                                                                         \
-        get_remote_key_and_addr(t, pe, &r_key, &r_t);                   \
+        memcpy(&vcomp, vp, vs); /* save comparator */                   \
+        get_remote_key_and_addr(ch, (uint64_t) t, pe, &r_key, &r_t);    \
         ep = lookup_ucp_ep(ch, pe);                                     \
                                                                         \
         do {                                                            \
@@ -685,13 +684,13 @@ HELPER_BITWISE_ATOMIC(XOR, xor)
             shmemu_assert(s == UCS_OK,                                  \
                           "AMO fetch failed in CAS (status: %s)",       \
                           ucs_status_string(s));                        \
-            rval = (rval_orig) _op v;                                   \
+            rval = (rval_orig) _op vcomp;                               \
                                                                         \
             s = ucp_atomic_cswap64(ep, rval_orig, rval,                 \
-                                        r_t, r_key, &ret);              \
+                                   r_t, r_key, &ret);                   \
         } while (ret != rval_orig);                                     \
                                                                         \
-        *retp = ret;                                                    \
+        memcpy(retp, &ret, vs); /* copy out answer */                   \
     }
 
 HELPER_BITWISE_FETCH_ATOMIC(|, or)
@@ -704,7 +703,10 @@ HELPER_BITWISE_FETCH_ATOMIC(^, xor)
                             void *t, void *vp, size_t vs,               \
                             int pe)                                     \
     {                                                                   \
-        (void) helper_atomic_fetch_##_opname(ch, t, vp, vs, pe);        \
+        uint64_t discard;                                               \
+                                                                        \
+        (void) helper_atomic_fetch_##_opname(ch, t, vp, vs, pe,         \
+                                             &discard);                 \
     }
 
 HELPER_BITWISE_ATOMIC(or)
@@ -726,11 +728,10 @@ HELPER_BITWISE_ATOMIC(xor)
     {                                                                   \
         shmemc_context_h ch = (shmemc_context_h) ctx;                   \
                                                                         \
-        helper_fetching_amo(ch,                                         \
-                            UCP_ATOMIC_FETCH_OP_FAND,                   \
-                            t, vp, vs,                                  \
-                            pe,                                         \
-                            retp);                                      \
+        helper_atomic_fetch_##_op(ch,                                   \
+                                  t, vp, vs,                            \
+                                  pe,                                   \
+                                  retp);                                \
     }
 
 SHMEMC_CTX_FETCH_BITWISE(and)

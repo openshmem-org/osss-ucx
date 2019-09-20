@@ -11,6 +11,10 @@
 #include "threading.h"
 #include "shmem_mutex.h"
 #include "progress.h"
+#include "collectives/collectives.h"
+#ifdef ENABLE_ALIGNED_ADDRESSES
+# include "asr.h"
+#endif /* ENABLE_ALIGNED_ADDRESSES */
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
@@ -66,6 +70,7 @@ finalize_helper(void)
 
     progress_finalize();
     shmemc_finalize();
+    collectives_finalize();
     /* don't need a shmemt_finalize() */
     shmemu_finalize();
 
@@ -119,6 +124,7 @@ init_thread_helper(int requested, int *provided)
     /* utiltiies */
     shmemt_init();
     shmemu_init();
+    collectives_init();
     progress_init();
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -138,7 +144,7 @@ init_thread_helper(int requested, int *provided)
 
     ++proc.refcount;
 
-    if (shmemc_my_pe() == 0) {
+    if (proc.rank == 0) {
         if (proc.env.print_version) {
             info_output_package_version(stdout, 0);
         }
@@ -152,6 +158,10 @@ init_thread_helper(int requested, int *provided)
            __func__,
            requested, proc.td.osh_tl
            );
+
+#ifdef ENABLE_ALIGNED_ADDRESSES
+    test_asr_mismatch();
+#endif /* ENABLE_ALIGNED_ADDRESSES */
 
     /* make sure all symmetric memory ready */
     shmem_barrier_all();
