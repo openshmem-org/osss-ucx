@@ -232,6 +232,8 @@
                           ptrdiff_t tst, ptrdiff_t sst,                 \
                           size_t nelems, int pe)                        \
     {                                                                   \
+        const size_t tst_nb = BITS2BYTES(_size) * tst;                  \
+        const size_t sst_nb = BITS2BYTES(_size) * sst;                  \
         size_t ti = 0, si = 0;                                          \
         size_t i;                                                       \
                                                                         \
@@ -252,8 +254,8 @@
                                  (void *) &((char *) target)[ti],       \
                                  (void *) &((char *) source)[si],       \
                                  1, pe);                                \
-            ti += tst;                                                  \
-            si += sst;                                                  \
+            ti += tst_nb;                                               \
+            si += sst_nb;                                               \
         }                                                               \
     }
 
@@ -264,6 +266,8 @@
                           ptrdiff_t tst, ptrdiff_t sst,                 \
                           size_t nelems, int pe)                        \
     {                                                                   \
+        const size_t tst_nb = BITS2BYTES(_size) * tst;                  \
+        const size_t sst_nb = BITS2BYTES(_size) * sst;                  \
         size_t ti = 0, si = 0;                                          \
         size_t i;                                                       \
                                                                         \
@@ -285,8 +289,8 @@
                                  (void *) &((char *) target)[ti],       \
                                  (void *) &((char *) source)[si],       \
                                  1, pe);                                \
-            ti += tst;                                                  \
-            si += sst;                                                  \
+            ti += tst_nb;                                               \
+            si += sst_nb;                                               \
         }                                                               \
     }
 
