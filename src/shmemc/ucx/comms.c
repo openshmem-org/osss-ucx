@@ -704,7 +704,9 @@ HELPER_BITWISE_FETCH_ATOMIC(^, xor)
                             int pe)                                     \
     {                                                                   \
         uint64_t discard;                                               \
-        (void) helper_atomic_fetch_##_opname(ch, t, vp, vs, pe, &discard); \
+                                                                        \
+        (void) helper_atomic_fetch_##_opname(ch, t, vp, vs, pe,         \
+                                             &discard);                 \
     }
 
 HELPER_BITWISE_ATOMIC(or)
