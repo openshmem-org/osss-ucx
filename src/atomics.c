@@ -423,11 +423,11 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t)
     shmem_ctx_##_name##_atomic_fetch(shmem_ctx_t ctx,                   \
                                      const _type *target, int pe)       \
     {                                                                   \
-        _type one = 1;                                                  \
+        _type zero = 0;                                                 \
         _type v;                                                        \
                                                                         \
         SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fadd(ctx, (_type *) target,   \
-                                               &one, sizeof(one), pe,   \
+                                               &zero, sizeof(zero), pe, \
                                                &v));                    \
         return v;                                                       \
     }
