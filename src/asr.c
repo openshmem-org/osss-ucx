@@ -10,6 +10,7 @@
 
 #include <unistd.h>
 #include <sys/file.h>
+#include <sys/personality.h>
 
 /*
  * if we claimed ASR isn't here, but it actually is, let's say
@@ -25,6 +26,7 @@
 void
 test_asr_mismatch(void)
 {
+    int p;
     int fd;
     ssize_t n;
     char inp;
@@ -43,10 +45,14 @@ test_asr_mismatch(void)
         return;                 /* file starts with "0", ASR turned off */
     }
 
-    /* only first PE per node reports */
+    p = personality(0xffffffff);
+    if (p & ADDR_NO_RANDOMIZE) {
+        return;                 /* ASR on globally, but not in this process */
+    }
+
     if ( (proc.npeers > 0) &&
          (proc.rank > proc.peers[0])) {
-        return;
+        return;                 /* only first PE per node reports */
     }
 
     shmemu_warn("aligned addresses requested, "
