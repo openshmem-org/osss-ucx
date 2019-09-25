@@ -324,7 +324,7 @@ shmemc_pmi_client_init(void)
     shmemu_assert(proc.nranks > 0,
                   "PMI count of PE ranks %d is not valid",
                   proc.nranks);
-    shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
+    shmemu_assert(SHMEMU_VALID_PE_NUMBER(proc.rank),
                   "PMI PE rank %d is not valid",
                   proc.rank);
 

@@ -23,13 +23,15 @@
 #define RAND_VARIABLE "randomize_va_space"
 #define RAND_FILE "/proc/sys/kernel/" RAND_VARIABLE
 
+#define PERSONALITY_QUERY 0xffffffff
+
 void
 test_asr_mismatch(void)
 {
-    int p;
     int fd;
     ssize_t n;
     char inp;
+    int p;
 
     fd = open(RAND_FILE, O_RDONLY, 0);
     if (fd < 0) {
@@ -45,13 +47,12 @@ test_asr_mismatch(void)
         return;                 /* file starts with "0", ASR turned off */
     }
 
-    p = personality(0xffffffff);
+    p = personality(PERSONALITY_QUERY);
     if (p & ADDR_NO_RANDOMIZE) {
         return;                 /* ASR on globally, but not in this process */
     }
 
-    if ( (proc.npeers > 0) &&
-         (proc.rank > proc.peers[0])) {
+    if ( SHMEMU_NODE_LEADER() ) {
         return;                 /* only first PE per node reports */
     }
 

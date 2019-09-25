@@ -371,7 +371,7 @@ shmemc_addr_accessible(const void *addr, int pe)
 int
 shmemc_pe_accessible(int pe)
 {
-    return IS_VALID_PE_NUMBER(pe);
+    return SHMEMU_VALID_PE_NUMBER(pe);
 }
 
 /*

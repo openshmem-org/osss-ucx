@@ -369,7 +369,7 @@ init_ranks(void)
     shmemu_assert(proc.maxranks > 0,
                   "PMIx universe size is %d, but must be > 0",
                   proc.maxranks);
-    shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
+    shmemu_assert(SHMEMU_VALID_PE_NUMBER(proc.rank),
                   "PMIx PE rank %d is not in range [0...%d)",
                   proc.rank, proc.nranks);
 

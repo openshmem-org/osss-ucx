@@ -53,8 +53,14 @@
 /*
  * Return non-zero if PE is a valid rank, 0 otherwise
  */
-#define IS_VALID_PE_NUMBER(_pe)                 \
+#define SHMEMU_VALID_PE_NUMBER(_pe)                 \
     ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
+
+/*
+ * are we first PE on a node?
+ */
+#define SHMEMU_NODE_LEADER() \
+    ( (proc.npeers > 0) && (proc.rank > proc.peers[0]) )
 
 void shmemu_init(void);
 void shmemu_finalize(void);
