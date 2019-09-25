@@ -52,7 +52,7 @@ test_asr_mismatch(void)
         return;                 /* ASR on globally, but not in this process */
     }
 
-    if ( SHMEMU_NODE_LEADER() ) {
+    if (! shmemu_node_leader()) {
         return;                 /* only first PE per node reports */
     }
 
