@@ -389,8 +389,8 @@ init_peers(void)
 
     proc.npeers = (int) vp->data.uint32;
     /* how's the 'hood look? */
-    shmemu_assert(proc.npeers >= 0,
-                  "PMIx PE's peer count %d must be >= 0",
+    shmemu_assert(proc.npeers > 0,
+                  "PMIx PE's peer count %d must be > 0",
                   proc.npeers);
     shmemu_assert(proc.npeers <= proc.nranks,
                   "PMIx PE's peer count %d bigger than program size %d",
