@@ -26,10 +26,16 @@
 void
 test_asr_mismatch(void)
 {
+    int p;
     int fd;
     ssize_t n;
     char inp;
-    int p;
+
+    p = personality(PERSONALITY_QUERY);
+    if (p & ADDR_NO_RANDOMIZE) {
+        return;                 /* ASR disabled in this process */
+        /* NOT REACHED */
+    }
 
     fd = open(RAND_FILE, O_RDONLY, 0);
     if (fd < 0) {
@@ -45,12 +51,6 @@ test_asr_mismatch(void)
 
     if (inp == '0') {
         return;                 /* file starts with "0", ASR turned off */
-        /* NOT REACHED */
-    }
-
-    p = personality(PERSONALITY_QUERY);
-    if (p & ADDR_NO_RANDOMIZE) {
-        return;                 /* ASR on globally, but not in this process */
         /* NOT REACHED */
     }
 
