@@ -34,24 +34,29 @@ test_asr_mismatch(void)
     fd = open(RAND_FILE, O_RDONLY, 0);
     if (fd < 0) {
         return;                 /* no file, carry on */
+        /* NOT REACHED */
     }
 
     n = read(fd, &inp, 1);
     if (n < 1) {
         return;                 /* can't read file, carry on */
+        /* NOT REACHED */
     }
 
     if (inp == '0') {
         return;                 /* file starts with "0", ASR turned off */
+        /* NOT REACHED */
     }
 
     p = personality(PERSONALITY_QUERY);
     if (p & ADDR_NO_RANDOMIZE) {
         return;                 /* ASR on globally, but not in this process */
+        /* NOT REACHED */
     }
 
     if (! shmemu_node_leader()) {
         return;                 /* only first PE per node reports */
+        /* NOT REACHED */
     }
 
     shmemu_warn("aligned addresses requested, "
