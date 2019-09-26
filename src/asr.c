@@ -4,8 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef ENABLE_ALIGNED_ADDRESSES
-
 #include "shmemu.h"
 
 #include <unistd.h>
@@ -61,5 +59,3 @@ test_asr_mismatch(void)
                 "(%s = %c)",
                 shmemu_gethostname(), RAND_VARIABLE, inp);
 }
-
-#endif /* ENABLE_ALIGNED_ADDRESSES */
