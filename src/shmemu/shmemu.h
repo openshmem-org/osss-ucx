@@ -48,7 +48,11 @@
 /*
  * rotate/spread PE communications
  */
-#define SHIFT(_pe) ( ((_pe) + proc.rank) % proc.nranks )
+inline static int
+shmemu_shift(int pe)
+{
+    return (pe + proc.rank) % proc.nranks;
+}
 
 /*
  * Return non-zero if PE is a valid rank, 0 otherwise

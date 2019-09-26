@@ -147,7 +147,7 @@ shmemc_pmi_exchange_workers(void)
     for (pe = 0; pe < proc.nranks; ++pe) {
         int ps;
         worker_info_t *wp;
-        const int i = SHIFT(pe);
+        const int i = shmemu_shift(pe);
 
         snprintf(key, kvs_max_key_len,
                  wrkr_exch_fmt,
@@ -170,7 +170,7 @@ shmemc_pmi_exchange_workers(void)
 inline static void
 exchange_one_rkeys(size_t r, int pe)
 {
-    const int i = SHIFT(pe);
+    const int i = shmemu_shift(pe);
     int ps;
     ucs_status_t s;
     size_t len;
@@ -233,7 +233,7 @@ exchange_all_rkeys(size_t r)
     int pe;
 
     for (pe = 0; pe < proc.nranks; ++pe) {
-        const int i = SHIFT(pe);
+        const int i = shmemu_shift(pe);
 
         exchange_one_rkeys(r, i);
     }
@@ -245,7 +245,7 @@ exchange_one_rkeys_and_heaps(size_t r)
     int pe;
 
     for (pe = 0; pe < proc.nranks; ++pe) {
-        const int i = SHIFT(pe);
+        const int i = shmemu_shift(pe);
 
         exchange_one_rkeys(r, i);
 
