@@ -48,13 +48,33 @@
 /*
  * rotate/spread PE communications
  */
-#define SHIFT(_pe) ( ((_pe) + proc.rank) % proc.nranks )
+inline static int
+shmemu_shift(int pe)
+{
+    return (pe + proc.rank) % proc.nranks;
+}
 
 /*
  * Return non-zero if PE is a valid rank, 0 otherwise
  */
-#define IS_VALID_PE_NUMBER(_pe)                 \
-    ((proc.nranks > (_pe) ) && ( (_pe) >= 0))
+inline static int
+shmemu_valid_pe_number(int pe)
+{
+    return (proc.nranks > pe) && (pe >= 0);
+}
+
+/*
+ * are we first PE on a node?
+ */
+inline static int
+shmemu_node_leader(void)
+{
+    if (proc.npeers == 1) {
+        return 1;               /* I'm the only PE here */
+    }
+
+    return (proc.rank == proc.peers[0]);
+}
 
 void shmemu_init(void);
 void shmemu_finalize(void);

@@ -3,8 +3,8 @@
 #ifndef _COLLECTIVES_DEFAULTS_H
 #define _COLLECTIVES_DEFAULTS_H 1
 
-#define COLLECTIVES_DEFAULT_ALLTOALL         "color_pairwise_exchange_counter"
-#define COLLECTIVES_DEFAULT_ALLTOALLS        "color_pairwise_exchange_counter"
+#define COLLECTIVES_DEFAULT_ALLTOALL         "shift_exchange_barrier"
+#define COLLECTIVES_DEFAULT_ALLTOALLS        "shift_exchange_barrier"
 #define COLLECTIVES_DEFAULT_BARRIER          "binomial_tree"
 #define COLLECTIVES_DEFAULT_BARRIER_ALL      "binomial_tree"
 #define COLLECTIVES_DEFAULT_SYNC             "binomial_tree"

@@ -18,7 +18,7 @@ shmemu_warn(const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    fprintf(stderr, "*** WARNING: ");
+    fprintf(stderr, "*** PE %d: WARNING: ", proc.rank);
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, " ***\n");
     fflush(stderr);
@@ -33,7 +33,7 @@ shmemu_fatal(const char *fmt, ...)
         va_list ap;
 
         va_start(ap, fmt);
-        fprintf(stderr, "*** FATAL: ");
+        fprintf(stderr, "*** PE %d: FATAL: ", proc.rank);
         vfprintf(stderr, fmt, ap);
         fprintf(stderr, " ***\n");
         fflush(stderr);

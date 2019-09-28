@@ -369,7 +369,7 @@ init_ranks(void)
     shmemu_assert(proc.maxranks > 0,
                   "PMIx universe size is %d, but must be > 0",
                   proc.maxranks);
-    shmemu_assert(IS_VALID_PE_NUMBER(proc.rank),
+    shmemu_assert(shmemu_valid_pe_number(proc.rank),
                   "PMIx PE rank %d is not in range [0...%d)",
                   proc.rank, proc.nranks);
 
@@ -389,8 +389,8 @@ init_peers(void)
 
     proc.npeers = (int) vp->data.uint32;
     /* how's the 'hood look? */
-    shmemu_assert(proc.npeers >= 0,
-                  "PMIx PE's peer count %d must be >= 0",
+    shmemu_assert(proc.npeers > 0,
+                  "PMIx PE's peer count %d must be > 0",
                   proc.npeers);
     shmemu_assert(proc.npeers <= proc.nranks,
                   "PMIx PE's peer count %d bigger than program size %d",

@@ -4,12 +4,11 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#ifdef ENABLE_ALIGNED_ADDRESSES
-
 #include "shmemu.h"
 
 #include <unistd.h>
 #include <sys/file.h>
+#include <sys/personality.h>
 
 /*
  * if we claimed ASR isn't here, but it actually is, let's say
@@ -22,31 +21,42 @@
 #define RAND_VARIABLE "randomize_va_space"
 #define RAND_FILE "/proc/sys/kernel/" RAND_VARIABLE
 
+#define PERSONALITY_QUERY 0xffffffff
+
 void
 test_asr_mismatch(void)
 {
+    int p;
     int fd;
     ssize_t n;
     char inp;
 
+    p = personality(PERSONALITY_QUERY);
+    if (p & ADDR_NO_RANDOMIZE) {
+        return;                 /* ASR disabled in this process */
+        /* NOT REACHED */
+    }
+
     fd = open(RAND_FILE, O_RDONLY, 0);
     if (fd < 0) {
         return;                 /* no file, carry on */
+        /* NOT REACHED */
     }
 
     n = read(fd, &inp, 1);
     if (n < 1) {
         return;                 /* can't read file, carry on */
+        /* NOT REACHED */
     }
 
     if (inp == '0') {
         return;                 /* file starts with "0", ASR turned off */
+        /* NOT REACHED */
     }
 
-    /* only first PE per node reports */
-    if ( (proc.npeers > 0) &&
-         (proc.rank > proc.peers[0])) {
-        return;
+    if (! shmemu_node_leader()) {
+        return;                 /* only first PE per node reports */
+        /* NOT REACHED */
     }
 
     shmemu_warn("aligned addresses requested, "
@@ -54,5 +64,3 @@ test_asr_mismatch(void)
                 "(%s = %c)",
                 shmemu_gethostname(), RAND_VARIABLE, inp);
 }
-
-#endif /* ENABLE_ALIGNED_ADDRESSES */
