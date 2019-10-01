@@ -134,10 +134,6 @@ register_globals()
 
     mp.address = (void *) g_base;
     mp.length = len;
-    mp.flags =
-        UCP_MEM_MAP_NONBLOCK |
-        UCP_MEM_MAP_ALLOCATE |
-        UCP_MEM_MAP_FIXED;
 
     globals->base = g_base;
     globals->end  = g_end;
