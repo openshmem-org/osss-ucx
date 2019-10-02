@@ -4,25 +4,31 @@
 #include "shmemu.h"
 #include "collectives/table.h"
 
+#define TRY(_cname)                                             \
+    {                                                           \
+        const int s = register_##_cname(proc.env.coll._cname);  \
+                                                                \
+        if (s != 0) {                                           \
+            shmemu_fatal("couldn't register collective "        \
+                         "\"%s\" (s = %d)",                     \
+                         #_cname, s);                           \
+        }                                                       \
+    }
+
 void
 collectives_init(void)
 {
-    int s = 0;
+    TRY(alltoall);
+    TRY(alltoalls);
+    TRY(collect);
+    TRY(fcollect);
+    TRY(barrier);
+    TRY(barrier_all);
+    TRY(sync);
+    TRY(sync_all);
+    TRY(broadcast);
 
-    s += register_alltoall(proc.env.coll.alltoall);
-    s += register_alltoalls(proc.env.coll.alltoalls);
-    s += register_collect(proc.env.coll.collect);
-    s += register_fcollect(proc.env.coll.fcollect);
-    s += register_barrier(proc.env.coll.barrier);
-    s += register_barrier_all(proc.env.coll.barrier_all);
-    s += register_sync(proc.env.coll.sync);
-    s += register_sync_all(proc.env.coll.sync_all);
-    s += register_broadcast(proc.env.coll.broadcast);
     /* TODO reductions */
-
-    if (s != 0) {
-        shmemu_fatal("couldn't register collectives (s = %d)", s);
-    }
 }
 
 void
