@@ -48,20 +48,6 @@
 # define _WUR
 #endif
 
-#if 0
-enum shmem_fortran_errors {
-    SHMEM_MALLOC_OK                  = (0L),
-    SHMEM_MALLOC_BAD_SIZE            = (-1L),
-    SHMEM_MALLOC_FAIL                = (-2L),
-    SHMEM_MALLOC_NOT_IN_SYMM_HEAP    = (-3L),
-    SHMEM_MALLOC_ALREADY_FREE        = (-4L),
-    SHMEM_MALLOC_NOT_ALIGNED         = (-5L),
-    SHMEM_MALLOC_MEMALIGN_FAILED     = (-11L),
-    SHMEM_MALLOC_REALLOC_FAILED      = (-12L),
-    SHMEM_MALLOC_SYMMSIZE_FAILED     = (-10L)
-};
-#endif
-
 enum shmem_cmp_constants {
     SHMEM_CMP_EQ = 0,
     SHMEM_CMP_NE,

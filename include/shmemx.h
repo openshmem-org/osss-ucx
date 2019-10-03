@@ -330,7 +330,6 @@ extern "C"
 
     enum interoperability {
         UPC_THREADS_ARE_PES = 0,
-        FORTRAN_IMAGES_ARE_PES,
         MPI_PROCESSES_ARE_PES,
         SHMEM_INITIALIZES_MPI,
         MPI_INITIALIZES_SHMEM

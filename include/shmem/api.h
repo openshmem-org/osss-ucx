@@ -40,13 +40,6 @@ extern "C"
      void start_pes(int npes);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER npes
-
-     CALL START_PES(npes)
-     @endcode
-     *
      * @param npes the number of PEs participating in the program.  This
      * is ignored and should be set to 0.
      *
@@ -71,11 +64,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_init(void);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_INIT
      @endcode
      *
      * @section Effect
@@ -121,11 +109,6 @@ extern "C"
      void shmem_finalize(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_FINALIZE
-     @endcode
-     *
      * @section Effect
      * A collective finalization of the OpenSHMEM environment on the
      * calling PE.  After a finalize call, no further OpenSHMEM calls
@@ -145,13 +128,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_global_exit(int status);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER STATUS
-
-     CALL SHMEM_FINALIZE(STATUS)
      @endcode
      *
      * @section Effect
@@ -186,13 +162,6 @@ extern "C"
      int shmem_my_pe(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER I
-
-     I = SHMEM_MY_PE()
-     @endcode
-     *
      * @section Effect
      * None.
      *
@@ -221,13 +190,6 @@ extern "C"
      * @subsection c C/C++
      @code
      int shmem_n_pes(void);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER I
-
-     I = SHMEM_N_PES()
      @endcode
      *
      * @section Effect
@@ -268,13 +230,6 @@ extern "C"
      void shmem_info_get_version(int *maj, int *min);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER MAJ, MIN
-
-     CALL SHMEM_INFO_GET_VERSION(MAJ, MIN)
-     @endcode
-     *
      * @param[out] maj set to the release's major version number
      * @param[out] min set to the release's minor version number
      *
@@ -295,12 +250,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_info_get_name(char *name);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CHARACTER, DIMENSION(SHMEM_MAX_NAME_LEN) :: NAME
-     CALL SHMEM_INFO_GET_NAME(NAME)
      @endcode
      *
      * @param[out] name contains the vendor-supplied release name
@@ -741,15 +690,6 @@ extern "C"
                         long *pSync);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER PE_start, logPE_stride, PE_size
-     INTEGER(*) pSync
-
-     CALL SHMEM_BARRIER(PE_start, logPE_stride, PE_size, pSync)
-     @endcode
-     *
-     *
      * @param[in] PE_start first PE of the active set
      * @param[in] logPE_stride log2 of stride between PEs
      * @param[in] PE_size number of PEs in the active set
@@ -782,10 +722,6 @@ extern "C"
      void shmem_barrier_all(void);
      @endcode
      *
-     * @subsection f Fortran
-     CALL SHMEM_BARRIER_ALL
-     @endcode
-     *
      * @section Effect
      * All PEs synchronize: no PE can leave the global barrier until all
      * have arrived.
@@ -808,11 +744,6 @@ extern "C"
      void shmem_fence(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_FENCE
-     @endcode
-     *
      * @section Effect
      * Local ordering
      *
@@ -833,11 +764,6 @@ extern "C"
      @code
      void shmem_ctx_quiet(shmem_ctx_t ctx);
      void shmem_quiet(void);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_QUIET
      @endcode
      *
      * @section Effect
@@ -864,13 +790,6 @@ extern "C"
      int shmem_pe_accessible(int pe);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER PE, RET
-
-     RET = SHMEM_PE_ACCESSIBLE(PE)
-     @endcode
-     *
      * @section Effect
      * None
      *
@@ -889,14 +808,6 @@ extern "C"
      * @subsection c C/C++
      @code
      int shmem_addr_accessible(const void *addr, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER PE, RET
-     ADDR = address
-
-     RET = SHMEM_ADDR_ACCESSIBLE(ADDR, PE)
      @endcode
      *
      * @param addr address to check
@@ -921,15 +832,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void *shmem_ptr(const void *addr, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER PE
-     ADDR RET = address
-     ADDR = address
-
-     RET = SHMEM_PTR(ADDR, PE)
      @endcode
      *
      * @section Effect
@@ -1116,11 +1018,6 @@ extern "C"
      int shmem_long_test(long *ivar, int cmp, long cmp_value);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     ...
-     @endcode
-     *
      * @section Effect
      *
      * ivar may be updated by another PE
@@ -1157,11 +1054,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_wait_until(long *ivar, int cmp, long cmp_value);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1202,11 +1094,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_wait(long *ivar, long cmp_value);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1258,11 +1145,6 @@ extern "C"
      * @subsection c C/C++
      @code
      long shmem_ctx_long_atomic_swap(shmem_ctx_t ctx, long *target, long value, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1324,11 +1206,6 @@ extern "C"
                                              long *target,
                                              long cond, long value,
                                              int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1395,11 +1272,6 @@ extern "C"
      long shmem_long_atomic_fetch_add(long *target, long value, int pe);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     ...
-     @endcode
-     *
      * @section Effect
      *
      * atomic fetch-and-add on another PE
@@ -1450,11 +1322,6 @@ extern "C"
      long shmem_long_atomic_fetch_inc(long *target, int pe);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     ...
-     @endcode
-     *
      * @section Effect
      *
      * atomic fetch-and-increment on another PE
@@ -1502,11 +1369,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_atomic_add(long *target, long value, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1564,8 +1426,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1618,8 +1479,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1672,8 +1532,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1727,8 +1586,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1781,8 +1639,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1836,8 +1693,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1881,11 +1737,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_atomic_inc(long *target, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1937,35 +1788,15 @@ extern "C"
      long shmem_ctx_long_atomic_fetch(shmem_ctx_t ctx, const long *dest, int pe);
      * @endcode
      *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     v4 = shmem_int4_fetch(dest, pe)
-     v8 = shmem_int8_fetch(dest, pe)
-     r4 = shmem_real4_fetch(dest, pe)
-     r8 = shmem_real8_fetch(dest, pe)
-     * @endcode
-     *
      * @param dest    Address of the symmetric data object in which save the
      *                    data on the target pe.
      * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
+     *                    which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied
-     *        in the Synopsis section. When calling from Fortran,
-     *        the data type of value must be as follows:
-     *          - For SHMEM_INT4_FETCH(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_FETCH(), value must be of type Integer,
-     *            with element size of 8 bytes.
+     *        in the Synopsis section.
      *      - value must be the same type as the target data object.
      *      - This process must be carried out guaranteeing that it will not
      *          be interrupted by any other atomic operation on the
@@ -2037,8 +1868,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -2086,11 +1916,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_atomic_inc(long *target, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -2142,35 +1967,15 @@ extern "C"
      long shmem_ctx_long_atomic_fetch(shmem_ctx_t ctx, const long *dest, int pe);
      * @endcode
      *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     v4 = shmem_int4_fetch(dest, pe)
-     v8 = shmem_int8_fetch(dest, pe)
-     r4 = shmem_real4_fetch(dest, pe)
-     r8 = shmem_real8_fetch(dest, pe)
-     * @endcode
-     *
      * @param dest    Address of the symmetric data object in which save the
      *                    data on the target pe.
      * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
+     *                    which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied
-     *        in the Synopsis section. When calling from Fortran,
-     *        the data type of value must be as follows:
-     *          - For SHMEM_INT4_FETCH(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_FETCH(), value must be of type Integer,
-     *            with element size of 8 bytes.
+     *        in the Synopsis section.
      *      - value must be the same type as the target data object.
      *      - This process must be carried out guaranteeing that it will not
      *          be interrupted by any other atomic operation on the
@@ -2238,37 +2043,17 @@ extern "C"
      void shmem_ctx_long_atomic_set(shmem_ctx_t ctx, long *dest, long value, int pe);
      * @endcode
      *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     call shmem_int4_set(dest, v4, pe)
-     call shmem_int8_set(dest, v8, pe)
-     call shmem_real4_set(dest, r4, pe)
-     call shmem_real8_set(dest, r8, pe)
-     * @endcode
-     *
      * @param dest    Address of the symmetric data object in which save the
      *                    data on the target pe.
      * @param value     The remote dest address is atomically set to
      *                    this value.
      * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
+     *                    which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in the
-     *        Synopsis section. When calling from Fortran, the data type of
-     *        value must be as follows:
-     *          - For SHMEM_INT4_SET(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_SET(), value must be of type Integer,
-     *            with element size of 8 bytes.
+     *        Synopsis section.
      *      - value must be the same type as the dest data object.
      *      - This process must be carried out guaranteeing that it will not
      *          be interrupted by any other atomic operation on the
@@ -2338,13 +2123,6 @@ extern "C"
      void shmem_set_lock(long *lock);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_SET_LOCK(LOCK)
-     @endcode
-     *
      * @param[in, out] lock a symmetric variable
      *
      * @section Effect
@@ -2368,13 +2146,6 @@ extern "C"
      void shmem_clear_lock(long *lock);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_CLEAR_LOCK(LOCK)
-     @endcode
-     *
      * @param[in, out] lock a symmetric variable
      *
      * @section Effect
@@ -2395,13 +2166,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_test_lock(long *lock);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_TEST_LOCK(LOCK)
      @endcode
      *
      * @param[in, out] lock a symmetric variable
