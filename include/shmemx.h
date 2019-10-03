@@ -42,11 +42,6 @@ extern "C"
     double shmemx_wtime(void);
 
     /*
-     * profiling
-     */
-    void shmemx_pcontrol(int level);
-
-    /*
      * address translation
      *
      */
