@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <stddef.h>               /* ptrdiff_t */
 #include <stdint.h>               /* sized int types */
+#include <stdarg.h>
 
 /*
  * for handling the "I" (upper-case eye) macro for complex numbers
@@ -312,6 +313,26 @@ extern "C"
      *
      */
     void shmem_info_get_name(char *name);
+
+    /**
+     * @brief Allows the user to control profiling
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_pcontrol(const int level, ...)
+     @endcode
+     *
+     * @param[in] level Profilong level to use
+     *
+     * @section Effect
+     * Sets the library's internal profiling behavior.
+     *
+     * @section Return
+     * None.
+     *
+     */
+    void shmem_pcontrol(const int level, ...);
 
     /*
      * I/O
