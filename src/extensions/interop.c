@@ -15,9 +15,6 @@ shmemx_query_interoperability(int property)
     case UPC_THREADS_ARE_PES:
         ret = 0;
         break;
-    case FORTRAN_IMAGES_ARE_PES:
-        ret = 0;
-        break;
     case MPI_PROCESSES_ARE_PES:
         ret = 0;
         break;
