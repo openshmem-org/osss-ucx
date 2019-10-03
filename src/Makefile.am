@@ -31,6 +31,7 @@ MY_SOURCES             = \
 				info.c \
 				init.c \
 				lock.c \
+				profiling.c \
 				progress.c \
 				ptr.c \
 				putget.c \
@@ -119,10 +120,6 @@ MY_SOURCES            += \
 all_cppflags          += -I$(srcdir)/extensions
 
 endif # experimental
-
-if ENABLE_PSHMEM
-MY_SOURCES            += profiling.c
-endif # pshmem
 
 LIBSHMEM_SOURCES       = $(MY_SOURCES)
 
