@@ -321,9 +321,6 @@ SHMEMU_DECL_MATH_FUNC(int32, int32_t)
 SHMEMU_DECL_MATH_FUNC(int64, int64_t)
 SHMEMU_DECL_MATH_FUNC(uint32, uint32_t)
 SHMEMU_DECL_MATH_FUNC(uint64, uint64_t)
-/* for Fortran */
-SHMEMU_DECL_MATH_FUNC(complexd, COMPLEXIFY(double))
-SHMEMU_DECL_MATH_FUNC(complexf, COMPLEXIFY(float))
 
 /**
  * these are the logical operations.  Note: these are *bitwise*.
