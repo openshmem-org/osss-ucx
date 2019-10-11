@@ -142,6 +142,18 @@ SHMEMC_CTX_DECL_FETCH_BITWISE(or)
 SHMEMC_CTX_DECL_FETCH_BITWISE(xor)
 
 /*
+ * set/fetch
+ */
+void shmemc_ctx_set(shmem_ctx_t ctx,
+                    void *tp, size_t ts,
+                    void *vp, size_t vs,
+                    int pe);
+void shmemc_ctx_fetch(shmem_ctx_t ctx,
+                      void *tp, size_t ts,
+                      int pe,
+                      void *valp);
+
+/*
  * locks
  */
 

@@ -418,6 +418,7 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t)
  * fetch
  */
 
+#if 0
 #define SHMEM_CTX_TYPE_FETCH(_name, _type)                              \
     _type                                                               \
     shmem_ctx_##_name##_atomic_fetch(shmem_ctx_t ctx,                   \
@@ -429,6 +430,22 @@ SHMEM_CTX_TYPE_INC(ptrdiff, ptrdiff_t)
         SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fadd(ctx, (_type *) target,   \
                                                &zero, sizeof(zero), pe, \
                                                &v));                    \
+        return v;                                                       \
+    }
+#endif
+
+#define SHMEM_CTX_TYPE_FETCH(_name, _type)                              \
+    _type                                                               \
+    shmem_ctx_##_name##_atomic_fetch(shmem_ctx_t ctx,                   \
+                                     const _type *target, int pe)       \
+    {                                                                   \
+        _type v;                                                        \
+                                                                        \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fetch(ctx,                    \
+                                                (_type *) target,       \
+                                                sizeof(*target),        \
+                                                pe,                     \
+                                                &v));                   \
         return v;                                                       \
     }
 
@@ -482,6 +499,7 @@ SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t)
  * set
  */
 
+#if 0
 #define SHMEM_CTX_TYPE_SET(_name, _type)                                \
     void                                                                \
     shmem_ctx_##_name##_atomic_set(shmem_ctx_t ctx,                     \
@@ -494,6 +512,18 @@ SHMEM_CTX_TYPE_FETCH(ptrdiff, ptrdiff_t)
         SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_swap(ctx, target,             \
                                                &value, sizeof(value),   \
                                                pe, &zap));              \
+    }
+#endif
+
+#define SHMEM_CTX_TYPE_SET(_name, _type)                                \
+    void                                                                \
+    shmem_ctx_##_name##_atomic_set(shmem_ctx_t ctx,                     \
+                                   _type *target, _type value, int pe)  \
+    {                                                                   \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_set(ctx,                      \
+                                              target, sizeof(*target),  \
+                                              &value, sizeof(value),    \
+                                              pe));                     \
     }
 
 SHMEM_CTX_TYPE_SET(float, float)

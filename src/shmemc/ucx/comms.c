@@ -375,139 +375,6 @@ shmemc_pe_accessible(int pe)
 }
 
 /*
- * -- puts & gets --------------------------------------------------------
- */
-
-void
-shmemc_ctx_put(shmem_ctx_t ctx,
-               void *dest, const void *src,
-               size_t nbytes, int pe)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    uint64_t r_dest;            /* address on other PE */
-    ucp_rkey_h r_key;            /* rkey for remote address */
-    ucp_ep_h ep;
-#ifdef HAVE_UCP_PUT_NB
-    ucs_status_ptr_t sp;
-#endif /* HAVE_UCP_PUT_NB */
-    ucs_status_t s;
-
-    get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
-    ep = lookup_ucp_ep(ch, pe);
-
-#ifdef HAVE_UCP_PUT_NB
-    sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
-                    noop_callback);
-    s = check_wait_for_request(ch, sp);
-#else
-    s = ucp_put(ep, src, nbytes, r_dest, r_key);
-#endif /* HAVE_UCP_PUT_NB */
-
-    shmemu_assert(s == UCS_OK,
-                  "put failed (status: %s)",
-                  ucs_status_string(s));
-}
-
-void
-shmemc_ctx_get(shmem_ctx_t ctx,
-               void *dest, const void *src,
-               size_t nbytes, int pe)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    uint64_t r_src;
-    ucp_rkey_h r_key;
-    ucp_ep_h ep;
-#ifdef HAVE_UCP_GET_NB
-    ucs_status_ptr_t sp;
-#endif /* HAVE_UCP_GET_NB */
-    ucs_status_t s;
-
-    get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
-    ep = lookup_ucp_ep(ch, pe);
-
-#ifdef HAVE_UCP_GET_NB
-    sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
-                    noop_callback);
-    s = check_wait_for_request(ch, sp);
-#else
-    s = ucp_get(ep, dest, nbytes, r_src, r_key);
-#endif /* HAVE_UCP_GET_NB */
-
-    shmemu_assert(s == UCS_OK,
-                  "get failed (status: %s)",
-                  ucs_status_string(s));
-}
-
-/*
- * strided ops currently build on put/get in upper API
- */
-
-/**
- * Return status from UCP nbi routines probably needs more handling
- *
- */
-
-void
-shmemc_ctx_put_nbi(shmem_ctx_t ctx,
-                   void *dest, const void *src,
-                   size_t nbytes, int pe)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    uint64_t r_dest;
-    ucp_rkey_h r_key;
-    ucp_ep_h ep;
-    ucs_status_t s;
-
-    get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
-    ep = lookup_ucp_ep(ch, pe);
-
-    s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
-    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking put failed (status: %s)",
-                  ucs_status_string(s));
-}
-
-void
-shmemc_ctx_get_nbi(shmem_ctx_t ctx,
-                   void *dest, const void *src,
-                   size_t nbytes, int pe)
-{
-    shmemc_context_h ch = (shmemc_context_h) ctx;
-    uint64_t r_src;
-    ucp_rkey_h r_key;
-    ucp_ep_h ep;
-    ucs_status_t s;
-
-    get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
-    ep = lookup_ucp_ep(ch, pe);
-
-    s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
-    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking get failed (status: %s)",
-                  ucs_status_string(s));
- }
-
-/*
- * puts with signals
- */
-
-void
-shmemc_ctx_put_signal(shmem_ctx_t ctx,
-                      void *dest, const void *src,
-                      size_t nbytes,
-                      uint64_t *sig_addr,
-                      uint64_t signal,
-                      int sig_op,
-                      int pe)
-{
-#if 0
-    shmemc_ctx_put(ctx, dest, src, nbytes, pe);
-    shmemc_ctx_fence(ctx);
-    shmemc_ctx_put(ctx, s_target, &s_val, sizeof(s_val), pe);
-#endif
-}
-
-/*
  * -- atomics ------------------------------------------------------------
  */
 
@@ -759,3 +626,180 @@ SHMEMC_CTX_FETCH_BITWISE(xor)
 SHMEMC_CTX_BITWISE(and)
 SHMEMC_CTX_BITWISE(or)
 SHMEMC_CTX_BITWISE(xor)
+
+/*
+ * set/fetch
+ */
+
+void
+shmemc_ctx_set(shmem_ctx_t ctx,
+               void *tp, size_t ts,
+               void *vp, size_t vs,
+               int pe)
+{
+    uint64_t zap;
+
+    NO_WARN_UNUSED(zap);
+    NO_WARN_UNUSED(ts);
+
+    shmemc_ctx_swap(ctx, tp, vp, vs, pe, &zap);
+}
+
+void
+shmemc_ctx_fetch(shmem_ctx_t ctx,
+                 void *tp, size_t ts,
+                 int pe,
+                 void *valp)
+{
+    uint64_t zero = 0;
+
+    shmemc_ctx_fadd(ctx, tp, &zero, ts, pe, valp);
+}
+
+/*
+ * -- puts & gets --------------------------------------------------------
+ */
+
+void
+shmemc_ctx_put(shmem_ctx_t ctx,
+               void *dest, const void *src,
+               size_t nbytes, int pe)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    uint64_t r_dest;            /* address on other PE */
+    ucp_rkey_h r_key;            /* rkey for remote address */
+    ucp_ep_h ep;
+#ifdef HAVE_UCP_PUT_NB
+    ucs_status_ptr_t sp;
+#endif /* HAVE_UCP_PUT_NB */
+    ucs_status_t s;
+
+    get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
+    ep = lookup_ucp_ep(ch, pe);
+
+#ifdef HAVE_UCP_PUT_NB
+    sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
+                    noop_callback);
+    s = check_wait_for_request(ch, sp);
+#else
+    s = ucp_put(ep, src, nbytes, r_dest, r_key);
+#endif /* HAVE_UCP_PUT_NB */
+
+    shmemu_assert(s == UCS_OK,
+                  "put failed (status: %s)",
+                  ucs_status_string(s));
+}
+
+void
+shmemc_ctx_get(shmem_ctx_t ctx,
+               void *dest, const void *src,
+               size_t nbytes, int pe)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    uint64_t r_src;
+    ucp_rkey_h r_key;
+    ucp_ep_h ep;
+#ifdef HAVE_UCP_GET_NB
+    ucs_status_ptr_t sp;
+#endif /* HAVE_UCP_GET_NB */
+    ucs_status_t s;
+
+    get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
+    ep = lookup_ucp_ep(ch, pe);
+
+#ifdef HAVE_UCP_GET_NB
+    sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
+                    noop_callback);
+    s = check_wait_for_request(ch, sp);
+#else
+    s = ucp_get(ep, dest, nbytes, r_src, r_key);
+#endif /* HAVE_UCP_GET_NB */
+
+    shmemu_assert(s == UCS_OK,
+                  "get failed (status: %s)",
+                  ucs_status_string(s));
+}
+
+/*
+ * strided ops currently build on put/get in upper API
+ */
+
+/**
+ * Return status from UCP nbi routines probably needs more handling
+ *
+ */
+
+void
+shmemc_ctx_put_nbi(shmem_ctx_t ctx,
+                   void *dest, const void *src,
+                   size_t nbytes, int pe)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    uint64_t r_dest;
+    ucp_rkey_h r_key;
+    ucp_ep_h ep;
+    ucs_status_t s;
+
+    get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
+    ep = lookup_ucp_ep(ch, pe);
+
+    s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
+    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
+                  "non-blocking put failed (status: %s)",
+                  ucs_status_string(s));
+}
+
+void
+shmemc_ctx_get_nbi(shmem_ctx_t ctx,
+                   void *dest, const void *src,
+                   size_t nbytes, int pe)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    uint64_t r_src;
+    ucp_rkey_h r_key;
+    ucp_ep_h ep;
+    ucs_status_t s;
+
+    get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
+    ep = lookup_ucp_ep(ch, pe);
+
+    s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
+    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
+                  "non-blocking get failed (status: %s)",
+                  ucs_status_string(s));
+ }
+
+/*
+ * puts with signals
+ */
+
+void
+shmemc_ctx_put_signal(shmem_ctx_t ctx,
+                      void *dest, const void *src,
+                      size_t nbytes,
+                      uint64_t *sig_addr,
+                      uint64_t signal,
+                      int sig_op,
+                      int pe)
+{
+
+    shmemc_ctx_put(ctx, dest, src, nbytes, pe);
+    shmemc_ctx_fence(ctx);
+
+    switch (sig_op) {
+    case SHMEM_SIGNAL_SET:
+        shmemc_ctx_set(ctx,
+                       sig_addr, sizeof(*sig_addr),
+                       &signal, sizeof(signal),
+                       pe);
+        break;
+    case SHMEM_SIGNAL_ADD:
+        shmemc_ctx_add(ctx, sig_addr, &signal, sizeof(signal), pe);
+        break;
+    default:
+        shmemu_fatal("unknown signal operation code %d",
+                     sig_op);
+        /* NOT REACHED */
+        break;
+    }
+}
