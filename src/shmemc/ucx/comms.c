@@ -487,21 +487,25 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                   ucs_status_string(s));
  }
 
-#define SHMEMC_PUTGET_SIGNAL(_op)                                       \
-    void                                                                \
-    shmemc_ctx_##_op##_signal(shmem_ctx_t ctx,                          \
-                              void *dest, const void *src,              \
-                              size_t nbytes,                            \
-                              uint64_t *s_target, uint64_t s_val,       \
-                              int pe)                                   \
-    {                                                                   \
-        shmemc_ctx_##_op(ctx, dest, src, nbytes, pe);                   \
-        shmemc_ctx_fence(ctx);                                          \
-        shmemc_ctx_##_op(ctx, s_target, &s_val, sizeof(s_val), pe);     \
-    }
+/*
+ * puts with signals
+ */
 
-SHMEMC_PUTGET_SIGNAL(put)
-SHMEMC_PUTGET_SIGNAL(get)
+void
+shmemc_ctx_put_signal(shmem_ctx_t ctx,
+                      void *dest, const void *src,
+                      size_t nbytes,
+                      uint64_t *sig_addr,
+                      uint64_t signal,
+                      int sig_op,
+                      int pe)
+{
+#if 0
+    shmemc_ctx_put(ctx, dest, src, nbytes, pe);
+    shmemc_ctx_fence(ctx);
+    shmemc_ctx_put(ctx, s_target, &s_val, sizeof(s_val), pe);
+#endif
+}
 
 /*
  * -- atomics ------------------------------------------------------------

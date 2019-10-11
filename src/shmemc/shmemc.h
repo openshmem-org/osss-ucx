@@ -73,13 +73,14 @@ void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                         size_t nbytes, int pe);
 
 void shmemc_ctx_put_signal(shmem_ctx_t ctx,
-                           void *dest, const void *src, size_t nbytes,
-                           uint64_t *sig_target, uint64_t sig_val,
+                           void *dest, const void *src,
+                           size_t nbytes,
+                           uint64_t *sig_addr,
+                           uint64_t signal,
+                           int sig_op,
                            int pe);
-void shmemc_ctx_get_signal(shmem_ctx_t ctx,
-                           void *dest, const void *src, size_t nbytes,
-                           uint64_t *sig_target, uint64_t sig_val,
-                           int pe);
+
+/* other signal ops TODO */
 
 /*
  * -- AMOs -------------------------------------------------------------------

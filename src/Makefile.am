@@ -35,6 +35,7 @@ MY_SOURCES             = \
 				progress.c \
 				ptr.c \
 				putget.c \
+				put_signal.c \
 				quiet.c \
 				ranks.c	 \
 				shmalloc.c \
@@ -106,7 +107,6 @@ noinst_LTLIBRARIES     = liballocator.la
 if ENABLE_EXPERIMENTAL
 
 MY_SOURCES            += \
-			extensions/putget_signal.c \
 			extensions/shmalloc.c \
 			extensions/testall.c \
 			extensions/testany.c \
