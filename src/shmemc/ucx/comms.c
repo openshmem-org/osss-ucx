@@ -803,3 +803,38 @@ shmemc_ctx_put_signal(shmem_ctx_t ctx,
         break;
     }
 }
+
+/*
+ * TODO HACK1: just use blocking implemetntion for testing
+ */
+
+void
+shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
+                          void *dest, const void *src,
+                          size_t nbytes,
+                          uint64_t *sig_addr,
+                          uint64_t signal,
+                          int sig_op,
+                          int pe)
+{
+
+    shmemc_ctx_put(ctx, dest, src, nbytes, pe);
+    shmemc_ctx_fence(ctx);
+
+    switch (sig_op) {
+    case SHMEM_SIGNAL_SET:
+        shmemc_ctx_set(ctx,
+                       sig_addr, sizeof(*sig_addr),
+                       &signal, sizeof(signal),
+                       pe);
+        break;
+    case SHMEM_SIGNAL_ADD:
+        shmemc_ctx_add(ctx, sig_addr, &signal, sizeof(signal), pe);
+        break;
+    default:
+        shmemu_fatal("unknown signal operation code %d",
+                     sig_op);
+        /* NOT REACHED */
+        break;
+    }
+}

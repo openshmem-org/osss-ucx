@@ -80,6 +80,14 @@ void shmemc_ctx_put_signal(shmem_ctx_t ctx,
                            int sig_op,
                            int pe);
 
+void shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
+                               void *dest, const void *src,
+                               size_t nbytes,
+                               uint64_t *sig_addr,
+                               uint64_t signal,
+                               int sig_op,
+                               int pe);
+
 /* other signal ops TODO */
 
 /*

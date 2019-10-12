@@ -658,6 +658,42 @@ extern "C"
     API_DECL_CTX_PUT_SIGNAL(size, size_t);
     API_DECL_CTX_PUT_SIGNAL(ptrdiff, ptrdiff_t);
 
+#define API_DECL_CTX_PUT_SIGNAL_NBI(_name, _type)           \
+    void                                                    \
+    shmem_ctx_##_name##_put_signal_nbi(shmem_ctx_t ctx,     \
+                                       _type *dest,         \
+                                       const _type *src,    \
+                                       size_t nelems,       \
+                                       uint64_t *sig_addr,  \
+                                       uint64_t signal,     \
+                                       int sig_op,          \
+                                       int pe)
+
+    API_DECL_CTX_PUT_SIGNAL_NBI(float, float);
+    API_DECL_CTX_PUT_SIGNAL_NBI(double, double);
+    API_DECL_CTX_PUT_SIGNAL_NBI(longdouble, long double);
+    API_DECL_CTX_PUT_SIGNAL_NBI(schar, signed char);
+    API_DECL_CTX_PUT_SIGNAL_NBI(char, char);
+    API_DECL_CTX_PUT_SIGNAL_NBI(short, short);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int, int);
+    API_DECL_CTX_PUT_SIGNAL_NBI(long, long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(longlong, long long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uchar, unsigned char);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ushort, unsigned short);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint, unsigned int);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ulong, unsigned long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ulonglong, unsigned long long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int8, int8_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int16, int16_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int32, int32_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int64, int64_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint8, uint8_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint16, uint16_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint32, uint32_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint64, uint64_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(size, size_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ptrdiff, ptrdiff_t);
+
 #define API_DECL_PUT_SIGNAL(_name, _type)           \
     void                                            \
     shmem_##_name##_put_signal(_type *dest,         \
@@ -692,6 +728,41 @@ extern "C"
     API_DECL_PUT_SIGNAL(uint64, uint64_t);
     API_DECL_PUT_SIGNAL(size, size_t);
     API_DECL_PUT_SIGNAL(ptrdiff, ptrdiff_t);
+
+#define API_DECL_PUT_SIGNAL_NBI(_name, _type)           \
+    void                                                \
+    shmem_##_name##_put_signal_nbi(_type *dest,         \
+                                   const _type *src,    \
+                                   size_t nelems,       \
+                                   uint64_t *sig_addr,  \
+                                   uint64_t signal,     \
+                                   int sig_op,          \
+                                   int pe)
+
+    API_DECL_PUT_SIGNAL_NBI(float, float);
+    API_DECL_PUT_SIGNAL_NBI(double, double);
+    API_DECL_PUT_SIGNAL_NBI(longdouble, long double);
+    API_DECL_PUT_SIGNAL_NBI(schar, signed char);
+    API_DECL_PUT_SIGNAL_NBI(char, char);
+    API_DECL_PUT_SIGNAL_NBI(short, short);
+    API_DECL_PUT_SIGNAL_NBI(int, int);
+    API_DECL_PUT_SIGNAL_NBI(long, long);
+    API_DECL_PUT_SIGNAL_NBI(longlong, long long);
+    API_DECL_PUT_SIGNAL_NBI(uchar, unsigned char);
+    API_DECL_PUT_SIGNAL_NBI(ushort, unsigned short);
+    API_DECL_PUT_SIGNAL_NBI(uint, unsigned int);
+    API_DECL_PUT_SIGNAL_NBI(ulong, unsigned long);
+    API_DECL_PUT_SIGNAL_NBI(ulonglong, unsigned long long);
+    API_DECL_PUT_SIGNAL_NBI(int8, int8_t);
+    API_DECL_PUT_SIGNAL_NBI(int16, int16_t);
+    API_DECL_PUT_SIGNAL_NBI(int32, int32_t);
+    API_DECL_PUT_SIGNAL_NBI(int64, int64_t);
+    API_DECL_PUT_SIGNAL_NBI(uint8, uint8_t);
+    API_DECL_PUT_SIGNAL_NBI(uint16, uint16_t);
+    API_DECL_PUT_SIGNAL_NBI(uint32, uint32_t);
+    API_DECL_PUT_SIGNAL_NBI(uint64, uint64_t);
+    API_DECL_PUT_SIGNAL_NBI(size, size_t);
+    API_DECL_PUT_SIGNAL_NBI(ptrdiff, ptrdiff_t);
 
     /*
      * barriers & syncs
