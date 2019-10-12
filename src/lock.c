@@ -50,7 +50,7 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
 
     node->d.next = SHMEM_LOCK_FREE;
 
-    LOAD_STORE_FENCE();
+    // LOAD_STORE_FENCE();
 
     /* request for ownership */
     t.d.locked = 1;
@@ -70,7 +70,7 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
     if (locked) {
         node->d.locked = 1;
 
-        LOAD_STORE_FENCE();
+        // LOAD_STORE_FENCE();
 
         shmem_short_p(&(node->d.next), proc.rank, prev);
 
