@@ -5,6 +5,7 @@ SHMEM_HDRS             =  \
 				shmem/defs_subst.h \
 				shmem/depr.h \
 				shmem/cache.h \
+				shmem/generics.h \
 				shmem/api.h \
 				shmem.h
 

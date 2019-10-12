@@ -90,6 +90,14 @@ enum shmem_thread_levels {
 };
 
 /*
+ * signal operators
+ */
+enum signal_ops {
+    SHMEM_SIGNAL_SET = 0,
+    SHMEM_SIGNAL_ADD
+};
+
+/*
  * default context, and context attributes
  */
 #define SHMEM_BIT_SET(_level) (1 << (_level))

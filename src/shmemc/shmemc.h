@@ -73,13 +73,22 @@ void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                         size_t nbytes, int pe);
 
 void shmemc_ctx_put_signal(shmem_ctx_t ctx,
-                           void *dest, const void *src, size_t nbytes,
-                           uint64_t *sig_target, uint64_t sig_val,
+                           void *dest, const void *src,
+                           size_t nbytes,
+                           uint64_t *sig_addr,
+                           uint64_t signal,
+                           int sig_op,
                            int pe);
-void shmemc_ctx_get_signal(shmem_ctx_t ctx,
-                           void *dest, const void *src, size_t nbytes,
-                           uint64_t *sig_target, uint64_t sig_val,
-                           int pe);
+
+void shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
+                               void *dest, const void *src,
+                               size_t nbytes,
+                               uint64_t *sig_addr,
+                               uint64_t signal,
+                               int sig_op,
+                               int pe);
+
+/* other signal ops TODO */
 
 /*
  * -- AMOs -------------------------------------------------------------------
@@ -139,6 +148,18 @@ SHMEMC_CTX_DECL_BITWISE(xor)
 SHMEMC_CTX_DECL_FETCH_BITWISE(and)
 SHMEMC_CTX_DECL_FETCH_BITWISE(or)
 SHMEMC_CTX_DECL_FETCH_BITWISE(xor)
+
+/*
+ * set/fetch
+ */
+void shmemc_ctx_set(shmem_ctx_t ctx,
+                    void *tp, size_t ts,
+                    void *vp, size_t vs,
+                    int pe);
+void shmemc_ctx_fetch(shmem_ctx_t ctx,
+                      void *tp, size_t ts,
+                      int pe,
+                      void *valp);
 
 /*
  * locks
