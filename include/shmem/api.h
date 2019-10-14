@@ -860,6 +860,28 @@ extern "C"
 
 #undef API_DECL_PUTMEM_SIGNAL
 
+    /**
+     * @brief fetches value of the signl object.
+     * @page shmem_signel_fetch
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     uint64_t shmem_signal_fetch(const uint64_t *sig_addr, int pe);
+     @endcode
+     *
+     * @param[in] sig_addr The address of the remotely accessible signal object
+     * @param[in] pe The PE to fetch from
+     *
+     * @section Effect
+     * None.
+     *
+     * @section Return
+     * The remote data value.
+     *
+     */
+    uint64_t shmem_signal_fetch(const uint64_t *sig_addr, int pe);
+
     /*
      * barriers & syncs
      */
