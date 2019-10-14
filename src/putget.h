@@ -7,10 +7,6 @@
 #include "shmemc.h"
 #include "shmem_mutex.h"
 
-#include <values.h>
-
-#define BITS2BYTES(_n) ((_n) / CHARBITS)
-
 #define SHMEM_CTX_TYPED_PUT(_name, _type)                               \
     void                                                                \
     shmem_ctx_##_name##_put(shmem_ctx_t ctx,                            \

@@ -764,6 +764,102 @@ extern "C"
     API_DECL_PUT_SIGNAL_NBI(size, size_t);
     API_DECL_PUT_SIGNAL_NBI(ptrdiff, ptrdiff_t);
 
+#define API_DECL_CTX_PUT_SIGNAL_SIZE(_size)                         \
+    /* see \ref shmem_ctx_long_put_signal() */                      \
+    void shmem_ctx_put##_size##_signal(shmem_ctx_t ctx,             \
+                                       void *dest,                  \
+                                       const void *src,             \
+                                       size_t nelems,               \
+                                       uint64_t *sig_addr,          \
+                                       uint64_t signal,             \
+                                       int sig_op,                  \
+                                       int pe);                     \
+    /* see \ref shmem_ctx_long_put_signal_nbi() */                  \
+    void shmem_ctx_put##_size##_signal_nbi(shmem_ctx_t ctx,         \
+                                           void *dest,              \
+                                           const void *src,         \
+                                           size_t nelems,           \
+                                           uint64_t *sig_addr,      \
+                                           uint64_t signal,         \
+                                           int sig_op,              \
+                                           int pe);
+
+    API_DECL_CTX_PUT_SIGNAL_SIZE(8)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(16)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(32)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(64)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(128)
+
+#undef API_DECL_CTX_PUT_SIGNAL_SIZE
+
+#define API_DECL_CTX_PUTMEM_SIGNAL()                                \
+    void shmem_ctx_putmem_signal(shmem_ctx_t ctx,                   \
+                                 void *dest,                        \
+                                 const void *src,                   \
+                                 size_t nelems,                     \
+                                 uint64_t *sig_addr,                \
+                                 uint64_t signal,                   \
+                                 int sig_op,                        \
+                                 int pe);                           \
+    void shmem_ctx_putmem_signal_nbi(shmem_ctx_t ctx,               \
+                                     void *dest,                    \
+                                     const void *src,               \
+                                     size_t nelems,                 \
+                                     uint64_t *sig_addr,            \
+                                     uint64_t signal,               \
+                                     int sig_op,                    \
+                                     int pe);
+
+    API_DECL_CTX_PUTMEM_SIGNAL()
+
+#undef API_DECL_CTX_PUTMEM_SIGNAL
+
+#define API_DECL_PUT_SIGNAL_SIZE(_size)                     \
+    /* see \ref shmem_long_put_signal() */                  \
+    void shmem_put##_size##_signal(void *dest,              \
+                                   const void *src,         \
+                                   size_t nelems,           \
+                                   uint64_t *sig_addr,      \
+                                   uint64_t signal,         \
+                                   int sig_op,              \
+                                   int pe);                 \
+    /* see \ref shmem_long_put_signal_nbi() */              \
+    void shmem_put##_size##_signal_nbi(void *dest,          \
+                                       const void *src,     \
+                                       size_t nelems,       \
+                                       uint64_t *sig_addr,  \
+                                       uint64_t signal,     \
+                                       int sig_op,          \
+                                       int pe);
+
+    API_DECL_PUT_SIGNAL_SIZE(8)
+    API_DECL_PUT_SIGNAL_SIZE(16)
+    API_DECL_PUT_SIGNAL_SIZE(32)
+    API_DECL_PUT_SIGNAL_SIZE(64)
+    API_DECL_PUT_SIGNAL_SIZE(128)
+
+#undef API_DECL_PUT_SIGNAL_SIZE
+
+#define API_DECL_PUTMEM_SIGNAL()                        \
+    void shmem_putmem_signal(void *dest,                \
+                             const void *src,           \
+                             size_t nelems,             \
+                             uint64_t *sig_addr,        \
+                             uint64_t signal,           \
+                             int sig_op,                \
+                             int pe);                   \
+    void shmem_putmem_signal_nbi(void *dest,            \
+                                 const void *src,       \
+                                 size_t nelems,         \
+                                 uint64_t *sig_addr,    \
+                                 uint64_t signal,       \
+                                 int sig_op,            \
+                                 int pe);
+
+    API_DECL_PUTMEM_SIGNAL()
+
+#undef API_DECL_PUTMEM_SIGNAL
+
     /*
      * barriers & syncs
      */

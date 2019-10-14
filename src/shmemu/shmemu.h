@@ -18,6 +18,10 @@
 
 /* ------------------------------------------------------------------ */
 
+#include <values.h>
+
+#define BITS2BYTES(_n) ((_n) / CHARBITS)
+
 /*
  * for branch prediction optimization
  *
