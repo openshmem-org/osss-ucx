@@ -398,13 +398,13 @@ SHMEM_CTX_DECL_PUTMEM_SIGNAL_NBI()
 API_DECL_PUTMEM_SIGNAL_NBI()
 
 uint64_t
-shmem_signal_fetch(const uint64_t *sig_addr, int pe)
+shmem_signal_fetch(const uint64_t *sig_addr)
 {
     uint64_t v;
 
     SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fetch(SHMEM_CTX_DEFAULT,
                                             (uint64_t *) sig_addr,
                                             sizeof(*sig_addr),
-                                            pe, &v));
+                                            proc.rank, &v));
     return v;
 }
