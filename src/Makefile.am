@@ -39,9 +39,16 @@ MY_SOURCES             = \
 				quiet.c \
 				ranks.c	 \
 				shmalloc.c \
-				test.c \
 				tl_query.c \
 				version.c \
+MY_SOURCES            += \
+				test.c \
+				testall.c \
+				testany.c \
+				testsome.c \
+				waitall.c \
+				waitany.c \
+				waitsome.c \
 				waituntil.c
 
 MY_SOURCES            += \
@@ -108,12 +115,6 @@ if ENABLE_EXPERIMENTAL
 
 MY_SOURCES            += \
 			extensions/shmalloc.c \
-			extensions/testall.c \
-			extensions/testany.c \
-			extensions/testsome.c \
-			extensions/waitall.c \
-			extensions/waitany.c \
-			extensions/waitsome.c \
 			extensions/wtime.c \
 			extensions/interop.c
 
