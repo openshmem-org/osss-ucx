@@ -3,7 +3,7 @@
 #ifndef _SHMEM_DEFINES_H
 #define _SHMEM_DEFINES_H 1
 
-#include "shmem/defs_subst.h"
+#include <shmem/defs_subst.h>
 
 #include <sys/types.h>
 #include <stddef.h>

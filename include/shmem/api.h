@@ -3,8 +3,8 @@
 #ifndef _SHMEM_API_H
 #define _SHMEM_API_H 1
 
-#include "shmem/defs.h"
-#include "shmem/depr.h"
+#include <shmem/defs.h>
+#include <shmem/depr.h>
 
 #include <sys/types.h>
 #include <stddef.h>               /* ptrdiff_t */
@@ -2911,12 +2911,12 @@ extern "C"
      * C11 Generics
      *
      */
-#include "shmem/generics.h"
+#include <shmem/generics.h>
 
     /*
      * deprecated cache routines
      */
-#include "shmem/cache.h"
+#include <shmem/cache.h>
 
 #ifdef __cplusplus
 }
