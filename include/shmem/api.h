@@ -1345,6 +1345,117 @@ extern "C"
 
 #undef API_DECL_TEST_AND_WAIT_UNTIL
 
+#define API_DECL_TEST_ALL(_opname, _type)                   \
+    int                                                     \
+    shmem_##_opname##_test_all(_type *ivars, size_t nelems, \
+                               int cmp, _type cmp_value)
+
+    API_DECL_TEST_ALL(short, short);
+    API_DECL_TEST_ALL(int, int);
+    API_DECL_TEST_ALL(long, long);
+    API_DECL_TEST_ALL(longlong, long long);
+    API_DECL_TEST_ALL(ushort, unsigned short);
+    API_DECL_TEST_ALL(uint, unsigned int);
+    API_DECL_TEST_ALL(ulong, unsigned long);
+    API_DECL_TEST_ALL(ulonglong, unsigned long long);
+    API_DECL_TEST_ALL(int32, int32_t);
+    API_DECL_TEST_ALL(int64, int64_t);
+    API_DECL_TEST_ALL(uint32, uint32_t);
+    API_DECL_TEST_ALL(uint64, uint64_t);
+    API_DECL_TEST_ALL(size, size_t);
+    API_DECL_TEST_ALL(ptrdiff, ptrdiff_t);
+
+#define API_DECL_TEST_ANY(_opname, _type)                   \
+    size_t                                                  \
+    shmem_##_opname##_test_any(_type *ivars, size_t nelems, \
+                               int *status,                 \
+                               int cmp, _type cmp_value)
+
+    API_DECL_TEST_ANY(short, short);
+    API_DECL_TEST_ANY(int, int);
+    API_DECL_TEST_ANY(long, long);
+    API_DECL_TEST_ANY(longlong, long long);
+    API_DECL_TEST_ANY(ushort, unsigned short);
+    API_DECL_TEST_ANY(uint, unsigned int);
+    API_DECL_TEST_ANY(ulong, unsigned long);
+    API_DECL_TEST_ANY(ulonglong, unsigned long long);
+    API_DECL_TEST_ANY(int32, int32_t);
+    API_DECL_TEST_ANY(int64, int64_t);
+    API_DECL_TEST_ANY(uint32, uint32_t);
+    API_DECL_TEST_ANY(uint64, uint64_t);
+    API_DECL_TEST_ANY(size, size_t);
+    API_DECL_TEST_ANY(ptrdiff, ptrdiff_t);
+
+#define API_DECL_TEST_SOME(_opname, _type)                      \
+    size_t                                                      \
+    shmem_##_opname##_test_some(_type *ivars, size_t nelems,    \
+                                size_t *indices,                \
+                                int *status,                    \
+                                int cmp, _type cmp_value)
+
+    API_DECL_TEST_SOME(short, short);
+    API_DECL_TEST_SOME(int, int);
+    API_DECL_TEST_SOME(long, long);
+    API_DECL_TEST_SOME(longlong, long long);
+    API_DECL_TEST_SOME(ushort, unsigned short);
+    API_DECL_TEST_SOME(uint, unsigned int);
+    API_DECL_TEST_SOME(ulong, unsigned long);
+    API_DECL_TEST_SOME(ulonglong, unsigned long long);
+    API_DECL_TEST_SOME(int32, int32_t);
+    API_DECL_TEST_SOME(int64, int64_t);
+    API_DECL_TEST_SOME(uint32, uint32_t);
+    API_DECL_TEST_SOME(uint64, uint64_t);
+    API_DECL_TEST_SOME(size, size_t);
+    API_DECL_TEST_SOME(ptrdiff, ptrdiff_t);
+
+#define API_DECL_WAIT_UNTIL_ALL(_opname, _type)                     \
+    void                                                            \
+    shmem_##_opname##_wait_until_all(_type *ivars, size_t nelems,   \
+                                     int cmp, _type cmp_value)
+
+    API_DECL_WAIT_UNTIL_ALL(short, short);
+    API_DECL_WAIT_UNTIL_ALL(int, int);
+    API_DECL_WAIT_UNTIL_ALL(long, long);
+    API_DECL_WAIT_UNTIL_ALL(longlong, long long);
+    API_DECL_WAIT_UNTIL_ALL(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_ALL(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_ALL(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_ALL(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_ALL(int32, int32_t);
+    API_DECL_WAIT_UNTIL_ALL(int64, int64_t);
+    API_DECL_WAIT_UNTIL_ALL(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_ALL(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_ALL(size, size_t);
+    API_DECL_WAIT_UNTIL_ALL(ptrdiff, ptrdiff_t);
+
+#define API_DECL_WAIT_UNTIL_ANY(_opname, _type)                     \
+    size_t                                                          \
+    shmem_##_opname##_wait_until_any(_type *ivars, size_t nelems,   \
+                                     int *status,                   \
+                                     int cmp, _type cmp_value)
+
+    API_DECL_WAIT_UNTIL_ANY(short, short);
+    API_DECL_WAIT_UNTIL_ANY(int, int);
+    API_DECL_WAIT_UNTIL_ANY(long, long);
+    API_DECL_WAIT_UNTIL_ANY(longlong, long long);
+    API_DECL_WAIT_UNTIL_ANY(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_ANY(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_ANY(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_ANY(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_ANY(int32, int32_t);
+    API_DECL_WAIT_UNTIL_ANY(int64, int64_t);
+    API_DECL_WAIT_UNTIL_ANY(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_ANY(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_ANY(size, size_t);
+    API_DECL_WAIT_UNTIL_ANY(ptrdiff, ptrdiff_t);
+
+#undef API_DECL_TEST_ALL
+#undef API_DECL_TEST_ANY
+#undef API_DECL_TEST_SOME
+#undef API_DECL_WAIT_UNTIL_ALL
+#undef API_DECL_WAIT_UNTIL_ANY
+#undef API_DECL_WAIT_UNTIL_SOME
+
     /**
      * @brief wait for symmetric variable to change value
      * @page shmem_long_wait

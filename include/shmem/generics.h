@@ -778,6 +778,84 @@ inline static void shmem_generics_ignore(void) { }
              default: shmem_generics_ignore                     \
              )(__VA_ARGS__)
 
-#endif  /* SHMEM_HAS_C11 */
+#define shmemx_wait_until_all(_ivars, _nelems,                      \
+                              _cmp, _cmp_value)                     \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_wait_until_all,                    \
+             int: shmemx_int_wait_until_all,                        \
+             long: shmemx_long_wait_until_all,                      \
+             long long: shmemx_longlong_wait_until_all,             \
+             unsigned short: shmemx_ushort_wait_until_all,          \
+             unsigned int: shmemx_uint_wait_until_all,              \
+             unsigned long: shmemx_ulong_wait_until_all,            \
+             unsigned long long: shmemx_ulonglong_wait_until_all    \
+             )(_ivars, _nelems, _cmp, _cmp_value)
+
+#define shmemx_wait_until_any(_ivars, _nelems, _status,             \
+                              _cmp, _cmp_value)                     \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_wait_until_any,                    \
+             int: shmemx_int_wait_until_any,                        \
+             long: shmemx_long_wait_until_any,                      \
+             long long: shmemx_longlong_wait_until_any,             \
+             unsigned short: shmemx_ushort_wait_until_any,          \
+             unsigned int: shmemx_uint_wait_until_any,              \
+             unsigned long: shmemx_ulong_wait_until_any,            \
+             unsigned long long: shmemx_ulonglong_wait_until_any    \
+             )(_ivars, _nelems, _status, _cmp, _cmp_value)
+
+#define shmemx_wait_until_some(_ivars, _nelems, _indices, _status,      \
+                               _cmp, _cmp_value)                        \
+    _Generic(* _ivars,                                                  \
+             short: shmemx_short_wait_until_some,                       \
+             int: shmemx_int_wait_until_some,                           \
+             long: shmemx_long_wait_until_some,                         \
+             long long: shmemx_longlong_wait_until_some,                \
+             unsigned short: shmemx_ushort_wait_until_some,             \
+             unsigned int: shmemx_uint_wait_until_some,                 \
+             unsigned long: shmemx_ulong_wait_until_some,               \
+             unsigned long long: shmemx_ulonglong_wait_until_some       \
+             )(_ivars, _nelems, _indices, _status, _cmp, _cmp_value)
+
+#define shmemx_test_all(_ivars, _nelems,                            \
+                        _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_test_all,                          \
+             int: shmemx_int_test_all,                              \
+             long: shmemx_long_test_all,                            \
+             long long: shmemx_longlong_test_all,                   \
+             unsigned short: shmemx_ushort_test_all,                \
+             unsigned int: shmemx_uint_test_all,                    \
+             unsigned long: shmemx_ulong_test_all,                  \
+             unsigned long long: shmemx_ulonglong_test_all          \
+             )(_ivars, _nelems, _cmp, _cmp_value)
+
+#define shmemx_test_any(_ivars, _nelems, _status,                   \
+                        _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                              \
+             short: shmemx_short_test_any,                          \
+             int: shmemx_int_test_any,                              \
+             long: shmemx_long_test_any,                            \
+             long long: shmemx_longlong_test_any,                   \
+             unsigned short: shmemx_ushort_test_any,                \
+             unsigned int: shmemx_uint_test_any,                    \
+             unsigned long: shmemx_ulong_test_any,                  \
+             unsigned long long: shmemx_ulonglong_test_any          \
+             )(_ivars, _nelems, _status, _cmp, _cmp_value)
+
+#define shmemx_test_some(_ivars, _nelems, _indices, _status,         \
+                         _cmp, _cmp_value)                           \
+    _Generic(* _ivars,                                               \
+             short: shmemx_short_test_some,                          \
+             int: shmemx_int_test_some,                              \
+             long: shmemx_long_test_some,                            \
+             long long: shmemx_longlong_test_some,                   \
+             unsigned short: shmemx_ushort_test_some,                \
+             unsigned int: shmemx_uint_test_some,                    \
+             unsigned long: shmemx_ulong_test_some,                  \
+             unsigned long long: shmemx_ulonglong_test_some          \
+             )(_ivars, _nelems, _indices, _status, _cmp, _cmp_value)
+
+#endif /* SHMEM_HAS_C11 */
 
 #endif  /* ! _SHMEM_API_GENERICS_H */
