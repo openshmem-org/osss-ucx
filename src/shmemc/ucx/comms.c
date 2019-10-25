@@ -639,10 +639,11 @@ shmemc_ctx_set(shmem_ctx_t ctx,
 {
     uint64_t zap;
 
-    NO_WARN_UNUSED(zap);
     NO_WARN_UNUSED(ts);
 
     shmemc_ctx_swap(ctx, tp, vp, vs, pe, &zap);
+
+    NO_WARN_UNUSED(zap);
 }
 
 void
