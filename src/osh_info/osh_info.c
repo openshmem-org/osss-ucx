@@ -47,6 +47,8 @@ main(int argc, char *argv[])
 
     progname = basename(argv[0]);
 
+    opterr = 0;                 /* no err msg, just my output */
+
     while (1) {
         const int c = getopt_long(argc, argv, "hV", opts, NULL);
 
