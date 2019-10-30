@@ -23,10 +23,10 @@ output_help(void)
             "Usage: %s [options]\n\n",
             progname);
     fprintf(stderr,
-            "    [-V | --version]    only output OpenSHMEM"
+            "    -V | --version    only output OpenSHMEM"
             " package version info\n");
     fprintf(stderr,
-            "    [-h | --help]       show this help message\n");
+            "    -h | --help       show this help message\n");
     fprintf(stderr,
             "\n");
 }
