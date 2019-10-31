@@ -88,10 +88,11 @@ typedef struct env_info {
  * PEs can belong to teams
  */
 typedef struct shmemc_team {
-    size_t id;                  /**< team ID# */
     int *members;               /**< list of PEs in the team */
     size_t nmembers;            /**< how many PEs */
 } shmemc_team_t;
+
+typedef shmemc_team_t *shmemc_team_h;
 
 /*
  * each PE has this state info

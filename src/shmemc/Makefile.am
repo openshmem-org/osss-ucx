@@ -10,7 +10,8 @@ LIBSHMEMC_SOURCES         = \
 				globalexit.c \
 				readenv.c \
 				init.c \
-				state.c
+				state.c \
+				teams.c
 
 #
 # -- begin: UCX sources --

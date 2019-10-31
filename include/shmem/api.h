@@ -2908,6 +2908,12 @@ extern "C"
     void shmem_ctx_destroy(shmem_ctx_t ctx);
 
     /*
+     * Teams
+     *
+     */
+#include <shmem/teams.h>
+
+    /*
      * C11 Generics
      *
      */
