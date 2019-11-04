@@ -32,5 +32,5 @@ See the [license file](./LICENSE).
 
 ## Building and Running
 
-* [Building](./doc/building.txt)
-* [Running](./doc/running.txt)
+* [Building](./doc/building.md)
+* [Running](./doc/running.md)
