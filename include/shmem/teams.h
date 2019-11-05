@@ -14,6 +14,8 @@ typedef void *shmem_team_t;
  */
 
 extern shmem_team_t SHMEM_TEAM_WORLD;
+extern shmem_team_t SHMEM_TEAM_SHARED;
+extern shmem_team_t SHMEM_TEAM_INVALID;
 
 /*
  * team configuration structure

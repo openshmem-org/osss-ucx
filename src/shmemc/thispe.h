@@ -9,6 +9,7 @@
 
 #include "boolean.h"
 #include "threading.h"
+#include "shmem/teams.h"
 
 #include "ucx/pe.h"
 
@@ -90,6 +91,7 @@ typedef struct env_info {
 typedef struct shmemc_team {
     int *members;               /**< list of PEs in the team */
     size_t nmembers;            /**< how many PEs */
+    shmem_team_config_t *cfg;   /*<< team configuration */
 } shmemc_team_t;
 
 typedef shmemc_team_t *shmemc_team_h;

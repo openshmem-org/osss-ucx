@@ -436,6 +436,39 @@ extern shmemc_context_h defcp;
 int shmemc_context_init_default(void);
 
 /*
+ * -- Teams management -------------------------------------------------------
+ *
+ * int functions return 0 for success, non-zero for failure
+ */
+
+extern shmemc_team_t shmemc_team_world;
+extern shmemc_team_t shmemc_team_shared;
+
+void shmemc_teams_init(void);
+void shmemc_teams_finalize(void);
+
+int shmemc_team_my_pe(shmemc_team_h th);
+int shmemc_team_n_pes(shmemc_team_h th);
+int shmemc_team_get_config(shmemc_team_h th,
+                           shmem_team_config_t *config);
+int shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
+                             shmemc_team_h dh);
+int shmemc_team_split_strided(shmemc_team_h parent_h,
+                              int start, int stride, int size,
+                              const shmem_team_config_t *config,
+                              long config_mask,
+                              shmemc_team_h *newh);
+int shmemc_team_split_2d(shmemc_team_h parent_h,
+                         int xrange,
+                         const shmem_team_config_t *xaxis_config,
+                         long xaxis_mask,
+                         shmemc_team_h *xaxis_h,
+                         const shmem_team_config_t *yaxis_config,
+                         long yaxis_mask,
+                         shmemc_team_h *yaxis_h);
+void shmemc_team_destroy(shmemc_team_h th);
+
+/*
  * -- barriers & syncs -------------------------------------------------------
  */
 
