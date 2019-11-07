@@ -91,6 +91,48 @@ void shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
 /* other signal ops TODO */
 
 /*
+ * -- Teams ------------------------------------------------------------------
+ */
+
+extern shmemc_team_t shmemc_team_world;
+extern shmemc_team_t shmemc_team_shared;
+
+void shmemc_ucx_teardown_context(shmemc_context_h ch);
+
+void shmemc_ucx_team_world_create(void);
+void shmemc_ucx_team_world_destroy(void);
+
+void shmemc_team_finalize(shmemc_team_h th);
+
+void shmemc_teams_init(void);
+void shmemc_teams_finalize(void);
+
+int shmemc_team_my_pe(shmemc_team_h th);
+int shmemc_team_n_pes(shmemc_team_h th);
+
+int shmemc_team_get_config(shmemc_team_h th,
+                           shmem_team_config_t *config);
+int shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
+                             shmemc_team_h dh);
+
+int shmemc_team_split_strided(shmemc_team_h parh,
+                              int start, int stride, int size,
+                              const shmem_team_config_t *config,
+                              long config_mask,
+                              shmemc_team_h *newh);
+
+int shmemc_team_split_2d(shmemc_team_h parh,
+                         int xrange,
+                         const shmem_team_config_t *xaxis_config,
+                         long xaxis_mask,
+                         shmemc_team_h *xaxish,
+                         const shmem_team_config_t *yaxis_config,
+                         long yaxis_mask,
+                         shmemc_team_h *yaxish);
+
+void shmemc_team_destroy(shmemc_team_h th);
+
+/*
  * -- AMOs -------------------------------------------------------------------
  */
 
@@ -434,39 +476,6 @@ extern shmemc_context_t shmemc_default_context;
 extern shmemc_context_h defcp;
 
 int shmemc_context_init_default(void);
-
-/*
- * -- Teams management -------------------------------------------------------
- *
- * int functions return 0 for success, non-zero for failure
- */
-
-extern shmemc_team_t shmemc_team_world;
-extern shmemc_team_t shmemc_team_shared;
-
-void shmemc_teams_init(void);
-void shmemc_teams_finalize(void);
-
-int shmemc_team_my_pe(shmemc_team_h th);
-int shmemc_team_n_pes(shmemc_team_h th);
-int shmemc_team_get_config(shmemc_team_h th,
-                           shmem_team_config_t *config);
-int shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
-                             shmemc_team_h dh);
-int shmemc_team_split_strided(shmemc_team_h parent_h,
-                              int start, int stride, int size,
-                              const shmem_team_config_t *config,
-                              long config_mask,
-                              shmemc_team_h *newh);
-int shmemc_team_split_2d(shmemc_team_h parent_h,
-                         int xrange,
-                         const shmem_team_config_t *xaxis_config,
-                         long xaxis_mask,
-                         shmemc_team_h *xaxis_h,
-                         const shmem_team_config_t *yaxis_config,
-                         long yaxis_mask,
-                         shmemc_team_h *yaxis_h);
-void shmemc_team_destroy(shmemc_team_h th);
 
 /*
  * -- barriers & syncs -------------------------------------------------------

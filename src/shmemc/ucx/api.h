@@ -13,8 +13,7 @@
  * a dummy callback that does nothing
  */
 
-void
-noop_callback(void *request, ucs_status_t status);
+void noop_callback(void *request, ucs_status_t status);
 
 /*
  * setup and teardown

@@ -9,7 +9,6 @@
 
 #include "boolean.h"
 #include "threading.h"
-#include "shmem/teams.h"
 
 #include "ucx/pe.h"
 
@@ -86,17 +85,6 @@ typedef struct env_info {
 } env_info_t;
 
 /*
- * PEs can belong to teams
- */
-typedef struct shmemc_team {
-    int *members;               /**< list of PEs in the team */
-    size_t nmembers;            /**< how many PEs */
-    shmem_team_config_t *cfg;   /*<< team configuration */
-} shmemc_team_t;
-
-typedef shmemc_team_t *shmemc_team_h;
-
-/*
  * each PE has this state info
  */
 typedef struct thispe_info {
@@ -110,9 +98,9 @@ typedef struct thispe_info {
     int refcount;               /**< library initialization count */
     int *peers;                 /**< peer PEs in a node group */
     int npeers;                 /**< how many peers */
+    bool progress_thread;       /**< PE requests progress thread */
     shmemc_team_t *teams;       /**< PE teams we belong to */
     size_t nteams;              /**< how many teams */
-    bool progress_thread;       /**< PE requests progress thread */
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */
