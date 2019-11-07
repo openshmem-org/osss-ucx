@@ -30,23 +30,53 @@ shmemc_team_contexts_destroy(shmemc_team_h th)
 }
 
 /*
+ * populate team from source PEs
+ */
+
+inline static void
+allocate_team_memory(shmemc_team_h th, int n)
+{
+    th->nmembers = n;
+    th->members = (int *) malloc(th->nmembers * sizeof(int));
+    shmemu_assert(th->members != NULL,
+                  "cannot allocate memory for new team");
+}
+
+inline static void
+create_team_members_from_range(shmemc_team_h th, int first, int last)
+{
+    int i;
+    int n;
+
+    allocate_team_memory(th, last - first + 1);
+
+    for (n = 0, i = first; i <= last; ++i) {
+        th->members[n] = i;
+        ++n;
+    }
+}
+
+inline static void
+create_team_members_from_array(shmemc_team_h th, const int *pes, int npes)
+{
+    int i;
+
+    allocate_team_memory(th, npes);
+
+    for (i = 0; i < npes; ++i) {
+        th->members[i] = pes[i];
+    }
+}
+
+/*
  * set up world/shared per PE
  */
 
 void
 shmemc_teams_init(void)
 {
-    int pe;
-
-    shmemc_team_world.nmembers = proc.nranks;
-    shmemc_team_world.members =
-        (int *) malloc(shmemc_team_world.nmembers * sizeof(int));
-    shmemu_assert(shmemc_team_world.members != NULL,
-                  "cannot allocate memory for world team");
-
-    for (pe = 0; pe < proc.nranks; ++pe) {
-        shmemc_team_world.members[pe] = pe;
-    }
+    create_team_members_from_range(& shmemc_team_world,
+                                   0, proc.nranks - 1);
 
     shmemc_team_world.nctxts = 0;
     shmemc_team_world.ctxts = NULL;
