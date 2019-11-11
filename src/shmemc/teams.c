@@ -14,6 +14,9 @@
 shmemc_team_t shmemc_team_world;
 shmemc_team_t shmemc_team_shared;
 
+shmemc_team_h shmemc_team_world_h = & shmemc_team_world;
+shmemc_team_h shmemc_team_shared_h = & shmemc_team_shared;
+
 /*
  * clear up the allocated SHMEM contexts in a team
  */
@@ -68,6 +71,19 @@ create_team_members_from_array(shmemc_team_h th, const int *pes, int npes)
     }
 }
 
+#if 0
+inline static void
+dump_team(shmemc_team_h th)
+{
+    size_t i;
+
+    for (i = 0; i < th->nmembers; ++i) {
+        fprintf(stderr, "%-8d %lu -> %d\n", proc.rank, i, th->members[i]);
+    }
+    fprintf(stderr, "\n");
+}
+#endif
+
 /*
  * set up world/shared per PE
  */
@@ -75,25 +91,37 @@ create_team_members_from_array(shmemc_team_h th, const int *pes, int npes)
 void
 shmemc_teams_init(void)
 {
-    create_team_members_from_range(& shmemc_team_world,
-                                   0, proc.nranks - 1);
+    /*
+     * world is just all PEs in program.
+     */
+    create_team_members_from_range(shmemc_team_world_h, 0, proc.nranks - 1);
+    shmemc_team_world_h->nctxts = 0;
+    shmemc_team_world_h->ctxts = NULL;
 
-    shmemc_team_world.nctxts = 0;
-    shmemc_team_world.ctxts = NULL;
+    /*
+     * assume that all peers on a node can share memory.
+     *
+     * could extend this with a ptr() test across peers.
+     */
+    create_team_members_from_array(shmemc_team_shared_h,
+                                   proc.peers, proc.npeers);
+    shmemc_team_shared_h->nctxts = 0;
+    shmemc_team_shared_h->ctxts = NULL;
 }
 
 /*
- * clean up at end
+ * clean up world/shared allocated resources at end
  */
 
 void
 shmemc_teams_finalize(void)
 {
-    shmemc_team_contexts_destroy(& shmemc_team_world);
+    shmemc_team_contexts_destroy(shmemc_team_shared_h);
+    free(shmemc_team_shared_h->members);
 
+    shmemc_team_contexts_destroy(shmemc_team_world_h);
     shmemc_ucx_team_world_destroy();
-
-    free(shmemc_team_world.members);
+    free(shmemc_team_world_h->members);
 }
 
 /*
@@ -193,7 +221,7 @@ shmemc_team_destroy(shmemc_team_h th)
         return;
     }
 
-    shmemu_assert(th != &shmemc_team_world,
+    shmemu_assert(th != shmemc_team_world_h,
                   "may not destroy world team");
     free(th->members);
 

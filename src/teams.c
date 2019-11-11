@@ -8,21 +8,16 @@
 #include "shmemc.h"
 #include "thispe.h"
 
-shmem_team_t SHMEM_TEAM_WORLD = (shmem_team_t) &shmemc_team_world;
+/*
+ * these point to underlying objects to be constant initialized
+ */
+shmem_team_t SHMEM_TEAM_WORLD = (shmem_team_t) & shmemc_team_world;
+shmem_team_t SHMEM_TEAM_SHARED = (shmem_team_t) & shmemc_team_shared;
 
+/*
+ * a bad team
+ */
 shmem_team_t SHMEM_TEAM_INVALID = NULL;
-
-void
-shmem_teams_init(void)
-{
-    /* TODO set up world/shared */
-}
-
-void
-shmem_teams_finalize(void)
-{
-    return;
-}
 
 int
 shmem_team_my_pe(shmem_team_t team)

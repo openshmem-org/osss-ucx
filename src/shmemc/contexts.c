@@ -179,7 +179,7 @@ context_set_options(long options, shmemc_context_h ch)
 int
 shmemc_context_create(long options, shmem_ctx_t *ctxp)
 {
-    shmemc_team_h th = & shmemc_team_world;
+    shmemc_team_h th = shmemc_team_world_h;
     bool reuse;
     const size_t idx = get_usable_context(th, &reuse);
     shmemc_context_h ch = th->ctxts[idx];
