@@ -120,7 +120,6 @@ shmemc_teams_finalize(void)
     free(shmemc_team_shared_h->members);
 
     shmemc_team_contexts_destroy(shmemc_team_world_h);
-    shmemc_ucx_team_world_destroy();
     free(shmemc_team_world_h->members);
 }
 

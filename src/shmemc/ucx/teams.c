@@ -43,10 +43,5 @@ shmemc_ucx_team_world_create(void)
 void
 shmemc_ucx_team_world_destroy(void)
 {
-    /*
-     * TODO this seems out of place now, need to rethink where it goes
-     */
-    ucp_worker_release_address(defcp->w,
-                               proc.comms.xchg_wrkr_info[proc.rank].addr);
-    shmemc_ucx_teardown_context(defcp);
+    return;
 }
