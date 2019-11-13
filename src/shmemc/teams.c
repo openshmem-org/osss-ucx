@@ -216,6 +216,8 @@ shmemc_team_split_2d(shmemc_team_h parh,
 void
 shmemc_team_destroy(shmemc_team_h th)
 {
+    size_t c;
+
     if (th == SHMEM_TEAM_INVALID) {
         return;
     }
@@ -224,7 +226,11 @@ shmemc_team_destroy(shmemc_team_h th)
                   "may not destroy world team");
     free(th->members);
 
-    /* destroy shareable contexts in this team */
+    for (c = 0; c < th->nctxts; ++c) {
+        if (! th->ctxts[c]->attr.private) {
+            shmemc_context_destroy(th->ctxts[c]);
+        }
+    }
 
     free(th);
 }
