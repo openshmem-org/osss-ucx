@@ -9,44 +9,43 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem/api.h"
-#include "shmemx.h"
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmemx_short_test_any = pshmemx_short_test_any
-#define shmemx_short_test_any pshmemx_short_test_any
-#pragma weak shmemx_int_test_any = pshmemx_int_test_any
-#define shmemx_int_test_any pshmemx_int_test_any
-#pragma weak shmemx_long_test_any = pshmemx_long_test_any
-#define shmemx_long_test_any pshmemx_long_test_any
-#pragma weak shmemx_longlong_test_any = pshmemx_longlong_test_any
-#define shmemx_longlong_test_any pshmemx_longlong_test_any
-#pragma weak shmemx_ushort_test_any = pshmemx_ushort_test_any
-#define shmemx_ushort_test_any pshmemx_ushort_test_any
-#pragma weak shmemx_uint_test_any = pshmemx_uint_test_any
-#define shmemx_uint_test_any pshmemx_uint_test_any
-#pragma weak shmemx_ulong_test_any = pshmemx_ulong_test_any
-#define shmemx_ulong_test_any pshmemx_ulong_test_any
-#pragma weak shmemx_ulonglong_test_any = pshmemx_ulonglong_test_any
-#define shmemx_ulonglong_test_any pshmemx_ulonglong_test_any
-#pragma weak shmemx_int32_test_any = pshmemx_int32_test_any
-#define shmemx_int32_test_any pshmemx_int32_test_any
-#pragma weak shmemx_int64_test_any = pshmemx_int64_test_any
-#define shmemx_int64_test_any pshmemx_int64_test_any
-#pragma weak shmemx_uint32_test_any = pshmemx_uint32_test_any
-#define shmemx_uint32_test_any pshmemx_uint32_test_any
-#pragma weak shmemx_uint64_test_any = pshmemx_uint64_test_any
-#define shmemx_uint64_test_any pshmemx_uint64_test_any
-#pragma weak shmemx_size_test_any = pshmemx_size_test_any
-#define shmemx_size_test_any pshmemx_size_test_any
-#pragma weak shmemx_ptrdiff_test_any = pshmemx_ptrdiff_test_any
-#define shmemx_ptrdiff_test_any pshmemx_ptrdiff_test_any
+#pragma weak shmem_short_test_any = pshmem_short_test_any
+#define shmem_short_test_any pshmem_short_test_any
+#pragma weak shmem_int_test_any = pshmem_int_test_any
+#define shmem_int_test_any pshmem_int_test_any
+#pragma weak shmem_long_test_any = pshmem_long_test_any
+#define shmem_long_test_any pshmem_long_test_any
+#pragma weak shmem_longlong_test_any = pshmem_longlong_test_any
+#define shmem_longlong_test_any pshmem_longlong_test_any
+#pragma weak shmem_ushort_test_any = pshmem_ushort_test_any
+#define shmem_ushort_test_any pshmem_ushort_test_any
+#pragma weak shmem_uint_test_any = pshmem_uint_test_any
+#define shmem_uint_test_any pshmem_uint_test_any
+#pragma weak shmem_ulong_test_any = pshmem_ulong_test_any
+#define shmem_ulong_test_any pshmem_ulong_test_any
+#pragma weak shmem_ulonglong_test_any = pshmem_ulonglong_test_any
+#define shmem_ulonglong_test_any pshmem_ulonglong_test_any
+#pragma weak shmem_int32_test_any = pshmem_int32_test_any
+#define shmem_int32_test_any pshmem_int32_test_any
+#pragma weak shmem_int64_test_any = pshmem_int64_test_any
+#define shmem_int64_test_any pshmem_int64_test_any
+#pragma weak shmem_uint32_test_any = pshmem_uint32_test_any
+#define shmem_uint32_test_any pshmem_uint32_test_any
+#pragma weak shmem_uint64_test_any = pshmem_uint64_test_any
+#define shmem_uint64_test_any pshmem_uint64_test_any
+#pragma weak shmem_size_test_any = pshmem_size_test_any
+#define shmem_size_test_any pshmem_size_test_any
+#pragma weak shmem_ptrdiff_test_any = pshmem_ptrdiff_test_any
+#define shmem_ptrdiff_test_any pshmem_ptrdiff_test_any
 #endif  /* ENABLE_PSHMEM */
 
-#define SHMEMX_TYPE_TEST_ANY(_opname, _type, _size)                     \
+#define SHMEM_TYPE_TEST_ANY(_opname, _type, _size)                      \
     size_t                                                              \
-    shmemx_##_opname##_test_any(_type *ivars, size_t nelems,            \
-                                int *status,                            \
-                                int cmp, _type cmp_value)               \
+    shmem_##_opname##_test_any(_type *ivars, size_t nelems,             \
+                               int *status,                             \
+                               int cmp, _type cmp_value)                \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \
             (                                                           \
@@ -100,17 +99,17 @@
                                                                         ); \
     }
 
-SHMEMX_TYPE_TEST_ANY(short, short, 16)
-SHMEMX_TYPE_TEST_ANY(int, int, 32)
-SHMEMX_TYPE_TEST_ANY(long, long, 64)
-SHMEMX_TYPE_TEST_ANY(longlong, long long, 64)
-SHMEMX_TYPE_TEST_ANY(ushort, unsigned short, 16)
-SHMEMX_TYPE_TEST_ANY(uint, unsigned int, 32)
-SHMEMX_TYPE_TEST_ANY(ulong, unsigned long, 64)
-SHMEMX_TYPE_TEST_ANY(ulonglong, unsigned long long, 64)
-SHMEMX_TYPE_TEST_ANY(int32, int32_t, 32)
-SHMEMX_TYPE_TEST_ANY(int64, int64_t, 64)
-SHMEMX_TYPE_TEST_ANY(uint32, uint32_t, 32)
-SHMEMX_TYPE_TEST_ANY(uint64, uint64_t, 64)
-SHMEMX_TYPE_TEST_ANY(size, size_t, 64)
-SHMEMX_TYPE_TEST_ANY(ptrdiff, ptrdiff_t, 64)
+SHMEM_TYPE_TEST_ANY(short, short, 16)
+SHMEM_TYPE_TEST_ANY(int, int, 32)
+SHMEM_TYPE_TEST_ANY(long, long, 64)
+SHMEM_TYPE_TEST_ANY(longlong, long long, 64)
+SHMEM_TYPE_TEST_ANY(ushort, unsigned short, 16)
+SHMEM_TYPE_TEST_ANY(uint, unsigned int, 32)
+SHMEM_TYPE_TEST_ANY(ulong, unsigned long, 64)
+SHMEM_TYPE_TEST_ANY(ulonglong, unsigned long long, 64)
+SHMEM_TYPE_TEST_ANY(int32, int32_t, 32)
+SHMEM_TYPE_TEST_ANY(int64, int64_t, 64)
+SHMEM_TYPE_TEST_ANY(uint32, uint32_t, 32)
+SHMEM_TYPE_TEST_ANY(uint64, uint64_t, 64)
+SHMEM_TYPE_TEST_ANY(size, size_t, 64)
+SHMEM_TYPE_TEST_ANY(ptrdiff, ptrdiff_t, 64)

@@ -118,7 +118,7 @@ check_if_progress_required(void)
         size_t i;
 
         for (i = 0; i < nres; ++i) {
-            if (res[i] == proc.rank) {
+            if (res[i] == shmemc_my_pe()) {
                 ret = 1;
                 goto out_free;
                 /* NOT REACHED */

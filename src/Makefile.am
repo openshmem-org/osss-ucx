@@ -31,15 +31,25 @@ MY_SOURCES             = \
 				info.c \
 				init.c \
 				lock.c \
+				profiling.c \
 				progress.c \
 				ptr.c \
 				putget.c \
+				put_signal.c \
 				quiet.c \
 				ranks.c	 \
 				shmalloc.c \
-				test.c \
+				teams.c \
 				tl_query.c \
 				version.c \
+MY_SOURCES            += \
+				test.c \
+				testall.c \
+				testany.c \
+				testsome.c \
+				waitall.c \
+				waitany.c \
+				waitsome.c \
 				waituntil.c
 
 MY_SOURCES            += \
@@ -105,24 +115,13 @@ noinst_LTLIBRARIES     = liballocator.la
 if ENABLE_EXPERIMENTAL
 
 MY_SOURCES            += \
-			extensions/putget_signal.c \
 			extensions/shmalloc.c \
-			extensions/testall.c \
-			extensions/testany.c \
-			extensions/testsome.c \
-			extensions/waitall.c \
-			extensions/waitany.c \
-			extensions/waitsome.c \
 			extensions/wtime.c \
 			extensions/interop.c
 
 all_cppflags          += -I$(srcdir)/extensions
 
 endif # experimental
-
-if ENABLE_PSHMEM
-MY_SOURCES            += profiling.c
-endif # pshmem
 
 LIBSHMEM_SOURCES       = $(MY_SOURCES)
 

@@ -25,11 +25,6 @@ extern "C"
      void shmem_clear_cache_inv(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_CLEAR_CACHE_INV
-     @endcode
-     *
      * @section Effect
      *
      * None.
@@ -54,11 +49,6 @@ extern "C"
      void shmem_set_cache_inv(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_SET_CACHE_INV
-     @endcode
-     *
      * @section Effect
      *
      * None.
@@ -81,11 +71,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_clear_cache_line_inv(void *target);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_CLEAR_CACHE_LINE_INV(target)
      @endcode
      *
      * @param target is the address of the cache line.
@@ -114,11 +99,6 @@ extern "C"
      void shmem_set_cache_line_inv(void *target);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_SET_CACHE_LINE_INV(target)
-     @endcode
-     *
      * @param target is the address of the cache line.
      *
      * @section Effect
@@ -145,11 +125,6 @@ extern "C"
      void shmem_udcflush(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_UDCFLUSH
-     @endcode
-     *
      * @section Effect
      *
      * None.
@@ -172,11 +147,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_udcflush_line(void *target);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_UDCFLUSH_LINE(target)
      @endcode
      *
      * @param target is the address of the cache line.

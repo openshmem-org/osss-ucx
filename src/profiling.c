@@ -4,38 +4,46 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <stdio.h>
-
 #include "shmemu.h"
 
+#include <stdio.h>
+#include <stdarg.h>
+
+static int profiling_level = 1; /* default per spec 1.5 ++ */
+
 /**
- * stub for the proposed UFL profiling (PSHMEM) interface
+ * stub for the profiling (PSHMEM) interface
  *
  */
 
 void
-shmemx_pcontrol(int level)
+shmem_pcontrol(const int level, ...)
 {
-#ifdef ENABLE_LOGGING
     char *msg;
 
-    switch (level) {
-    case 0:
+    if (level <= 0) {
         msg = "disabled";
-        break;
-    case 1:
-        msg = "enabled (default detail)";
-        break;
-    default:
-        msg = "tool-specific";
-        break;
+    }
+    else if (level == 1) {
+        msg = "enabled "
+            "(default detail)";
+    }
+    else if (level == 2) {
+        msg = "enabled "
+            "(profile buffers flushed)";
+    }
+    else {                      /* > 2 */
+        msg = "enabled "
+            "(profile library defined effects and additional arguments)";
     }
 
-    logger(LOG_INFO, "shmem_pcontrol(%d) is %s", level, msg);
+    profiling_level = level;
 
-#else /* ENABLE_LOGGING */
+    logger(LOG_INFO,
+           "shmem_pcontrol(level = %d) set to \"%s\"",
+           level, msg);
 
-    NO_WARN_UNUSED(level);
-
-#endif  /* ENABLE_LOGGING */
+#ifndef ENABLE_LOGGING
+    NO_WARN_UNUSED(msg);
+#endif /* ! ENABLE_LOGGING */
 }

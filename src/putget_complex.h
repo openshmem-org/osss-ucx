@@ -3,10 +3,6 @@
 #ifndef _SHMEM_PUTGET_COMPLEX_H
 #define _SHMEM_PUTGET_COMPLEX_H 1
 
-/*
- * These are the routines used internally by the Fortran interface
- */
-
 #include "shmem/api.h"
 
 #define DECL_TYPED_CTX_PUT_PROTO(_name, _type)                      \

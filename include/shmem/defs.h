@@ -3,7 +3,7 @@
 #ifndef _SHMEM_DEFINES_H
 #define _SHMEM_DEFINES_H 1
 
-#include "shmem/defs_subst.h"
+#include <shmem/defs_subst.h>
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -48,20 +48,6 @@
 # define _WUR
 #endif
 
-#if 0
-enum shmem_fortran_errors {
-    SHMEM_MALLOC_OK                  = (0L),
-    SHMEM_MALLOC_BAD_SIZE            = (-1L),
-    SHMEM_MALLOC_FAIL                = (-2L),
-    SHMEM_MALLOC_NOT_IN_SYMM_HEAP    = (-3L),
-    SHMEM_MALLOC_ALREADY_FREE        = (-4L),
-    SHMEM_MALLOC_NOT_ALIGNED         = (-5L),
-    SHMEM_MALLOC_MEMALIGN_FAILED     = (-11L),
-    SHMEM_MALLOC_REALLOC_FAILED      = (-12L),
-    SHMEM_MALLOC_SYMMSIZE_FAILED     = (-10L)
-};
-#endif
-
 enum shmem_cmp_constants {
     SHMEM_CMP_EQ = 0,
     SHMEM_CMP_NE,
@@ -101,6 +87,14 @@ enum shmem_thread_levels {
     SHMEM_THREAD_FUNNELED,
     SHMEM_THREAD_SERIALIZED,
     SHMEM_THREAD_MULTIPLE
+};
+
+/*
+ * signal operators
+ */
+enum signal_ops {
+    SHMEM_SIGNAL_SET = 0,
+    SHMEM_SIGNAL_ADD
 };
 
 /*

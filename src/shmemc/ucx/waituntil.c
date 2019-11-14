@@ -53,7 +53,7 @@ COMMS_CTX_WAIT_SIZE(16, ge)
 COMMS_CTX_WAIT_SIZE(32, ge)
 COMMS_CTX_WAIT_SIZE(64, ge)
 
-#define COMMS_CTX_WAIT_UNTIL_ALL_SIZE(_size, _opname, _op)              \
+#define COMMS_CTX_WAIT_UNTIL_ALL_SIZE(_size, _opname)                   \
     void                                                                \
     shmemc_ctx_wait_until_all_##_opname##_size(shmem_ctx_t ctx,         \
                                                int##_size##_t *vars,    \
@@ -73,33 +73,33 @@ COMMS_CTX_WAIT_SIZE(64, ge)
                 yielder();                                              \
             }                                                           \
         } while (n < nelems);                                           \
-   }
+    }
 
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, eq, ==)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, eq, ==)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, eq, ==)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, eq)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, eq)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, eq)
 
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, ne, !=)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, ne, !=)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ne, !=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, ne)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, ne)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ne)
 
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, gt, >)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, gt, >)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, gt, >)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, gt)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, gt)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, gt)
 
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, le, <=)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, le, <=)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, le, <=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, le)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, le)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, le)
 
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, lt, <)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, lt, <)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, lt, <)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, lt)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, lt)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, lt)
 
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, ge, >=)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, ge, >=)
-COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(16, ge)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(32, ge)
+COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge)
 
-#define COMMS_CTX_WAIT_UNTIL_ANY_SIZE(_size, _opname, _op)              \
+#define COMMS_CTX_WAIT_UNTIL_ANY_SIZE(_size, _opname)                   \
     size_t                                                              \
     shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,         \
                                                int##_size##_t * restrict vars, \
@@ -130,31 +130,31 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge, >=)
         return winner;                                                  \
     }
 
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, eq, ==)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, eq, ==)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, eq, ==)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, eq)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, eq)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, eq)
 
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, ne, !=)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, ne, !=)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ne, !=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, ne)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, ne)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ne)
 
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, gt, >)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, gt, >)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, gt, >)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, gt)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, gt)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, gt)
 
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, le, <=)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, le, <=)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, le, <=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, le)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, le)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, le)
 
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, lt, <)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, lt, <)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, lt, <)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, lt)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, lt)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, lt)
 
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, ge, >=)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, ge, >=)
-COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge, >=)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(16, ge)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(32, ge)
+COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge)
 
-#define COMMS_CTX_WAIT_UNTIL_SOME_SIZE(_size, _opname, _op)             \
+#define COMMS_CTX_WAIT_UNTIL_SOME_SIZE(_size, _opname)                  \
     size_t                                                              \
     shmemc_ctx_wait_until_some_##_opname##_size(shmem_ctx_t ctx,        \
                                                 int##_size##_t * restrict vars, \
@@ -188,26 +188,26 @@ COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge, >=)
         return hits;                                                    \
     }
 
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, eq, ==)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, eq, ==)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, eq, ==)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, eq)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, eq)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, eq)
 
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, ne, !=)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, ne, !=)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ne, !=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, ne)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, ne)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ne)
 
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, gt, >)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, gt, >)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, gt, >)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, gt)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, gt)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, gt)
 
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, le, <=)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, le, <=)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, le, <=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, le)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, le)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, le)
 
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, lt, <)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, lt, <)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, lt, <)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, lt)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, lt)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, lt)
 
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, ge, >=)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, ge, >=)
-COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ge, >=)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, ge)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, ge)
+COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ge)

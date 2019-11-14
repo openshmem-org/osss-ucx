@@ -1,11 +1,13 @@
 # For license: see LICENSE file at top-level
 
 SHMEM_HDRS             =  \
+				shmem/api.h \
+				shmem/cache.h \
 				shmem/defs.h \
 				shmem/defs_subst.h \
 				shmem/depr.h \
-				shmem/cache.h \
-				shmem/api.h \
+				shmem/generics.h \
+				shmem/teams.h \
 				shmem.h
 
 #

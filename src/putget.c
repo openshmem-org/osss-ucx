@@ -6,7 +6,6 @@
 
 #include "shmemc.h"
 #include "shmem/api.h"
-#include "shmemx.h"
 
 #include "putget.h"
 

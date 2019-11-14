@@ -40,6 +40,11 @@ deallocate_xworkers_table(void)
 }
 
 /*
+ * THIS NEXT BIT NOW BELONGS TO TEAMS
+ */
+
+#if 0
+/*
  * Context management
  */
 inline static void
@@ -95,6 +100,7 @@ contexts_table_finalize(void)
 
     free(proc.comms.ctxts);
 }
+#endif
 
 /*
  * shortcut for global variables
@@ -437,8 +443,10 @@ shmemc_ucx_init(void)
 
     shmemc_ucx_allocate_eps_table(defcp);
 
+#if 0
     /* prep contexts, allocate first one (default) */
     contexts_table_init();
+#endif
 
     /* pre-allocate internal sync variables */
     ALLOC_INTERNAL_SYMM_VAR(shmemc_barrier_all_psync);
@@ -459,7 +467,9 @@ shmemc_ucx_finalize(void)
 {
     shmemc_globalexit_finalize();
 
+#if 0
     contexts_table_finalize();
+#endif
 
     deallocate_xworkers_table();
 

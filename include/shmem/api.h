@@ -3,12 +3,13 @@
 #ifndef _SHMEM_API_H
 #define _SHMEM_API_H 1
 
-#include "shmem/defs.h"
-#include "shmem/depr.h"
+#include <shmem/defs.h>
+#include <shmem/depr.h>
 
 #include <sys/types.h>
 #include <stddef.h>               /* ptrdiff_t */
 #include <stdint.h>               /* sized int types */
+#include <stdarg.h>
 
 /*
  * for handling the "I" (upper-case eye) macro for complex numbers
@@ -39,13 +40,6 @@ extern "C"
      void start_pes(int npes);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER npes
-
-     CALL START_PES(npes)
-     @endcode
-     *
      * @param npes the number of PEs participating in the program.  This
      * is ignored and should be set to 0.
      *
@@ -70,11 +64,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_init(void);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_INIT
      @endcode
      *
      * @section Effect
@@ -120,11 +109,6 @@ extern "C"
      void shmem_finalize(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_FINALIZE
-     @endcode
-     *
      * @section Effect
      * A collective finalization of the OpenSHMEM environment on the
      * calling PE.  After a finalize call, no further OpenSHMEM calls
@@ -144,13 +128,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_global_exit(int status);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER STATUS
-
-     CALL SHMEM_FINALIZE(STATUS)
      @endcode
      *
      * @section Effect
@@ -185,13 +162,6 @@ extern "C"
      int shmem_my_pe(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER I
-
-     I = SHMEM_MY_PE()
-     @endcode
-     *
      * @section Effect
      * None.
      *
@@ -220,13 +190,6 @@ extern "C"
      * @subsection c C/C++
      @code
      int shmem_n_pes(void);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER I
-
-     I = SHMEM_N_PES()
      @endcode
      *
      * @section Effect
@@ -267,13 +230,6 @@ extern "C"
      void shmem_info_get_version(int *maj, int *min);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER MAJ, MIN
-
-     CALL SHMEM_INFO_GET_VERSION(MAJ, MIN)
-     @endcode
-     *
      * @param[out] maj set to the release's major version number
      * @param[out] min set to the release's minor version number
      *
@@ -296,12 +252,6 @@ extern "C"
      void shmem_info_get_name(char *name);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CHARACTER, DIMENSION(SHMEM_MAX_NAME_LEN) :: NAME
-     CALL SHMEM_INFO_GET_NAME(NAME)
-     @endcode
-     *
      * @param[out] name contains the vendor-supplied release name
      *
      * @section Effect
@@ -312,6 +262,26 @@ extern "C"
      *
      */
     void shmem_info_get_name(char *name);
+
+    /**
+     * @brief Allows the user to control profiling
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void shmem_pcontrol(const int level, ...)
+     @endcode
+     *
+     * @param[in] level Profilong level to use
+     *
+     * @section Effect
+     * Sets the library's internal profiling behavior.
+     *
+     * @section Return
+     * None.
+     *
+     */
+    void shmem_pcontrol(const int level, ...);
 
     /*
      * I/O
@@ -652,6 +622,265 @@ extern "C"
 
 #undef API_DECL_G
 
+#define API_DECL_CTX_PUT_SIGNAL(_name, _type)           \
+    void                                                \
+    shmem_ctx_##_name##_put_signal(shmem_ctx_t ctx,     \
+                                   _type *dest,         \
+                                   const _type *src,    \
+                                   size_t nelems,       \
+                                   uint64_t *sig_addr,  \
+                                   uint64_t signal,     \
+                                   int sig_op,          \
+                                   int pe)
+
+    API_DECL_CTX_PUT_SIGNAL(float, float);
+    API_DECL_CTX_PUT_SIGNAL(double, double);
+    API_DECL_CTX_PUT_SIGNAL(longdouble, long double);
+    API_DECL_CTX_PUT_SIGNAL(schar, signed char);
+    API_DECL_CTX_PUT_SIGNAL(char, char);
+    API_DECL_CTX_PUT_SIGNAL(short, short);
+    API_DECL_CTX_PUT_SIGNAL(int, int);
+    API_DECL_CTX_PUT_SIGNAL(long, long);
+    API_DECL_CTX_PUT_SIGNAL(longlong, long long);
+    API_DECL_CTX_PUT_SIGNAL(uchar, unsigned char);
+    API_DECL_CTX_PUT_SIGNAL(ushort, unsigned short);
+    API_DECL_CTX_PUT_SIGNAL(uint, unsigned int);
+    API_DECL_CTX_PUT_SIGNAL(ulong, unsigned long);
+    API_DECL_CTX_PUT_SIGNAL(ulonglong, unsigned long long);
+    API_DECL_CTX_PUT_SIGNAL(int8, int8_t);
+    API_DECL_CTX_PUT_SIGNAL(int16, int16_t);
+    API_DECL_CTX_PUT_SIGNAL(int32, int32_t);
+    API_DECL_CTX_PUT_SIGNAL(int64, int64_t);
+    API_DECL_CTX_PUT_SIGNAL(uint8, uint8_t);
+    API_DECL_CTX_PUT_SIGNAL(uint16, uint16_t);
+    API_DECL_CTX_PUT_SIGNAL(uint32, uint32_t);
+    API_DECL_CTX_PUT_SIGNAL(uint64, uint64_t);
+    API_DECL_CTX_PUT_SIGNAL(size, size_t);
+    API_DECL_CTX_PUT_SIGNAL(ptrdiff, ptrdiff_t);
+
+#define API_DECL_CTX_PUT_SIGNAL_NBI(_name, _type)           \
+    void                                                    \
+    shmem_ctx_##_name##_put_signal_nbi(shmem_ctx_t ctx,     \
+                                       _type *dest,         \
+                                       const _type *src,    \
+                                       size_t nelems,       \
+                                       uint64_t *sig_addr,  \
+                                       uint64_t signal,     \
+                                       int sig_op,          \
+                                       int pe)
+
+    API_DECL_CTX_PUT_SIGNAL_NBI(float, float);
+    API_DECL_CTX_PUT_SIGNAL_NBI(double, double);
+    API_DECL_CTX_PUT_SIGNAL_NBI(longdouble, long double);
+    API_DECL_CTX_PUT_SIGNAL_NBI(schar, signed char);
+    API_DECL_CTX_PUT_SIGNAL_NBI(char, char);
+    API_DECL_CTX_PUT_SIGNAL_NBI(short, short);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int, int);
+    API_DECL_CTX_PUT_SIGNAL_NBI(long, long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(longlong, long long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uchar, unsigned char);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ushort, unsigned short);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint, unsigned int);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ulong, unsigned long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ulonglong, unsigned long long);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int8, int8_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int16, int16_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int32, int32_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(int64, int64_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint8, uint8_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint16, uint16_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint32, uint32_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(uint64, uint64_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(size, size_t);
+    API_DECL_CTX_PUT_SIGNAL_NBI(ptrdiff, ptrdiff_t);
+
+#define API_DECL_PUT_SIGNAL(_name, _type)           \
+    void                                            \
+    shmem_##_name##_put_signal(_type *dest,         \
+                               const _type *src,    \
+                               size_t nelems,       \
+                               uint64_t *sig_addr,  \
+                               uint64_t signal,     \
+                               int sig_op,          \
+                               int pe)
+
+    API_DECL_PUT_SIGNAL(float, float);
+    API_DECL_PUT_SIGNAL(double, double);
+    API_DECL_PUT_SIGNAL(longdouble, long double);
+    API_DECL_PUT_SIGNAL(schar, signed char);
+    API_DECL_PUT_SIGNAL(char, char);
+    API_DECL_PUT_SIGNAL(short, short);
+    API_DECL_PUT_SIGNAL(int, int);
+    API_DECL_PUT_SIGNAL(long, long);
+    API_DECL_PUT_SIGNAL(longlong, long long);
+    API_DECL_PUT_SIGNAL(uchar, unsigned char);
+    API_DECL_PUT_SIGNAL(ushort, unsigned short);
+    API_DECL_PUT_SIGNAL(uint, unsigned int);
+    API_DECL_PUT_SIGNAL(ulong, unsigned long);
+    API_DECL_PUT_SIGNAL(ulonglong, unsigned long long);
+    API_DECL_PUT_SIGNAL(int8, int8_t);
+    API_DECL_PUT_SIGNAL(int16, int16_t);
+    API_DECL_PUT_SIGNAL(int32, int32_t);
+    API_DECL_PUT_SIGNAL(int64, int64_t);
+    API_DECL_PUT_SIGNAL(uint8, uint8_t);
+    API_DECL_PUT_SIGNAL(uint16, uint16_t);
+    API_DECL_PUT_SIGNAL(uint32, uint32_t);
+    API_DECL_PUT_SIGNAL(uint64, uint64_t);
+    API_DECL_PUT_SIGNAL(size, size_t);
+    API_DECL_PUT_SIGNAL(ptrdiff, ptrdiff_t);
+
+#define API_DECL_PUT_SIGNAL_NBI(_name, _type)           \
+    void                                                \
+    shmem_##_name##_put_signal_nbi(_type *dest,         \
+                                   const _type *src,    \
+                                   size_t nelems,       \
+                                   uint64_t *sig_addr,  \
+                                   uint64_t signal,     \
+                                   int sig_op,          \
+                                   int pe)
+
+    API_DECL_PUT_SIGNAL_NBI(float, float);
+    API_DECL_PUT_SIGNAL_NBI(double, double);
+    API_DECL_PUT_SIGNAL_NBI(longdouble, long double);
+    API_DECL_PUT_SIGNAL_NBI(schar, signed char);
+    API_DECL_PUT_SIGNAL_NBI(char, char);
+    API_DECL_PUT_SIGNAL_NBI(short, short);
+    API_DECL_PUT_SIGNAL_NBI(int, int);
+    API_DECL_PUT_SIGNAL_NBI(long, long);
+    API_DECL_PUT_SIGNAL_NBI(longlong, long long);
+    API_DECL_PUT_SIGNAL_NBI(uchar, unsigned char);
+    API_DECL_PUT_SIGNAL_NBI(ushort, unsigned short);
+    API_DECL_PUT_SIGNAL_NBI(uint, unsigned int);
+    API_DECL_PUT_SIGNAL_NBI(ulong, unsigned long);
+    API_DECL_PUT_SIGNAL_NBI(ulonglong, unsigned long long);
+    API_DECL_PUT_SIGNAL_NBI(int8, int8_t);
+    API_DECL_PUT_SIGNAL_NBI(int16, int16_t);
+    API_DECL_PUT_SIGNAL_NBI(int32, int32_t);
+    API_DECL_PUT_SIGNAL_NBI(int64, int64_t);
+    API_DECL_PUT_SIGNAL_NBI(uint8, uint8_t);
+    API_DECL_PUT_SIGNAL_NBI(uint16, uint16_t);
+    API_DECL_PUT_SIGNAL_NBI(uint32, uint32_t);
+    API_DECL_PUT_SIGNAL_NBI(uint64, uint64_t);
+    API_DECL_PUT_SIGNAL_NBI(size, size_t);
+    API_DECL_PUT_SIGNAL_NBI(ptrdiff, ptrdiff_t);
+
+#define API_DECL_CTX_PUT_SIGNAL_SIZE(_size)                         \
+    /* see \ref shmem_ctx_long_put_signal() */                      \
+    void shmem_ctx_put##_size##_signal(shmem_ctx_t ctx,             \
+                                       void *dest,                  \
+                                       const void *src,             \
+                                       size_t nelems,               \
+                                       uint64_t *sig_addr,          \
+                                       uint64_t signal,             \
+                                       int sig_op,                  \
+                                       int pe);                     \
+    /* see \ref shmem_ctx_long_put_signal_nbi() */                  \
+    void shmem_ctx_put##_size##_signal_nbi(shmem_ctx_t ctx,         \
+                                           void *dest,              \
+                                           const void *src,         \
+                                           size_t nelems,           \
+                                           uint64_t *sig_addr,      \
+                                           uint64_t signal,         \
+                                           int sig_op,              \
+                                           int pe);
+
+    API_DECL_CTX_PUT_SIGNAL_SIZE(8)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(16)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(32)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(64)
+    API_DECL_CTX_PUT_SIGNAL_SIZE(128)
+
+#undef API_DECL_CTX_PUT_SIGNAL_SIZE
+
+#define API_DECL_CTX_PUTMEM_SIGNAL()                                \
+    void shmem_ctx_putmem_signal(shmem_ctx_t ctx,                   \
+                                 void *dest,                        \
+                                 const void *src,                   \
+                                 size_t nelems,                     \
+                                 uint64_t *sig_addr,                \
+                                 uint64_t signal,                   \
+                                 int sig_op,                        \
+                                 int pe);                           \
+    void shmem_ctx_putmem_signal_nbi(shmem_ctx_t ctx,               \
+                                     void *dest,                    \
+                                     const void *src,               \
+                                     size_t nelems,                 \
+                                     uint64_t *sig_addr,            \
+                                     uint64_t signal,               \
+                                     int sig_op,                    \
+                                     int pe);
+
+    API_DECL_CTX_PUTMEM_SIGNAL()
+
+#undef API_DECL_CTX_PUTMEM_SIGNAL
+
+#define API_DECL_PUT_SIGNAL_SIZE(_size)                     \
+    /* see \ref shmem_long_put_signal() */                  \
+    void shmem_put##_size##_signal(void *dest,              \
+                                   const void *src,         \
+                                   size_t nelems,           \
+                                   uint64_t *sig_addr,      \
+                                   uint64_t signal,         \
+                                   int sig_op,              \
+                                   int pe);                 \
+    /* see \ref shmem_long_put_signal_nbi() */              \
+    void shmem_put##_size##_signal_nbi(void *dest,          \
+                                       const void *src,     \
+                                       size_t nelems,       \
+                                       uint64_t *sig_addr,  \
+                                       uint64_t signal,     \
+                                       int sig_op,          \
+                                       int pe);
+
+    API_DECL_PUT_SIGNAL_SIZE(8)
+    API_DECL_PUT_SIGNAL_SIZE(16)
+    API_DECL_PUT_SIGNAL_SIZE(32)
+    API_DECL_PUT_SIGNAL_SIZE(64)
+    API_DECL_PUT_SIGNAL_SIZE(128)
+
+#undef API_DECL_PUT_SIGNAL_SIZE
+
+#define API_DECL_PUTMEM_SIGNAL()                        \
+    void shmem_putmem_signal(void *dest,                \
+                             const void *src,           \
+                             size_t nelems,             \
+                             uint64_t *sig_addr,        \
+                             uint64_t signal,           \
+                             int sig_op,                \
+                             int pe);                   \
+    void shmem_putmem_signal_nbi(void *dest,            \
+                                 const void *src,       \
+                                 size_t nelems,         \
+                                 uint64_t *sig_addr,    \
+                                 uint64_t signal,       \
+                                 int sig_op,            \
+                                 int pe);
+
+    API_DECL_PUTMEM_SIGNAL()
+
+#undef API_DECL_PUTMEM_SIGNAL
+
+    /**
+     * @brief fetches value of the signal object.
+     * @page shmem_signel_fetch
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     uint64_t shmem_signal_fetch(const uint64_t *sig_addr);
+     @endcode
+     *
+     * @param[in] sig_addr The address of the remotely accessible signal object
+     *
+     * @section Effect
+     * None.
+     *
+     * @section Return
+     * The data value.
+     *
+     */
+    uint64_t shmem_signal_fetch(const uint64_t *sig_addr);
+
     /*
      * barriers & syncs
      */
@@ -720,15 +949,6 @@ extern "C"
                         long *pSync);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER PE_start, logPE_stride, PE_size
-     INTEGER(*) pSync
-
-     CALL SHMEM_BARRIER(PE_start, logPE_stride, PE_size, pSync)
-     @endcode
-     *
-     *
      * @param[in] PE_start first PE of the active set
      * @param[in] logPE_stride log2 of stride between PEs
      * @param[in] PE_size number of PEs in the active set
@@ -761,10 +981,6 @@ extern "C"
      void shmem_barrier_all(void);
      @endcode
      *
-     * @subsection f Fortran
-     CALL SHMEM_BARRIER_ALL
-     @endcode
-     *
      * @section Effect
      * All PEs synchronize: no PE can leave the global barrier until all
      * have arrived.
@@ -787,11 +1003,6 @@ extern "C"
      void shmem_fence(void);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_FENCE
-     @endcode
-     *
      * @section Effect
      * Local ordering
      *
@@ -812,11 +1023,6 @@ extern "C"
      @code
      void shmem_ctx_quiet(shmem_ctx_t ctx);
      void shmem_quiet(void);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     CALL SHMEM_QUIET
      @endcode
      *
      * @section Effect
@@ -843,13 +1049,6 @@ extern "C"
      int shmem_pe_accessible(int pe);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER PE, RET
-
-     RET = SHMEM_PE_ACCESSIBLE(PE)
-     @endcode
-     *
      * @section Effect
      * None
      *
@@ -868,14 +1067,6 @@ extern "C"
      * @subsection c C/C++
      @code
      int shmem_addr_accessible(const void *addr, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER PE, RET
-     ADDR = address
-
-     RET = SHMEM_ADDR_ACCESSIBLE(ADDR, PE)
      @endcode
      *
      * @param addr address to check
@@ -900,15 +1091,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void *shmem_ptr(const void *addr, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER PE
-     ADDR RET = address
-     ADDR = address
-
-     RET = SHMEM_PTR(ADDR, PE)
      @endcode
      *
      * @section Effect
@@ -1095,11 +1277,6 @@ extern "C"
      int shmem_long_test(long *ivar, int cmp, long cmp_value);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     ...
-     @endcode
-     *
      * @section Effect
      *
      * ivar may be updated by another PE
@@ -1138,11 +1315,6 @@ extern "C"
      void shmem_long_wait_until(long *ivar, int cmp, long cmp_value);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     ...
-     @endcode
-     *
      * @section Effect
      *
      * ivar updated by another PE, wait for that to happen
@@ -1173,6 +1345,117 @@ extern "C"
 
 #undef API_DECL_TEST_AND_WAIT_UNTIL
 
+#define API_DECL_TEST_ALL(_opname, _type)                   \
+    int                                                     \
+    shmem_##_opname##_test_all(_type *ivars, size_t nelems, \
+                               int cmp, _type cmp_value)
+
+    API_DECL_TEST_ALL(short, short);
+    API_DECL_TEST_ALL(int, int);
+    API_DECL_TEST_ALL(long, long);
+    API_DECL_TEST_ALL(longlong, long long);
+    API_DECL_TEST_ALL(ushort, unsigned short);
+    API_DECL_TEST_ALL(uint, unsigned int);
+    API_DECL_TEST_ALL(ulong, unsigned long);
+    API_DECL_TEST_ALL(ulonglong, unsigned long long);
+    API_DECL_TEST_ALL(int32, int32_t);
+    API_DECL_TEST_ALL(int64, int64_t);
+    API_DECL_TEST_ALL(uint32, uint32_t);
+    API_DECL_TEST_ALL(uint64, uint64_t);
+    API_DECL_TEST_ALL(size, size_t);
+    API_DECL_TEST_ALL(ptrdiff, ptrdiff_t);
+
+#define API_DECL_TEST_ANY(_opname, _type)                   \
+    size_t                                                  \
+    shmem_##_opname##_test_any(_type *ivars, size_t nelems, \
+                               int *status,                 \
+                               int cmp, _type cmp_value)
+
+    API_DECL_TEST_ANY(short, short);
+    API_DECL_TEST_ANY(int, int);
+    API_DECL_TEST_ANY(long, long);
+    API_DECL_TEST_ANY(longlong, long long);
+    API_DECL_TEST_ANY(ushort, unsigned short);
+    API_DECL_TEST_ANY(uint, unsigned int);
+    API_DECL_TEST_ANY(ulong, unsigned long);
+    API_DECL_TEST_ANY(ulonglong, unsigned long long);
+    API_DECL_TEST_ANY(int32, int32_t);
+    API_DECL_TEST_ANY(int64, int64_t);
+    API_DECL_TEST_ANY(uint32, uint32_t);
+    API_DECL_TEST_ANY(uint64, uint64_t);
+    API_DECL_TEST_ANY(size, size_t);
+    API_DECL_TEST_ANY(ptrdiff, ptrdiff_t);
+
+#define API_DECL_TEST_SOME(_opname, _type)                      \
+    size_t                                                      \
+    shmem_##_opname##_test_some(_type *ivars, size_t nelems,    \
+                                size_t *indices,                \
+                                int *status,                    \
+                                int cmp, _type cmp_value)
+
+    API_DECL_TEST_SOME(short, short);
+    API_DECL_TEST_SOME(int, int);
+    API_DECL_TEST_SOME(long, long);
+    API_DECL_TEST_SOME(longlong, long long);
+    API_DECL_TEST_SOME(ushort, unsigned short);
+    API_DECL_TEST_SOME(uint, unsigned int);
+    API_DECL_TEST_SOME(ulong, unsigned long);
+    API_DECL_TEST_SOME(ulonglong, unsigned long long);
+    API_DECL_TEST_SOME(int32, int32_t);
+    API_DECL_TEST_SOME(int64, int64_t);
+    API_DECL_TEST_SOME(uint32, uint32_t);
+    API_DECL_TEST_SOME(uint64, uint64_t);
+    API_DECL_TEST_SOME(size, size_t);
+    API_DECL_TEST_SOME(ptrdiff, ptrdiff_t);
+
+#define API_DECL_WAIT_UNTIL_ALL(_opname, _type)                     \
+    void                                                            \
+    shmem_##_opname##_wait_until_all(_type *ivars, size_t nelems,   \
+                                     int cmp, _type cmp_value)
+
+    API_DECL_WAIT_UNTIL_ALL(short, short);
+    API_DECL_WAIT_UNTIL_ALL(int, int);
+    API_DECL_WAIT_UNTIL_ALL(long, long);
+    API_DECL_WAIT_UNTIL_ALL(longlong, long long);
+    API_DECL_WAIT_UNTIL_ALL(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_ALL(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_ALL(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_ALL(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_ALL(int32, int32_t);
+    API_DECL_WAIT_UNTIL_ALL(int64, int64_t);
+    API_DECL_WAIT_UNTIL_ALL(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_ALL(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_ALL(size, size_t);
+    API_DECL_WAIT_UNTIL_ALL(ptrdiff, ptrdiff_t);
+
+#define API_DECL_WAIT_UNTIL_ANY(_opname, _type)                     \
+    size_t                                                          \
+    shmem_##_opname##_wait_until_any(_type *ivars, size_t nelems,   \
+                                     int *status,                   \
+                                     int cmp, _type cmp_value)
+
+    API_DECL_WAIT_UNTIL_ANY(short, short);
+    API_DECL_WAIT_UNTIL_ANY(int, int);
+    API_DECL_WAIT_UNTIL_ANY(long, long);
+    API_DECL_WAIT_UNTIL_ANY(longlong, long long);
+    API_DECL_WAIT_UNTIL_ANY(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_ANY(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_ANY(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_ANY(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_ANY(int32, int32_t);
+    API_DECL_WAIT_UNTIL_ANY(int64, int64_t);
+    API_DECL_WAIT_UNTIL_ANY(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_ANY(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_ANY(size, size_t);
+    API_DECL_WAIT_UNTIL_ANY(ptrdiff, ptrdiff_t);
+
+#undef API_DECL_TEST_ALL
+#undef API_DECL_TEST_ANY
+#undef API_DECL_TEST_SOME
+#undef API_DECL_WAIT_UNTIL_ALL
+#undef API_DECL_WAIT_UNTIL_ANY
+#undef API_DECL_WAIT_UNTIL_SOME
+
     /**
      * @brief wait for symmetric variable to change value
      * @page shmem_long_wait
@@ -1181,11 +1464,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_wait(long *ivar, long cmp_value);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1237,11 +1515,6 @@ extern "C"
      * @subsection c C/C++
      @code
      long shmem_ctx_long_atomic_swap(shmem_ctx_t ctx, long *target, long value, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1303,11 +1576,6 @@ extern "C"
                                              long *target,
                                              long cond, long value,
                                              int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1374,11 +1642,6 @@ extern "C"
      long shmem_long_atomic_fetch_add(long *target, long value, int pe);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     ...
-     @endcode
-     *
      * @section Effect
      *
      * atomic fetch-and-add on another PE
@@ -1429,11 +1692,6 @@ extern "C"
      long shmem_long_atomic_fetch_inc(long *target, int pe);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     ...
-     @endcode
-     *
      * @section Effect
      *
      * atomic fetch-and-increment on another PE
@@ -1481,11 +1739,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_atomic_add(long *target, long value, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1543,8 +1796,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1597,8 +1849,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1651,8 +1902,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1706,8 +1956,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1760,8 +2009,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1815,8 +2063,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -1860,11 +2107,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_atomic_inc(long *target, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -1916,35 +2158,15 @@ extern "C"
      long shmem_ctx_long_atomic_fetch(shmem_ctx_t ctx, const long *dest, int pe);
      * @endcode
      *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     v4 = shmem_int4_fetch(dest, pe)
-     v8 = shmem_int8_fetch(dest, pe)
-     r4 = shmem_real4_fetch(dest, pe)
-     r8 = shmem_real8_fetch(dest, pe)
-     * @endcode
-     *
      * @param dest    Address of the symmetric data object in which save the
      *                    data on the target pe.
      * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
+     *                    which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied
-     *        in the Synopsis section. When calling from Fortran,
-     *        the data type of value must be as follows:
-     *          - For SHMEM_INT4_FETCH(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_FETCH(), value must be of type Integer,
-     *            with element size of 8 bytes.
+     *        in the Synopsis section.
      *      - value must be the same type as the target data object.
      *      - This process must be carried out guaranteeing that it will not
      *          be interrupted by any other atomic operation on the
@@ -2016,8 +2238,7 @@ extern "C"
      * @param value     The value with which the exclusive-or operation is
      *                    atomically performed with the data at address dest.
      * @param pe        An integer that indicates the PE number upon
-     *                which dest is to be updated. If you are using Fortran,
-     *                it must be a default integer value.
+     *                which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
@@ -2065,11 +2286,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_long_atomic_inc(long *target, int pe);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     ...
      @endcode
      *
      * @section Effect
@@ -2121,35 +2337,15 @@ extern "C"
      long shmem_ctx_long_atomic_fetch(shmem_ctx_t ctx, const long *dest, int pe);
      * @endcode
      *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     v4 = shmem_int4_fetch(dest, pe)
-     v8 = shmem_int8_fetch(dest, pe)
-     r4 = shmem_real4_fetch(dest, pe)
-     r8 = shmem_real8_fetch(dest, pe)
-     * @endcode
-     *
      * @param dest    Address of the symmetric data object in which save the
      *                    data on the target pe.
      * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
+     *                    which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied
-     *        in the Synopsis section. When calling from Fortran,
-     *        the data type of value must be as follows:
-     *          - For SHMEM_INT4_FETCH(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_FETCH(), value must be of type Integer,
-     *            with element size of 8 bytes.
+     *        in the Synopsis section.
      *      - value must be the same type as the target data object.
      *      - This process must be carried out guaranteeing that it will not
      *          be interrupted by any other atomic operation on the
@@ -2217,37 +2413,17 @@ extern "C"
      void shmem_ctx_long_atomic_set(shmem_ctx_t ctx, long *dest, long value, int pe);
      * @endcode
      *
-     * - Fortran:
-     * @code
-     integer pe
-     integer*4 v4
-     integer*8 v8
-     real*4 r4
-     real*8 r8
-
-     call shmem_int4_set(dest, v4, pe)
-     call shmem_int8_set(dest, v8, pe)
-     call shmem_real4_set(dest, r4, pe)
-     call shmem_real8_set(dest, r8, pe)
-     * @endcode
-     *
      * @param dest    Address of the symmetric data object in which save the
      *                    data on the target pe.
      * @param value     The remote dest address is atomically set to
      *                    this value.
      * @param pe        An integer that indicates the PE number upon
-     *                    which dest is to be updated. If you are using
-     *                    Fortran, it must be a default integer value.
+     *                    which dest is to be updated.
      *
      * @section Constraints
      *      - dest must be the address of a symmetric data object.
      *      - If using C/C++, the type of value must match that implied in the
-     *        Synopsis section. When calling from Fortran, the data type of
-     *        value must be as follows:
-     *          - For SHMEM_INT4_SET(), value must be of type Integer,
-     *            with element size of 4 bytes
-     *          - For SHMEM_INT8_SET(), value must be of type Integer,
-     *            with element size of 8 bytes.
+     *        Synopsis section.
      *      - value must be the same type as the dest data object.
      *      - This process must be carried out guaranteeing that it will not
      *          be interrupted by any other atomic operation on the
@@ -2317,13 +2493,6 @@ extern "C"
      void shmem_set_lock(long *lock);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_SET_LOCK(LOCK)
-     @endcode
-     *
      * @param[in, out] lock a symmetric variable
      *
      * @section Effect
@@ -2347,13 +2516,6 @@ extern "C"
      void shmem_clear_lock(long *lock);
      @endcode
      *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_CLEAR_LOCK(LOCK)
-     @endcode
-     *
      * @param[in, out] lock a symmetric variable
      *
      * @section Effect
@@ -2374,13 +2536,6 @@ extern "C"
      * @subsection c C/C++
      @code
      void shmem_test_lock(long *lock);
-     @endcode
-     *
-     * @subsection f Fortran
-     @code
-     INTEGER LOCK
-
-     CALL SHMEM_TEST_LOCK(LOCK)
      @endcode
      *
      * @param[in, out] lock a symmetric variable
@@ -2753,682 +2908,21 @@ extern "C"
     void shmem_ctx_destroy(shmem_ctx_t ctx);
 
     /*
-     * Contexts-based C11 Generic variants
+     * Teams
      *
      */
+#include <shmem/teams.h>
 
-#if SHMEM_HAS_C11
-
-    /**
-     * Contexts-based generics
+    /*
+     * C11 Generics
      *
      */
-
-    /*
-     * get numbered args out of parameter list
-     * (thanks to SOS)
-     */
-#define SHC11_GET_ARG1_HELPER(_arg1, ...) _arg1
-
-#define SHC11_GET_ARG1(...) \
-    SHC11_GET_ARG1_HELPER(__VA_ARGS__, _extra)
-#define SHC11_GET_ARG2(_arg1, ...) \
-    SHC11_GET_ARG1_HELPER(__VA_ARGS__, _extra)
-
-#define SHC11_TYPE_EVAL_PTR(_arg) &*(_arg)
-#define SHC11_TYPE_EVAL_PTR_OR_SCALAR(_arg) (_arg)+0
-
-    /*
-     * This stops the not-a-context case turning into an error when
-     * the value type doesn't match anything
-     */
-    inline static void shmem_atomic_ignore(void) { }
-
-    /* see \ref shmem_long_put() */
-#define shmem_put(...)                                                  \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_put,                     \
-                      double *: shmem_ctx_double_put,                   \
-                      long double *: shmem_ctx_longdouble_put,          \
-                      signed char *: shmem_ctx_schar_put,               \
-                      char *: shmem_ctx_char_put,                       \
-                      short *: shmem_ctx_short_put,                     \
-                      int *: shmem_ctx_int_put,                         \
-                      long *: shmem_ctx_long_put,                       \
-                      long long *: shmem_ctx_longlong_put,              \
-                      unsigned char *: shmem_ctx_uchar_put,             \
-                      unsigned short *: shmem_ctx_ushort_put,           \
-                      unsigned int *: shmem_ctx_uint_put,               \
-                      unsigned long *: shmem_ctx_ulong_put,             \
-                      unsigned long long *: shmem_ctx_ulonglong_put,    \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_put,                                  \
-             double *: shmem_double_put,                                \
-             long double *: shmem_longdouble_put,                       \
-             signed char *: shmem_schar_put,                            \
-             char *: shmem_char_put,                                    \
-             short *: shmem_short_put,                                  \
-             int *: shmem_int_put,                                      \
-             long *: shmem_long_put,                                    \
-             long long *: shmem_longlong_put,                           \
-             unsigned char *: shmem_uchar_put,                          \
-             unsigned short *: shmem_ushort_put,                        \
-             unsigned int *: shmem_uint_put,                            \
-             unsigned long *: shmem_ulong_put,                          \
-             unsigned long long *: shmem_ulonglong_put                  \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_put_nbi() */
-#define shmem_put_nbi(...)                                              \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_put_nbi,                 \
-                      double *: shmem_ctx_double_put_nbi,               \
-                      long double *: shmem_ctx_longdouble_put_nbi,      \
-                      signed char *: shmem_ctx_schar_put_nbi,           \
-                      char *: shmem_ctx_char_put_nbi,                   \
-                      short *: shmem_ctx_short_put_nbi,                 \
-                      int *: shmem_ctx_int_put_nbi,                     \
-                      long *: shmem_ctx_long_put_nbi,                   \
-                      long long *: shmem_ctx_longlong_put_nbi,          \
-                      unsigned char *: shmem_ctx_uchar_put_nbi,         \
-                      unsigned short *: shmem_ctx_ushort_put_nbi,       \
-                      unsigned int *: shmem_ctx_uint_put_nbi,           \
-                      unsigned long *: shmem_ctx_ulong_put_nbi,         \
-                      unsigned long long *: shmem_ctx_ulonglong_put_nbi, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_put_nbi,                              \
-             double *: shmem_double_put_nbi,                            \
-             long double *: shmem_longdouble_put_nbi,                   \
-             signed char *: shmem_schar_put_nbi,                        \
-             char *: shmem_char_put_nbi,                                \
-             short *: shmem_short_put_nbi,                              \
-             int *: shmem_int_put_nbi,                                  \
-             long *: shmem_long_put_nbi,                                \
-             long long *: shmem_longlong_put_nbi,                       \
-             unsigned char *: shmem_uchar_put_nbi,                      \
-             unsigned short *: shmem_ushort_put_nbi,                    \
-             unsigned int *: shmem_uint_put_nbi,                        \
-             unsigned long *: shmem_ulong_put_nbi,                      \
-             unsigned long long *: shmem_ulonglong_put_nbi              \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_get() */
-#define shmem_get(...)                                                  \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_get,                     \
-                      double *: shmem_ctx_double_get,                   \
-                      long double *: shmem_ctx_longdouble_get,          \
-                      signed char *: shmem_ctx_schar_get,               \
-                      char *: shmem_ctx_char_get,                       \
-                      short *: shmem_ctx_short_get,                     \
-                      int *: shmem_ctx_int_get,                         \
-                      long *: shmem_ctx_long_get,                       \
-                      long long *: shmem_ctx_longlong_get,              \
-                      unsigned char *: shmem_ctx_uchar_get,             \
-                      unsigned short *: shmem_ctx_ushort_get,           \
-                      unsigned int *: shmem_ctx_uint_get,               \
-                      unsigned long *: shmem_ctx_ulong_get,             \
-                      unsigned long long *: shmem_ctx_ulonglong_get,    \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_get,                                  \
-             double *: shmem_double_get,                                \
-             long double *: shmem_longdouble_get,                       \
-             signed char *: shmem_schar_get,                            \
-             char *: shmem_char_get,                                    \
-             short *: shmem_short_get,                                  \
-             int *: shmem_int_get,                                      \
-             long *: shmem_long_get,                                    \
-             long long *: shmem_longlong_get,                           \
-             unsigned char *: shmem_uchar_get,                          \
-             unsigned short *: shmem_ushort_get,                        \
-             unsigned int *: shmem_uint_get,                            \
-             unsigned long *: shmem_ulong_get,                          \
-             unsigned long long *: shmem_ulonglong_get                  \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_get_nbi() */
-#define shmem_get_nbi(...)                                              \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_get_nbi,                 \
-                      double *: shmem_ctx_double_get_nbi,               \
-                      long double *: shmem_ctx_longdouble_get_nbi,      \
-                      signed char *: shmem_ctx_schar_get_nbi,           \
-                      char *: shmem_ctx_char_get_nbi,                   \
-                      short *: shmem_ctx_short_get_nbi,                 \
-                      int *: shmem_ctx_int_get_nbi,                     \
-                      long *: shmem_ctx_long_get_nbi,                   \
-                      long long *: shmem_ctx_longlong_get_nbi,          \
-                      unsigned char *: shmem_ctx_uchar_get_nbi,         \
-                      unsigned short *: shmem_ctx_ushort_get_nbi,       \
-                      unsigned int *: shmem_ctx_uint_get_nbi,           \
-                      unsigned long *: shmem_ctx_ulong_get_nbi,         \
-                      unsigned long long *: shmem_ctx_ulonglong_get_nbi, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_get_nbi,                              \
-             double *: shmem_double_get_nbi,                            \
-             long double *: shmem_longdouble_get_nbi,                   \
-             signed char *: shmem_schar_get_nbi,                        \
-             char *: shmem_char_get_nbi,                                \
-             short *: shmem_short_get_nbi,                              \
-             int *: shmem_int_get_nbi,                                  \
-             long *: shmem_long_get_nbi,                                \
-             long long *: shmem_longlong_get_nbi,                       \
-             unsigned char *: shmem_uchar_get_nbi,                      \
-             unsigned short *: shmem_ushort_get_nbi,                    \
-             unsigned int *: shmem_uint_get_nbi,                        \
-             unsigned long *: shmem_ulong_get_nbi,                      \
-             unsigned long long *: shmem_ulonglong_get_nbi              \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_p() */
-#define shmem_p(...)                                                    \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_p,                       \
-                      double *: shmem_ctx_double_p,                     \
-                      long double *: shmem_ctx_longdouble_p,            \
-                      signed char *: shmem_ctx_schar_p,                 \
-                      char *: shmem_ctx_char_p,                         \
-                      short *: shmem_ctx_short_p,                       \
-                      int *: shmem_ctx_int_p,                           \
-                      long *: shmem_ctx_long_p,                         \
-                      long long *: shmem_ctx_longlong_p,                \
-                      unsigned char *: shmem_ctx_uchar_p,               \
-                      unsigned short *: shmem_ctx_ushort_p,             \
-                      unsigned int *: shmem_ctx_uint_p,                 \
-                      unsigned long *: shmem_ctx_ulong_p,               \
-                      unsigned long long *: shmem_ctx_ulonglong_p,      \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_p,                                    \
-             double *: shmem_double_p,                                  \
-             long double *: shmem_longdouble_p,                         \
-             signed char *: shmem_schar_p,                              \
-             char *: shmem_char_p,                                      \
-             short *: shmem_short_p,                                    \
-             int *: shmem_int_p,                                        \
-             long *: shmem_long_p,                                      \
-             long long *: shmem_longlong_p,                             \
-             unsigned char *: shmem_uchar_p,                            \
-             unsigned short *: shmem_ushort_p,                          \
-             unsigned int *: shmem_uint_p,                              \
-             unsigned long *: shmem_ulong_p,                            \
-             unsigned long long *: shmem_ulonglong_p                    \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_g() */
-#define shmem_g(...)                                                    \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_g,                       \
-                      double *: shmem_ctx_double_g,                     \
-                      long double *: shmem_ctx_longdouble_g,            \
-                      signed char *: shmem_ctx_schar_g,                 \
-                      char *: shmem_ctx_char_g,                         \
-                      short *: shmem_ctx_short_g,                       \
-                      int *: shmem_ctx_int_g,                           \
-                      long *: shmem_ctx_long_g,                         \
-                      long long *: shmem_ctx_longlong_g,                \
-                      unsigned char *: shmem_ctx_uchar_g,               \
-                      unsigned short *: shmem_ctx_ushort_g,             \
-                      unsigned int *: shmem_ctx_uint_g,                 \
-                      unsigned long *: shmem_ctx_ulong_g,               \
-                      unsigned long long *: shmem_ctx_ulonglong_g,      \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_g,                                    \
-             double *: shmem_double_g,                                  \
-             long double *: shmem_longdouble_g,                         \
-             signed char *: shmem_schar_g,                              \
-             char *: shmem_char_g,                                      \
-             short *: shmem_short_g,                                    \
-             int *: shmem_int_g,                                        \
-             long *: shmem_long_g,                                      \
-             long long *: shmem_longlong_g,                             \
-             unsigned char *: shmem_uchar_g,                            \
-             unsigned short *: shmem_ushort_g,                          \
-             unsigned int *: shmem_uint_g,                              \
-             unsigned long *: shmem_ulong_g,                            \
-             unsigned long long *: shmem_ulonglong_g                    \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_iput() */
-#define shmem_iput(...)                                                 \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_iput,                    \
-                      double *: shmem_ctx_double_iput,                  \
-                      long double *: shmem_ctx_longdouble_iput,         \
-                      signed char *: shmem_ctx_schar_iput,              \
-                      char *: shmem_ctx_char_iput,                      \
-                      short *: shmem_ctx_short_iput,                    \
-                      int *: shmem_ctx_int_iput,                        \
-                      long *: shmem_ctx_long_iput,                      \
-                      long long *: shmem_ctx_longlong_iput,             \
-                      unsigned char *: shmem_ctx_uchar_iput,            \
-                      unsigned short *: shmem_ctx_ushort_iput,          \
-                      unsigned int *: shmem_ctx_uint_iput,              \
-                      unsigned long *: shmem_ctx_ulong_iput,            \
-                      unsigned long long *: shmem_ctx_ulonglong_iput,   \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_iput,                                 \
-             double *: shmem_double_iput,                               \
-             long double *: shmem_longdouble_iput,                      \
-             signed char *: shmem_schar_iput,                           \
-             char *: shmem_char_iput,                                   \
-             short *: shmem_short_iput,                                 \
-             int *: shmem_int_iput,                                     \
-             long *: shmem_long_iput,                                   \
-             long long *: shmem_longlong_iput,                          \
-             unsigned char *: shmem_uchar_iput,                         \
-             unsigned short *: shmem_ushort_iput,                       \
-             unsigned int *: shmem_uint_iput,                           \
-             unsigned long *: shmem_ulong_iput,                         \
-             unsigned long long *: shmem_ulonglong_iput                 \
-             )(__VA_ARGS__)
-
-
-    /* see \ref shmem_long_iget() */
-#define shmem_iget(...)                                                 \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_iget,                    \
-                      double *: shmem_ctx_double_iget,                  \
-                      long double *: shmem_ctx_longdouble_iget,         \
-                      signed char *: shmem_ctx_schar_iget,              \
-                      char *: shmem_ctx_char_iget,                      \
-                      short *: shmem_ctx_short_iget,                    \
-                      int *: shmem_ctx_int_iget,                        \
-                      long *: shmem_ctx_long_iget,                      \
-                      long long *: shmem_ctx_longlong_iget,             \
-                      unsigned char *: shmem_ctx_uchar_iget,            \
-                      unsigned short *: shmem_ctx_ushort_iget,          \
-                      unsigned int *: shmem_ctx_uint_iget,              \
-                      unsigned long *: shmem_ctx_ulong_iget,            \
-                      unsigned long long *: shmem_ctx_ulonglong_iget,   \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_iget,                                 \
-             double *: shmem_double_iget,                               \
-             long double *: shmem_longdouble_iget,                      \
-             signed char *: shmem_schar_iget,                           \
-             char *: shmem_char_iget,                                   \
-             short *: shmem_short_iget,                                 \
-             int *: shmem_int_iget,                                     \
-             long *: shmem_long_iget,                                   \
-             long long *: shmem_longlong_iget,                          \
-             unsigned char *: shmem_uchar_iget,                         \
-             unsigned short *: shmem_ushort_iget,                       \
-             unsigned int *: shmem_uint_iget,                           \
-             unsigned long *: shmem_ulong_iget,                         \
-             unsigned long long *: shmem_ulonglong_iget                 \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_swap() */
-#define shmem_atomic_swap(...)                                          \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_atomic_swap,             \
-                      double *: shmem_ctx_double_atomic_swap,           \
-                      int *: shmem_ctx_int_atomic_swap,                 \
-                      long *: shmem_ctx_long_atomic_swap,               \
-                      long long *: shmem_ctx_longlong_atomic_swap,      \
-                      unsigned int *: shmem_ctx_uint_atomic_swap,       \
-                      unsigned long *: shmem_ctx_ulong_atomic_swap,     \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_swap, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_atomic_swap,                          \
-             double *: shmem_double_atomic_swap,                        \
-             int *: shmem_int_atomic_swap,                              \
-             long *: shmem_long_atomic_swap,                            \
-             long long *: shmem_longlong_atomic_swap,                   \
-             unsigned int *: shmem_uint_atomic_swap,                    \
-             unsigned long *: shmem_ulong_atomic_swap,                  \
-             unsigned long long *: shmem_ulonglong_atomic_swap          \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_compare_swap() */
-#define shmem_atomic_compare_swap(...)                                  \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int *: shmem_ctx_int_atomic_compare_swap,         \
-                      long *: shmem_ctx_long_atomic_compare_swap,       \
-                      long long *: shmem_ctx_longlong_atomic_compare_swap, \
-                      unsigned int *: shmem_ctx_uint_atomic_compare_swap, \
-                      unsigned long *: shmem_ctx_ulong_atomic_compare_swap, \
-                      unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_compare_swap,          \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int *: shmem_int_atomic_compare_swap,                      \
-             long *: shmem_long_atomic_compare_swap,                    \
-             long long *: shmem_longlong_atomic_compare_swap,           \
-             unsigned int *: shmem_uint_atomic_compare_swap,            \
-             unsigned long *: shmem_ulong_atomic_compare_swap,          \
-             unsigned long long *: shmem_ulonglong_atomic_compare_swap  \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_fetch_add() */
-#define shmem_atomic_fetch_add(...)                                     \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int *: shmem_ctx_int_atomic_fetch_add,            \
-                      long *: shmem_ctx_long_atomic_fetch_add,          \
-                      long long *: shmem_ctx_longlong_atomic_fetch_add, \
-                      unsigned int *: shmem_ctx_uint_atomic_fetch_add,  \
-                      unsigned long *: shmem_ctx_ulong_atomic_fetch_add, \
-                      unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_add,             \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int *: shmem_int_atomic_fetch_add,                         \
-             long *: shmem_long_atomic_fetch_add,                       \
-             long long *: shmem_longlong_atomic_fetch_add,              \
-             unsigned int *: shmem_uint_atomic_fetch_add,               \
-             unsigned long *: shmem_ulong_atomic_fetch_add,             \
-             unsigned long long *: shmem_ulonglong_atomic_fetch_add     \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_fetch_inc() */
-#define shmem_atomic_fetch_inc(...)                                     \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__))), \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int *: shmem_ctx_int_atomic_fetch_inc,            \
-                      long *: shmem_ctx_long_atomic_fetch_inc,          \
-                      long long *: shmem_ctx_longlong_atomic_fetch_inc, \
-                      unsigned int *: shmem_ctx_uint_atomic_fetch_inc,  \
-                      unsigned long *: shmem_ctx_ulong_atomic_fetch_inc, \
-                      unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_inc,             \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int *: shmem_int_atomic_fetch_inc,                         \
-             long *: shmem_long_atomic_fetch_inc,                       \
-             long long *: shmem_longlong_atomic_fetch_inc,              \
-             unsigned int *: shmem_uint_atomic_fetch_inc,               \
-             unsigned long *: shmem_ulong_atomic_fetch_inc,             \
-             unsigned long long *: shmem_ulonglong_atomic_fetch_inc     \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_fetch_and() */
-#define shmem_atomic_fetch_and(...)                                     \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int32_t *: shmem_ctx_int32_atomic_fetch_and,      \
-                      int64_t *: shmem_ctx_int64_atomic_fetch_and,      \
-                      unsigned int *: shmem_ctx_uint_atomic_fetch_and,  \
-                      unsigned long *: shmem_ctx_ulong_atomic_fetch_and, \
-                      unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_and,             \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int32_t *: shmem_int32_atomic_fetch_and,                   \
-             int64_t *: shmem_int64_atomic_fetch_and,                   \
-             unsigned int *: shmem_uint_atomic_fetch_and,               \
-             unsigned long *: shmem_ulong_atomic_fetch_and,             \
-             unsigned long long *: shmem_ulonglong_atomic_fetch_and     \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_fetch_or() */
-#define shmem_atomic_fetch_or(...)                                      \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int32_t *: shmem_ctx_int32_atomic_fetch_or,       \
-                      int64_t *: shmem_ctx_int64_atomic_fetch_or,       \
-                      unsigned int *: shmem_ctx_uint_atomic_fetch_or,   \
-                      unsigned long *: shmem_ctx_ulong_atomic_fetch_or, \
-                      unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_or,              \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int32_t *: shmem_int32_atomic_fetch_or,                    \
-             int64_t *: shmem_int64_atomic_fetch_or,                    \
-             unsigned int *: shmem_uint_atomic_fetch_or,                \
-             unsigned long *: shmem_ulong_atomic_fetch_or,              \
-             unsigned long long *: shmem_ulonglong_atomic_fetch_or      \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_fetch_xor() */
-#define shmem_atomic_fetch_xor(...)                                     \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int32_t *: shmem_ctx_int32_atomic_fetch_xor,      \
-                      int64_t *: shmem_ctx_int64_atomic_fetch_xor,      \
-                      unsigned int *: shmem_ctx_uint_atomic_fetch_xor,  \
-                      unsigned long *: shmem_ctx_ulong_atomic_fetch_xor, \
-                      unsigned long long *:                             \
-                      shmem_ctx_ulonglong_atomic_fetch_xor,             \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int32_t *: shmem_int32_atomic_fetch_xor,                   \
-             int64_t *: shmem_int64_atomic_fetch_xor,                   \
-             unsigned int *: shmem_uint_atomic_fetch_xor,               \
-             unsigned long *: shmem_ulong_atomic_fetch_xor,             \
-             unsigned long long *: shmem_ulonglong_atomic_fetch_xor     \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_add() */
-#define shmem_atomic_add(...)                                           \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int *: shmem_ctx_int_atomic_add,                  \
-                      long *: shmem_ctx_long_atomic_add,                \
-                      long long *: shmem_ctx_longlong_atomic_add,       \
-                      unsigned int *: shmem_ctx_uint_atomic_add,        \
-                      unsigned long *: shmem_ctx_ulong_atomic_add,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_add, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int *: shmem_int_atomic_add,                               \
-             long *: shmem_long_atomic_add,                             \
-             long long *: shmem_longlong_atomic_add,                    \
-             unsigned int *: shmem_uint_atomic_add,                     \
-             unsigned long *: shmem_ulong_atomic_add,                   \
-             unsigned long long *: shmem_ulonglong_atomic_add           \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_inc() */
-#define shmem_atomic_inc(...)                                           \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int *: shmem_ctx_int_atomic_inc,                  \
-                      long *: shmem_ctx_long_atomic_inc,                \
-                      long long *: shmem_ctx_longlong_atomic_inc,       \
-                      unsigned int *: shmem_ctx_uint_atomic_inc,        \
-                      unsigned long *: shmem_ctx_ulong_atomic_inc,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_inc, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int *: shmem_int_atomic_inc,                               \
-             long *: shmem_long_atomic_inc,                             \
-             long long *: shmem_longlong_atomic_inc,                    \
-             unsigned int *: shmem_uint_atomic_inc,                     \
-             unsigned long *: shmem_ulong_atomic_inc,                   \
-             unsigned long long *: shmem_ulonglong_atomic_inc           \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_and() */
-#define shmem_atomic_and(...)                                           \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int32_t *: shmem_ctx_int32_atomic_and,            \
-                      int64_t *: shmem_ctx_int64_atomic_and,            \
-                      unsigned int *: shmem_ctx_uint_atomic_and,        \
-                      unsigned long *: shmem_ctx_ulong_atomic_and,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_and, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int32_t *: shmem_int32_atomic_and,                         \
-             int64_t *: shmem_int64_atomic_and,                         \
-             unsigned int *: shmem_uint_atomic_and,                     \
-             unsigned long *: shmem_ulong_atomic_and,                   \
-             unsigned long long *: shmem_ulonglong_atomic_and           \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_or() */
-#define shmem_atomic_or(...)                                            \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int32_t *: shmem_ctx_int32_atomic_or,             \
-                      int64_t *: shmem_ctx_int64_atomic_or,             \
-                      unsigned int *: shmem_ctx_uint_atomic_or,         \
-                      unsigned long *: shmem_ctx_ulong_atomic_or,       \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_or, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int32_t *: shmem_int32_atomic_or,                          \
-             int64_t *: shmem_int64_atomic_or,                          \
-             unsigned int *: shmem_uint_atomic_or,                      \
-             unsigned long *: shmem_ulong_atomic_or,                    \
-             unsigned long long *: shmem_ulonglong_atomic_or            \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_xor() */
-#define shmem_atomic_xor(...)                                           \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      int32_t *: shmem_ctx_int32_atomic_xor,            \
-                      int64_t *: shmem_ctx_int64_atomic_xor,            \
-                      unsigned int *: shmem_ctx_uint_atomic_xor,        \
-                      unsigned long *: shmem_ctx_ulong_atomic_xor,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_xor, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             int32_t *: shmem_int32_atomic_xor,                         \
-             int64_t *: shmem_int64_atomic_xor,                         \
-             unsigned int *: shmem_uint_atomic_xor,                     \
-             unsigned long *: shmem_ulong_atomic_xor,                   \
-             unsigned long long *: shmem_ulonglong_atomic_xor           \
-             )(__VA_ARGS__)
-
-
-    /* see \ref shmem_long_atomic_fetch() */
-#define shmem_atomic_fetch(...)                                         \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_atomic_fetch,            \
-                      double *: shmem_ctx_double_atomic_fetch,          \
-                      int *: shmem_ctx_int_atomic_fetch,                \
-                      long *: shmem_ctx_long_atomic_fetch,              \
-                      long long *: shmem_ctx_longlong_atomic_fetch,     \
-                      unsigned int *: shmem_ctx_uint_atomic_fetch,      \
-                      unsigned long *: shmem_ctx_ulong_atomic_fetch,    \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_fetch, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_atomic_fetch,                         \
-             double *: shmem_double_atomic_fetch,                       \
-             int *: shmem_int_atomic_fetch,                             \
-             long *: shmem_long_atomic_fetch,                           \
-             long long *: shmem_longlong_atomic_fetch,                  \
-             unsigned int *: shmem_uint_atomic_fetch,                   \
-             unsigned long *: shmem_ulong_atomic_fetch,                 \
-             unsigned long long *: shmem_ulonglong_atomic_fetch         \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_atomic_set() */
-#define shmem_atomic_set(...)                                           \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
-             shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
-                      float *: shmem_ctx_float_atomic_set,              \
-                      double *: shmem_ctx_double_atomic_set,            \
-                      int *: shmem_ctx_int_atomic_set,                  \
-                      long *: shmem_ctx_long_atomic_set,                \
-                      long long *: shmem_ctx_longlong_atomic_set,       \
-                      unsigned int *: shmem_ctx_uint_atomic_set,        \
-                      unsigned long *: shmem_ctx_ulong_atomic_set,      \
-                      unsigned long long *: shmem_ctx_ulonglong_atomic_set, \
-                      default: shmem_atomic_ignore                      \
-                      ),                                                \
-             float *: shmem_float_atomic_set,                           \
-             double *: shmem_double_atomic_set,                         \
-             int *: shmem_int_atomic_set,                               \
-             long *: shmem_long_atomic_set,                             \
-             long long *: shmem_longlong_atomic_set,                    \
-             unsigned int *: shmem_uint_atomic_set,                     \
-             unsigned long *: shmem_ulong_atomic_set,                   \
-             unsigned long long *: shmem_ulonglong_atomic_set           \
-             )(__VA_ARGS__)
-
-/* waits and test have no context-based counterparts */
-
-/* see \ref shmem_long_wait() */
-#define shmem_wait(...)                                         \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),  \
-             short *: shmem_short_wait,                         \
-             int *: shmem_int_wait,                             \
-             long *: shmem_long_wait,                           \
-             long long *: shmem_longlong_wait,                  \
-             unsigned short *: shmem_ushort_wait,               \
-             unsigned int *: shmem_uint_wait,                   \
-             unsigned long *: shmem_ulong_wait,                 \
-             unsigned long long *: shmem_ulonglong_wait         \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_wait_until() */
-#define shmem_wait_until(...)                                   \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),  \
-             short *: shmem_short_wait_until,                   \
-             int *: shmem_int_wait_until,                       \
-             long *: shmem_long_wait_until,                     \
-             long long *: shmem_longlong_wait_until,            \
-             unsigned short *: shmem_ushort_wait_until,         \
-             unsigned int *: shmem_uint_wait_until,             \
-             unsigned long *: shmem_ulong_wait_until,           \
-             unsigned long long *: shmem_ulonglong_wait_until   \
-             )(__VA_ARGS__)
-
-    /* see \ref shmem_long_test() */
-#define shmem_test(...)                                         \
-    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),  \
-             short *: shmem_short_test,                         \
-             int *: shmem_int_test,                             \
-             long *: shmem_long_test,                           \
-             long long *: shmem_longlong_test,                  \
-             unsigned short *: shmem_ushort_test,               \
-             unsigned int *: shmem_uint_test,                   \
-             unsigned long *: shmem_ulong_test,                 \
-             unsigned long long *: shmem_ulonglong_test         \
-             )(__VA_ARGS__)
-
-#endif  /* SHMEM_HAS_C11 */
+#include <shmem/generics.h>
 
     /*
      * deprecated cache routines
      */
-#include "shmem/cache.h"
+#include <shmem/cache.h>
 
 #ifdef __cplusplus
 }

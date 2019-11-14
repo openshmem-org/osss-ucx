@@ -21,6 +21,8 @@ shmemc_init(void)
 
     shmemc_context_init_default();
 
+    shmemc_teams_init();
+
     /* now heap registered... */
 
     /* publish worker info, everyone has it and exchanges */
@@ -43,6 +45,10 @@ void
 shmemc_finalize(void)
 {
     shmemc_pmi_client_finalize();
+
+    shmemc_teams_finalize();
+
+    shmemc_ucx_context_default_destroy();
 
     shmemc_ucx_finalize();
 }

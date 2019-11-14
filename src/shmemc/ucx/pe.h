@@ -9,6 +9,7 @@
 
 #include "boolean.h"
 #include "threading.h"
+#include "shmem/teams.h"
 
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
@@ -67,6 +68,22 @@ typedef struct mem_region {
  * OpenSHMEM context requires...
  */
 
+typedef struct shmemc_context *shmemc_context_h;
+
+/*
+ * PEs can belong to teams
+ */
+typedef struct shmemc_team {
+    int *members;               /**< virt -> phys PE mapping */
+    size_t nmembers;            /**< how many PEs */
+    shmem_team_config_t cfg;    /**< team configuration */
+
+    shmemc_context_h *ctxts;    /**< contexts in this team */
+    size_t nctxts;              /**< how many contexts */
+} shmemc_team_t;
+
+typedef shmemc_team_t *shmemc_team_h;
+
 /*
  * context attributes, see OpenSMHEM 1.4 spec, sec. 9.4.1, pp. 30-31
  */
@@ -88,12 +105,12 @@ typedef struct shmemc_context {
 
     mem_region_access_t *racc;  /* for endpoint remote access */
 
+    shmemc_team_h team;         /* team we belong to */
+
     /*
      * possibly other things
      */
 } shmemc_context_t;
-
-typedef shmemc_context_t *shmemc_context_h;
 
 /*
  * this comms-layer needs to know...
@@ -103,8 +120,10 @@ typedef struct comms_info {
     ucp_config_t *ucx_cfg;      /* local config */
     worker_info_t *xchg_wrkr_info; /* nranks worker info exchanged */
 
+#if 0
     shmemc_context_h *ctxts;    /**< PE's contexts */
     size_t nctxts;              /**< how many contexts */
+#endif
 
     mem_region_t *regions;      /**< exchanged symmetric regions */
     size_t nregions;            /**< how many regions */

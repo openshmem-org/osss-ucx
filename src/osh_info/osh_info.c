@@ -23,10 +23,10 @@ output_help(void)
             "Usage: %s [options]\n\n",
             progname);
     fprintf(stderr,
-            "    [-V | --version]    only output OpenSHMEM"
+            "    -V | --version    only output OpenSHMEM"
             " package version info\n");
     fprintf(stderr,
-            "    [-h | --help]       show this help message\n");
+            "    -h | --help       show this help message\n");
     fprintf(stderr,
             "\n");
 }
@@ -46,6 +46,8 @@ main(int argc, char *argv[])
     int help = 0;
 
     progname = basename(argv[0]);
+
+    opterr = 0;                 /* no err msg, just my output */
 
     while (1) {
         const int c = getopt_long(argc, argv, "hV", opts, NULL);

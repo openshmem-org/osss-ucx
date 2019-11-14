@@ -73,13 +73,73 @@ void shmemc_ctx_get_nbi(shmem_ctx_t ctx,
                         size_t nbytes, int pe);
 
 void shmemc_ctx_put_signal(shmem_ctx_t ctx,
-                           void *dest, const void *src, size_t nbytes,
-                           uint64_t *sig_target, uint64_t sig_val,
+                           void *dest, const void *src,
+                           size_t nbytes,
+                           uint64_t *sig_addr,
+                           uint64_t signal,
+                           int sig_op,
                            int pe);
-void shmemc_ctx_get_signal(shmem_ctx_t ctx,
-                           void *dest, const void *src, size_t nbytes,
-                           uint64_t *sig_target, uint64_t sig_val,
-                           int pe);
+
+void shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
+                               void *dest, const void *src,
+                               size_t nbytes,
+                               uint64_t *sig_addr,
+                               uint64_t signal,
+                               int sig_op,
+                               int pe);
+
+/* other signal ops TODO */
+
+/*
+ * -- Teams ------------------------------------------------------------------
+ */
+
+/*
+ * pre-defined teams
+ */
+extern shmemc_team_t shmemc_team_world;
+extern shmemc_team_t shmemc_team_shared;
+
+/*
+ * utility handles to pre-defined teams
+ */
+extern shmemc_team_h shmemc_team_world_h;
+extern shmemc_team_h shmemc_team_shared_h;
+
+void shmemc_ucx_teardown_context(shmemc_context_h ch);
+
+void shmemc_ucx_team_world_create(void);
+void shmemc_ucx_team_world_destroy(void);
+
+void shmemc_team_finalize(shmemc_team_h th);
+
+void shmemc_teams_init(void);
+void shmemc_teams_finalize(void);
+
+int shmemc_team_my_pe(shmemc_team_h th);
+int shmemc_team_n_pes(shmemc_team_h th);
+
+int shmemc_team_get_config(shmemc_team_h th,
+                           shmem_team_config_t *config);
+int shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
+                             shmemc_team_h dh);
+
+int shmemc_team_split_strided(shmemc_team_h parh,
+                              int start, int stride, int size,
+                              const shmem_team_config_t *config,
+                              long config_mask,
+                              shmemc_team_h *newh);
+
+int shmemc_team_split_2d(shmemc_team_h parh,
+                         int xrange,
+                         const shmem_team_config_t *xaxis_config,
+                         long xaxis_mask,
+                         shmemc_team_h *xaxish,
+                         const shmem_team_config_t *yaxis_config,
+                         long yaxis_mask,
+                         shmemc_team_h *yaxish);
+
+void shmemc_team_destroy(shmemc_team_h th);
 
 /*
  * -- AMOs -------------------------------------------------------------------
@@ -139,6 +199,18 @@ SHMEMC_CTX_DECL_BITWISE(xor)
 SHMEMC_CTX_DECL_FETCH_BITWISE(and)
 SHMEMC_CTX_DECL_FETCH_BITWISE(or)
 SHMEMC_CTX_DECL_FETCH_BITWISE(xor)
+
+/*
+ * set/fetch
+ */
+void shmemc_ctx_set(shmem_ctx_t ctx,
+                    void *tp, size_t ts,
+                    void *vp, size_t vs,
+                    int pe);
+void shmemc_ctx_fetch(shmem_ctx_t ctx,
+                      void *tp, size_t ts,
+                      int pe,
+                      void *valp);
 
 /*
  * locks

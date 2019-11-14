@@ -33,10 +33,10 @@ static klist_t(freelist) *fl = NULL;
  * first call performs initialization, then reroutes to real work
  */
 
-static size_t get_usable_context_boot(bool *reused);
-static size_t get_usable_context_run(bool *reused);
+static size_t get_usable_context_boot(shmemc_team_h th, bool *reused);
+static size_t get_usable_context_run(shmemc_team_h th, bool *reused);
 
-static size_t (*get_usable_context)(bool *reused)
+static size_t (*get_usable_context)(shmemc_team_h th, bool *reused)
     = get_usable_context_boot;
 
 /*
@@ -48,11 +48,11 @@ static size_t spill_block;
 static size_t spill_ctxt = 0;
 
 inline static shmemc_context_h *
-resize_spill_block(size_t n)
+resize_spill_block(shmemc_team_h th, size_t n)
 {
     shmemc_context_h *chp = (shmemc_context_h *)
-        realloc(proc.comms.ctxts,
-                n * sizeof(*(proc.comms.ctxts))
+        realloc(th->ctxts,
+                n * sizeof(*(th->ctxts))
                 );
 
     if (shmemu_unlikely(chp == NULL)) {
@@ -85,35 +85,35 @@ alloc_freelist_slot(void)
 }
 
 static size_t
-get_usable_context_boot(bool *reused)
+get_usable_context_boot(shmemc_team_h th, bool *reused)
 {
     fl = kl_init(freelist);
 
     /* pre-alloc */
     spill_block = proc.env.prealloc_contexts;
-    proc.comms.ctxts = resize_spill_block(spill_block);
+    th->ctxts = resize_spill_block(th, spill_block);
 
     get_usable_context = get_usable_context_run;
 
-    return get_usable_context(reused);
+    return get_usable_context(th, reused);
 }
 
 static size_t
-get_usable_context_run(bool *reused)
+get_usable_context_run(shmemc_team_h th, bool *reused)
 {
     size_t idx;
     kliter_t(freelist) *head = kl_begin(fl);
 
     if (head == kl_end(fl)) {   /* nothing in free list */
-        idx = proc.comms.nctxts;
+        idx = th->nctxts;
 
         /* if out of space, grab some more slots */
         if (idx == spill_ctxt) {
             spill_ctxt += spill_block;
 
-            proc.comms.ctxts = resize_spill_block(spill_ctxt);
+            th->ctxts = resize_spill_block(th, spill_ctxt);
 
-            if (shmemu_unlikely(proc.comms.ctxts == NULL)) {
+            if (shmemu_unlikely(th->ctxts == NULL)) {
                 logger(LOG_FATAL,
                        "can't allocate more memory for context freelist");
                 /* NOT REACHED */
@@ -121,9 +121,9 @@ get_usable_context_run(bool *reused)
         }
 
         /* allocate context in current slot */
-        proc.comms.ctxts[idx] = alloc_freelist_slot();
+        th->ctxts[idx] = alloc_freelist_slot();
 
-        ++proc.comms.nctxts;    /* for next one */
+        ++ th->nctxts;          /* for next one */
         *reused = false;
     }
     else {                /* grab & remove the head of the freelist */
@@ -179,9 +179,10 @@ context_set_options(long options, shmemc_context_h ch)
 int
 shmemc_context_create(long options, shmem_ctx_t *ctxp)
 {
+    shmemc_team_h th = shmemc_team_world_h;
     bool reuse;
-    const size_t idx = get_usable_context(&reuse);
-    shmemc_context_h ch = proc.comms.ctxts[idx];
+    const size_t idx = get_usable_context(th, &reuse);
+    shmemc_context_h ch = th->ctxts[idx];
 
     /* set SHMEM context behavior */
     context_set_options(options, ch);
@@ -210,6 +211,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 
     ch->creator_thread = threadwrap_thread_id();
     ch->id = idx;
+    ch->team = th;
 
     context_register(ch);
 

@@ -39,7 +39,7 @@ lock_owner(void *addr)
 {
     const uintptr_t la = (uintptr_t) addr;
 
-    return (la >> 3) % proc.nranks;
+    return (la >> 3) % shmem_n_pes();
 }
 
 inline static void
@@ -50,11 +50,11 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
 
     node->d.next = SHMEM_LOCK_FREE;
 
-    LOAD_STORE_FENCE();
+    // LOAD_STORE_FENCE();
 
     /* request for ownership */
     t.d.locked = 1;
-    t.d.next = proc.rank;
+    t.d.next = shmem_my_pe();
 
     t.blob = shmem_int_atomic_swap(&(lock->blob),
                                    t.blob,
@@ -70,9 +70,9 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
     if (locked) {
         node->d.locked = 1;
 
-        LOAD_STORE_FENCE();
+        // LOAD_STORE_FENCE();
 
-        shmem_short_p(&(node->d.next), proc.rank, prev);
+        shmem_short_p(&(node->d.next), shmem_my_pe(), prev);
 
         /* sit here until unlocked */
         shmem_short_wait_until(&(node->d.locked), SHMEM_CMP_EQ, 0);
@@ -86,7 +86,7 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
         shmem_lock_t t;
 
         t.d.locked = 1;
-        t.d.next = proc.rank;
+        t.d.next = shmem_my_pe();
 
         t.blob = shmem_int_atomic_compare_swap(&(lock->blob),
                                                t.blob,
@@ -94,7 +94,7 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
                                                lock_owner(lock));
 
         /* only self here */
-        if (t.d.next == proc.rank) {
+        if (t.d.next == shmem_my_pe()) {
             return;
             /* NOT REACHED */
         }

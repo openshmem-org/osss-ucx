@@ -71,3 +71,11 @@ shmemc_ucx_context_default_set_info(void)
 
     return 0;
 }
+
+void
+shmemc_ucx_context_default_destroy(void)
+{
+    ucp_worker_release_address(defcp->w,
+                               proc.comms.xchg_wrkr_info[proc.rank].addr);
+    shmemc_ucx_teardown_context(defcp);
+}

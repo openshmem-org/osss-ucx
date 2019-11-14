@@ -10,7 +10,8 @@ LIBSHMEMC_SOURCES         = \
 				globalexit.c \
 				readenv.c \
 				init.c \
-				state.c
+				state.c \
+				teams.c
 
 #
 # -- begin: UCX sources --
@@ -20,6 +21,7 @@ LIBSHMEMC_SOURCES        += \
 				ucx/contexts.c \
 				ucx/eps.c \
 				ucx/init.c \
+				ucx/teams.c \
 				ucx/test.c ucx/waituntil.c
 
 if HAVE_PMI
