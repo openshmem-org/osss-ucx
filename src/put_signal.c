@@ -405,6 +405,6 @@ shmem_signal_fetch(const uint64_t *sig_addr)
     SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fetch(SHMEM_CTX_DEFAULT,
                                             (uint64_t *) sig_addr,
                                             sizeof(*sig_addr),
-                                            proc.rank, &v));
+                                            shmemc_my_pe(), &v));
     return v;
 }
