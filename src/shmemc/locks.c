@@ -100,7 +100,6 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
                      &(t.blob));
 
         if (t.d.next == proc.rank) {
-            // fprintf(stderr, "DEBUG(%d): alone, just return\n", proc.rank);
             return;
             /* NOT REACHED */
         }
