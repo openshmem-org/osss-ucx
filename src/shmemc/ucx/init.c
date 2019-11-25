@@ -36,6 +36,12 @@ allocate_xworkers_table(void)
 inline static void
 deallocate_xworkers_table(void)
 {
+    int pe;
+
+    /* clean up worker exchange */
+    for (pe = 0; pe < proc.nranks; ++pe) {
+        free(proc.comms.xchg_wrkr_info[pe].buf);
+    }
     free(proc.comms.xchg_wrkr_info);
 }
 

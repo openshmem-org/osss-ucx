@@ -539,8 +539,6 @@ shmemc_pmi_client_abort(const char *msg, int status)
 void
 shmemc_pmi_client_finalize(void)
 {
-    int pe;
-
     ps = pmix_finalize_wrapper();
 
     shmemu_assert(ps == PMIX_SUCCESS,
@@ -549,11 +547,6 @@ shmemc_pmi_client_finalize(void)
 
     /* clean up memory recording peer PEs */
     free(proc.peers);
-
-    /* clean up worker exchange */
-    for (pe = 0; pe < proc.nranks; ++pe) {
-        free(proc.comms.xchg_wrkr_info[pe].buf);
-    }
 }
 
 /*
