@@ -355,12 +355,14 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width, proc.env.memfatal ? "yes" : "no",
             "abort if symmetric memory corruption");
 
+#if 0
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
             prefix,
             var_width, "SHMEM_TEARDOWN_KLUDGE",
             val_width, shmemu_human_option(proc.env.teardown_kludge),
             "avoid endpoint tear-down bug (temporary fix)");
+#endif
 
     /* ---------------------------------------------------------------- */
 
