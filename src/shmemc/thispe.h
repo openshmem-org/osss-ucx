@@ -98,6 +98,7 @@ typedef struct thispe_info {
     int refcount;               /**< library initialization count */
     int *peers;                 /**< peer PEs in a node group */
     int npeers;                 /**< how many peers */
+    bool leader;                /**< is this PE a node leader? */
     bool progress_thread;       /**< PE requests progress thread */
     shmemc_team_t *teams;       /**< PE teams we belong to */
     size_t nteams;              /**< how many teams */

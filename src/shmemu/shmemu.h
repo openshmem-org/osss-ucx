@@ -67,19 +67,6 @@ shmemu_valid_pe_number(int pe)
     return (proc.nranks > pe) && (pe >= 0);
 }
 
-/*
- * are we first PE on a node?
- */
-inline static int
-shmemu_node_leader(void)
-{
-    if (proc.npeers == 1) {
-        return 1;               /* I'm the only PE here */
-    }
-
-    return (proc.rank == proc.peers[0]);
-}
-
 void shmemu_init(void);
 void shmemu_finalize(void);
 

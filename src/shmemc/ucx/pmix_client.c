@@ -413,6 +413,9 @@ init_peers(void)
     }
 
     PMIX_VALUE_RELEASE(vp);
+
+    /* am I first on a node/in a group? */
+    proc.leader = (proc.rank == proc.peers[0]);
 }
 
 /*
