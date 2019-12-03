@@ -100,6 +100,7 @@ typedef struct thispe_info {
     int npeers;                 /**< how many peers */
     bool leader;                /**< is this PE a node leader? */
     bool progress_thread;       /**< PE requests progress thread */
+    char *nodename;             /**< node we're running on */
     shmemc_team_t *teams;       /**< PE teams we belong to */
     size_t nteams;              /**< how many teams */
 } thispe_info_t;

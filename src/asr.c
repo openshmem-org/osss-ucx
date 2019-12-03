@@ -58,6 +58,6 @@ test_asr_mismatch(void)
         shmemu_warn("aligned addresses requested, "
                     "but this node (%s) appears to have ASR enabled "
                     "(%s = %c)",
-                    shmemu_gethostname(), RAND_VARIABLE, inp);
+                    proc.nodename, RAND_VARIABLE, inp);
     }
 }

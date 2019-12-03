@@ -80,7 +80,6 @@ double shmemu_timer(void);
 /*
  * number manipulators
  */
-char *shmemu_gethostname(void);
 int shmemu_parse_size(const char *size_str, size_t *bytes_p);
 int shmemu_human_number(double bytes, char *buf, size_t buflen);
 const char *shmemu_human_option(int v);
