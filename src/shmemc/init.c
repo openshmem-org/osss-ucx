@@ -45,11 +45,11 @@ shmemc_init(void)
 void
 shmemc_finalize(void)
 {
-    shmemc_pmi_barrier_all(false);
-
     shmemc_teams_finalize();
 
     shmemc_ucx_context_default_destroy();
+
+    shmemc_pmi_barrier_all(false);
 
     shmemc_ucx_finalize();
 
