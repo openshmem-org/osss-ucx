@@ -37,7 +37,14 @@ else {
 
 sub debug {
   if ($debug) {
-    my $msg = "$progname:@_\n";
+    my $cat = shift;
+
+    my $msg = "$progname:";
+    if ($cat ne '') {
+      $cat .= ':';
+      $msg .= sprintf "%-8s", $cat;
+    }
+    $msg .= "@_\n";
     print STDERR $do_effect ? colored($msg, 'bold') : $msg;
   }
 }
@@ -88,6 +95,8 @@ sub which {
 # PRRTE.
 #
 
+debug('init', "look for viable launcher");
+
 my $prrte_starter;
 
 my $prun = qq(prun);
@@ -96,24 +105,24 @@ if ($launcher eq '') {
   my $pl = which($prun);
 
   if (defined $pl) {
-    debug("prrte: found \"$prun\"");
+    debug('prrte', "found \"$prun\"");
 
     my @Starters = qw(prte psrvr);
 
     for my $strt (@Starters) {
-      debug("prrte: check matching \"$strt\"");
+      debug('prrte', "check matching \"$strt\"");
 
       my $ps = $pl;
       $ps =~ s%/$prun$%/$strt%;
 
       if ( -x $ps ) {
-        debug("prrte: found \"$strt\"");
+        debug('prrte', "found \"$strt\"");
         $prrte_starter = $ps;
         $launcher = $prun;
         last;
       }
       else {
-        debug("prrte: no \"$strt\", skipping");
+        debug('prrte', "no \"$strt\", skipping");
       }
     } # end loop
   } # end if
@@ -127,12 +136,12 @@ if ($launcher eq '') {
   my @Launchers = qw(mpiexec mpirun);
 
   for my $L (@Launchers) {
-    debug("launch: look for \"$L\"");
+    debug('mpi', "look for \"$L\"");
 
     my $pl = which($L);
     next unless defined $pl;
 
-    debug("launch: using \"$pl\"");
+    debug('mpi', "using \"$pl\"");
 
     # take this one
     $launcher = $L;
@@ -157,7 +166,7 @@ sub zap {                       # clean up after signal
   my $s;
 
   for (1 .. 2) {
-    debug("launch: signaling termination to $pid");
+    debug('cleanup', "signaling termination to $pid");
 
     kill TERM => $pid;
     sleep 3;
@@ -168,14 +177,14 @@ sub zap {                       # clean up after signal
     }
   }
   kill KILL => $pid if $s == 1;
-  debug("launch: signalled kill to $pid");
+  debug('cleanup', "signalled kill to $pid");
   # maybe add extra existence check here
  zap_out:
-  debug("launch: cleaned up process $pid");
+  debug('cleanup', "killed process $pid");
 };
 
 sub run_app {
-  debug("launch: \"$launcher @ARGV\"");
+  debug('launch', "\"$launcher @ARGV\"");
   my $pid = fork();
   die "$progname:launch: fork failed: $!" unless defined $pid;
 
@@ -188,8 +197,8 @@ sub run_app {
     exec $launcher, @ARGV;
   }
   else {                        # parent
-    debug("launch: application in process $pid");
-    debug("-" x 70);
+    debug('launch', "application in process $pid");
+    debug('', "-" x 70);
     waitpid($pid, 0);
     $rc = $? >> 8;
     # debug("rc = $rc\n");
@@ -239,7 +248,7 @@ sub prrte_shutdown {
   my $killed = waitpid($prte_pid, 0);
 
   if ($killed == $prte_pid) {
-    debug("prrte: process $prte_pid shut down");
+    debug('prrte', "process $prte_pid shut down");
   }
   else {
     die "$progname:$prte_pid: couldn't kill PRRTE starter: $!";
@@ -250,7 +259,7 @@ sub prrte_launch {
   #
   # starter is in child process
   #
-  debug("prrte: starting up");
+  debug('prrte', "starting up");
 
   $cherr = gensym();            # need lvalue
 
@@ -280,7 +289,7 @@ sub prrte_launch {
 
     # off we go!
     if ($ready) {
-      debug("prrte: pid $prte_pid says \"$got\"");
+      debug('prrte', "pid $prte_pid says \"$got\"");
       return 0;
     }
 
@@ -300,7 +309,7 @@ sub prrte_launch {
 
 if ($is_prrte) {
   my $err = prrte_launch();
-  die "$progname:launch: failed: $!" if $err != 0;
+  die "$progname:error: failed: $!" if $err != 0;
 }
 
 my $app_err = run_app();
@@ -309,7 +318,7 @@ if ($is_prrte) {
   prrte_shutdown();
 }
 else {
-  debug("launch: done");
+  debug('launch', "done");
 }
 
 exit $app_err;
