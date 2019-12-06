@@ -323,8 +323,9 @@ shmemc_progress(void)
 void *
 shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
+    /* self short-circuit */
     if (pe == proc.rank && lookup_region((uint64_t) addr) >= 0) {
-        return addr;
+        return (void *) addr;
     }
 
     /* check to see if UCX is new enough */
