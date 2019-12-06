@@ -323,6 +323,10 @@ shmemc_progress(void)
 void *
 shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
+    if (pe == proc.rank && lookup_region((uint64_t) addr) >= 0) {
+        return addr;
+    }
+
     /* check to see if UCX is new enough */
 #ifdef HAVE_UCP_RKEY_PTR
     shmemc_context_h ch = (shmemc_context_h) ctx;
