@@ -320,16 +320,21 @@ shmemc_progress(void)
  * address if so, otherwise NULL.
  */
 
-void *
-shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
+inline static void *
+ctx_ptr_self_check(const void *addr)
 {
-    /* self short-circuit */
-    if (pe == proc.rank && lookup_region((uint64_t) addr) >= 0) {
+    /* is it remotely accessible? */
+    if (lookup_region((uint64_t) addr) >= 0) {
         return (void *) addr;
     }
+    else {
+        return NULL;
+    }
+}
 
-    /* check to see if UCX is new enough */
-#ifdef HAVE_UCP_RKEY_PTR
+inline static void *
+ctx_ptr_remote_check(shmem_ctx_t ctx, const void *addr, int pe)
+{
     shmemc_context_h ch = (shmemc_context_h) ctx;
     uint64_t r_addr;            /* address on other PE */
     ucp_rkey_h r_key;            /* rkey for remote address */
@@ -341,14 +346,27 @@ shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
     s = ucp_rkey_ptr(r_key, r_addr, &usable_addr);
     if (s == UCS_OK) {
         return usable_addr;
+    }
+    else {
+        return NULL;
+    }
+}
+
+void *
+shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
+{
+    /* self short-circuit */
+    if (shmemu_unlikely(pe == proc.rank)) {
+        return ctx_ptr_self_check(addr);
         /* NOT REACHED */
     }
-    /*
-     * fall through and ...
-     */
-#endif  /* HAVE_UCP_RKEY_PTR */
 
+    /* if UCX has check routine, do a full test, otherwise give up */
+#ifdef HAVE_UCP_RKEY_PTR
+    return ctx_ptr_remote_check(ctx, addr, pe);
+#else
     return NULL;
+#endif  /* HAVE_UCP_RKEY_PTR */
 }
 
 /*
