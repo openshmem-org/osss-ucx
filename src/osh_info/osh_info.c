@@ -14,6 +14,8 @@
 
 static char *progname;
 
+static char *prefix = "# ";
+
 static void
 output_help(void)
 {
@@ -23,10 +25,13 @@ output_help(void)
             "Usage: %s [options]\n\n",
             progname);
     fprintf(stderr,
-            "    -V | --version    only output OpenSHMEM"
+            "    -V   | --version    only output OpenSHMEM"
             " package version info\n");
     fprintf(stderr,
-            "    -h | --help       show this help message\n");
+            "    -p S | --prefix=S   string to insert before output lines"
+            " (default \"%s\")\n", prefix);
+    fprintf(stderr,
+            "    -h   | --help       show this help message\n");
     fprintf(stderr,
             "\n");
 }
@@ -34,6 +39,7 @@ output_help(void)
 static struct option opts[] = {
     { "version", no_argument, NULL, 'V' },
     { "help",    no_argument, NULL, 'h' },
+    { "prefix",  no_argument, NULL, 'p' },
     { NULL,      no_argument, NULL, 0   }
 };
 
@@ -50,7 +56,7 @@ main(int argc, char *argv[])
     opterr = 0;                 /* no err msg, just my output */
 
     while (1) {
-        const int c = getopt_long(argc, argv, "hV", opts, NULL);
+        const int c = getopt_long(argc, argv, "hVp:", opts, NULL);
 
         if (c == -1) {
             break;
@@ -63,6 +69,9 @@ main(int argc, char *argv[])
             break;
         case 'V':
             just_version = 1;
+            break;
+        case 'p':
+            prefix = optarg;
             break;
         default:
             help = 1;
@@ -78,18 +87,18 @@ main(int argc, char *argv[])
     }
 
     if (just_version) {
-        info_output_package_version(out, just_version);
+        info_output_package_version(out, prefix, just_version);
         return EXIT_SUCCESS;
         /* NOT REACHED */
     }
 
-    info_output_package_name(out);
-    info_output_package_version(out, just_version);
-    info_output_package_contact(out);
-    info_output_spec_version(out);
-    info_output_build_env(out);
-    info_output_features(out);
-    info_output_comms(out);
+    info_output_package_name(out, prefix);
+    info_output_package_version(out, prefix, just_version);
+    info_output_package_contact(out, prefix);
+    info_output_spec_version(out, prefix);
+    info_output_build_env(out, prefix);
+    info_output_features(out, prefix);
+    info_output_comms(out, prefix);
 
     return EXIT_SUCCESS;
 }
