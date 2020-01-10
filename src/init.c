@@ -146,7 +146,7 @@ init_thread_helper(int requested, int *provided)
 
     if (shmemc_my_pe() == 0) {
         if (proc.env.print_version) {
-            info_output_package_version(stdout, 0);
+            info_output_package_version(stdout, "# ", 0);
         }
         if (proc.env.print_info) {
             shmemc_print_env_vars(stdout, "# ");
