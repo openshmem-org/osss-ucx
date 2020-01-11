@@ -54,13 +54,10 @@ test_asr_mismatch(void)
         /* NOT REACHED */
     }
 
-    if (! shmemu_node_leader()) {
-        return;                 /* only first PE per node reports */
-        /* NOT REACHED */
+    if (proc.leader) {
+        shmemu_warn("aligned addresses requested, "
+                    "but this node (%s) appears to have ASR enabled "
+                    "(%s = %c)",
+                    proc.nodename, RAND_VARIABLE, inp);
     }
-
-    shmemu_warn("aligned addresses requested, "
-                "but this node (%s) appears to have ASR enabled "
-                "(%s = %c)",
-                shmemu_gethostname(), RAND_VARIABLE, inp);
 }

@@ -3,9 +3,9 @@
 .SH NAME
 \fBosh_intro\fP - Overview of OpenSHMEM programs
 .SH DESCRIPTION
-OpenSHMEM is a PGAS programming library that can use
-hardware capabilities such as RDMA for fast direct-to-memory
-communication.
+OpenSHMEM is a PGAS programming library that can use hardware
+capabilities such as RDMA for fast direct-to-memory communication in
+systems such as high performance computing clusters.
 .LP
 This manual page documents the commands associated with the Open
 Source Software Solutions (OSSS) Reference Implementation.

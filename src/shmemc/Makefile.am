@@ -10,6 +10,7 @@ LIBSHMEMC_SOURCES         = \
 				globalexit.c \
 				readenv.c \
 				init.c \
+				nodename.c \
 				state.c \
 				teams.c
 

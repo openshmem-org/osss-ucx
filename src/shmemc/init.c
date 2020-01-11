@@ -6,12 +6,13 @@
 
 #include "ucx/api.h"
 #include "shmemc.h"
-
+#include "nodename.h"
 #include "pmi_client.h"
 
 void
 shmemc_init(void)
 {
+    shmemc_nodename_init();
 
     /* find launch info */
     shmemc_pmi_client_init();
@@ -44,11 +45,15 @@ shmemc_init(void)
 void
 shmemc_finalize(void)
 {
-    shmemc_pmi_client_finalize();
-
     shmemc_teams_finalize();
 
     shmemc_ucx_context_default_destroy();
 
+    shmemc_pmi_barrier_all(false);
+
     shmemc_ucx_finalize();
+
+    shmemc_pmi_client_finalize();
+
+    shmemc_nodename_finalize();
 }

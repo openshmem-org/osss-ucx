@@ -24,7 +24,6 @@
 #include <math.h>
 
 static FILE *log_stream = NULL;
-static char *host = NULL;
 
 /*
  * output formatting
@@ -101,11 +100,6 @@ shmemu_logger_init(void)
 
     if (! proc.env.logging) {
         return;
-    }
-
-    host = shmemu_gethostname();
-    if (host == NULL) {
-        host = (char *) "unknown";
     }
 
     /* TODO "%" modifiers for extra info */
@@ -185,7 +179,7 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
         snprintf(tmp1, TRACE_MSG_BUF_SIZE_1,
                  "[%*d:%s:%d:%6.6f]",
                  pe_width, proc.rank,
-                 host,
+                 proc.nodename,
                  mypid,
                  shmemu_timer()
                  );

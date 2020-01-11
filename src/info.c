@@ -20,13 +20,13 @@ static const int tag_width = 28;
 #define INTERNAL_ERROR "not found [shouldn't happen]"
 
 inline static void
-output(FILE *strm, const char *tag, const char *val)
+output(FILE *strm, const char *prefix, const char *tag, const char *val)
 {
     if (tag != NULL) {
         char buf[BUFMAX];
 
         snprintf(buf, BUFMAX, "%s:", tag);
-        fprintf(strm, "# %-*s ", tag_width, buf);
+        fprintf(strm, "%s%-*s ", prefix, tag_width, buf);
     }
 
     if (val != NULL) {
@@ -35,7 +35,7 @@ output(FILE *strm, const char *tag, const char *val)
 }
 
 void
-info_output_spec_version(FILE *strm)
+info_output_spec_version(FILE *strm, const char *prefix)
 {
 #if defined(SHMEM_MAJOR_VERSION) && defined(SHMEM_MINOR_VERSION)
     char buf[BUFMAX];
@@ -43,14 +43,14 @@ info_output_spec_version(FILE *strm)
     snprintf(buf, BUFMAX,
              "%d.%d",
              SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
-    output(strm, "OpenSHMEM Specification", buf);
+    output(strm, prefix, "OpenSHMEM Specification", buf);
 #endif /* spec. version check */
 }
 
 void
-info_output_package_name(FILE *strm)
+info_output_package_name(FILE *strm, const char *prefix)
 {
-    output(strm, "OpenSHMEM Package name",
+    output(strm, prefix, "OpenSHMEM Package name",
 #ifdef PACKAGE_NAME
            PACKAGE_NAME
 #else
@@ -60,9 +60,9 @@ info_output_package_name(FILE *strm)
 }
 
 void
-info_output_package_contact(FILE *strm)
+info_output_package_contact(FILE *strm, const char *prefix)
 {
-    output(strm, "OpenSHMEM Package URL",
+    output(strm, prefix, "OpenSHMEM Package URL",
 #ifdef PACKAGE_URL
            PACKAGE_URL
 #else
@@ -70,7 +70,7 @@ info_output_package_contact(FILE *strm)
 #endif /* PACKAGE_URL */
            );
 
-    output(strm, "OpenSHMEM Bug Report",
+    output(strm, prefix, "OpenSHMEM Bug Report",
 #ifdef PACKAGE_BUGREPORT
            PACKAGE_BUGREPORT
 #else
@@ -80,9 +80,9 @@ info_output_package_contact(FILE *strm)
 }
 
 void
-info_output_package_version(FILE *strm, int terse)
+info_output_package_version(FILE *strm, const char *prefix, int terse)
 {
-    output(strm, terse ? NULL : "OpenSHMEM Package version",
+    output(strm, prefix, terse ? NULL : "OpenSHMEM Package version",
 #ifdef PACKAGE_VERSION
            PACKAGE_VERSION
 #else
@@ -93,12 +93,12 @@ info_output_package_version(FILE *strm, int terse)
 }
 
 void
-info_output_build_env(FILE *strm)
+info_output_build_env(FILE *strm, const char *prefix)
 {
     int s;
     char host[BUFMAX];
 
-    output(strm, "Configured as",
+    output(strm, prefix, "Configured as",
 #ifdef CONFIG_FLAGS
            CONFIG_FLAGS
 #else
@@ -106,7 +106,7 @@ info_output_build_env(FILE *strm)
 #endif /* CONFIG_FLAGS */
            );
 
-    output(strm, "Configure date",
+    output(strm, prefix, "Configure date",
 #ifdef CONFIG_BUILD_DATE
            CONFIG_BUILD_DATE
 #else
@@ -114,7 +114,7 @@ info_output_build_env(FILE *strm)
 #endif /* CONFIG_BUILD_DATE */
            );
 
-    output(strm, "Configure host",
+    output(strm, prefix, "Configure host",
 #ifdef CONFIG_BUILD_HOST
            CONFIG_BUILD_HOST
 #else
@@ -123,13 +123,13 @@ info_output_build_env(FILE *strm)
            );
 
     s = gethostname(host, BUFMAX);
-    output(strm, "Execution host", (s == 0) ? host : UNKNOWN);
+    output(strm, prefix, "Execution host", (s == 0) ? host : UNKNOWN);
 }
 
 void
-info_output_features(FILE *strm)
+info_output_features(FILE *strm, const char *prefix)
 {
-    output(strm, "Static libraries",
+    output(strm, prefix, "Static libraries",
 #ifdef ENABLE_STATIC
            "on"
 #else
@@ -137,7 +137,7 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_STATIC */
            );
 
-    output(strm, "Shared libraries",
+    output(strm, prefix, "Shared libraries",
 #ifdef ENABLE_SHARED
            "on"
 #else
@@ -145,7 +145,7 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_SHARED */
            );
 
-    output(strm, "C++ compiler",
+    output(strm, prefix, "C++ compiler",
 #ifdef ENABLE_CXX
            "on"
 #else
@@ -153,7 +153,7 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_CXX */
            );
 
-    output(strm, "Debug checks",
+    output(strm, prefix, "Debug checks",
 #ifdef ENABLE_DEBUG
            "on"
 #else
@@ -161,7 +161,7 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_DEBUG */
            );
 
-    output(strm, "Logging messages",
+    output(strm, prefix, "Logging messages",
 #ifdef ENABLE_LOGGING
            "on"
 #else
@@ -169,7 +169,7 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_LOGGING */
            );
 
-    output(strm, "Aligned symmetric addresses",
+    output(strm, prefix, "Aligned symmetric addresses",
 #ifdef ENABLE_ALIGNED_ADDRESSES
            "on"
 #else
@@ -178,11 +178,11 @@ info_output_features(FILE *strm)
            );
 
 #ifdef SHMEM_DEFAULT_HEAP_SIZE
-    output(strm, "Default symmetric heap size",
+    output(strm, prefix, "Default symmetric heap size",
            SHMEM_DEFAULT_HEAP_SIZE);
 #endif /* SHMEM_DEFAULT_HEAP_SIZE */
 
-    output(strm, "Thread support",
+    output(strm, prefix, "Thread support",
 #ifdef ENABLE_THREADS
            "on"
 #else
@@ -190,7 +190,7 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_THREADS */
            );
 
-    output(strm, "Experimental API",
+    output(strm, prefix, "Experimental API",
 #ifdef ENABLE_EXPERIMENTAL
            "on"
 #else
@@ -198,7 +198,7 @@ info_output_features(FILE *strm)
 #endif /* ENABLE_EXPERIMENTAL */
            );
 
-    output(strm, "Profiling interface",
+    output(strm, prefix, "Profiling interface",
 #ifdef ENABLE_PSHMEM
            "on"
 #else
@@ -208,9 +208,9 @@ info_output_features(FILE *strm)
 }
 
 void
-info_output_comms(FILE *strm)
+info_output_comms(FILE *strm, const char *prefix)
 {
-    output(strm, "Using UCX from",
+    output(strm, prefix, "Using UCX from",
 #ifdef HAVE_UCX
            UCX_DIR
 #else
@@ -218,7 +218,7 @@ info_output_comms(FILE *strm)
 #endif /* HAVE_UCX install */
            );
 
-    output(strm, "UCX Version",
+    output(strm, prefix, "UCX Version",
 #ifdef HAVE_UCX
            UCX_VERSION_STRING
 #else
@@ -226,14 +226,14 @@ info_output_comms(FILE *strm)
 #endif /* HAVE_UCX version */
            );
 
-    output(strm, "Using PMIx from",
+    output(strm, prefix, "Using PMIx from",
 #ifdef HAVE_PMIX
            PMIX_DIR
 #else
            INTERNAL_ERROR
 #endif /* HAVE_PMIX install */
            );
-    output(strm, "PMIx Version",
+    output(strm, prefix, "PMIx Version",
 #ifdef HAVE_PMIX
            PMIX_VERSION_STRING
 #else
@@ -241,7 +241,7 @@ info_output_comms(FILE *strm)
 #endif /* HAVE_PMIX version */
            );
 
-    output(strm, "Using SHCOLL from",
+    output(strm, prefix, "Using SHCOLL from",
 #ifdef HAVE_SHCOLL_INTERNAL
            PACKAGE_STRING
 #else
@@ -249,7 +249,7 @@ info_output_comms(FILE *strm)
 #endif  /* HAVE_SHCOLL_INTERNAL */
            );
 
-    output(strm, "Using launcher",
+    output(strm, prefix, "Using launcher",
 #ifdef SHMEM_LAUNCHER
            SHMEM_LAUNCHER
 #else

@@ -127,6 +127,10 @@ shmemc_teams_finalize(void)
  *
  */
 
+/*
+ * per-team rank queries
+ */
+
 int
 shmemc_team_my_pe(shmemc_team_h th)
 {
@@ -138,6 +142,10 @@ shmemc_team_n_pes(shmemc_team_h th)
 {
     return (int) th->nmembers;
 }
+
+/*
+ * retrieve the team's configuration
+ */
 
 int
 shmemc_team_get_config(shmemc_team_h th,
@@ -153,6 +161,10 @@ shmemc_team_get_config(shmemc_team_h th,
         return -1;
     }
 }
+
+/*
+ * what's the SOURCEHANDLE team SRC_PE in the DESTHANDLE team?
+ */
 
 int
 shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,

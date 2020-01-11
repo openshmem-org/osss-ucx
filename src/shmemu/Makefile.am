@@ -8,7 +8,6 @@ OTHER_CPPFLAGS            = -I../../include \
 				-I$(srcdir)/../allocator
 
 LIBSHMEMU_SOURCES         = shmemu_init.c \
-				hostname.c \
 				carp.c \
 				memcheck.c \
 				parse_csv.c \
