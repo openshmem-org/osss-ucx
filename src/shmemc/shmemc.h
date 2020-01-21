@@ -474,7 +474,8 @@ SHMEMC_CTX_WAIT_UNTIL_ANY(64, ge)
  * int functions return 0 for success, non-zero for failure
  */
 
-int shmemc_context_create(long options, shmem_ctx_t *ctxp);
+shmemc_context_h *shmemc_alloc_contexts(shmemc_team_h th);
+int shmemc_context_create(shmemc_team_h th, long options, shmem_ctx_t *ctxp);
 void shmemc_context_destroy(shmem_ctx_t ctx);
 unsigned long shmemc_context_id(shmem_ctx_t ctx);
 

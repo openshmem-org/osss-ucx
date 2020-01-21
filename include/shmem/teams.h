@@ -4,13 +4,13 @@
 #define _SHMEM_API_TEAMS_H 1
 
 /*
- * an OpenSHMEM team
+ * an opaque OpenSHMEM team
  */
 
 typedef void *shmem_team_t;
 
 /*
- * pre-defined team for whole program at start
+ * pre-defined teams for whole program at start
  */
 
 extern shmem_team_t SHMEM_TEAM_WORLD;

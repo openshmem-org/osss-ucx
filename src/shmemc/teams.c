@@ -86,41 +86,65 @@ dump_team(shmemc_team_h th)
 
 /*
  * set up world/shared per PE
+ *
+ * N.B. currently don't need to pre-alloc anything, just allow it to
+ * happen organically, but leave frameowrk in place, just in case.
  */
 
-void
-shmemc_teams_init(void)
+inline static void
+world_create_team(shmemc_team_h wh)
 {
     /*
      * world is just all PEs in program.
      */
-    create_team_members_from_range(shmemc_team_world_h, 0, proc.nranks - 1);
-    shmemc_team_world_h->nctxts = 0;
-    shmemc_team_world_h->ctxts = NULL;
+    create_team_members_from_range(wh, 0, proc.nranks - 1);
+    wh->nctxts = 0; /* proc.env.prealloc_contexts; */
+    wh->ctxts = NULL; /* shmemc_alloc_contexts(wh); */
+}
 
+inline static void
+shared_create_team(shmemc_team_h sh)
+{
     /*
-     * assume that all peers on a node can share memory.
-     *
-     * could extend this with a ptr() test across peers.
+     * for now, we'll assume that all peers on a node can share
+     * memory.  should perhaps extend this with a ptr() test across
+     * peers.
      */
-    create_team_members_from_array(shmemc_team_shared_h,
-                                   proc.peers, proc.npeers);
-    shmemc_team_shared_h->nctxts = 0;
-    shmemc_team_shared_h->ctxts = NULL;
+    create_team_members_from_array(sh, proc.peers, proc.npeers);
+    sh->nctxts = 0; /* proc.env.prealloc_contexts; */
+    sh->ctxts = NULL; /* shmemc_alloc_contexts(sh); */
+}
+
+void
+shmemc_teams_init(void)
+{
+    world_create_team(shmemc_team_world_h);
+    shared_create_team(shmemc_team_shared_h);
 }
 
 /*
  * clean up world/shared allocated resources at end
  */
 
+inline static void
+world_finalize_team(shmemc_team_h wh)
+{
+    shmemc_team_contexts_destroy(wh);
+    free(wh->members);
+}
+
+inline static void
+shared_finalize_team(shmemc_team_h sh)
+{
+    shmemc_team_contexts_destroy(sh);
+    free(sh->members);
+}
+
 void
 shmemc_teams_finalize(void)
 {
-    shmemc_team_contexts_destroy(shmemc_team_shared_h);
-    free(shmemc_team_shared_h->members);
-
-    shmemc_team_contexts_destroy(shmemc_team_world_h);
-    free(shmemc_team_world_h->members);
+    shared_finalize_team(shmemc_team_shared_h);
+    world_finalize_team(shmemc_team_world_h);
 }
 
 /*
@@ -151,15 +175,10 @@ int
 shmemc_team_get_config(shmemc_team_h th,
                        shmem_team_config_t *config)
 {
-    if (th != SHMEM_TEAM_INVALID) {
-        *config = th->cfg;
-        NO_WARN_UNUSED(config);     /* not touched further here */
+    *config = th->cfg;
+    NO_WARN_UNUSED(config);     /* not touched further here */
 
-        return 0;
-    }
-    else {
-        return -1;
-    }
+    return 0;
 }
 
 /*
@@ -230,12 +249,6 @@ shmemc_team_destroy(shmemc_team_h th)
 {
     size_t c;
 
-    if (th == SHMEM_TEAM_INVALID) {
-        return;
-    }
-
-    shmemu_assert(th != shmemc_team_world_h,
-                  "may not destroy world team");
     free(th->members);
 
     for (c = 0; c < th->nctxts; ++c) {
