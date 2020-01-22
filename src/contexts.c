@@ -39,7 +39,7 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
     SHMEMU_CHECK_INIT();
 
     /* defaults to world team */
-    SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(shmemc_team_world_h,
+    SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(SHMEM_TEAM_WORLD,
                                                    options, ctxp));
 
     logger(LOG_CONTEXTS,

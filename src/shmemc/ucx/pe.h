@@ -80,6 +80,10 @@ typedef struct shmemc_team {
 
     shmemc_context_h *ctxts;    /**< contexts in this team */
     size_t nctxts;              /**< how many contexts */
+
+    bool predef;                /**< team was defined by this library */
+    const char *name;           /**< if predef, who we are
+                                   (otherwise unused) */
 } shmemc_team_t;
 
 typedef shmemc_team_t *shmemc_team_h;

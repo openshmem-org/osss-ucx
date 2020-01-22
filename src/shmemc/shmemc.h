@@ -100,12 +100,6 @@ void shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
 extern shmemc_team_t shmemc_team_world;
 extern shmemc_team_t shmemc_team_shared;
 
-/*
- * utility handles to pre-defined teams
- */
-extern shmemc_team_h shmemc_team_world_h;
-extern shmemc_team_h shmemc_team_shared_h;
-
 void shmemc_ucx_teardown_context(shmemc_context_h ch);
 
 void shmemc_ucx_team_world_create(void);

@@ -14,8 +14,9 @@
 shmemc_team_t shmemc_team_world;
 shmemc_team_t shmemc_team_shared;
 
-shmemc_team_h shmemc_team_world_h = & shmemc_team_world;
-shmemc_team_h shmemc_team_shared_h = & shmemc_team_shared;
+shmem_team_t SHMEM_TEAM_WORLD = & shmemc_team_world;
+shmem_team_t SHMEM_TEAM_SHARED = & shmemc_team_shared;
+shmem_team_t SHMEM_TEAM_INVALID = NULL;
 
 /*
  * clear up the allocated SHMEM contexts in a team
@@ -100,6 +101,9 @@ world_create_team(shmemc_team_h wh)
     create_team_members_from_range(wh, 0, proc.nranks - 1);
     wh->nctxts = 0; /* proc.env.prealloc_contexts; */
     wh->ctxts = NULL; /* shmemc_alloc_contexts(wh); */
+
+    wh->predef = true;
+    wh->name = "world";
 }
 
 inline static void
@@ -113,13 +117,9 @@ shared_create_team(shmemc_team_h sh)
     create_team_members_from_array(sh, proc.peers, proc.npeers);
     sh->nctxts = 0; /* proc.env.prealloc_contexts; */
     sh->ctxts = NULL; /* shmemc_alloc_contexts(sh); */
-}
 
-void
-shmemc_teams_init(void)
-{
-    world_create_team(shmemc_team_world_h);
-    shared_create_team(shmemc_team_shared_h);
+    sh->predef = true;
+    sh->name = "shared";
 }
 
 /*
@@ -141,14 +141,21 @@ shared_finalize_team(shmemc_team_h sh)
 }
 
 void
+shmemc_teams_init(void)
+{
+    world_create_team(SHMEM_TEAM_WORLD);
+    shared_create_team(SHMEM_TEAM_SHARED);
+}
+
+void
 shmemc_teams_finalize(void)
 {
-    shared_finalize_team(shmemc_team_shared_h);
-    world_finalize_team(shmemc_team_world_h);
+    shared_finalize_team(SHMEM_TEAM_SHARED);
+    world_finalize_team(SHMEM_TEAM_WORLD);
 }
 
 /*
- *
+ * ----------------------------------------------------------------
  */
 
 /*
@@ -244,18 +251,30 @@ shmemc_team_split_2d(shmemc_team_h parh,
     return -1;
 }
 
+/*
+ * teams that the library defined in advance cannot be destroyed.
+ */
+
 void
 shmemc_team_destroy(shmemc_team_h th)
 {
-    size_t c;
+    if (! th->predef) {
+        size_t c;
 
-    free(th->members);
+        free(th->members);
 
-    for (c = 0; c < th->nctxts; ++c) {
-        if (! th->ctxts[c]->attr.private) {
-            shmemc_context_destroy(th->ctxts[c]);
+        for (c = 0; c < th->nctxts; ++c) {
+            if (! th->ctxts[c]->attr.private) {
+                shmemc_context_destroy(th->ctxts[c]);
+            }
         }
-    }
 
-    free(th);
+        free(th);
+
+        th = SHMEM_TEAM_INVALID;
+    }
+    else {
+        shmemu_fatal("cannot destroy predefined team \"%s\"", th->name);
+        /* NOT REACHED */
+    }
 }

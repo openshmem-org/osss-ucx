@@ -128,21 +128,7 @@ shmem_team_split_2d(shmem_team_t parent_team,
 void
 shmem_team_destroy(shmem_team_t team)
 {
-    if (team == SHMEM_TEAM_WORLD) {
-        logger(LOG_FATAL,
-               "cannot destroy the \"world\" team"
-               );
-        /* NOT REACHED */
-    }
-    else if (team == SHMEM_TEAM_SHARED) {
-        logger(LOG_FATAL,
-               "cannot destroy the \"shared\" team"
-               );
-        /* NOT REACHED */
-    }
-    else {
-        shmemc_team_h th = (shmemc_team_h) team;
+    shmemc_team_h th = (shmemc_team_h) team;
 
-        shmemc_team_destroy(th);
-    }
+    shmemc_team_destroy(th);
 }
