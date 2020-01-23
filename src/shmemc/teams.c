@@ -223,7 +223,9 @@ shmemc_team_split_strided(shmemc_team_h parh,
     NO_WARN_UNUSED(size);
     NO_WARN_UNUSED(config);
     NO_WARN_UNUSED(config_mask);
-    NO_WARN_UNUSED(newh);
+    /* NO_WARN_UNUSED(newh); */
+
+    (*newh)->predef = false;
 
     return -1;
 }
@@ -243,10 +245,13 @@ shmemc_team_split_2d(shmemc_team_h parh,
     NO_WARN_UNUSED(xrange);
     NO_WARN_UNUSED(xaxis_config);
     NO_WARN_UNUSED(xaxis_mask);
-    NO_WARN_UNUSED(xaxish);
+    /* NO_WARN_UNUSED(xaxish); */
     NO_WARN_UNUSED(yaxis_config);
     NO_WARN_UNUSED(yaxis_mask);
-    NO_WARN_UNUSED(yaxish);
+    /* NO_WARN_UNUSED(yaxish); */
+
+    (*xaxish)->predef = false;
+    (*yaxish)->predef = false;
 
     return -1;
 }
