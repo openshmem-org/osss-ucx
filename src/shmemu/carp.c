@@ -6,6 +6,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
+#include "shmemc.h"
 #include "state.h"
 
 #include <stdio.h>
@@ -40,6 +41,6 @@ shmemu_fatal(const char *fmt, ...)
         va_end(ap);
     }
 
-    exit(EXIT_FAILURE);
+    shmemc_global_exit(EXIT_FAILURE);
     /* NOT REACHED */
 }
