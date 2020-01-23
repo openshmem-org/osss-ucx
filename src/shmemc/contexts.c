@@ -56,9 +56,8 @@ resize_spill_block(shmemc_team_h th, size_t n)
                                      );
 
     if (chp == NULL) {
-        logger(LOG_FATAL,
-               "can't allocate %lu bytes for context freelist",
-               (unsigned long) n);
+        shmemu_fatal("can't allocate %lu bytes for context freelist",
+                     (unsigned long) n);
         /* NOT REACHED */
     }
 
@@ -76,8 +75,7 @@ alloc_freelist_slot(void)
         (shmemc_context_h) malloc(sizeof(shmemc_context_t));
 
     if (ch == NULL) {
-        logger(LOG_FATAL,
-               "unable to allocate memory for new context");
+        shmemu_fatal("unable to allocate memory for new context");
         /* NOT REACHED */
     }
 
@@ -114,8 +112,8 @@ get_usable_context_run(shmemc_team_h th, bool *reused)
             th->ctxts = resize_spill_block(th, spill_ctxt);
 
             if (th->ctxts == NULL) {
-                logger(LOG_FATAL,
-                       "can't allocate more memory for context freelist");
+                shmemu_fatal("can't allocate more memory "
+                             "for context freelist");
                 /* NOT REACHED */
             }
         }
@@ -216,9 +214,7 @@ shmemc_context_create(shmemc_team_h th, long options, shmem_ctx_t *ctxp)
         s = shmemc_ucx_worker_wireup(ch);
 
         if (s != UCS_OK) {
-            logger(LOG_FATAL,
-                   "cannot complete new context worker wireup"
-                   );
+            shmemu_fatal("cannot complete new context worker wireup");
             /* NOT REACHED */
         }
     }
@@ -243,13 +239,10 @@ void
 shmemc_context_destroy(shmem_ctx_t ctx)
 {
     if (ctx == SHMEM_CTX_INVALID) {
-        logger(LOG_CONTEXTS,
-               "ignoring attempt to destroy invalid context");
+        shmemu_warn("ignoring attempt to destroy invalid context");
     }
     else if (ctx == SHMEM_CTX_DEFAULT) {
-        logger(LOG_FATAL,
-               "cannot destroy the default context"
-               );
+        shmemu_fatal("cannot destroy the default context");
         /* NOT REACHED */
     }
     else {

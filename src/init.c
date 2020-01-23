@@ -103,10 +103,7 @@ init_thread_helper(int requested, int *provided)
     case SHMEM_THREAD_MULTIPLE:
         break;
     default:
-        logger(LOG_FATAL,
-               "unknown thread level %d requested",
-               requested
-               );
+        shmemu_fatal("unknown thread level %d requested", requested);
         /* NOT REACHED */
         break;
     }
@@ -133,10 +130,9 @@ init_thread_helper(int requested, int *provided)
 
     s = atexit(finalize_helper);
     if (s != 0) {
-        logger(LOG_FATAL,
-               "unable to register atexit() handler: %s",
-               strerror(errno)
-               );
+        shmemu_fatal("unable to register atexit() handler: %s",
+                     strerror(errno)
+                     );
         /* NOT REACHED */
     }
 

@@ -93,7 +93,7 @@ dump_team(shmemc_team_h th)
  */
 
 inline static void
-world_create_team(shmemc_team_h wh)
+world_initialize_team(shmemc_team_h wh)
 {
     /*
      * world is just all PEs in program.
@@ -107,7 +107,7 @@ world_create_team(shmemc_team_h wh)
 }
 
 inline static void
-shared_create_team(shmemc_team_h sh)
+shared_initialize_team(shmemc_team_h sh)
 {
     /*
      * for now, we'll assume that all peers on a node can share
@@ -143,8 +143,8 @@ shared_finalize_team(shmemc_team_h sh)
 void
 shmemc_teams_init(void)
 {
-    world_create_team(SHMEM_TEAM_WORLD);
-    shared_create_team(SHMEM_TEAM_SHARED);
+    world_initialize_team(SHMEM_TEAM_WORLD);
+    shared_initialize_team(SHMEM_TEAM_SHARED);
 }
 
 void

@@ -86,11 +86,10 @@
                                                   cmp_value);           \
              break;                                                     \
              default:                                                   \
-             logger(LOG_FATAL,                                          \
-                    "unknown operator (code %d) in \"%s\"",             \
-                    cmp,                                                \
-                    __func__                                            \
-                    );                                                  \
+             shmemu_fatal("unknown operator (code %d) in \"%s\"",       \
+                          cmp,                                          \
+                         __func__                                       \
+                         );                                             \
              return -1;                                                 \
              /* NOT REACHED */                                          \
              break;                                                     \

@@ -106,10 +106,10 @@ check_if_progress_required(void)
     /* shmemu_parse_csv zaps the input string */
     copy = strdup(proc.env.progress_threads);
     if (copy == NULL) {
-        logger(LOG_FATAL,
-               "Unable to allocate memory during progress thread check: %s",
-               strerror(errno)
-               );
+        shmemu_fatal("Unable to allocate memory during "
+                     "progress thread check: %s",
+                     strerror(errno)
+                     );
         /* NOT REACHED */
     }
 

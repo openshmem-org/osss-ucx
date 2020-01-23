@@ -171,30 +171,28 @@ void shmemu_deprecate_finalize(void);
         const int top_pe = proc.nranks - 1;                     \
                                                                 \
         if (shmemu_unlikely((_pe < 0) || (_pe > top_pe))) {     \
-            logger(LOG_FATAL,                                   \
-                   "In %s(), PE argument #%d is %d: "           \
-                   "outside allocated range [%d, %d]",          \
-                   __func__,                                    \
-                   _argpos,                                     \
-                   _pe,                                         \
-                   0, top_pe                                    \
-                   );                                           \
+            shmemu_fatal("In %s(), PE argument #%d is %d: "     \
+                         "outside allocated range [%d, %d]",    \
+                         __func__,                              \
+                         _argpos,                               \
+                         _pe,                                   \
+                         0, top_pe                              \
+                         );                                     \
             /* NOT REACHED */                                   \
         }                                                       \
     } while (0)
 
-# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                     \
-    do {                                                            \
-        if (shmemu_unlikely(! shmemc_addr_accessible(_addr,         \
-                                                     proc.rank))) { \
-            logger(LOG_FATAL,                                       \
-                   "In %s(), address %p in argument #%d "           \
-                   "is not symmetric",                              \
-                   __func__,                                        \
-                   _addr, _argpos                                   \
-                   );                                               \
-            /* NOT REACHED */                                       \
-        }                                                           \
+# define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                         \
+    do {                                                                \
+        if (shmemu_unlikely(! shmemc_addr_accessible(_addr,             \
+                                                     proc.rank))) {     \
+            shmemu_fatal("In %s(), address %p in argument #%d "         \
+                         "is not symmetric",                            \
+                         __func__,                                      \
+                         _addr, _argpos                                 \
+                         );                                             \
+            /* NOT REACHED */                                           \
+        }                                                               \
     } while (0)
 
 # define SHMEMU_CHECK_INIT()                                            \
@@ -238,13 +236,12 @@ void shmemu_deprecate_finalize(void);
         const int top_heap = proc.env.heaps.nheaps - 1;                 \
                                                                         \
         if (shmemu_unlikely( ((_idx) < 0) || ((_idx) > top_heap) )) {   \
-            logger(LOG_FATAL,                                           \
-                   "In %s(), heap index #%d"                            \
-                   "is outside allocated range [%d, %d]",               \
-                   __func__,                                            \
-                   _idx,                                                \
-                   0, top_heap                                          \
-                   );                                                   \
+            shmemu_fatal("In %s(), heap index #%d"                      \
+                         "is outside allocated range [%d, %d]",         \
+                         __func__,                                      \
+                         _idx,                                          \
+                         0, top_heap                                    \
+                         );                                             \
             /* NOT REACHED */                                           \
         }                                                               \
     } while (0)
