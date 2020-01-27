@@ -10,7 +10,6 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "state.h"
-#include "memfence.h"
 
 #include <sys/types.h>
 

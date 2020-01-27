@@ -6,7 +6,6 @@
 #include "thispe.h"
 #include "state.h"
 #include "shmemc.h"
-#include "memfence.h"
 #include "shmem/defs.h"
 
 #include <sys/types.h>          /* size_t */
