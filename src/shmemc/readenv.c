@@ -245,7 +245,8 @@ hr(FILE *stream, const char *prefix)
 void
 shmemc_print_env_vars(FILE *stream, const char *prefix)
 {
-    fprintf(stream, "%sEnvironment Variable Information\n",
+    fprintf(stream, "%sEnvironment Variable Information.  "
+            "See oshrun(1) for more.\n",
             prefix);
     fprintf(stream, "%s\n", prefix);
     fprintf(stream, "%s%-*s %-*s %s\n",
