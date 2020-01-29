@@ -189,11 +189,15 @@ shmemc_alloc_contexts(shmemc_team_h th)
  */
 
 int
-shmemc_context_create(shmemc_team_h th, long options, shmem_ctx_t *ctxp)
+shmemc_context_create(shmemc_team_h th, long options, shmemc_context_h *ctxp)
 {
     bool reuse;
-    const size_t idx = get_usable_context(th, &reuse);
-    shmemc_context_h ch = th->ctxts[idx];
+    size_t idx;
+    shmemc_context_h ch;
+
+    /* identify context to use */
+    idx = get_usable_context(th, &reuse);
+    ch = th->ctxts[idx];
 
     /* set SHMEM context behavior */
     context_set_options(options, ch);
@@ -225,7 +229,7 @@ shmemc_context_create(shmemc_team_h th, long options, shmem_ctx_t *ctxp)
 
     context_register(ch);
 
-    *ctxp = (shmem_ctx_t) ch;
+    *ctxp = ch;
 
     return 0;
 }

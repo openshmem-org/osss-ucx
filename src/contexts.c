@@ -40,7 +40,8 @@ shmem_ctx_create(long options, shmem_ctx_t *ctxp)
 
     /* defaults to world team */
     SHMEMT_MUTEX_PROTECT(s = shmemc_context_create(SHMEM_TEAM_WORLD,
-                                                   options, ctxp));
+                                                   options,
+                                                   (shmemc_context_h *) ctxp));
 
     logger(LOG_CONTEXTS,
            "%s(options=%#lx, ctxp->%p)",
