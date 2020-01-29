@@ -355,14 +355,16 @@ init_ranks(void)
 
     PMIX_VALUE_RELEASE(vp);
 
+    /* this can fail on older PMIx setups, so be more careful */
     ps = PMIx_Get(&wc_proc, PMIX_NUM_NODES, NULL, 0, &vp);
-    shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't get number of allocated nodes: %s",
-                  PMIx_Error_string(ps));
-
-    proc.nnodes = (int) vp->data.uint32; /* number of nodes */
-
-    PMIX_VALUE_RELEASE(vp);
+    if (ps == PMIX_SUCCESS) {
+        proc.nnodes = (int) vp->data.uint32; /* number of nodes */
+        PMIX_VALUE_RELEASE(vp);
+    }
+    else {
+        /* this seems somewhat sane if we can't query */
+        proc.nnodes = 1;
+    }
 
     ps = PMIx_Get(&wc_proc, PMIX_UNIV_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
