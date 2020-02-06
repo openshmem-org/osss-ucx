@@ -26,6 +26,8 @@ AC_ARG_ENABLE([logging],
 	[])
 AM_CONDITIONAL([ENABLE_LOGGING], [test "x$enable_logging" = "xyes"])
 
+AS_IF([test "x$enable_logging" != "xyes"], [enable_logging=no])
+
 #
 # non-standard/proposed API features (shmemx): disabled by default
 #
@@ -39,7 +41,7 @@ AS_IF([test "x$enable_experimental" = "xyes"],
 	)
 AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
 
-AS_IF([test "x$enable_experimentalm" != "xyes"], [enable_experimental=no])
+AS_IF([test "x$enable_experimental" != "xyes"], [enable_experimental=no])
 
 #
 # profiling API: disabled by default
