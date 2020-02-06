@@ -178,7 +178,7 @@ API_DECL_TYPED_PUT_SIGNAL(ptrdiff, ptrdiff_t)
 #pragma weak shmem_put64_signal = pshmem_put64_signal
 #define shmem_put64_signal pshmem_put64_signal
 #pragma weak shmem_put128_signal = pshmem_put128_signal
-#define shmem_ut128_signal pshmem_put128_signal
+#define shmem_put128_signal pshmem_put128_signal
 #endif /* ENABLE_PSHMEM */
 
 SHMEM_CTX_DECL_SIZED_PUT_SIGNAL(8)
@@ -374,7 +374,7 @@ API_DECL_TYPED_PUT_SIGNAL_NBI(ptrdiff, ptrdiff_t)
 #pragma weak shmem_put64_signal_nbi = pshmem_put64_signal_nbi
 #define shmem_put64_signal_nbi pshmem_put64_signal_nbi
 #pragma weak shmem_put128_signal_nbi = pshmem_put128_signal_nbi
-#define shmem_ut128_signal_nbi pshmem_put128_signal_nbi
+#define shmem_put128_signal_nbi pshmem_put128_signal_nbi
 #endif /* ENABLE_PSHMEM */
 
 SHMEM_CTX_DECL_SIZED_PUT_SIGNAL_NBI(8)
