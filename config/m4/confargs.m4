@@ -13,6 +13,8 @@ AC_ARG_ENABLE([debug],
 	[])
 AM_CONDITIONAL([ENABLE_DEBUG], [test "x$enable_debug" = "xyes"])
 
+AS_IF([test "x$enable_debug" != "xyes"], [enable_debug=no])
+
 #
 # logging output: disabled by default
 #
@@ -37,6 +39,8 @@ AS_IF([test "x$enable_experimental" = "xyes"],
 	)
 AM_CONDITIONAL([ENABLE_EXPERIMENTAL], [test "x$enable_experimental" = "xyes"])
 
+AS_IF([test "x$enable_experimentalm" != "xyes"], [enable_experimental=no])
+
 #
 # profiling API: disabled by default
 #
@@ -49,6 +53,8 @@ AS_IF([test "x$enable_pshmem" = "xyes"],
 	[AC_SUBST([ENABLE_PSHMEM], [0])]
 	)
 AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
+
+AS_IF([test "x$enable_pshmem" != "xyes"], [enable_pshmem=no])
 
 #
 # address translation: disabled by default
@@ -63,6 +69,9 @@ AS_IF([test "x$enable_aligned_addresses" = "xyes"],
 	)
 AM_CONDITIONAL([ENABLE_ALIGNED_ADDRESSES], [test "x$enable_aligned_addresses" = "xyes"])
 
+AS_IF([test "x$enable_aligned_addresses" != "xyes"],
+	    [enable_aligned_addresses=no])
+
 #
 # threads: enabled by default
 #
@@ -75,6 +84,8 @@ AS_IF([test "x$enable_threads" != "xno"],
 	[AC_SUBST([ENABLE_THREADS], [0])]
 	)
 AM_CONDITIONAL([ENABLE_THREADS], [test "x$enable_threads" != "xno"])
+
+AS_IF([test "x$enable_threads" != "xno"], [enable_threads=yes])
 
 #
 # Default symmetric heap size
