@@ -86,7 +86,6 @@ check_if_progress_required(void)
     size_t nres;
     int s;
     char *copy;
-    char first;
     int ret = 0;
 
     if (proc.env.progress_threads == NULL) {
@@ -94,13 +93,15 @@ check_if_progress_required(void)
         /* NOT REACHED */
     }
 
-    first = tolower(*proc.env.progress_threads);
-
     /* something like "yes" or "all"? */
-    if ( (first == 'y') || (first == 'a') ) {
-        ret = 1;
-        goto out;
-        /* NOT REACHED */
+    if (proc.leader) {
+        const char first = tolower(*proc.env.progress_threads);
+
+        if ( (first == 'y') || (first == 'a') ) {
+            ret = 1;
+            goto out;
+            /* NOT REACHED */
+        }
     }
 
     /* shmemu_parse_csv zaps the input string */
