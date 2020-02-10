@@ -36,9 +36,9 @@ shmemu_deprecate(const char *fn_name, float version)
     k = kh_put(deprecations, table, fn_name, &ret);
 
     if (ret < 0) {
-        logger(LOG_FATAL,
-               "failed to insert \"%s\" into deprecations table",
-               fn_name);
+        shmemu_fatal("failed to insert \"%s\" into deprecations table",
+                     fn_name
+                     );
         /* NOT REACHED */
     }
 

@@ -94,6 +94,7 @@ typedef struct thispe_info {
     int rank;                   /**< physical rank info */
     int nranks;                 /**< number of ranks requested */
     int maxranks;               /**< universe size (e.g. for spares) */
+    int nnodes;                 /**< number of nodes allocated */
     shmemc_status_t status;     /**< up, down, out to lunch etc */
     int refcount;               /**< library initialization count */
     int *peers;                 /**< peer PEs in a node group */

@@ -125,8 +125,6 @@ shmemu_logger_init(void)
 
     events = kh_init(events_hash);
 
-    event_set(LOG_FATAL,      true);
-
     event_set(LOG_INIT,       false);
     event_set(LOG_FINALIZE,   false);
     event_set(LOG_MEMORY,     false);
@@ -200,10 +198,5 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
         fputs(tmp2, log_stream);
         /* make sure this all goes out in 1 burst */
         fflush(log_stream);
-
-        if (strncmp(evt, LOG_FATAL, strlen(LOG_FATAL)) == 0) {
-            shmemc_global_exit(1);
-            /* NOT REACHED */
-        }
     }
 }

@@ -74,12 +74,16 @@ typedef struct shmemc_context *shmemc_context_h;
  * PEs can belong to teams
  */
 typedef struct shmemc_team {
-    int *members;               /**< virt -> phys PE mapping */
+    int *members;               /**< virt -> parent PE mapping */
     size_t nmembers;            /**< how many PEs */
+
     shmem_team_config_t cfg;    /**< team configuration */
 
-    shmemc_context_h *ctxts;    /**< contexts in this team */
-    size_t nctxts;              /**< how many contexts */
+    shmemc_context_h *ctxts;    /**< array of contexts in this team */
+    size_t nctxts;              /**< how many contexts allocated */
+
+    bool predef;                /**< team was defined by this library */
+    const char *name;           /**< if predef, who we are (else unused) */
 } shmemc_team_t;
 
 typedef shmemc_team_t *shmemc_team_h;

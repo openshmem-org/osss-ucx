@@ -8,7 +8,6 @@
 
 #include "shmemu.h"
 #include "state.h"
-// #include "memfence.h"
 #include "shmem/api.h"
 
 /*

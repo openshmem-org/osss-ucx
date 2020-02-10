@@ -53,44 +53,43 @@
             (                                                           \
              switch (cmp) {                                             \
              case SHMEM_CMP_EQ:                                         \
-                 shmemc_ctx_wait_until_eq##_size(SHMEM_CTX_DEFAULT,     \
-                                                 (int##_size##_t *) ivar, \
-                                                 cmp_value);            \
-                 break;                                                 \
+             shmemc_ctx_wait_until_eq##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
+             break;                                                     \
              case SHMEM_CMP_NE:                                         \
-                 shmemc_ctx_wait_until_ne##_size(SHMEM_CTX_DEFAULT,     \
-                                                 (int##_size##_t *) ivar, \
-                                                 cmp_value);            \
-                 break;                                                 \
+             shmemc_ctx_wait_until_ne##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
+             break;                                                     \
              case SHMEM_CMP_GT:                                         \
-                 shmemc_ctx_wait_until_gt##_size(SHMEM_CTX_DEFAULT,     \
-                                                 (int##_size##_t *) ivar, \
-                                                 cmp_value);            \
-                 break;                                                 \
+             shmemc_ctx_wait_until_gt##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
+             break;                                                     \
              case SHMEM_CMP_LE:                                         \
-                 shmemc_ctx_wait_until_le##_size(SHMEM_CTX_DEFAULT,     \
-                                                 (int##_size##_t *) ivar, \
-                                                 cmp_value);            \
-                 break;                                                 \
+             shmemc_ctx_wait_until_le##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
+             break;                                                     \
              case SHMEM_CMP_LT:                                         \
-                 shmemc_ctx_wait_until_lt##_size(SHMEM_CTX_DEFAULT,     \
-                                                 (int##_size##_t *) ivar, \
-                                                 cmp_value);            \
-                 break;                                                 \
+             shmemc_ctx_wait_until_lt##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
+             break;                                                     \
              case SHMEM_CMP_GE:                                         \
-                 shmemc_ctx_wait_until_ge##_size(SHMEM_CTX_DEFAULT,     \
-                                                 (int##_size##_t *) ivar, \
-                                                 cmp_value);            \
-                 break;                                                 \
+             shmemc_ctx_wait_until_ge##_size(SHMEM_CTX_DEFAULT,         \
+                                             (int##_size##_t *) ivar,   \
+                                             cmp_value);                \
+             break;                                                     \
              default:                                                   \
-                 logger(LOG_FATAL,                                      \
-                        "unknown operator (code %d) in \"%s\"",         \
-                        cmp,                                            \
-                        __func__                                        \
-                        );                                              \
-                 return;                                                \
-                 /* NOT REACHED */                                      \
-                 break;                                                 \
+             shmemu_fatal("unknown operator (code %d) in \"%s\"",       \
+                          cmp,                                          \
+                          __func__                                      \
+                          );                                            \
+             return;                                                    \
+             /* NOT REACHED */                                          \
+             break;                                                     \
              }                                                          \
                                                                         ); \
     }

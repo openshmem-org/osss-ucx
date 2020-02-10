@@ -192,6 +192,13 @@ echo
 echo "Summary"
 echo "-------"
 echo
+echo "              Logging: $enable_logging"
+echo "            Debugging: $enable_debug"
+echo "           Extensions: $enable_experimental"
+echo "    Aligned Addresses: $enable_aligned_addresses"
+echo "       Multi-threaded: $enable_threads"
+echo "    Profiling Support: $enable_pshmem"
+
 echo "                  UCX: version $UCX_VERSION_STRING in $UCX_DIR"
 echo "                 PMIx: version $PMIX_VERSION_STRING in $PMIX_DIR"
 

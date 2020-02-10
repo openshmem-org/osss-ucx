@@ -40,7 +40,7 @@ static size_t (*get_usable_context)(shmemc_team_h th, bool *reused)
     = get_usable_context_boot;
 
 /*
- * how many more to allocate when we run out (magic number)
+ * how many more to allocate when we run out
  */
 
 static size_t spill_block;
@@ -50,15 +50,14 @@ static size_t spill_ctxt = 0;
 inline static shmemc_context_h *
 resize_spill_block(shmemc_team_h th, size_t n)
 {
-    shmemc_context_h *chp = (shmemc_context_h *)
-        realloc(th->ctxts,
-                n * sizeof(*(th->ctxts))
-                );
+    shmemc_context_h *chp =
+        (shmemc_context_h *) realloc(th->ctxts,
+                                     n * sizeof(*(th->ctxts))
+                                     );
 
-    if (shmemu_unlikely(chp == NULL)) {
-        logger(LOG_FATAL,
-               "can't allocate %lu bytes for context freelist",
-               n);
+    if (chp == NULL) {
+        shmemu_fatal("can't allocate %lu bytes for context freelist",
+                     (unsigned long) n);
         /* NOT REACHED */
     }
 
@@ -75,9 +74,8 @@ alloc_freelist_slot(void)
     shmemc_context_h ch =
         (shmemc_context_h) malloc(sizeof(shmemc_context_t));
 
-    if (shmemu_unlikely(ch == NULL)) {
-        logger(LOG_FATAL,
-               "unable to allocate memory for new context");
+    if (ch == NULL) {
+        shmemu_fatal("unable to allocate memory for new context");
         /* NOT REACHED */
     }
 
@@ -113,9 +111,9 @@ get_usable_context_run(shmemc_team_h th, bool *reused)
 
             th->ctxts = resize_spill_block(th, spill_ctxt);
 
-            if (shmemu_unlikely(th->ctxts == NULL)) {
-                logger(LOG_FATAL,
-                       "can't allocate more memory for context freelist");
+            if (th->ctxts == NULL) {
+                shmemu_fatal("can't allocate more memory "
+                             "for context freelist");
                 /* NOT REACHED */
             }
         }
@@ -131,7 +129,7 @@ get_usable_context_run(shmemc_team_h th, bool *reused)
         kl_shift(freelist, fl, NULL);
         logger(LOG_CONTEXTS,
                "reclaiming context #%lu from free list",
-               idx);
+               (unsigned long) idx);
         *reused = true;
     }
     return idx;
@@ -171,18 +169,35 @@ context_set_options(long options, shmemc_context_h ch)
 }
 
 /*
- * create new context
+ * allocate space for contexts in team
+ */
+shmemc_context_h *
+shmemc_alloc_contexts(shmemc_team_h th)
+{
+    if (th->nctxts > 0) {
+        return resize_spill_block(th, th->nctxts);
+    }
+    else {
+        return NULL;
+    }
+}
+
+/*
+ * create new context in a team
  *
  * Return 0 on success, non-zero on failure
  */
 
 int
-shmemc_context_create(long options, shmem_ctx_t *ctxp)
+shmemc_context_create(shmemc_team_h th, long options, shmemc_context_h *ctxp)
 {
-    shmemc_team_h th = shmemc_team_world_h;
     bool reuse;
-    const size_t idx = get_usable_context(th, &reuse);
-    shmemc_context_h ch = th->ctxts[idx];
+    size_t idx;
+    shmemc_context_h ch;
+
+    /* identify context to use */
+    idx = get_usable_context(th, &reuse);
+    ch = th->ctxts[idx];
 
     /* set SHMEM context behavior */
     context_set_options(options, ch);
@@ -193,7 +208,7 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 
         const int ret = shmemc_ucx_context_progress(ch);
 
-        if (shmemu_unlikely(ret != 0)) {
+        if (ret != 0) {
             free(ch);
             return ret;
             /* NOT REACHED */
@@ -202,20 +217,19 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 
         s = shmemc_ucx_worker_wireup(ch);
 
-        if (shmemu_unlikely(s != UCS_OK)) {
-            logger(LOG_FATAL,
-                   "cannot complete new context worker wireup"
-                   );
+        if (s != UCS_OK) {
+            shmemu_fatal("cannot complete new context worker wireup");
+            /* NOT REACHED */
         }
     }
 
     ch->creator_thread = threadwrap_thread_id();
     ch->id = idx;
-    ch->team = th;
+    ch->team = th;              /* connect context to its owning team */
 
     context_register(ch);
 
-    *ctxp = (shmem_ctx_t) ch;
+    *ctxp = ch;
 
     return 0;
 }
@@ -228,14 +242,11 @@ shmemc_context_create(long options, shmem_ctx_t *ctxp)
 void
 shmemc_context_destroy(shmem_ctx_t ctx)
 {
-    if (shmemu_unlikely(ctx == SHMEM_CTX_INVALID)) {
-        logger(LOG_CONTEXTS,
-               "ignoring attempt to destroy invalid context");
+    if (ctx == SHMEM_CTX_INVALID) {
+        shmemu_warn("ignoring attempt to destroy invalid context");
     }
-    else if (shmemu_unlikely(ctx == SHMEM_CTX_DEFAULT)) {
-        logger(LOG_FATAL,
-               "cannot destroy the default context"
-               );
+    else if (ctx == SHMEM_CTX_DEFAULT) {
+        shmemu_fatal("cannot destroy the default context");
         /* NOT REACHED */
     }
     else {
