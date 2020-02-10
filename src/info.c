@@ -5,6 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "info.h"
+#include "shmemc.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -218,7 +219,7 @@ info_output_comms(FILE *strm, const char *prefix)
 #endif /* HAVE_UCX install */
            );
 
-    output(strm, prefix, "UCX Version",
+    output(strm, prefix, "UCX Buld Version",
 #ifdef HAVE_UCX
            UCX_VERSION_STRING
 #else
@@ -233,7 +234,7 @@ info_output_comms(FILE *strm, const char *prefix)
            INTERNAL_ERROR
 #endif /* HAVE_PMIX install */
            );
-    output(strm, prefix, "PMIx Version",
+    output(strm, prefix, "PMIx Build Version",
 #ifdef HAVE_PMIX
            PMIX_VERSION_STRING
 #else
