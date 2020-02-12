@@ -95,17 +95,19 @@ sub which {
 # PRRTE.
 #
 
-debug('init', "look for viable launcher");
+debug('init', "finding viable launcher");
 
 my $prrte_starter;
 
 my $prun = qq(prun);
 
 if ($launcher eq '') {
+  debug('prrte', "look for \"$prun\"");
+
   my $pl = which($prun);
 
   if (defined $pl) {
-    debug('prrte', "found \"$prun\"");
+    debug('prrte', "using \"$pl\"");
 
     my @Starters = qw(prte psrvr);
 
@@ -116,7 +118,7 @@ if ($launcher eq '') {
       $ps =~ s%/$prun$%/$strt%;
 
       if ( -x $ps ) {
-        debug('prrte', "found \"$strt\"");
+        debug('prrte', "using \"$ps\"");
         $prrte_starter = $ps;
         $launcher = "$prun";
         last;
