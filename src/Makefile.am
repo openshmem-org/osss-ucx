@@ -115,6 +115,8 @@ noinst_LTLIBRARIES     = liballocator.la
 if ENABLE_EXPERIMENTAL
 
 MY_SOURCES            += \
+			extensions/fence.c \
+			extensions/quiet.c \
 			extensions/shmalloc.c \
 			extensions/wtime.c \
 			extensions/interop.c

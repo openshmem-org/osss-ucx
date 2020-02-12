@@ -118,7 +118,7 @@ if ($launcher eq '') {
       if ( -x $ps ) {
         debug('prrte', "found \"$strt\"");
         $prrte_starter = $ps;
-        $launcher = $prun;
+        $launcher = "$prun";
         last;
       }
       else {

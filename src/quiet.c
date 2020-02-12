@@ -35,38 +35,3 @@ shmem_quiet(void)
 
     SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_quiet(SHMEM_CTX_DEFAULT));
 }
-
-#ifdef ENABLE_EXPERIMENTAL
-
-#ifdef ENABLE_PSHMEM
-#pragma weak shmemx_quiet_test = pshmemx_quiet_test
-#define shmemx_quiet_test pshmemx_quiet_test
-#endif /* ENABLE_PSHMEM */
-
-int
-shmemx_ctx_quiet_test(shmem_ctx_t ctx)
-{
-    int s;
-
-    SHMEMT_MUTEX_NOPROTECT(s = shmemc_ctx_quiet_test(ctx));
-
-    logger(LOG_QUIET,
-           "%s(ctx=%lu) -> %d",
-           __func__,
-           shmemc_context_id(ctx), s
-           );
-
-    return s;
-}
-
-int
-shmemx_quiet_test(void)
-{
-    int s;
-
-    SHMEMT_MUTEX_NOPROTECT(s = shmemc_ctx_quiet_test(SHMEM_CTX_DEFAULT));
-
-    return s;
-}
-
-#endif  /* ENABLE_EXPERIMENTAL */
