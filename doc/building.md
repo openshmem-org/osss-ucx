@@ -48,7 +48,7 @@ The OpenSHMEM Collectives Library.
 
 Tested with github master:
 
-[Get SHCOLL](https://github.com/tonycurtis/OpenSHMEM-Collective-Routines)
+[Get SHCOLL](https://github.com/tonycurtis/shcoll)
 
 SHCOLL is also bundled with the OSSS-UCX distribution to avoid
 requiring an external installation, and will be used by default.
