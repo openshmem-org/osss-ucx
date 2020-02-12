@@ -26,7 +26,7 @@ For more information about the PRRTE-based launcher, see
 
 v1.2.x, or newer, release; or from github master:
 
-[Get PMIx](https://github.com/openpmix/pmix/)
+[Get PMIx](https://github.com/openpmix/openpmix/)
 
 ### Sample author config
 
