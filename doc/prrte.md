@@ -2,10 +2,17 @@
 
 # Using PRRTE as launcher
 
+## NOTE:
+
+Open-MPI and PRRTE are basically "becoming one".  If you use the
+latest Op-enMPI from GitHub, the OSSS-UCX launcher will find the
+Open-MPI `prte`/`prun` commands and use those, interpreting the setup
+as PRRTE-based.  But it should continue to work "as is".
+
 PRRTE is the server-side of PMIx.  It can be used instead of Open-MPI
 as the launcher.
 
-[Get PRRTE](https://github.com/pmix/prrte/)
+[Get PRRTE](https://github.com/openpmix/prrte/)
 
 ## Sample author config
 

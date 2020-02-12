@@ -4,7 +4,8 @@
 
 For all users, any version of UCX should be fine.
 
-The interaction with most impact is that of PMIx and Open-MPI.  Here is a table showing tested configurations:
+The interaction with most impact is that of PMIx and Open-MPI.  Here
+is a table showing tested configurations:
 
 |Launcher|PMIx|Stability level|Note|
 |---:|---:|---:|---:|
@@ -25,7 +26,7 @@ For more information about the PRRTE-based launcher, see
 
 v1.2.x, or newer, release; or from github master:
 
-[Get PMIx](https://github.com/pmix/pmix/)
+[Get PMIx](https://github.com/openpmix/pmix/)
 
 ### Sample author config
 
