@@ -194,9 +194,18 @@ sub run_app {
     $SIG{$sig} = sub { zap $pid; };
   }
 
+  # make sure required SHMEM_ env vars get passed
+  my @extra_args = qw(-x SHMEM_*);
+
+  # see if user wants to tell us anything from environment
+  my $pre = $ENV{PRUN_ARGS};
+  if (defined $pre) {
+    push @extra_args, split('\s+', $pre);
+  }
+
   my $rc = 0;
   if ($pid == 0) {              # child
-    exec $launcher, @ARGV;
+    exec $launcher, @extra_args, @ARGV;
   }
   else {                        # parent
     debug('launch', "application in process $pid");
@@ -224,15 +233,6 @@ sub run_app {
 #         --debug-daemons
 #      );
 
-my $pae = $ENV{PRTE_ARGS};
-
-my @envargs = (defined $pae) ? split('\s+', $pae) : ();
-
-my @prte_cmd =
-  (
-   $prrte_starter,
-   @envargs
-  );
 my $prte_pid;
 
 my ($chin, $chout, $cherr);     # child stdio
@@ -265,7 +265,7 @@ sub prrte_launch {
 
   $cherr = gensym();            # need lvalue
 
-  $prte_pid = open3($chin, $chout, $cherr, @prte_cmd);
+  $prte_pid = open3($chin, $chout, $cherr, $prrte_starter);
 
   if (! defined $prte_pid) {
     die "$progname: failed to run starter: $!";
