@@ -186,8 +186,10 @@ sub zap {                       # clean up after signal
 };
 
 sub run_app {
+  my @extra_args;
+
   # make sure required SHMEM_ env vars get passed
-  my @extra_args = qw(-x SHMEM_* -x SMA_*);
+  push @extra_args, qw(-x SHMEM_* -x SMA_*) if $is_prrte;
 
   # see if user wants to tell us anything from environment
   my $pre = $ENV{PRUN_ARGS};
