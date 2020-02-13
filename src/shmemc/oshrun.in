@@ -186,16 +186,8 @@ sub zap {                       # clean up after signal
 };
 
 sub run_app {
-  debug('launch', "\"$launcher @ARGV\"");
-  my $pid = fork();
-  die "$progname:launch: fork failed: $!" unless defined $pid;
-
-  for my $sig (qw(INT QUIT)) {
-    $SIG{$sig} = sub { zap $pid; };
-  }
-
   # make sure required SHMEM_ env vars get passed
-  my @extra_args = qw(-x SHMEM_*);
+  my @extra_args = qw(-x SHMEM_* -x SMA_*);
 
   # see if user wants to tell us anything from environment
   my $pre = $ENV{PRUN_ARGS};
@@ -203,9 +195,21 @@ sub run_app {
     push @extra_args, split('\s+', $pre);
   }
 
+  my @all_args = (@extra_args, @ARGV);
+
+  debug('launch', "\"$launcher @all_args\"");
+
+
+  my $pid = fork();
+  die "$progname:launch: fork failed: $!" unless defined $pid;
+
+  for my $sig (qw(INT QUIT)) {
+    $SIG{$sig} = sub { zap $pid; };
+  }
+
   my $rc = 0;
   if ($pid == 0) {              # child
-    exec $launcher, @extra_args, @ARGV;
+    exec $launcher, @all_args;
   }
   else {                        # parent
     debug('launch', "application in process $pid");
