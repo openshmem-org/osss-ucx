@@ -37,7 +37,7 @@ option_enabled_test(char *str)
     if (strncasecmp(str, "on", 2) == 0) {
         return true;
     }
-    if (strtol(str, NULL, 10) > 0L) {
+    if (strtol(str, NULL, 10) != 0L) {
         return true;
     }
     return false;
