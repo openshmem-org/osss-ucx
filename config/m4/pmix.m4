@@ -70,7 +70,7 @@ AS_IF([test "x$pmix_happy" = "xyes"],
        PMIX_VERSION_STRING=`printf "%lu.%lu.%lu" $maj $min $rel`
        AS_BOX(PMIx version is $PMIX_VERSION_STRING)
 
-       min_pmix_version=5
+       min_pmix_version=3
 
        AS_IF([test $maj -lt $min_pmix_version],
        		   AC_MSG_ERROR([PMIx version $PMIX_VERSION_STRING is too old.  Use version $min_pmix_version and above])
