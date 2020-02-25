@@ -65,11 +65,12 @@ AS_IF([test "x$pmix_happy" = "xyes"],
       [hdr="$PMIX_DIR/include/pmix_version.h"
        maj=`awk '$2 == "PMIX_VERSION_MAJOR" {print strtonum($3)}' $hdr`
        min=`awk '$2 == "PMIX_VERSION_MINOR" {print strtonum($3)}' $hdr`
+       rel=`awk '$2 == "PMIX_VERSION_RELEASE" {print strtonum($3)}' $hdr`
 
-       PMIX_VERSION_STRING=`printf "%lu.%lu" $maj $min`
+       PMIX_VERSION_STRING=`printf "%lu.%lu.%lu" $maj $min $rel`
        AS_BOX(PMIx version is $PMIX_VERSION_STRING)
 
-       min_pmix_version=3
+       min_pmix_version=5
 
        AS_IF([test $maj -lt $min_pmix_version],
        		   AC_MSG_ERROR([PMIx version $PMIX_VERSION_STRING is too old.  Use version $min_pmix_version and above])
