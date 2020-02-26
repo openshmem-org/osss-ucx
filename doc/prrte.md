@@ -5,7 +5,7 @@
 ## NOTE:
 
 Open-MPI and PRRTE are basically "becoming one".  If you use the
-latest Op-enMPI from GitHub, the OSSS-UCX launcher will find the
+latest Open-MPI from GitHub, the OSSS-UCX launcher will find the
 Open-MPI `prte`/`prun` commands and use those, interpreting the setup
 as PRRTE-based.  But it should continue to work "as is".
 
