@@ -9,11 +9,9 @@ is a table showing tested configurations:
 
 |Launcher|PMIx|Stability level|Note|
 |---:|---:|---:|---:|
-|OMPI 3.1.3|2.1.1|highest||
-|OMPI 4.0.0|2.1.1|||
-|OMPI 4.0.1|3.1.2||Author's more stable env|
-|OMPI 4.0.1|github master|||
-|OMPI github master|3.1.2|||
+|OMPI 4.0.2|3.1.4||Author's more stable env|
+|OMPI 4.0.2|github master|||
+|OMPI github master|3.1.4|||
 |OMPI github master|github master|||
 |PRRTE github master|github master|lowest|Author's bleeding-edge env|
 
@@ -24,7 +22,7 @@ For more information about the PRRTE-based launcher, see
 
 ## PMIx
 
-v1.2.x, or newer, release; or from github master:
+v3 or newer, release; or from github master:
 
 [Get PMIx](https://github.com/openpmix/openpmix/)
 
