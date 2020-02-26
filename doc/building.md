@@ -2,10 +2,11 @@
 
 ## Combinations
 
-For all users, any version of UCX should be fine.
+For all users, any version of UCX should be fine.  Features are
+auto-detected by our configure script.
 
-The interaction with most impact is that of PMIx and Open-MPI.  Here
-is a table showing tested configurations:
+The interaction with most impact is that of PMIx and he launcher.
+Here is a table showing tested configurations:
 
 |Launcher|PMIx|Stability level|Note|
 |---:|---:|---:|---:|
@@ -14,9 +15,6 @@ is a table showing tested configurations:
 |OMPI github master|3.1.4|||
 |OMPI github master|github master|||
 |PRRTE github master|github master|lowest|Author's bleeding-edge env|
-
-For more information about the PRRTE-based launcher, see
-[prrte.md](./prrte.md).
 
 # Prerequisites
 
@@ -54,12 +52,14 @@ requiring an external installation, and will be used by default.
 
 ### Sample author config
 
-```sh
+```shell
 .../configure \
         --prefix=/path/to/install/shcoll
 ```
 
-## OpenMPI
+## Launcher: OpenMPI, PRRTE, SLURM
+
+### Open-MPI
 
 For PMIx-aware "mpiexec" launcher:
 
@@ -67,7 +67,7 @@ For PMIx-aware "mpiexec" launcher:
 
 ### Sample author config
 
-```sh
+```shell
 .../configure \
         --prefix=/path/to/install/openmpi \
         --without-verbs \
@@ -75,11 +75,57 @@ For PMIx-aware "mpiexec" launcher:
         --with-tm
 ```
 
+### PRRTE
+
+Open-MPI and PRRTE are basically "becoming one".  If you use the
+latest Open-MPI from GitHub, the OSSS-UCX launcher will find the
+Open-MPI `prte`/`prun` commands and use those, interpreting the setup
+as PRRTE-based.  But it should continue to work "as is".
+
+PRRTE is the server-side of PMIx.  It can be used instead of Open-MPI
+as the launcher.
+
+[Get PRRTE](https://github.com/openpmix/prrte/)
+
+#### Sample author config
+
+```shell
+.../configure \
+        --with-tm \
+        --prefix=/path/to/install/prrte \
+        --with-pmix=/path/to/install/pmix
+```
+
+OSSS-UCX's oshrun command will detect PRRTE's `prun` command and use
+it instead of mpiexec.
+
+In case of problems, the environment variable OSHRUN_DEBUG can be set
+to y|1 to provide debugging output during oshrun start-up for
+detection of PRRTE/Open-MPI.
+
+### SLURM
+
+SLURM can be configured with a PMIx plugin.  You can see if this is
+supported with the command:
+
+```shell
+$ srun --mpi=list
+srun: MPI types are...
+srun: pmix
+srun: pmix_v2
+srun: none
+srun: openmpi
+srun: pmi2
+```
+
+With this setup, you should be able to run OSSS-UCX OpenSHMEM programs
+directly with `srun`, avoiding Open-MPI/PRRTE and `oshrun` altogether.
+
 ## Building Sequence
 
 In the top-level source directory, run
 
-```sh
+```shell
 ./autogen.sh
 ```
 
@@ -89,7 +135,7 @@ out-of-source-tree.
 The configure script can be told where PMIx and UCX live, and other
 options, e.g.
 
-```sh
+```shell
  .../configure \
        --prefix=/path/to/install/osss-ucx \
        --with-pmix=/path/to/install/pmix \
@@ -102,6 +148,6 @@ options, e.g.
 
 Then
 
-```sh
+```shell
 $ make install
 ```
