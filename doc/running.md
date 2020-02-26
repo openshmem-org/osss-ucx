@@ -1,16 +1,16 @@
 # For license: see LICENSE file at top-level
 
-At a minimum, make sure OSSS-UCX, and a suitable Open-MPI (see
-building.md) are on your PATH in that priority:
+At a minimum, make sure OSSS-UCX, and a suitable launcher (see
+[Building](building.md) are on your PATH in that priority:
 
-```sh
+```shell
 $ export PATH=/path/to/install/openmpi/bin:$PATH
 $ export PATH=/path/to/install/osss-ucx/bin:$PATH
 ```
 
 and test:
 
-```sh
+```shell
 $ which mpiexec
 /path/to/install/openmpi/bin/mpiexec
 
@@ -22,7 +22,7 @@ You can set up a modulefile (http://modules.sourceforge.net/) to
 simplify this process and set up other SHMEM environment variables
 that might be of interest, e.g. something like:
 
-```sh
+```shell
 #%Module1.0#############################################
 
 set             openmpi_root      /path/to/install/openmpi
