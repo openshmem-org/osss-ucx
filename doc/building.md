@@ -5,7 +5,7 @@
 For all users, any version of UCX should be fine.  Features are
 auto-detected by our configure script.
 
-The interaction with most impact is that of PMIx and he launcher.
+The interaction with most impact is that of PMIx and the launcher.
 Here is a table showing tested configurations:
 
 |Launcher|PMIx|Stability level|Note|
@@ -20,13 +20,15 @@ Here is a table showing tested configurations:
 
 ## PMIx
 
-v3 or newer, release; or from github master:
+v2 is no longer supported.
+
+v3, or newer, release; or from github master:
 
 [Get PMIx](https://github.com/openpmix/openpmix/)
 
 ### Sample author config
 
-```sh
+```shell
 $ .../configure --prefix=/path/to/install/pmix
 ```
 
@@ -48,7 +50,8 @@ Tested with github master:
 [Get SHCOLL](https://github.com/tonycurtis/shcoll)
 
 SHCOLL is also bundled with the OSSS-UCX distribution to avoid
-requiring an external installation, and will be used by default.
+requiring an external installation, and will be used by default
+(RECOMMENDED).
 
 ### Sample author config
 
@@ -121,7 +124,7 @@ srun: pmi2
 With this setup, you should be able to run OSSS-UCX OpenSHMEM programs
 directly with `srun`, avoiding Open-MPI/PRRTE and `oshrun` altogether.
 
-## Building Sequence
+## OSSS-UCX Building Sequence
 
 In the top-level source directory, run
 
@@ -151,3 +154,5 @@ Then
 ```shell
 $ make install
 ```
+
+See [Running](running.md) about using OSSS-UCX.
