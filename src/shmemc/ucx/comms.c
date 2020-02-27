@@ -194,9 +194,10 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 #endif  /* ENABLE_EXPERIMENTAL */
 
 void
-noop_callback(void *request, ucs_status_t status)
+nb_callback(void *req, ucs_status_t status)
 {
-    NO_WARN_UNUSED(request);
+    ucp_request_free(req);
+    /* TODO: check status */
     NO_WARN_UNUSED(status);
 }
 
@@ -215,8 +216,6 @@ noop_callback(void *request, ucs_status_t status)
 inline static ucs_status_t
 check_wait_for_request(shmemc_context_h ch, void *req)
 {
-    NO_WARN_UNUSED(ch);
-
     if (req == NULL) {          /* completed */
         return UCS_OK;
     }
@@ -232,7 +231,7 @@ check_wait_for_request(shmemc_context_h ch, void *req)
 
             s = UCX_REQUEST_CHECK(req);
         } while (s == UCS_INPROGRESS);
-        ucp_request_free(req);
+
         return s;
     }
 }
@@ -277,7 +276,7 @@ helper_fetching_amo(shmemc_context_h ch,
     sp = ucp_atomic_fetch_nb(ep,
                              op,
                              rv, retp, vs,
-                             r_t, r_key, noop_callback);
+                             r_t, r_key, nb_callback);
 
     return check_wait_for_request(ch, sp);
 }
@@ -703,7 +702,7 @@ shmemc_ctx_put(shmem_ctx_t ctx,
 
 #ifdef HAVE_UCP_PUT_NB
     sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
-                    noop_callback);
+                    nb_callback);
     s = check_wait_for_request(ch, sp);
 #else
     s = ucp_put(ep, src, nbytes, r_dest, r_key);
@@ -733,7 +732,7 @@ shmemc_ctx_get(shmem_ctx_t ctx,
 
 #ifdef HAVE_UCP_GET_NB
     sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
-                    noop_callback);
+                    nb_callback);
     s = check_wait_for_request(ch, sp);
 #else
     s = ucp_get(ep, dest, nbytes, r_src, r_key);
@@ -762,15 +761,14 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     uint64_t r_dest;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
-    ucs_status_t s;
+    ucs_status_ptr_t sp;
 
     get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
     ep = lookup_ucp_ep(ch, pe);
 
-    s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
-    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking put failed (status: %s)",
-                  ucs_status_string(s));
+    sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key, nb_callback);
+    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+                  "non-blocking put failed");
 }
 
 void
@@ -782,15 +780,14 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     uint64_t r_src;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
-    ucs_status_t s;
+    ucs_status_ptr_t sp;
 
     get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
     ep = lookup_ucp_ep(ch, pe);
 
-    s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
-    shmemu_assert((s == UCS_OK) || (s == UCS_INPROGRESS),
-                  "non-blocking get failed (status: %s)",
-                  ucs_status_string(s));
+    sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key, nb_callback);
+    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+                  "non-blocking get failed");
  }
 
 /*
