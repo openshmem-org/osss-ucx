@@ -1,3 +1,4 @@
+
 .\" For license: see LICENSE file at top-level
 .TH oshrun 1 "" "OSSS"
 .SH NAME
@@ -89,7 +90,7 @@ or on all PEs if the variable's (case-insensitive) value is "y[es]" or
 "a[ll]".
 .RE
 .RS 2
-.IP "SHMEM_PROGRESS_DELAY_NS (default: 1000)"
+.IP "SHMEM_PROGRESS_DELAY (default: 1000)"
 If progress threads requested, control the delay between polls.  Given
 in nanosceonds.
 .RE

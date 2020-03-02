@@ -180,7 +180,7 @@ shmemc_env_init(void)
 
     proc.env.progress_delay_ns = 1000; /* magic, empirical */
 
-    CHECK_ENV(e, PROGRESS_DELAY_NS);
+    CHECK_ENV(e, PROGRESS_DELAY);
     r = shmemu_parse_size(e != NULL ? e : "1000" /* magic, empirical */,
                           &proc.env.progress_delay_ns);
     if (r != 0) {
@@ -236,7 +236,7 @@ shmemc_env_finalize(void)
  * all terminals are 80 columns, right? :)
  */
 
-static const int var_width = 24;
+static const int var_width = 22;
 static const int val_width = 10;
 static const int hr_width  = 74;
 
@@ -356,9 +356,9 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width,
             proc.env.progress_threads ? proc.env.progress_threads : "no",
             "do we manage our own progress?");
-    fprintf(stream, "%s%-*s %-*ld %s\n",
+    fprintf(stream, "%s%-*s %-*lu %s\n",
             prefix,
-            var_width, "SHMEM_PROGRESS_DELAY_NS",
+            var_width, "SHMEM_PROGRESS_DELAY",
             val_width,
             proc.env.progress_delay_ns,
             "delay between progress polls (ns)");

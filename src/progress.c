@@ -147,7 +147,11 @@ progress_init(void)
         int s;
 
         /* pull in progress timing */
-        delay_ns = proc.env.progress_delay_ns;
+        delay_ns = (long) proc.env.progress_delay_ns;
+
+        shmemu_logger(LOG_INIT,
+                      "progress thread delay = %ldns",
+                      delay_ns);
 
         s = threadwrap_thread_create(&thr, start_progress, NULL);
         shmemu_assert(s == 0,
