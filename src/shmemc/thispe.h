@@ -79,6 +79,8 @@ typedef struct env_info {
     shmemc_coll_t coll;         /**< collectives */
 
     char *progress_threads;     /**< do we need to start our own? */
+    long progress_delay_ns;     /**< if progress needed, time (ns)
+                                   between polls */
 
     size_t prealloc_contexts;   /**< set up this many at start */
     bool memfatal;              /**< force exit on memory usage error? */

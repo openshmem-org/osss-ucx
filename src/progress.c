@@ -44,7 +44,7 @@ static threadwrap_thread_t thr;
  * N.B. mutable in case we want to look at adaptive polling
  */
 
-static volatile long delay_ns = 1000;
+static long delay_ns;
 
 /*
  * polling sentinel
@@ -145,6 +145,9 @@ progress_init(void)
 
     if (proc.progress_thread) {
         int s;
+
+        /* pull in progress timing */
+        delay_ns = proc.env.progress_delay_ns;
 
         s = threadwrap_thread_create(&thr, start_progress, NULL);
         shmemu_assert(s == 0,

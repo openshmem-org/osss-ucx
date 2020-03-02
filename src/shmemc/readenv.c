@@ -178,6 +178,16 @@ shmemc_env_init(void)
         proc.env.progress_threads = strdup(e); /* free@end */
     }
 
+    proc.env.progress_delay_ns = 1000; /* magic, empirical */
+
+    CHECK_ENV(e, PROGRESS_DELAY_NS);
+    r = shmemu_parse_size(e != NULL ? e : "1000" /* magic, empirical */,
+                          &proc.env.progress_delay_ns);
+    if (r != 0) {
+        shmemu_fatal("Couldn't work out requested progress delay time \"%s\"",
+                     e != NULL ? e : "(null)");
+    }
+
     proc.env.prealloc_contexts = 64; /* magic number */
 
     CHECK_ENV(e, PREALLOC_CTXS);
@@ -346,6 +356,12 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width,
             proc.env.progress_threads ? proc.env.progress_threads : "no",
             "do we manage our own progress?");
+    fprintf(stream, "%s%-*s %-*ld %s\n",
+            prefix,
+            var_width, "SHMEM_PROGRESS_DELAY_NS",
+            val_width,
+            proc.env.progress_delay_ns,
+            "delay between progress polls (ns)");
     fprintf(stream, "%s%-*s %-*lu %s\n",
             prefix,
             var_width, "SHMEM_PREALLOC_CTXS",

@@ -89,6 +89,11 @@ or on all PEs if the variable's (case-insensitive) value is "y[es]" or
 "a[ll]".
 .RE
 .RS 2
+.IP "SHMEM_PROGRESS_DELAY_NS (default: 1000)"
+If progress threads requested, control the delay between polls.  Given
+in nanosceonds.
+.RE
+.RS 2
 .IP "SHMEM_MEMERR_FATAL (bool, default: true)"
 If set to true, symmetric memory corruption or overflow is treated as
 a fatal condition, and the program exits.  If unset or false, the
