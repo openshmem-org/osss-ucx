@@ -56,6 +56,8 @@ static volatile bool done = false;
  * Does comms. service until told not to
  */
 
+static const long billion = 1e9;
+
 static void *
 start_progress(void *args)
 {
@@ -63,8 +65,8 @@ start_progress(void *args)
 
     do {
         const struct timespec ts = {
-            .tv_sec  = (time_t) 0,
-            .tv_nsec = delay_ns
+            .tv_sec  = delay_ns / billion,
+            .tv_nsec = delay_ns % billion
         };
 
         shmemc_progress();
