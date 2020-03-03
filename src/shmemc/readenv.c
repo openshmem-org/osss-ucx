@@ -356,12 +356,16 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             val_width,
             proc.env.progress_threads ? proc.env.progress_threads : "no",
             "do we manage our own progress?");
-    fprintf(stream, "%s%-*s %-*lu %s\n",
+    fprintf(stream, "%s%-*s %-*lu %s",
             prefix,
             var_width, "SHMEM_PROGRESS_DELAY",
             val_width,
             proc.env.progress_delay_ns,
             "delay between progress polls (ns)");
+    if (proc.env.progress_threads == NULL) {
+        fprintf(stream, " [not used]");
+    }
+    fprintf(stream, "\n");
     fprintf(stream, "%s%-*s %-*lu %s\n",
             prefix,
             var_width, "SHMEM_PREALLOC_CTXS",
