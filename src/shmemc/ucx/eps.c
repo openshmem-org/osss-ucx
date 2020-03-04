@@ -189,7 +189,7 @@ shmemc_ucx_worker_wireup(shmemc_context_h ch)
 {
     ucs_status_ptr_t req;
 
-    req = ucp_worker_flush_nb(ch->w, 0, noop_callback);
+    req = ucp_worker_flush_nb(ch->w, 0, nb_callback);
 
     if (req == UCS_OK) {
         return UCS_OK;

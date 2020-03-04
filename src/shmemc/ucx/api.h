@@ -10,10 +10,10 @@
 #include "pe.h"
 
 /*
- * a dummy callback that does nothing
+ * callback for non-blocking ops.
  */
 
-void noop_callback(void *request, ucs_status_t status);
+void nb_callback(void *request, ucs_status_t status);
 
 /*
  * setup and teardown
