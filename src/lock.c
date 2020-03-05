@@ -47,6 +47,10 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
     shmem_lock_t t;
     int16_t prev, locked;
 
+    logger(LOG_LOCKS,
+           "%s() locked=%d next=%d",
+           __func__, node->d.locked, node->d.next);
+
     node->d.next = SHMEM_LOCK_FREE;
 
     // LOAD_STORE_FENCE();
@@ -76,11 +80,16 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
         /* sit here until unlocked */
         shmem_short_wait_until(&(node->d.locked), SHMEM_CMP_EQ, 0);
     }
+
 }
 
 static void
 clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
+    logger(LOG_LOCKS,
+           "%s() locked=%d next=%d",
+           __func__, node->d.locked, node->d.next);
+
     if (node->d.next == SHMEM_LOCK_FREE) {
         shmem_lock_t t;
 
@@ -111,6 +120,10 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
     shmem_lock_t t;
     int ret;
+
+    logger(LOG_LOCKS,
+           "%s() locked=%d next=%d",
+           __func__, node->d.locked, node->d.next);
 
     t.blob = shmem_int_g(&(lock->blob), lock_owner(lock));
 
