@@ -7,12 +7,10 @@ from subprocess import Popen, PIPE
 import re
 import shlex
 from threading import Timer
-import colorama
-from colorama import Style
 from distutils.spawn import find_executable
 
 #
-# defaults
+# -- defaults --------------------------------------------------------
 #
 
 DVM            = "prte"
@@ -27,13 +25,12 @@ ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
 
 width          = 70             # of terminal
 debugging      = False
-do_effect      = False
 launcher       = None
 using_dvm      = False
 lproc          = None           # launcher process
 
 #
-# maybe produce some debugging output
+# -- debug and error--------------------------------------------------
 #
 def debug(cat, *args):
     if debugging:
@@ -41,16 +38,12 @@ def debug(cat, *args):
         if cat != None:
             msg += cat + ":"
         msg += ' '.join(map(str, args))
-        if do_effect:
-            print Style.BRIGHT + msg + Style.RESET_ALL
-        else:
-            print msg
+        print msg
 
 #
 # crash out on error
 #
 def bail(*args):
-    print Style.RESET_ALL       # in case in middle of effect
     err = "ERROR:" + ' '.join(map(str, args)) + "\n"
     sys.stderr.write(err)
     sys.exit(1)
@@ -63,15 +56,6 @@ def bail(*args):
 # set up
 #
 progname = os.path.basename(sys.argv[0])
-
-#
-# if we can't do output effects, just carry on
-#
-try:
-    colorama.init()
-    do_effect = sys.stdout.isatty()
-except:
-    pass
 
 #
 # produce commentary during start up?
