@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # For license: see LICENSE file at top-level
 
 import os
@@ -38,7 +38,7 @@ def debug(cat, *args):
         if cat != None:
             msg += cat + ":"
         msg += ' '.join(map(str, args))
-        print msg
+        print(msg)
 
 #
 # crash out on error
