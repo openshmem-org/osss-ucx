@@ -10,6 +10,13 @@ import shlex
 from threading import Timer
 from distutils.spawn import find_executable
 
+try:
+    from colorama import Style
+    do_effect = sys.stdout.isatty()
+except ImportError:
+    do_effect = False
+    pass
+
 #
 # -- defaults --------------------------------------------------------
 #
@@ -38,13 +45,17 @@ def debug(cat, *args):
         msg = progname + ":"
         if cat != None:
             msg += cat + ":"
-        msg += ' '.join(map(str, args)) + "\n"
+        msg += ' '.join(map(str, args))
+        if do_effect:
+            msg = Style.BRIGHT + msg + Style.RESET_ALL
+        msg += "\n"
         sys.stdout.write(msg)
 
 #
 # crash out on error
 #
 def bail(*args):
+    lproc.terminate()
     err = progname + ": ERROR:" + \
         ' '.join(map(str, args)) + \
         "\n"
