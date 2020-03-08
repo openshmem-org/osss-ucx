@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # For license: see LICENSE file at top-level
 
+import signal
 import os
 import sys
 from subprocess import Popen, PIPE
@@ -37,20 +38,32 @@ def debug(cat, *args):
         msg = progname + ":"
         if cat != None:
             msg += cat + ":"
-        msg += ' '.join(map(str, args))
-        print(msg)
+        msg += ' '.join(map(str, args)) + "\n"
+        sys.stdout.write(msg)
 
 #
 # crash out on error
 #
 def bail(*args):
-    err = "ERROR:" + ' '.join(map(str, args)) + "\n"
+    err = progname + ": ERROR:" + \
+        ' '.join(map(str, args)) + \
+        "\n"
     sys.stderr.write(err)
     sys.exit(1)
 
 #
 # -- main ------------------------------------------------------------
 #
+
+#
+# -- trap signals ----------------------------------------------------
+#
+def trap_out(signo, frame):
+    lproc.terminate()
+    sys.exit(0)
+
+signal.signal(signal.SIGINT, trap_out)
+signal.signal(signal.SIGQUIT, trap_out)
 
 #
 # set up
@@ -68,14 +81,12 @@ if de != None:
 debug("init", "looking for launcher")
 
 launcher = os.getenv(ENV_LAUNCH_VAR)
-
 if launcher != None:
     if not find_executable(launcher):
         bail("can't find launcher \"{0}\" in ".format(launcher) + \
              "environment variable \"{0}\"".format(ENV_LAUNCH_VAR))
 else:
     launcher = "@SHMEM_LAUNCHER@" # override from configure?
-
 
 if launcher == "":
     #

@@ -114,15 +114,11 @@ endif # c++
 
 # TODO detect perl/python and choose source version
 
-if HAVE_PY3_LAUNCHER
-OSHRUN_TEMPLATE = oshrun.py3.in
-else
-if HAVE_PY2_LAUNCHER
-OSHRUN_TEMPLATE = oshrun.py2.in
+if HAVE_PY_LAUNCHER
+OSHRUN_TEMPLATE = oshrun.py.in
 else
 OSHRUN_TEMPLATE = oshrun.perl.in
-endif # HAVE_PY2_LAUNCHER
-endif # HAVE_PY3_LAUNCHER
+endif # HAVE_PY_LAUNCHER
 
 oshrun:	$(OSHRUN_TEMPLATE)
 	sed -e 's,\@SHMEM_LAUNCHER\@,@SHMEM_LAUNCHER@,g' < $^ > $@
