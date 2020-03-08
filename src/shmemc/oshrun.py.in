@@ -24,7 +24,7 @@ except ImportError:
 DVM            = "prte"
 EXPECTED       = b"DVM ready"
 
-SPAWN_TIMEOUT  = 3
+SPAWN_TIMEOUT  = 8
 
 PRTE_LAUNCHER  = "prun -x SHMEM_* -x SMA_*"
 MPI_LAUNCHER   = "mpiexec"
