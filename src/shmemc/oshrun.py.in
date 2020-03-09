@@ -10,6 +10,9 @@ import shlex
 from threading import Timer
 from distutils.spawn import find_executable
 
+#
+# try to highlight debugging output, don't worry if we can't
+#
 try:
     from colorama import Style
     do_effect = sys.stdout.isatty()
@@ -77,18 +80,20 @@ signal.signal(signal.SIGINT, trap_out)
 signal.signal(signal.SIGQUIT, trap_out)
 
 #
-# set up
+# set up basic environment
 #
 progname = os.path.basename(sys.argv[0])
 
-#
-# produce commentary during start up?
-#
 de = os.getenv("OSHRUN_DEBUG")
 if de != None:
     if not re.match('^[n0]', de, re.IGNORECASE):
         debugging = True
 
+debug(None, "== OSSS-UCX Python-based Launcher ==")
+
+#
+# off we go
+#
 debug("init", "looking for launcher")
 
 launcher = os.getenv(ENV_LAUNCH_VAR)
