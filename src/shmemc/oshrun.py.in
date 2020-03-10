@@ -105,12 +105,13 @@ else:
     launcher = "@SHMEM_LAUNCHER@" # override from configure?
 
 if launcher == "":
+    debug("init", "checking for DVM...")
     #
     # start the DVM if required
     #
     using_dvm = find_executable(DVM) != None
     if using_dvm:
-        debug(DVM, "start DVM")
+        debug(DVM, "starting DVM")
         lproc = Popen(shlex.split(DVM), stdout = PIPE, stderr = PIPE)
         t = Timer(SPAWN_TIMEOUT, lproc.terminate)
         try:
@@ -125,9 +126,10 @@ if launcher == "":
         launcher = PRTE_LAUNCHER
         debug(DVM, "talking with DVM \"{0}\"".format(DVM))
     else:
-        debug("init", "checking for MPI")
+        debug("init", "checking for MPI...")
         if find_executable(MPI_LAUNCHER):
             launcher = MPI_LAUNCHER
+            debug("init", "using MPI")
         else:
             bail("can't find a launcher")
 
@@ -141,7 +143,7 @@ user_cmd = ' '.join(map(str, sys.argv[1:]))
 #
 cmd = launcher + ' ' + user_cmd
 
-debug(DVM, "running \"{0}\"".format(cmd))
+debug(None, "running \"{0}\"".format(cmd))
 debug(None, '-' * width)
 
 #
