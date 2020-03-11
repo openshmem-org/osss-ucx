@@ -205,31 +205,31 @@ echo
 echo "Summary"
 echo "-------"
 echo
-echo "              Logging: $enable_logging"
-echo "            Debugging: $enable_debug"
-echo "           Extensions: $enable_experimental"
-echo "    Aligned Addresses: $enable_aligned_addresses"
-echo "       Multi-threaded: $enable_threads"
-echo "    Profiling Support: $enable_pshmem"
-
-echo "                  UCX: version $UCX_VERSION_STRING in $UCX_DIR"
-echo "                 PMIx: version $PMIX_VERSION_STRING in $PMIX_DIR"
-
-case "$shcoll_happy" in
-    no)
-        ;;
-    *)
-        echo "               SHCOLL: in $SHCOLL_DIR"
-	;;
-esac
-case "$SHMEM_LAUNCHER" in
-    "")
-        ;;
-    *)
-        echo "             Launcher: $SHMEM_LAUNCHER"
-	;;
-esac
-
-echo "    Default heap size: $shmem_heap_size"
+echo "            Logging: $enable_logging"
+echo "          Debugging: $enable_debug"
+echo "         Extensions: $enable_experimental"
+echo "  Aligned Addresses: $enable_aligned_addresses"
+echo "     Multi-threaded: $enable_threads"
+echo "  Profiling Support: $enable_pshmem"
+echo "  Default heap size: $shmem_heap_size"
+echo "     Install prefix: $prefix"
 echo
+echo "                UCX: version $UCX_VERSION_STRING in $UCX_DIR"
+echo "               PMIx: version $PMIX_VERSION_STRING in $PMIX_DIR"
+
+case "x$shcoll_happy" in
+    xno)
+        ;;
+    *)
+        echo "             SHCOLL: in $SHCOLL_DIR"
+	;;
+esac
+case "x$SHMEM_LAUNCHER" in
+    x)
+        ;;
+    *)
+        echo "           Launcher: $SHMEM_LAUNCHER"
+	;;
+esac
+
 echo
