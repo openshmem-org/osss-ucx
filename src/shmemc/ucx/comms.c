@@ -196,7 +196,7 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 void
 nb_callback(void *req, ucs_status_t status)
 {
-    ucp_request_free(req);
+    NO_WARN_UNUSED(req);
     /* TODO: check status */
     NO_WARN_UNUSED(status);
 }
@@ -231,6 +231,7 @@ check_wait_for_request(shmemc_context_h ch, void *req)
 
             s = UCX_REQUEST_CHECK(req);
         } while (s == UCS_INPROGRESS);
+        ucp_request_free(req);
 
         return s;
     }
