@@ -63,9 +63,9 @@ AS_IF([test "x$pmix_happy" != "xno"], [
 
 AS_IF([test "x$pmix_happy" = "xyes"],
       [hdr="$PMIX_DIR/include/pmix_version.h"
-       maj=`awk '$2 == "PMIX_VERSION_MAJOR" {print strtonum($3)}' $hdr`
-       min=`awk '$2 == "PMIX_VERSION_MINOR" {print strtonum($3)}' $hdr`
-       rel=`awk '$2 == "PMIX_VERSION_RELEASE" {print strtonum($3)}' $hdr`
+       maj=`awk '$2 == "PMIX_VERSION_MAJOR"   {print 0 + $3}' $hdr`
+       min=`awk '$2 == "PMIX_VERSION_MINOR"   {print 0 + $3}' $hdr`
+       rel=`awk '$2 == "PMIX_VERSION_RELEASE" {print 0 + $3}' $hdr`
 
        PMIX_VERSION_STRING=`printf "%lu.%lu.%lu" $maj $min $rel`
        AS_BOX(PMIx version is $PMIX_VERSION_STRING)
