@@ -1,5 +1,5 @@
 .\" For license: see LICENSE file at top-level
-.TH osh_intro 1 "" "OSSS"
+.TH osh_intro 1 "" "OSSS-UCX"
 .SH NAME
 \fBosh_intro\fP - Overview of OpenSHMEM programs
 .SH DESCRIPTION
