@@ -1,5 +1,5 @@
 .\" For license: see LICENSE file at top-level
-.TH oshcxx 1 "" "OSSS"
+.TH oshcxx 1 "" "OSSS-UCX"
 .SH NAME
 \fBoshcxx | oshc++\fP \- compile an OpenSHMEM C++ program
 .SH SYNOPSIS
@@ -28,7 +28,6 @@ Overrides the underlying compiler/linker invoked by this wrapper.  The
 default is determined when the OpenSHMEM library is built.
 .RE
 .LP
-environment variable.
 .SH NOTES
 The OpenSHMEM specification does not say anything normative about how
 OpenSHMEM programs are compiled, linked and launched.  These wrapper

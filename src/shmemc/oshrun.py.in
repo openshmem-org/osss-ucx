@@ -29,7 +29,7 @@ EXPECTED       = b"DVM ready"
 
 SPAWN_TIMEOUT  = 8
 
-PRTE_LAUNCHER  = "prun -x SHMEM_* -x SMA_*"
+PRTE_LAUNCHER  = "prun -x 'S{HMEM,MA}_*'"
 MPI_LAUNCHER   = "mpiexec"
 
 ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"

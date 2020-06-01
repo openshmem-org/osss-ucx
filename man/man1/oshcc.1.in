@@ -1,5 +1,5 @@
 .\" For license: see LICENSE file at top-level
-.TH oshcc 1 "" "OSSS"
+.TH oshcc 1 "" "OSSS-UCX"
 .SH NAME
 \fBoshcc\fP \- compile an OpenSHMEM C program
 .SH SYNOPSIS

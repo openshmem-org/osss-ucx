@@ -185,7 +185,7 @@ sub run_app {
   my @args;
 
   # make sure required env vars get passed
-  push @args, qw(-x SHMEM_* -x SMA_*) if $is_prrte;
+  push @args, ('-x', 'S{HMEM,MA}_*') if $is_prrte;
 
   # see if user wants to tell us anything from environment
   my $pre = $ENV{PRUN_ARGS};
