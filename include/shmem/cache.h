@@ -3,8 +3,8 @@
 #ifndef _SHMEM_CACHE_H
 #define _SHMEM_CACHE_H 1
 
-#include "shmem/defs.h"
-#include "shmem/depr.h"
+#include <shmem/defs.h>
+#include <shmem/depr.h>
 
 /**
  * cache flushing(deprecated)
