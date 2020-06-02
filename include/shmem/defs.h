@@ -60,15 +60,13 @@ enum shmem_cmp_constants {
 /*
  * array sizes for collectives
  */
-#define SHMEM_INTERNAL_F2C_SCALE        (int) (sizeof(long) / sizeof(int))
-
-#define SHMEM_BCAST_SYNC_SIZE           (128 / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_BARRIER_SYNC_SIZE         (4   / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_REDUCE_SYNC_SIZE          (256 / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_REDUCE_MIN_WRKDATA_SIZE   (128 / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_COLLECT_SYNC_SIZE         (128 / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_ALLTOALL_SYNC_SIZE        (128 / SHMEM_INTERNAL_F2C_SCALE)
-#define SHMEM_ALLTOALLS_SYNC_SIZE       (128 / SHMEM_INTERNAL_F2C_SCALE)
+#define SHMEM_BCAST_SYNC_SIZE           64
+#define SHMEM_BARRIER_SYNC_SIZE         2
+#define SHMEM_REDUCE_SYNC_SIZE          128
+#define SHMEM_REDUCE_MIN_WRKDATA_SIZE   64
+#define SHMEM_COLLECT_SYNC_SIZE         64
+#define SHMEM_ALLTOALL_SYNC_SIZE        64
+#define SHMEM_ALLTOALLS_SYNC_SIZE       64
 /*
  * max(the above)
  */
