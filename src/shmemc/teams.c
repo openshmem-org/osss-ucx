@@ -93,7 +93,7 @@ dump_team(shmemc_team_h th)
 inline static void
 world_initialize_team(shmemc_team_h th)
 {
-    th->predef = true;
+    th->parent = NULL;
     th->name   = "world";
 
     /* nothing allocated yet */
@@ -111,7 +111,7 @@ world_initialize_team(shmemc_team_h th)
 inline static void
 shared_initialize_team(shmemc_team_h th)
 {
-    th->predef = true;
+    th->parent = NULL;
     th->name   = "shared";
 
     /* nothing allocated yet */
@@ -231,9 +231,7 @@ shmemc_team_split_strided(shmemc_team_h parh,
     NO_WARN_UNUSED(size);
     NO_WARN_UNUSED(config);
     NO_WARN_UNUSED(config_mask);
-    /* NO_WARN_UNUSED(newh); */
-
-    (*newh)->predef = false;
+    NO_WARN_UNUSED(newh);
 
     return -1;
 }
@@ -253,13 +251,10 @@ shmemc_team_split_2d(shmemc_team_h parh,
     NO_WARN_UNUSED(xrange);
     NO_WARN_UNUSED(xaxis_config);
     NO_WARN_UNUSED(xaxis_mask);
-    /* NO_WARN_UNUSED(xaxish); */
+    NO_WARN_UNUSED(xaxish);
     NO_WARN_UNUSED(yaxis_config);
     NO_WARN_UNUSED(yaxis_mask);
-    /* NO_WARN_UNUSED(yaxish); */
-
-    (*xaxish)->predef = false;
-    (*yaxish)->predef = false;
+    NO_WARN_UNUSED(yaxish);
 
     return -1;
 }
@@ -271,7 +266,7 @@ shmemc_team_split_2d(shmemc_team_h parh,
 void
 shmemc_team_destroy(shmemc_team_h th)
 {
-    if (! th->predef) {
+    if (th->parent != NULL) {
         size_t c;
 
         free(th->members);

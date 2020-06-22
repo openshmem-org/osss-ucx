@@ -73,6 +73,8 @@ typedef struct shmemc_context *shmemc_context_h;
 /*
  * PEs can belong to teams
  */
+typedef struct shmemc_team *shmemc_team_h;
+
 typedef struct shmemc_team {
     int *members;               /**< virt -> parent PE mapping */
     size_t nmembers;            /**< how many PEs */
@@ -82,11 +84,11 @@ typedef struct shmemc_team {
     shmemc_context_h *ctxts;    /**< array of contexts in this team */
     size_t nctxts;              /**< how many contexts allocated */
 
-    bool predef;                /**< team was defined by this library */
     const char *name;           /**< if predef, who we are (else unused) */
+    shmemc_team_h parent;       /**< parent team we split from,
+                                   NULL if predef */
 } shmemc_team_t;
 
-typedef shmemc_team_t *shmemc_team_h;
 
 /*
  * context attributes, see OpenSMHEM 1.4 spec, sec. 9.4.1, pp. 30-31
