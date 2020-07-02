@@ -144,3 +144,12 @@ shmem_align(size_t a, size_t s)
 
     return addr;
 }
+
+
+void *
+shmem_malloc_with_hints(size_t s, long hints)
+{
+    NO_WARN_UNUSED(hints);
+
+    return shmem_malloc(s);
+}

@@ -1261,6 +1261,33 @@ extern "C"
      */
     void *shmem_align(size_t alignment, size_t size) _WUR;
 
+    /**
+     * @brief dynamically allocates symmetric memory with hints about
+     * memory properties
+     *
+     * @page shmem_malloc_with_hints
+     *
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     void *shmem_malloc(size_t size);
+     @endcode
+     *
+     * @param size number of bytes requested
+     * @param hints bitwise or of hint values
+     *
+     * @section Effect Allocates "size" bytes of contiguous memory
+     * from the PE's symmetric heap, allowing the implementation to
+     * optimize allocation by using "hints".
+     *
+     * @section Return
+     * a pointer to the requested memory location, or NULL if
+     * the requested memory is not available.
+     *
+     */
+    void *shmem_malloc_with_hints(size_t size, long hints) _WUR;
+
 #define API_DECL_TEST_AND_WAIT_UNTIL(_opname, _rettype, _name, _type)   \
     /* see \ref shmem_##_name##_opname() */                             \
     _rettype shmem_##_name##_##_opname(_type *ivar,                     \

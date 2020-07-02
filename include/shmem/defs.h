@@ -113,6 +113,13 @@ extern shmem_ctx_t SHMEM_CTX_DEFAULT;
 #define SHMEM_CTX_INVALID NULL
 
 /*
+ * malloc hints
+ */
+
+#define SHMEM_MALLOC_ATOMICS_REMOTE 1
+#define SHMEM_MALLOC_SIGNAL_REMOTE  2
+
+/*
  * to declare AMOs
  */
 #define SHMEM_DECL_CONST_AMO1(_op, _name, _type)                        \
