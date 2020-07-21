@@ -62,6 +62,20 @@ AS_IF([test -d "$with_ucx"],
 		],
 		[AC_MSG_NOTICE([UCX: ucp_get_nb NOT found])
 		])
+	      AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nbi])],
+		[AC_MSG_NOTICE([UCX: ucp_put_nbi found])
+ 	         AC_DEFINE([HAVE_UCP_PUT_NBI], [1], [UCX has ucp_put_nbi])
+		],
+		[AC_MSG_NOTICE([UCX: ucp_put_nbi NOT found])
+		])
+	      AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nbi])],
+		[AC_MSG_NOTICE([UCX: ucp_get_nbi found])
+ 	         AC_DEFINE([HAVE_UCP_GET_NBI], [1], [UCX has ucp_get_nbi])
+		],
+		[AC_MSG_NOTICE([UCX: ucp_get_nbi NOT found])
+		])
 	      AC_LANG_POP([C])
 	      UCX_DIR="$with_ucx"
 	      AC_DEFINE_UNQUOTED([UCX_DIR], ["$UCX_DIR"], [UCX installation directory])
