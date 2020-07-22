@@ -47,32 +47,49 @@ AS_IF([test -d "$with_ucx"],
 		],
 		[AC_MSG_NOTICE([UCX: native bit-wise atomics NOT found])
 		])
-	      # check for non-blocking put/get
+	      #
+	      # check for non/blocking put/get.
+	      # The blocking routines are now deprecated.
+	      #
+	      AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put])],
+		[AC_MSG_NOTICE([UCX: ucp_put found])
+ 	         AC_DEFINE([HAVE_UCP_PUT], [1], [UCX has blocking ucp_put])
+		],
+		[AC_MSG_NOTICE([UCX: ucp_put NOT found])
+		])
+	      AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get])],
+		[AC_MSG_NOTICE([UCX: ucp_get found])
+ 	         AC_DEFINE([HAVE_UCP_GET], [1], [UCX has blocking ucp_get])
+		],
+		[AC_MSG_NOTICE([UCX: ucp_get NOT found])
+		])
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nb])],
 		[AC_MSG_NOTICE([UCX: ucp_put_nb found])
- 	         AC_DEFINE([HAVE_UCP_PUT_NB], [1], [UCX has ucp_put_nb])
+ 	         AC_DEFINE([HAVE_UCP_PUT_NB], [1], [UCX has non-blocking ucp_put])
 		],
 		[AC_MSG_NOTICE([UCX: ucp_put_nb NOT found])
 		])
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nb])],
 		[AC_MSG_NOTICE([UCX: ucp_get_nb found])
- 	         AC_DEFINE([HAVE_UCP_GET_NB], [1], [UCX has ucp_get_nb])
+ 	         AC_DEFINE([HAVE_UCP_GET_NB], [1], [UCX has non-blocking ucp_get])
 		],
 		[AC_MSG_NOTICE([UCX: ucp_get_nb NOT found])
 		])
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nbi])],
 		[AC_MSG_NOTICE([UCX: ucp_put_nbi found])
- 	         AC_DEFINE([HAVE_UCP_PUT_NBI], [1], [UCX has ucp_put_nbi])
+ 	         AC_DEFINE([HAVE_UCP_PUT_NBI], [1], [UCX has non-blocking implicit ucp_put])
 		],
 		[AC_MSG_NOTICE([UCX: ucp_put_nbi NOT found])
 		])
 	      AC_COMPILE_IFELSE(
 		[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nbi])],
 		[AC_MSG_NOTICE([UCX: ucp_get_nbi found])
- 	         AC_DEFINE([HAVE_UCP_GET_NBI], [1], [UCX has ucp_get_nbi])
+ 	         AC_DEFINE([HAVE_UCP_GET_NBI], [1], [UCX has non-blocking implicit ucp_get])
 		],
 		[AC_MSG_NOTICE([UCX: ucp_get_nbi NOT found])
 		])
