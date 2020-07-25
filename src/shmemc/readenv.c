@@ -354,8 +354,8 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             prefix,
             var_width, "SHMEM_PROGRESS_THREADS",
             val_width,
-            proc.env.progress_threads ? proc.env.progress_threads : "no",
-            "do we manage our own progress?");
+            proc.env.progress_threads ? proc.env.progress_threads : "none",
+            "PEs that need progress threads");
     fprintf(stream, "%s%-*s %-*lu %s",
             prefix,
             var_width, "SHMEM_PROGRESS_DELAY",

@@ -762,13 +762,13 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
     uint64_t r_dest;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
-    ucs_status_ptr_t sp;
+    ucs_status_t s;
 
     get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
     ep = lookup_ucp_ep(ch, pe);
 
-    sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key, nb_callback);
-    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+    s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
+    shmemu_assert(s == UCS_OK || s == UCS_INPROGRESS,
                   "non-blocking put failed");
 }
 
@@ -781,15 +781,15 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
     uint64_t r_src;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
-    ucs_status_ptr_t sp;
+    ucs_status_t s;
 
     get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
     ep = lookup_ucp_ep(ch, pe);
 
-    sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key, nb_callback);
-    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+    s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
+    shmemu_assert(s == UCS_OK || s == UCS_INPROGRESS,
                   "non-blocking get failed");
- }
+}
 
 /*
  * puts with signals

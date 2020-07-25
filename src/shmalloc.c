@@ -22,6 +22,8 @@
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_malloc = pshmem_malloc
 #define shmem_malloc pshmem_malloc
+#pragma weak shmem_malloc_with_hints = pshmem_malloc_with_hints
+#define shmem_malloc_with_hints pshmem_malloc_with_hints
 #pragma weak shmem_calloc = pshmem_calloc
 #define shmem_calloc pshmem_calloc
 #pragma weak shmem_free = pshmem_free
@@ -32,8 +34,8 @@
 #define shmem_align pshmem_align
 #endif /* ENABLE_PSHMEM */
 
-void *
-shmem_malloc(size_t s)
+inline static void *
+shmem_malloc_private(size_t s)
 {
     void *addr;
 
@@ -45,13 +47,41 @@ shmem_malloc(size_t s)
 
     shmem_barrier_all();
 
+    SHMEMU_CHECK_ALLOC(addr, s);
+
+    return addr;
+}
+
+void *
+shmem_malloc(size_t s)
+{
+    void *addr;
+
+    addr = shmem_malloc_private(s);
+
     logger(LOG_MEMORY,
            "%s(size=%lu) -> %p",
            __func__,
            (unsigned long) s, addr
            );
 
-    SHMEMU_CHECK_ALLOC(addr, s);
+    return addr;
+}
+
+void *
+shmem_malloc_with_hints(size_t s, long hints)
+{
+    void *addr;
+
+    NO_WARN_UNUSED(hints);
+
+    addr = shmem_malloc_private(s);
+
+    logger(LOG_MEMORY,
+           "%s(size=%lu) -> %p",
+           __func__,
+           (unsigned long) s, addr
+           );
 
     return addr;
 }
