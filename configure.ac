@@ -214,8 +214,8 @@ echo "  Profiling Support: $enable_pshmem"
 echo "  Default heap size: $shmem_heap_size"
 echo "     Install prefix: $prefix"
 echo
-echo "                UCX: version $UCX_VERSION_STRING in $UCX_DIR"
-echo "               PMIx: version $PMIX_VERSION_STRING in $PMIX_DIR"
+echo "                UCX: version $UCX_VERSION_STRING"
+echo "               PMIx: version $PMIX_VERSION_STRING"
 
 case "x$shcoll_happy" in
     xno)
