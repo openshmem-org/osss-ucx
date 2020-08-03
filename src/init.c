@@ -160,8 +160,6 @@ init_thread_helper(int requested, int *provided)
     test_asr_mismatch();
 #endif /* ENABLE_ALIGNED_ADDRESSES */
 
-    populate_env();
-
     /* make sure all symmetric memory ready */
     shmem_barrier_all();
 
