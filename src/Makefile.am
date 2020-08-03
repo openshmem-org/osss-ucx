@@ -31,6 +31,7 @@ MY_SOURCES             = \
 				info.c \
 				init.c \
 				lock.c \
+				popenv.c \
 				profiling.c \
 				progress.c \
 				ptr.c \

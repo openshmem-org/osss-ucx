@@ -15,6 +15,7 @@
 #ifdef ENABLE_ALIGNED_ADDRESSES
 # include "asr.h"
 #endif /* ENABLE_ALIGNED_ADDRESSES */
+#include "popenv.h"
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
@@ -158,6 +159,8 @@ init_thread_helper(int requested, int *provided)
 #ifdef ENABLE_ALIGNED_ADDRESSES
     test_asr_mismatch();
 #endif /* ENABLE_ALIGNED_ADDRESSES */
+
+    populate_env();
 
     /* make sure all symmetric memory ready */
     shmem_barrier_all();

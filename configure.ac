@@ -124,7 +124,7 @@ AC_CHECK_TYPES([ptrdiff_t])
 # AC_FUNC_MALLOC
 # AC_FUNC_REALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([atexit _exit exit gettimeofday gethostname uname memset strlcat strlcpy sched_yield nanosleep])
+AC_CHECK_FUNCS([atexit _exit exit gettimeofday gethostname uname memset strlcat strlcpy sched_yield nanosleep setenv putenv])
 AC_CHECK_LIB([m], [log10])
 
 AM_INIT_AUTOMAKE
