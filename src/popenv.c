@@ -65,6 +65,7 @@ populate_env(void)
         if (proc.peers[i] == proc.rank) {
             env_setter("SHMEM_TEAM_WORLD_LOCAL_PE", i);
             env_setter("SHMEM_TEAM_WORLD_NODE_PE", i);
+            break;
         }
     }
 
