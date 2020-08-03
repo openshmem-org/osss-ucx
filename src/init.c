@@ -15,7 +15,6 @@
 #ifdef ENABLE_ALIGNED_ADDRESSES
 # include "asr.h"
 #endif /* ENABLE_ALIGNED_ADDRESSES */
-#include "popenv.h"
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
