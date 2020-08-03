@@ -66,6 +66,7 @@ populate_env(void)
             env_setter("SHMEM_TEAM_WORLD_LOCAL_PE", i);
             env_setter("SHMEM_TEAM_WORLD_NODE_PE", i);
             break;
+            /* NOT REACHED */
         }
     }
 
