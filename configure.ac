@@ -81,18 +81,19 @@ m4_include([config/m4/confargs.m4])
 m4_include([config/m4/ax_gcc_func_attribute.m4])
 m4_include([config/m4/attribute_checks.m4])
 
+# == ASSUME YES ==
 # do we have python?
-m4_include([config/m4/ax_python.m4])
-AX_PYTHON
-case "$ax_python_bin" in
-    python*)
-	    AC_DEFINE_UNQUOTED([HAVE_PY_LAUNCHER], [1], [Enable Python-based launcher])
-	    AM_CONDITIONAL([HAVE_PY_LAUNCHER], [true])
-	    ;;
-    *)
-	    AM_CONDITIONAL([HAVE_PY_LAUNCHER], [false])
-            ;;
-esac
+# m4_include([config/m4/ax_python.m4])
+# AX_PYTHON
+# case "$ax_python_bin" in
+#     python*)
+#             AC_DEFINE_UNQUOTED([HAVE_PY_LAUNCHER], [1], [Enable Python-based launcher])
+#             AM_CONDITIONAL([HAVE_PY_LAUNCHER], [true])
+#             ;;
+#     *)
+#             AM_CONDITIONAL([HAVE_PY_LAUNCHER], [false])
+#             ;;
+# esac
 
 # c++ -specific checks
 m4_include([config/m4/cxx.m4])
