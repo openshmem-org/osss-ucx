@@ -115,8 +115,6 @@ AS_IF([test "x$ucx_happy" = "xno"], [
 	    	[AC_MSG_NOTICE([UCX: ucp_get_nbi NOT found])
 	    	])
 	    AC_LANG_POP([C])
-	    AC_DEFINE_UNQUOTED([UCX_DIR], ["$UCX_DIR"], [UCX installation directory])
-	    AC_SUBST([UCX_DIR])
 	    AC_SUBST([UCX_LIBS])
 
 	    hdr="$ucp_include_dir/ucp_version.h"
