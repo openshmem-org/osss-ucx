@@ -25,9 +25,9 @@
  * Persistent local state
  */
 
-static pmix_proc_t my_proc;     /* about me */
-static pmix_proc_t wc_proc;     /* wildcard lookups */
-static pmix_proc_t ex_proc;     /* internal exchanges */
+static pmix_proc_t my_pmix;     /* about me */
+static pmix_proc_t wc_pmix;     /* wildcard lookups */
+static pmix_proc_t ex_pmix;     /* internal exchanges */
 
 static pmix_key_t k1;           /* re-usable key spaces */
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -48,11 +48,11 @@ shmemc_pmi_publish_worker(void)
     pmix_value_t v;
 
     /* everyone publishes their info */
-    snprintf(k1, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.rank);
+    snprintf(k1, PMIX_MAX_KEYLEN, wrkr_exch_fmt, proc.li.rank);
 
     v.type = PMIX_BYTE_OBJECT;
-    v.data.bo.bytes = (char *) proc.comms.xchg_wrkr_info[proc.rank].addr;
-    v.data.bo.size = proc.comms.xchg_wrkr_info[proc.rank].len;
+    v.data.bo.bytes = (char *) proc.comms.xchg_wrkr_info[proc.li.rank].addr;
+    v.data.bo.size = proc.comms.xchg_wrkr_info[proc.li.rank].len;
 
     ps = PMIx_Put(PMIX_GLOBAL, k1, &v);
     shmemu_assert(ps == PMIX_SUCCESS, "can't publish worker blob");
@@ -67,12 +67,12 @@ publish_one_rkeys(size_t r)
     void *packed_rkey;
     size_t rkey_len;
     const ucs_status_t s =
-        shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.rank].mh,
+        shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.li.rank].mh,
                              &packed_rkey, &rkey_len
                              );
     shmemu_assert(s == UCS_OK, "can't pack rkey");
 
-    snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.rank);
+    snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.li.rank);
 
     v.type = PMIX_BYTE_OBJECT;
     v.data.bo.bytes = (char *) packed_rkey;
@@ -97,13 +97,13 @@ publish_one_heap(size_t r)
 {
     pmix_value_t vb, vs;
 
-    snprintf(k1, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.rank);
-    snprintf(k2, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.rank);
+    snprintf(k1, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.li.rank);
+    snprintf(k2, PMIX_MAX_KEYLEN, region_size_fmt, r, proc.li.rank);
 
     vb.type = PMIX_UINT64;
-    vb.data.uint64 = proc.comms.regions[r].minfo[proc.rank].base;
+    vb.data.uint64 = proc.comms.regions[r].minfo[proc.li.rank].base;
     vs.type = PMIX_SIZE;
-    vs.data.size = proc.comms.regions[r].minfo[proc.rank].len;
+    vs.data.size = proc.comms.regions[r].minfo[proc.li.rank].len;
 
     ps = PMIx_Put(PMIX_GLOBAL, k1, &vb);
     shmemu_assert(ps == PMIX_SUCCESS,
@@ -144,13 +144,13 @@ shmemc_pmi_exchange_workers(void)
     pmix_value_t *vp = NULL;
     int pe;
 
-    for (pe = 0; pe < proc.nranks; ++pe) {
+    for (pe = 0; pe < proc.li.nranks; ++pe) {
         pmix_byte_object_t *bop;
 
         snprintf(k1, PMIX_MAX_KEYLEN, wrkr_exch_fmt, pe);
-        ex_proc.rank = pe;
+        ex_pmix.rank = pe;
 
-        ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vp);
+        ps = PMIx_Get(&ex_pmix, k1, NULL, 0, &vp);
         shmemu_assert(ps == PMIX_SUCCESS,
                       "can't find remote worker blob for PE %d",
                       pe);
@@ -176,17 +176,17 @@ exchange_one_heap(size_t r, int pe)
     uint64_t base;
     size_t len;
 
-    ex_proc.rank = pe;
+    ex_pmix.rank = pe;
 
     snprintf(k1, PMIX_MAX_KEYLEN, region_base_fmt, r, pe);
     snprintf(k2, PMIX_MAX_KEYLEN, region_size_fmt, r, pe);
 
-    ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vpb);
+    ps = PMIx_Get(&ex_pmix, k1, NULL, 0, &vpb);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap base for memory region %lu from PE %d",
                   r, pe);
 
-    ps = PMIx_Get(&ex_proc, k2, NULL, 0, &vps);
+    ps = PMIx_Get(&ex_pmix, k2, NULL, 0, &vps);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch heap size for memory region %lu from PE %d",
                   r, pe);
@@ -210,11 +210,11 @@ exchange_one_rkeys(size_t r, int pe)
     pmix_value_t *vp = NULL;
     pmix_byte_object_t *bop;
 
-    ex_proc.rank = pe;
+    ex_pmix.rank = pe;
 
     snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, pe);
 
-    ps = PMIx_Get(&ex_proc, k1, NULL, 0, &vp);
+    ps = PMIx_Get(&ex_pmix, k1, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "can't fetch remote rkey for memory region %lu from PE %d",
                   r, pe);
@@ -238,7 +238,7 @@ exchange_all_rkeys(size_t r)
 {
     int pe;
 
-    for (pe = 0; pe < proc.nranks; ++pe) {
+    for (pe = 0; pe < proc.li.nranks; ++pe) {
         exchange_one_rkeys(r, pe);
     }
 }
@@ -248,7 +248,7 @@ exchange_one_rkeys_and_heaps(size_t r)
 {
     int pe;
 
-    for (pe = 0; pe < proc.nranks; ++pe) {
+    for (pe = 0; pe < proc.li.nranks; ++pe) {
         exchange_one_rkeys(r, pe);
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -341,48 +341,48 @@ init_ranks(void)
     pmix_value_t *vp;           /* holds things we get from PMIx */
 
     /* we can get our own rank immediately */
-    proc.rank = (int) my_proc.rank;
-    shmemu_assert(proc.rank >= 0,
+    proc.li.rank = (int) my_pmix.rank;
+    shmemu_assert(proc.li.rank >= 0,
                   "PMIx PE rank %d must be >= 0",
-                  proc.rank);
+                  proc.li.rank);
 
-    ps = PMIx_Get(&wc_proc, PMIX_JOB_SIZE, NULL, 0, &vp);
+    ps = PMIx_Get(&wc_pmix, PMIX_JOB_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't get program size: %s",
                   PMIx_Error_string(ps));
 
-    proc.nranks = (int) vp->data.uint32; /* number of ranks/PEs */
+    proc.li.nranks = (int) vp->data.uint32; /* number of ranks/PEs */
 
     PMIX_VALUE_RELEASE(vp);
 
     /* this can fail on older PMIx setups, so be more careful */
-    ps = PMIx_Get(&wc_proc, PMIX_NUM_NODES, NULL, 0, &vp);
+    ps = PMIx_Get(&wc_pmix, PMIX_NUM_NODES, NULL, 0, &vp);
     if (ps == PMIX_SUCCESS) {
-        proc.nnodes = (int) vp->data.uint32; /* number of nodes */
+        proc.li.nnodes = (int) vp->data.uint32; /* number of nodes */
         PMIX_VALUE_RELEASE(vp);
     }
     else {
         /* this seems somewhat sane if we can't query */
-        proc.nnodes = 1;
+        proc.li.nnodes = 1;
     }
 
-    ps = PMIx_Get(&wc_proc, PMIX_UNIV_SIZE, NULL, 0, &vp);
+    ps = PMIx_Get(&wc_pmix, PMIX_UNIV_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't get universe size: %s",
                   PMIx_Error_string(ps));
 
-    proc.maxranks = (int) vp->data.uint32; /* total ranks available */
+    proc.li.maxranks = (int) vp->data.uint32; /* total ranks available */
 
     /* is the world a sane size? */
-    shmemu_assert(proc.nranks > 0,
+    shmemu_assert(proc.li.nranks > 0,
                   "PMIx PE count is %d, but must be > 0",
-                  proc.nranks);
-    shmemu_assert(proc.maxranks > 0,
+                  proc.li.nranks);
+    shmemu_assert(proc.li.maxranks > 0,
                   "PMIx universe size is %d, but must be > 0",
-                  proc.maxranks);
-    shmemu_assert(shmemu_valid_pe_number(proc.rank),
+                  proc.li.maxranks);
+    shmemu_assert(shmemu_valid_pe_number(proc.li.rank),
                   "PMIx PE rank %d is not in range [0...%d)",
-                  proc.rank, proc.nranks);
+                  proc.li.rank, proc.li.nranks);
 
     PMIX_VALUE_RELEASE(vp);
 }
@@ -393,29 +393,29 @@ init_peers(void)
     pmix_value_t *vp = NULL;    /* holds things we get from PMIx */
 
     /* what's on this node? */
-    ps = PMIx_Get(&wc_proc, PMIX_LOCAL_SIZE, NULL, 0, &vp);
+    ps = PMIx_Get(&wc_pmix, PMIX_LOCAL_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't look up PE's peers: %s",
                   PMIx_Error_string(ps));
 
-    proc.npeers = (int) vp->data.uint32;
+    proc.li.npeers = (int) vp->data.uint32;
     /* how's the 'hood look? */
-    shmemu_assert(proc.npeers > 0,
+    shmemu_assert(proc.li.npeers > 0,
                   "PMIx PE's peer count %d must be > 0",
-                  proc.npeers);
-    shmemu_assert(proc.npeers <= proc.nranks,
+                  proc.li.npeers);
+    shmemu_assert(proc.li.npeers <= proc.li.nranks,
                   "PMIx PE's peer count %d bigger than program size %d",
-                  proc.npeers, proc.nranks);
+                  proc.li.npeers, proc.li.nranks);
 
     PMIX_VALUE_RELEASE(vp);
 
     /* look for peers; leave empty if can't find them */
-    ps = PMIx_Get(&wc_proc, PMIX_LOCAL_PEERS, NULL, 0, &vp);
+    ps = PMIx_Get(&wc_pmix, PMIX_LOCAL_PEERS, NULL, 0, &vp);
     if (ps == PMIX_SUCCESS) {
         if (vp->data.string != NULL) {
             size_t n;
             const int s =
-                shmemu_parse_csv(vp->data.string, &proc.peers, &n);
+                shmemu_parse_csv(vp->data.string, &proc.li.peers, &n);
             NO_WARN_UNUSED(n);
             shmemu_assert(s > 0,
                           "Unable to parse peer PE numbers \"%s\"",
@@ -426,7 +426,7 @@ init_peers(void)
     PMIX_VALUE_RELEASE(vp);
 
     /* am I first on a node/in a group? */
-    proc.leader = (proc.rank == proc.peers[0]);
+    proc.leader = (proc.li.rank == proc.li.peers[0]);
 }
 
 /*
@@ -536,7 +536,7 @@ shmemc_pmi_client_abort(const char *msg, int status)
     PMIX_INFO_LOAD(&si, PMIX_EXIT_CODE, &status, PMIX_INT);
 
     ps = PMIx_Notify_event(ERROR_TO_REPORT,
-                           &my_proc,
+                           &my_pmix,
                            PMIX_RANGE_NAMESPACE,
                            &si, 1,
                            NULL, NULL);
@@ -560,7 +560,7 @@ shmemc_pmi_client_finalize(void)
                   PMIx_Error_string(ps));
 
     /* clean up memory recording peer PEs */
-    free(proc.peers);
+    free(proc.li.peers);
 }
 
 /*
@@ -570,20 +570,20 @@ shmemc_pmi_client_finalize(void)
 void
 shmemc_pmi_client_init(void)
 {
-    ps = pmix_init_wrapper(&my_proc);
+    ps = pmix_init_wrapper(&my_pmix);
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   "PMIx can't initialize: %s",
                   PMIx_Error_string(ps));
 
     /* make a new proc to query things not linked to a specific rank */
-    PMIX_PROC_CONSTRUCT(&wc_proc);
-    STRNCPY_SAFE(wc_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
-    wc_proc.rank = PMIX_RANK_WILDCARD;
+    PMIX_PROC_CONSTRUCT(&wc_pmix);
+    STRNCPY_SAFE(wc_pmix.nspace, my_pmix.nspace, PMIX_MAX_NSLEN + 1);
+    wc_pmix.rank = PMIX_RANK_WILDCARD;
 
     /* init proc for exchange use, rank filled in as needed */
-    PMIX_PROC_CONSTRUCT(&ex_proc);
-    strncpy(ex_proc.nspace, my_proc.nspace, PMIX_MAX_NSLEN + 1);
+    PMIX_PROC_CONSTRUCT(&ex_pmix);
+    strncpy(ex_pmix.nspace, my_pmix.nspace, PMIX_MAX_NSLEN + 1);
 
     init_ranks();
     init_peers();

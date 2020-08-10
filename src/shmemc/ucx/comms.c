@@ -48,7 +48,7 @@ lookup_rkey(shmemc_context_h ch, size_t region, int pe)
 inline static int
 in_region(uint64_t addr, size_t region)
 {
-    const mem_info_t *mip = & proc.comms.regions[region].minfo[proc.rank];
+    const mem_info_t *mip = & proc.comms.regions[region].minfo[proc.li.rank];
 
     return (mip->base <= addr) && (addr < mip->end);
 }
@@ -101,7 +101,7 @@ translate_region_address(uint64_t local_addr, size_t region, int pe)
         return local_addr;
     }
     else {
-        const long my_offset = local_addr - get_base(region, proc.rank);
+        const long my_offset = local_addr - get_base(region, proc.li.rank);
 
         if (my_offset < 0) {
             return 0;
@@ -356,7 +356,7 @@ void *
 shmemc_ctx_ptr(shmem_ctx_t ctx, const void *addr, int pe)
 {
     /* self short-circuit */
-    if (shmemu_unlikely(pe == proc.rank)) {
+    if (shmemu_unlikely(pe == proc.li.rank)) {
         return ctx_ptr_self_check(addr);
         /* NOT REACHED */
     }

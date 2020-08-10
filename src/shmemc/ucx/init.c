@@ -28,7 +28,7 @@ inline static void
 allocate_xworkers_table(void)
 {
     proc.comms.xchg_wrkr_info = (worker_info_t *)
-        calloc(proc.nranks, sizeof(*(proc.comms.xchg_wrkr_info)));
+        calloc(proc.li.nranks, sizeof(*(proc.comms.xchg_wrkr_info)));
     shmemu_assert(proc.comms.xchg_wrkr_info != NULL,
                   "can't allocate memory for worker exchange");
 }
@@ -39,7 +39,7 @@ deallocate_xworkers_table(void)
     int pe;
 
     /* clean up worker exchange */
-    for (pe = 0; pe < proc.nranks; ++pe) {
+    for (pe = 0; pe < proc.li.nranks; ++pe) {
         free(proc.comms.xchg_wrkr_info[pe].buf);
     }
     free(proc.comms.xchg_wrkr_info);
@@ -74,7 +74,7 @@ teardown_context(shmemc_context_h ch)
     }
     /* release remote access memory */
     for (r = 0; r < proc.comms.nregions; ++r) {
-        for (pe = 0; pe < proc.nranks; ++pe) {
+        for (pe = 0; pe < proc.li.nranks; ++pe) {
             ucp_rkey_destroy(ch->racc[r].rinfo[pe].rkey);
         }
         free(ch->racc[r].rinfo);
@@ -101,7 +101,7 @@ contexts_table_finalize(void)
      * special release case for default context
      */
     ucp_worker_release_address(defcp->w,
-                               proc.comms.xchg_wrkr_info[proc.rank].addr);
+                               proc.comms.xchg_wrkr_info[proc.li.rank].addr);
     teardown_context(defcp);
 
     free(proc.comms.ctxts);
@@ -258,7 +258,7 @@ opaque_rkeys_init(void)
 
     for (r = 0; r < proc.comms.nregions; ++r) {
         proc.comms.orks[r].rkeys =
-            (mem_opaque_rkey_t *) calloc(proc.nranks,
+            (mem_opaque_rkey_t *) calloc(proc.li.nranks,
                                          sizeof(mem_opaque_rkey_t));
         shmemu_assert(proc.comms.orks[r].rkeys != NULL,
                       "can't allocate memory for opaque rkeys");
@@ -273,7 +273,7 @@ opaque_rkeys_finalize(void)
 
     /* clear opaque rkeys */
     for (r = 0; r < proc.comms.nregions; ++r) {
-        for (pe = 0; pe < proc.nranks; ++pe) {
+        for (pe = 0; pe < proc.li.nranks; ++pe) {
             free(proc.comms.orks[r].rkeys[pe].data);
         }
     }
@@ -296,13 +296,13 @@ init_memory_regions(void)
     /* now prep for all PEs to exchange */
     for (i = 0; i < proc.comms.nregions; ++i) {
         proc.comms.regions[i].minfo =
-            (mem_info_t *) calloc(proc.nranks, sizeof(mem_info_t));
+            (mem_info_t *) calloc(proc.li.nranks, sizeof(mem_info_t));
         shmemu_assert(proc.comms.regions[i].minfo != NULL,
                       "can't allocate memory region metadata");
     }
 
     /* to access global variables */
-    globals = & proc.comms.regions[0].minfo[proc.rank];
+    globals = & proc.comms.regions[0].minfo[proc.li.rank];
 }
 
 /*
@@ -317,7 +317,7 @@ register_memory_regions(void)
     register_globals();
 
     for (hi = 1; hi < proc.comms.nregions; ++hi) {
-        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.rank];
+        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.li.rank];
 
         register_symmetric_heap(hi - 1, shp);
     }
@@ -330,7 +330,7 @@ deregister_memory_regions(void)
 
     /* deregister symmetric heaps, then globals (index 0) */
     for (hi = proc.comms.nregions - 1; hi >= 1; hi -= 1) {
-        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.rank];
+        mem_info_t *shp = & proc.comms.regions[hi].minfo[proc.li.rank];
 
         deregister_symmetric_heap(shp);
 
@@ -402,7 +402,7 @@ ucx_init_ready(void)
 
     pm.mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
 
-    pm.estimated_num_eps = proc.nranks;
+    pm.estimated_num_eps = proc.li.nranks;
 
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
     if (s != UCS_OK) {

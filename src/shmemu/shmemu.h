@@ -55,7 +55,7 @@
 inline static int
 shmemu_shift(int pe)
 {
-    return (pe + proc.rank) % proc.nranks;
+    return (pe + proc.li.rank) % proc.li.nranks;
 }
 
 /*
@@ -64,7 +64,7 @@ shmemu_shift(int pe)
 inline static int
 shmemu_valid_pe_number(int pe)
 {
-    return (proc.nranks > pe) && (pe >= 0);
+    return (proc.li.nranks > pe) && (pe >= 0);
 }
 
 void shmemu_init(void);
@@ -167,7 +167,7 @@ void shmemu_deprecate_finalize(void);
  */
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)                \
     do {                                                        \
-        const int top_pe = proc.nranks - 1;                     \
+        const int top_pe = proc.li.nranks - 1;                  \
                                                                 \
         if (shmemu_unlikely((_pe < 0) || (_pe > top_pe))) {     \
             shmemu_fatal("In %s(), PE argument #%d is %d: "     \
@@ -184,7 +184,7 @@ void shmemu_deprecate_finalize(void);
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                         \
     do {                                                                \
         if (shmemu_unlikely(! shmemc_addr_accessible(_addr,             \
-                                                     proc.rank))) {     \
+                                                     proc.li.rank))) {  \
             shmemu_fatal("In %s(), address %p in argument #%d "         \
                          "is not symmetric",                            \
                          __func__,                                      \

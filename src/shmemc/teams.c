@@ -79,7 +79,7 @@ dump_team(shmemc_team_h th)
     size_t i;
 
     for (i = 0; i < th->nmembers; ++i) {
-        fprintf(stderr, "%-8d %lu -> %d\n", proc.rank, i, th->members[i]);
+        fprintf(stderr, "%-8d %lu -> %d\n", proc.li.rank, i, th->members[i]);
     }
     fprintf(stderr, "\n");
 }
@@ -105,7 +105,7 @@ world_initialize_team(shmemc_team_h th)
     /*
      * world is just all PEs in program.
      */
-    create_team_members_from_range(th, 0, proc.nranks - 1);
+    create_team_members_from_range(th, 0, proc.li.nranks - 1);
 }
 
 inline static void
@@ -120,14 +120,14 @@ shared_initialize_team(shmemc_team_h th)
 
     /* divide up pre-allocated contexts */
     th->cfg.num_contexts
-        = proc.env.prealloc_contexts / proc.nnodes;
+        = proc.env.prealloc_contexts / proc.li.nnodes;
 
     /*
      * for now, we'll assume that all peers on a node can share
      * memory.  should perhaps extend this with a ptr() test across
      * peers.
      */
-    create_team_members_from_array(th, proc.peers, proc.npeers);
+    create_team_members_from_array(th, proc.li.peers, proc.li.npeers);
 }
 
 /*
@@ -173,7 +173,7 @@ shmemc_teams_finalize(void)
 int
 shmemc_team_my_pe(shmemc_team_h th)
 {
-    return th->members[proc.rank];
+    return th->members[proc.li.rank];
 }
 
 int

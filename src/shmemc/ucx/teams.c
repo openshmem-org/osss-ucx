@@ -23,7 +23,7 @@ shmemc_ucx_teardown_context(shmemc_context_h ch)
     }
     /* release remote access memory */
     for (r = 0; r < proc.comms.nregions; ++r) {
-        for (pe = 0; pe < proc.nranks; ++pe) {
+        for (pe = 0; pe < proc.li.nranks; ++pe) {
             ucp_rkey_destroy(ch->racc[r].rinfo[pe].rkey);
         }
         free(ch->racc[r].rinfo);

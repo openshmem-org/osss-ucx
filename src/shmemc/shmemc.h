@@ -29,8 +29,8 @@ void shmemc_globalexit_init(void);
 void shmemc_globalexit_finalize(void);
 void shmemc_global_exit(int status);
 
-inline static int shmemc_my_pe(void) { return proc.rank; }
-inline static int shmemc_n_pes(void) { return proc.nranks; }
+inline static int shmemc_my_pe(void) { return proc.li.rank; }
+inline static int shmemc_n_pes(void) { return proc.li.nranks; }
 
 void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);

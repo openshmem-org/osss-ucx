@@ -66,8 +66,8 @@ shmemc_ucx_context_default_set_info(void)
         /* NOT REACHED */
     }
 
-    proc.comms.xchg_wrkr_info[proc.rank].addr = addr;
-    proc.comms.xchg_wrkr_info[proc.rank].len = len;
+    proc.comms.xchg_wrkr_info[proc.li.rank].addr = addr;
+    proc.comms.xchg_wrkr_info[proc.li.rank].len = len;
 
     return 0;
 }
@@ -76,6 +76,6 @@ void
 shmemc_ucx_context_default_destroy(void)
 {
     ucp_worker_release_address(defcp->w,
-                               proc.comms.xchg_wrkr_info[proc.rank].addr);
+                               proc.comms.xchg_wrkr_info[proc.li.rank].addr);
     shmemc_ucx_teardown_context(defcp);
 }

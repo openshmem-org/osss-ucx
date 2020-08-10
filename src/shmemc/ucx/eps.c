@@ -24,7 +24,7 @@ void
 shmemc_ucx_allocate_eps_table(shmemc_context_h ch)
 {
     ch->eps = (ucp_ep_h *)
-        calloc(proc.nranks, sizeof(*(ch->eps)));
+        calloc(proc.li.nranks, sizeof(*(ch->eps)));
     shmemu_assert(ch->eps != NULL,
                   "can't allocate memory "
                   "for remotely accessible endpoints: %s",
@@ -106,17 +106,17 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
     ucs_status_ptr_t *req;
     int i;
 
-    req = (ucs_status_ptr_t *) calloc(proc.nranks, sizeof(*req));
+    req = (ucs_status_ptr_t *) calloc(proc.li.nranks, sizeof(*req));
     shmemu_assert(req != NULL,
                   "failed to allocate memory "
                   "for UCP endpoint disconnect: %s",
                   strerror(errno));
 
-    for (i = 0; i < proc.nranks; ++i) {
+    for (i = 0; i < proc.li.nranks; ++i) {
         req[i] = ep_disconnect_nb(ch->eps[i]);
     }
 
-    for (i = 0; i < proc.nranks; ++i) {
+    for (i = 0; i < proc.li.nranks; ++i) {
         ep_wait(ch, req[i]);
     }
 
@@ -139,7 +139,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
                   "can't allocate memory for remote access rkeys");
 
     for (r = 0; r < proc.comms.nregions; ++r) {
-        ch->racc[r].rinfo = (mem_access_t *) calloc(proc.nranks,
+        ch->racc[r].rinfo = (mem_access_t *) calloc(proc.li.nranks,
                                                     sizeof(mem_access_t));
         shmemu_assert(ch->racc[r].rinfo != NULL,
                       "can't allocate remote access info "
@@ -148,7 +148,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
                       strerror(errno));
     }
 
-    ch->eps = (ucp_ep_h *) calloc(proc.nranks, sizeof(ucp_ep_h));
+    ch->eps = (ucp_ep_h *) calloc(proc.li.nranks, sizeof(ucp_ep_h));
     shmemu_assert(ch->eps != NULL,
                   "can't allocate memory for endpoints "
                   "for context %lu: %s",
@@ -159,7 +159,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
 
     epm.field_mask = UCP_EP_PARAM_FIELD_REMOTE_ADDRESS;
 
-    for (pe = 0; pe < proc.nranks; ++pe) {
+    for (pe = 0; pe < proc.li.nranks; ++pe) {
 
         epm.address = (ucp_address_t *) proc.comms.xchg_wrkr_info[pe].buf;
 
