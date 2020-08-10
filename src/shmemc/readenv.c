@@ -360,7 +360,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             prefix,
             var_width, "SHMEM_PROGRESS_DELAY",
             val_width,
-            proc.env.progress_delay_ns,
+            (unsigned long) proc.env.progress_delay_ns,
             "delay between progress polls (ns)");
     if (proc.env.progress_threads == NULL) {
         fprintf(stream, " [not used]");
