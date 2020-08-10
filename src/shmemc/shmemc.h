@@ -29,9 +29,6 @@ void shmemc_globalexit_init(void);
 void shmemc_globalexit_finalize(void);
 void shmemc_global_exit(int status);
 
-inline static int shmemc_my_pe(void) { return proc.li.rank; }
-inline static int shmemc_n_pes(void) { return proc.li.nranks; }
-
 void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);
 int shmemc_addr_accessible(const void *addr, int pe);
@@ -133,6 +130,13 @@ int shmemc_team_split_2d(shmemc_team_h parh,
                          shmemc_team_h *yaxish);
 
 void shmemc_team_destroy(shmemc_team_h th);
+
+/*
+ * the implicit world queries.  we can short-circuit these because the
+ * world team is the same as the physically queried values.
+ */
+inline static int shmemc_my_pe(void) { return proc.li.rank; }
+inline static int shmemc_n_pes(void) { return proc.li.nranks; }
 
 /*
  * -- AMOs -------------------------------------------------------------------
