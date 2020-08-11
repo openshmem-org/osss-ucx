@@ -10,6 +10,7 @@
 #include "boolean.h"
 #include "threading.h"
 #include "shmem/teams.h"
+#include "../klib/khash.h"      /* TODO */
 
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
@@ -75,16 +76,21 @@ typedef struct shmemc_context *shmemc_context_h;
  */
 typedef struct shmemc_team *shmemc_team_h;
 
+KHASH_MAP_INIT_INT(map, int)
+
 typedef struct shmemc_team {
-    int *members;               /**< virt -> parent PE mapping */
-    size_t nmembers;            /**< how many PEs */
+    int rank;
+    int nranks;                 /**< identity */
+
+    khash_t(map) *fwd;
+    khash_t(map) *rev;      /**< forward and reverse PE number maps */
 
     shmem_team_config_t cfg;    /**< team configuration */
 
     shmemc_context_h *ctxts;    /**< array of contexts in this team */
     size_t nctxts;              /**< how many contexts allocated */
 
-    const char *name;           /**< if predef, who we are (else unused) */
+    const char *name;           /**< if predef, who we are (else NULL) */
     shmemc_team_h parent;       /**< parent team we split from,
                                    NULL if predef */
 } shmemc_team_t;

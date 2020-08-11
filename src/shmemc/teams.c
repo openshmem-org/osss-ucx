@@ -14,9 +14,9 @@
 shmemc_team_t shmemc_team_world;
 shmemc_team_t shmemc_team_shared;
 
-shmem_team_t SHMEM_TEAM_WORLD = & shmemc_team_world;
-shmem_team_t SHMEM_TEAM_SHARED = & shmemc_team_shared;
-shmem_team_t SHMEM_TEAM_INVALID = NULL;
+static shmemc_team_h world = & shmemc_team_world;
+static shmemc_team_h shared = & shmemc_team_shared;
+static shmemc_team_h invalid = NULL;
 
 /*
  * clear up the allocated SHMEM contexts in a team
@@ -33,57 +33,53 @@ shmemc_team_contexts_destroy(shmemc_team_h th)
     free(th->ctxts);
 }
 
-/*
- * populate team from source PEs
- */
-
-inline static void
-allocate_team_memory(shmemc_team_h th, int n)
-{
-    th->nmembers = n;
-    th->members = (int *) malloc(th->nmembers * sizeof(int));
-    shmemu_assert(th->members != NULL,
-                  "cannot allocate memory for new team");
-}
-
-inline static void
-create_team_members_from_range(shmemc_team_h th, int first, int last)
-{
-    int i;
-    int n;
-
-    allocate_team_memory(th, last - first + 1);
-
-    for (n = 0, i = first; i <= last; ++i) {
-        th->members[n] = i;
-        ++n;
-    }
-}
-
-inline static void
-create_team_members_from_array(shmemc_team_h th, const int *pes, int npes)
-{
-    int i;
-
-    allocate_team_memory(th, npes);
-
-    for (i = 0; i < npes; ++i) {
-        th->members[i] = pes[i];
-    }
-}
-
-#if 0
+#if 1
 inline static void
 dump_team(shmemc_team_h th)
 {
-    size_t i;
+   int key, val;
 
-    for (i = 0; i < th->nmembers; ++i) {
-        fprintf(stderr, "%-8d %lu -> %d\n", proc.li.rank, i, th->members[i]);
-    }
-    fprintf(stderr, "\n");
+   printf("==========================================\n");
+
+   kh_foreach(th->fwd, key, val,
+              {
+                  printf("fwd: %d -> %d\n", key, val);
+              }
+              );
+   kh_foreach(th->rev, key, val,
+              {
+                  printf("rev: %d -> %d\n", key, val);
+              }
+              );
+   printf("\n");
+
+   printf("Team = %p (%s)\n", (void *) th, th->name);
+
+   printf("  mype = %4d, npes = %4d\n",
+          th->rank,
+          th->nranks);
+   printf("------------------------------------------\n");
 }
 #endif
+
+/*
+ * common setup
+ */
+inline static void
+initialize_common_team(shmemc_team_h th, const char *name, int cfg_nctxts)
+{
+    th->parent = NULL;
+    th->name   = name;
+
+    /* nothing allocated yet */
+    th->nctxts = 0;
+    th->ctxts  = NULL;
+
+    th->cfg.num_contexts = cfg_nctxts;
+
+    th->fwd = kh_init(map);
+    th->rev = kh_init(map);
+}
 
 /*
  * set up world/shared per PE
@@ -91,43 +87,48 @@ dump_team(shmemc_team_h th)
  */
 
 inline static void
-world_initialize_team(shmemc_team_h th)
+initialize_team_world(void)
 {
-    th->parent = NULL;
-    th->name   = "world";
+    size_t i;
+    khiter_t k;
+    int absent;
 
-    /* nothing allocated yet */
-    th->nctxts = 0;
-    th->ctxts  = NULL;
+    initialize_common_team(world, "world", proc.env.prealloc_contexts);
 
-    th->cfg.num_contexts = proc.env.prealloc_contexts;
+    world->rank = proc.li.rank;
+    world->nranks = proc.li.nranks;
 
-    /*
-     * world is just all PEs in program.
-     */
-    create_team_members_from_range(th, 0, proc.li.nranks - 1);
+    for (i = 0; i < proc.li.nranks; ++i) {
+        k = kh_put(map, world->fwd, i, &absent);
+        kh_val(world->fwd, k) = i;
+        k = kh_put(map, world->rev, i, &absent);
+        kh_val(world->rev, k) = i;
+    }
 }
 
 inline static void
-shared_initialize_team(shmemc_team_h th)
+initialize_team_shared(void)
 {
-    th->parent = NULL;
-    th->name   = "shared";
+    size_t i;
+    khiter_t k;
+    int absent;
 
-    /* nothing allocated yet */
-    th->nctxts = 0;
-    th->ctxts  = NULL;
+    initialize_common_team(shared, "shared",
+                           proc.env.prealloc_contexts / proc.li.nnodes);
 
-    /* divide up pre-allocated contexts */
-    th->cfg.num_contexts
-        = proc.env.prealloc_contexts / proc.li.nnodes;
+    shared->rank = -1;
+    shared->nranks = proc.li.npeers;
 
-    /*
-     * for now, we'll assume that all peers on a node can share
-     * memory.  should perhaps extend this with a ptr() test across
-     * peers.
-     */
-    create_team_members_from_array(th, proc.li.peers, proc.li.npeers);
+    for (i = 0; i < proc.li.npeers; ++i) {
+        if (proc.li.rank == proc.li.peers[i]) {
+            shared->rank = i;
+        }
+
+        k = kh_put(map, shared->fwd, proc.li.peers[i], &absent);
+        kh_val(shared->fwd, k) = proc.li.rank;
+        k = kh_put(map, shared->rev, proc.li.rank, &absent);
+        kh_val(shared->rev, k) = proc.li.peers[i];
+    }
 }
 
 /*
@@ -135,31 +136,23 @@ shared_initialize_team(shmemc_team_h th)
  */
 
 inline static void
-world_finalize_team(shmemc_team_h th)
+finalize_team(shmemc_team_h th)
 {
     shmemc_team_contexts_destroy(th);
-    free(th->members);
-}
-
-inline static void
-shared_finalize_team(shmemc_team_h th)
-{
-    shmemc_team_contexts_destroy(th);
-    free(th->members);
 }
 
 void
 shmemc_teams_init(void)
 {
-    world_initialize_team(SHMEM_TEAM_WORLD);
-    shared_initialize_team(SHMEM_TEAM_SHARED);
+    initialize_team_world();
+    initialize_team_shared();
 }
 
 void
 shmemc_teams_finalize(void)
 {
-    shared_finalize_team(SHMEM_TEAM_SHARED);
-    world_finalize_team(SHMEM_TEAM_WORLD);
+    finalize_team(shared);
+    finalize_team(world);
 }
 
 /*
@@ -173,13 +166,13 @@ shmemc_teams_finalize(void)
 int
 shmemc_team_my_pe(shmemc_team_h th)
 {
-    return th->members[proc.li.rank];
+    return th->rank;
 }
 
 int
 shmemc_team_n_pes(shmemc_team_h th)
 {
-    return (int) th->nmembers;
+    return th->nranks;
 }
 
 /*
@@ -204,16 +197,6 @@ int
 shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
                          shmemc_team_h dh)
 {
-    const int phys = sh->members[src_pe];
-    size_t i;
-
-    for (i = 0; i < dh->nmembers; ++i) {
-        if (dh->members[i] == phys) {
-            return (int) i;
-            /* NOT REACHED */
-        }
-    }
-
     return -1;
 }
 
@@ -269,8 +252,6 @@ shmemc_team_destroy(shmemc_team_h th)
     if (th->parent != NULL) {
         size_t c;
 
-        free(th->members);
-
         for (c = 0; c < th->nctxts; ++c) {
             if (! th->ctxts[c]->attr.private) {
                 shmemc_context_destroy(th->ctxts[c]);
@@ -279,7 +260,7 @@ shmemc_team_destroy(shmemc_team_h th)
 
         free(th);
 
-        th = SHMEM_TEAM_INVALID;
+        th = invalid;
     }
     else {
         shmemu_fatal("cannot destroy predefined team \"%s\"", th->name);

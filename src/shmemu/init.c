@@ -4,7 +4,7 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemu.h"
+#include "init.h"
 
 void
 shmemu_init(void)

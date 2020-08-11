@@ -3,6 +3,7 @@
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 				-I$(srcdir)/../shmemt \
 				-I../../include \
+				-I$(srcdir)/../klib \
 				-I$(top_srcdir)/include \
 				-I$(srcdir)/..
 LIBSHMEMC_SOURCES         = \

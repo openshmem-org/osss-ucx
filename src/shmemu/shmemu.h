@@ -73,8 +73,6 @@ void shmemu_finalize(void);
 /*
  * elapsed time in seconds since program started
  */
-void shmemu_timer_init(void);
-void shmemu_timer_finalize(void);
 double shmemu_timer(void);
 
 /*
@@ -124,12 +122,8 @@ void shmemu_logger(shmemu_log_t evt, const char *fmt, ...);
 void shmemu_deprecate(const char *fn, float version);
 
 # define logger(...) shmemu_logger(__VA_ARGS__)
-void shmemu_logger_init(void);
-void shmemu_logger_finalize(void);
 
 # define deprecate(...) shmemu_deprecate(__VA_ARGS__)
-void shmemu_deprecate_init(void);
-void shmemu_deprecate_finalize(void);
 
 #else  /* ENABLE_LOGGING */
 
