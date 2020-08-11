@@ -128,12 +128,8 @@ void shmemu_deprecate(const char *fn, float version);
 #else  /* ENABLE_LOGGING */
 
 # define logger(...)
-# define shmemu_logger_init()
-# define shmemu_logger_finalize()
 
 # define deprecate(...)
-# define shmemu_deprecate_init()
-# define shmemu_deprecate_finalize()
 
 #endif  /* ENABLE_LOGGING */
 
