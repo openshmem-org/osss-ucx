@@ -55,7 +55,8 @@ dump_team(shmemc_team_h th)
 
    printf("Team = %p (%s)\n", (void *) th, th->name);
 
-   printf("  mype = %4d, npes = %4d\n",
+   printf("  global rank = %d, mype = %4d, npes = %4d\n",
+          proc.li.rank,
           th->rank,
           th->nranks);
    printf("------------------------------------------\n");
@@ -124,10 +125,10 @@ initialize_team_shared(void)
             shared->rank = i;
         }
 
-        k = kh_put(map, shared->fwd, proc.li.peers[i], &absent);
-        kh_val(shared->fwd, k) = proc.li.rank;
-        k = kh_put(map, shared->rev, proc.li.rank, &absent);
-        kh_val(shared->rev, k) = proc.li.peers[i];
+        k = kh_put(map, shared->fwd, i, &absent);
+        kh_val(shared->fwd, k) = proc.li.peers[i];
+        k = kh_put(map, shared->rev, proc.li.peers[i], &absent);
+        kh_val(shared->rev, k) = i;
     }
 }
 
