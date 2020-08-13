@@ -199,22 +199,26 @@ shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
                          shmemc_team_h dh)
 {
     khiter_t k;
-    int fpe;
+    int wpe;
 
+    /* can we find the source PE? */
     k = kh_get(map, sh->fwd, src_pe);
+    if (k == kh_end(sh->fwd)) {
+        return -1;
+        /* NOT REACHED */
+    }
+
+    /* world equiv PE */
+    wpe = kh_val(sh->fwd, k);
+
+    /* map to world equiv in destination team */
+    k = kh_get(map, dh->rev, wpe);
     if (k == kh_end(dh->rev)) {
         return -1;
         /* NOT REACHED */
     }
 
-    fpe = kh_val(sh->fwd, k);
-
-    k = kh_get(map, dh->rev, fpe);
-    if (k == kh_end(dh->rev)) {
-        return -1;
-        /* NOT REACHED */
-    }
-
+    /* world equiv is this in destination team */
     return kh_val(dh->rev, k);
 }
 
