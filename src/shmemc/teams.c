@@ -198,11 +198,24 @@ int
 shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
                          shmemc_team_h dh)
 {
-    NO_WARN_UNUSED(sh);
-    NO_WARN_UNUSED(src_pe);
-    NO_WARN_UNUSED(dh);
+    khiter_t k;
+    int fpe;
 
-    return -1;
+    k = kh_get(map, sh->fwd, src_pe);
+    if (k == kh_end(dh->rev)) {
+        return -1;
+        /* NOT REACHED */
+    }
+
+    fpe = kh_val(sh->fwd, k);
+
+    k = kh_get(map, dh->rev, fpe);
+    if (k == kh_end(dh->rev)) {
+        return -1;
+        /* NOT REACHED */
+    }
+
+    return kh_val(dh->rev, k);
 }
 
 static bool
