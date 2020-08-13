@@ -22,7 +22,7 @@ static shmemc_team_h invalid = NULL;
  * clear up the allocated SHMEM contexts in a team
  */
 
-inline static void
+static void
 shmemc_team_contexts_destroy(shmemc_team_h th)
 {
     size_t c;
@@ -34,7 +34,7 @@ shmemc_team_contexts_destroy(shmemc_team_h th)
 }
 
 #if 1
-inline static void
+static void
 dump_team(shmemc_team_h th)
 {
    int key, val;
@@ -66,7 +66,7 @@ dump_team(shmemc_team_h th)
 /*
  * common setup
  */
-inline static void
+static void
 initialize_common_team(shmemc_team_h th, const char *name, int cfg_nctxts)
 {
     th->parent = NULL;
@@ -87,10 +87,10 @@ initialize_common_team(shmemc_team_h th, const char *name, int cfg_nctxts)
  *
  */
 
-inline static void
+static void
 initialize_team_world(void)
 {
-    size_t i;
+    int i;
     khiter_t k;
     int absent;
 
@@ -107,10 +107,10 @@ initialize_team_world(void)
     }
 }
 
-inline static void
+static void
 initialize_team_shared(void)
 {
-    size_t i;
+    int i;
     khiter_t k;
     int absent;
 
@@ -136,7 +136,7 @@ initialize_team_shared(void)
  * clean up world/shared allocated resources at end
  */
 
-inline static void
+static void
 finalize_team(shmemc_team_h th)
 {
     shmemc_team_contexts_destroy(th);
@@ -198,7 +198,17 @@ int
 shmemc_team_translate_pe(shmemc_team_h sh, int src_pe,
                          shmemc_team_h dh)
 {
+    NO_WARN_UNUSED(sh);
+    NO_WARN_UNUSED(src_pe);
+    NO_WARN_UNUSED(dh);
+
     return -1;
+}
+
+static bool
+is_member(int parent_pe, int start, int stride)
+{
+    return ((parent_pe - start) % stride) == 0;
 }
 
 int
@@ -208,16 +218,46 @@ shmemc_team_split_strided(shmemc_team_h parh,
                           long config_mask,
                           shmemc_team_h *newh)
 {
-    /* TODO */
-    NO_WARN_UNUSED(parh);
-    NO_WARN_UNUSED(start);
-    NO_WARN_UNUSED(stride);
-    NO_WARN_UNUSED(size);
-    NO_WARN_UNUSED(config);
-    NO_WARN_UNUSED(config_mask);
-    NO_WARN_UNUSED(newh);
+    int i;                      /* new team PE # */
+    int walk;                   /* iterate over parent PEs */
+    shmemc_team_h newt;
+    khint_t k;
+    int absent;
+    int nc;
 
-    return -1;
+    newt = (shmemc_team_h) malloc(sizeof(*newt));
+    if (newt == NULL) {
+        *newh = SHMEM_TEAM_INVALID;
+        return -1;
+    }
+
+    nc = (config_mask & SHMEM_TEAM_NUM_CONTEXTS)
+        ? config->num_contexts
+        : 0;
+
+    initialize_common_team(newt, NULL, nc);
+
+    newt->nranks = size;
+
+    walk = start;
+    for (i = 0; i < size; ++i) {
+        k = kh_get(map, parh->fwd, walk);
+        const int up = kh_val(parh->fwd, k);
+
+        if (is_member(up, start, size)) {
+            k = kh_put(map, newt->fwd, i, &absent);
+            kh_val(newt->fwd, k) = up;
+
+            k = kh_put(map, newt->rev, up, &absent);
+            kh_val(newt->rev, k) = i;
+        }
+
+        walk += stride;
+    }
+
+    *newh = newt;
+
+    return 0;
 }
 
 int
