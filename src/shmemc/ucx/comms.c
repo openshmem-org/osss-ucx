@@ -860,14 +860,3 @@ shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
         break;
     }
 }
-
-uint64_t
-shmemc_ctx_signal_wait_until(shmem_ctx_t ctx,
-                             uint64_t *sig_addr,
-                             int cmp,
-                             uint64_t cmp_value)
-{
-    NO_WARN_UNUSED(ctx);
-
-
-}
