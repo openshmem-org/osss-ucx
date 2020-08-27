@@ -44,6 +44,7 @@
 #define SHMEM_TYPE_WAIT_UNTIL_ALL(_opname, _type, _size)                \
     void                                                                \
     shmem_##_opname##_wait_until_all(_type *ivars, size_t nelems,       \
+                                     const int *status,                 \
                                      int cmp, _type cmp_value)          \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \
@@ -53,36 +54,42 @@
              shmemc_ctx_wait_until_all_eq##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivars, \
                                                  nelems,                \
+                                                 status,                \
                                                  cmp_value);            \
              break;                                                     \
              case SHMEM_CMP_NE:                                         \
              shmemc_ctx_wait_until_all_ne##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivars, \
                                                  nelems,                \
+                                                 status,                \
                                                  cmp_value);            \
              break;                                                     \
              case SHMEM_CMP_GT:                                         \
              shmemc_ctx_wait_until_all_gt##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivars, \
                                                  nelems,                \
+                                                 status,                \
                                                  cmp_value);            \
              break;                                                     \
              case SHMEM_CMP_LE:                                         \
              shmemc_ctx_wait_until_all_le##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivars, \
                                                  nelems,                \
+                                                 status,                \
                                                  cmp_value);            \
              break;                                                     \
              case SHMEM_CMP_LT:                                         \
              shmemc_ctx_wait_until_all_lt##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivars, \
                                                  nelems,                \
+                                                 status,                \
                                                  cmp_value);            \
              break;                                                     \
              case SHMEM_CMP_GE:                                         \
              shmemc_ctx_wait_until_all_ge##_size(SHMEM_CTX_DEFAULT,     \
                                                  (int##_size##_t *) ivars, \
                                                  nelems,                \
+                                                 status,                \
                                                  cmp_value);            \
              break;                                                     \
              default:                                                   \

@@ -283,6 +283,7 @@ SHMEMC_CTX_WAIT_UNTIL(64, ge)
     int shmemc_ctx_test_all_##_opname##_size(shmem_ctx_t ctx,           \
                                              int##_size##_t *vars,      \
                                              size_t nelems,             \
+                                             const int *status,         \
                                              int##_size##_t value);
 
 SHMEMC_CTX_TEST_ALL(16, eq)
@@ -314,7 +315,7 @@ SHMEMC_CTX_TEST_ALL(64, ge)
                                                  int##_size##_t * restrict vars,  \
                                                  size_t nelems,         \
                                                  size_t * restrict idxs, \
-                                                 int * restrict status, \
+                                                 const int *status,     \
                                                  int##_size##_t value);
 
 SHMEMC_CTX_TEST_SOME(16, eq)
@@ -345,7 +346,7 @@ SHMEMC_CTX_TEST_SOME(64, ge)
     size_t shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,        \
                                                 int##_size##_t * restrict vars,   \
                                                 size_t nelems,          \
-                                                int * restrict status,  \
+                                                const int *status,      \
                                                 int##_size##_t value);
 
 SHMEMC_CTX_TEST_ANY(16, eq)
@@ -376,6 +377,7 @@ SHMEMC_CTX_TEST_ANY(64, ge)
     void shmemc_ctx_wait_until_all_##_opname##_size(shmem_ctx_t ctx,    \
                                                     int##_size##_t *vars, \
                                                     size_t nelems,      \
+                                                    const int *status,  \
                                                     int##_size##_t value);
 
 SHMEMC_CTX_WAIT_UNTIL_ALL(16, eq)
@@ -407,7 +409,7 @@ SHMEMC_CTX_WAIT_UNTIL_ALL(64, ge)
                                                        int##_size##_t * restrict vars, \
                                                        size_t nelems,   \
                                                        size_t * restrict idxs, \
-                                                       int * restrict status, \
+                                                       const int *status, \
                                                        int##_size##_t value);
 
 SHMEMC_CTX_WAIT_UNTIL_SOME(16, eq)
@@ -438,7 +440,7 @@ SHMEMC_CTX_WAIT_UNTIL_SOME(64, ge)
     size_t shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,  \
                                                       int##_size##_t * restrict vars, \
                                                       size_t nelems,    \
-                                                      int * restrict status, \
+                                                      const int *status, \
                                                       int##_size##_t value);
 
 SHMEMC_CTX_WAIT_UNTIL_ANY(16, eq)

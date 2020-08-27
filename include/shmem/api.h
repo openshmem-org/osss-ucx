@@ -862,7 +862,7 @@ extern "C"
 
     /**
      * @brief fetches value of the signal object.
-     * @page shmem_signel_fetch
+     * @page shmem_signal_fetch
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -880,6 +880,31 @@ extern "C"
      *
      */
     uint64_t shmem_signal_fetch(const uint64_t *sig_addr);
+
+    /**
+     * @brief waits for signal object to change value
+     * @page shmem_signal_wait_until
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     uint64_t shmem_signal_wait_until(uint64_t *sig_addr, int cmp, uint64_t cmp_value));
+     @endcode
+     *
+     * @param[inout] sig_addr The address of the remotely accessible signal object
+     * @param[in] cmp The comparison operator
+     * @param[in] cmp_value Value to compare against
+     *
+     * @section Effect
+     * Waits for contents of sig_addr to change
+     *
+     * @section Return
+     * The value in sig_addr on calling PE
+     *
+     */
+    uint64_t shmem_signal_wait_until(uint64_t *sig_addr,
+                                     int cmp,
+                                     uint64_t cmp_value);
 
     /*
      * barriers & syncs
@@ -1375,6 +1400,7 @@ extern "C"
 #define API_DECL_TEST_ALL(_opname, _type)                   \
     int                                                     \
     shmem_##_opname##_test_all(_type *ivars, size_t nelems, \
+                               const int *status,           \
                                int cmp, _type cmp_value)
 
     API_DECL_TEST_ALL(short, short);
@@ -1395,7 +1421,7 @@ extern "C"
 #define API_DECL_TEST_ANY(_opname, _type)                   \
     size_t                                                  \
     shmem_##_opname##_test_any(_type *ivars, size_t nelems, \
-                               int *status,                 \
+                               const int *status,           \
                                int cmp, _type cmp_value)
 
     API_DECL_TEST_ANY(short, short);
@@ -1417,7 +1443,7 @@ extern "C"
     size_t                                                      \
     shmem_##_opname##_test_some(_type *ivars, size_t nelems,    \
                                 size_t *indices,                \
-                                int *status,                    \
+                                const int *status,              \
                                 int cmp, _type cmp_value)
 
     API_DECL_TEST_SOME(short, short);
@@ -1438,6 +1464,7 @@ extern "C"
 #define API_DECL_WAIT_UNTIL_ALL(_opname, _type)                     \
     void                                                            \
     shmem_##_opname##_wait_until_all(_type *ivars, size_t nelems,   \
+                                     const int *status,             \
                                      int cmp, _type cmp_value)
 
     API_DECL_WAIT_UNTIL_ALL(short, short);
@@ -1458,7 +1485,7 @@ extern "C"
 #define API_DECL_WAIT_UNTIL_ANY(_opname, _type)                     \
     size_t                                                          \
     shmem_##_opname##_wait_until_any(_type *ivars, size_t nelems,   \
-                                     int *status,                   \
+                                     const int *status,             \
                                      int cmp, _type cmp_value)
 
     API_DECL_WAIT_UNTIL_ANY(short, short);
@@ -1475,6 +1502,28 @@ extern "C"
     API_DECL_WAIT_UNTIL_ANY(uint64, uint64_t);
     API_DECL_WAIT_UNTIL_ANY(size, size_t);
     API_DECL_WAIT_UNTIL_ANY(ptrdiff, ptrdiff_t);
+
+#define API_DECL_WAIT_UNTIL_SOME(_opname, _type)                        \
+    size_t                                                              \
+    shmem_##_opname##_wait_until_some(_type *ivars, size_t nelems,      \
+                                      size_t *indices,                  \
+                                      const int *status,                \
+                                      int cmp, _type cmp_value)
+
+    API_DECL_WAIT_UNTIL_SOME(short, short);
+    API_DECL_WAIT_UNTIL_SOME(int, int);
+    API_DECL_WAIT_UNTIL_SOME(long, long);
+    API_DECL_WAIT_UNTIL_SOME(longlong, long long);
+    API_DECL_WAIT_UNTIL_SOME(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_SOME(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_SOME(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_SOME(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_SOME(int32, int32_t);
+    API_DECL_WAIT_UNTIL_SOME(int64, int64_t);
+    API_DECL_WAIT_UNTIL_SOME(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_SOME(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_SOME(size, size_t);
+    API_DECL_WAIT_UNTIL_SOME(ptrdiff, ptrdiff_t);
 
 #undef API_DECL_TEST_ALL
 #undef API_DECL_TEST_ANY

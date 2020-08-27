@@ -108,3 +108,13 @@ SHMEM_TYPE_WAIT_UNTIL(uint32, uint32_t, 32)
 SHMEM_TYPE_WAIT_UNTIL(uint64, uint64_t, 64)
 SHMEM_TYPE_WAIT_UNTIL(size, size_t, 64)
 SHMEM_TYPE_WAIT_UNTIL(ptrdiff, ptrdiff_t, 64)
+
+uint64_t
+shmem_signal_wait_until(uint64_t *sig_addr,
+                        int cmp,
+                        uint64_t cmp_value)
+{
+    shmem_uint64_wait_until(sig_addr, cmp, cmp_value);
+
+    return *sig_addr;
+}

@@ -44,6 +44,7 @@
 #define SHMEM_TYPE_TEST_ALL(_opname, _type, _size)                      \
     int                                                                 \
     shmem_##_opname##_test_all(_type *ivars, size_t nelems,             \
+                               const int *status,                       \
                                int cmp, _type cmp_value)                \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \
@@ -53,36 +54,42 @@
              return shmemc_ctx_test_all_eq##_size(SHMEM_CTX_DEFAULT,    \
                                                   (int##_size##_t *) ivars, \
                                                   nelems,               \
+                                                  status,               \
                                                   cmp_value);           \
              break;                                                     \
              case SHMEM_CMP_NE:                                         \
              return shmemc_ctx_test_all_ne##_size(SHMEM_CTX_DEFAULT,    \
                                                   (int##_size##_t *) ivars, \
                                                   nelems,               \
+                                                  status,               \
                                                   cmp_value);           \
              break;                                                     \
              case SHMEM_CMP_GT:                                         \
              return shmemc_ctx_test_all_gt##_size(SHMEM_CTX_DEFAULT,    \
                                                   (int##_size##_t *) ivars, \
                                                   nelems,               \
+                                                  status,               \
                                                   cmp_value);           \
              break;                                                     \
              case SHMEM_CMP_LE:                                         \
              return shmemc_ctx_test_all_le##_size(SHMEM_CTX_DEFAULT,    \
                                                   (int##_size##_t *) ivars, \
                                                   nelems,               \
+                                                  status,               \
                                                   cmp_value);           \
              break;                                                     \
              case SHMEM_CMP_LT:                                         \
              return shmemc_ctx_test_all_lt##_size(SHMEM_CTX_DEFAULT,    \
                                                   (int##_size##_t *) ivars, \
                                                   nelems,               \
+                                                  status,               \
                                                   cmp_value);           \
              break;                                                     \
              case SHMEM_CMP_GE:                                         \
              return shmemc_ctx_test_all_ge##_size(SHMEM_CTX_DEFAULT,    \
                                                   (int##_size##_t *) ivars, \
                                                   nelems,               \
+                                                  status,               \
                                                   cmp_value);           \
              break;                                                     \
              default:                                                   \

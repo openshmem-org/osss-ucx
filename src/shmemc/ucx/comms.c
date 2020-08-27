@@ -827,7 +827,7 @@ shmemc_ctx_put_signal(shmem_ctx_t ctx,
 }
 
 /*
- * TODO HACK1: just use blocking implemetntion for testing
+ * TODO HACK1: just use blocking implementation for testing
  */
 
 void
@@ -859,4 +859,15 @@ shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
         /* NOT REACHED */
         break;
     }
+}
+
+uint64_t
+shmemc_ctx_signal_wait_until(shmem_ctx_t ctx,
+                             uint64_t *sig_addr,
+                             int cmp,
+                             uint64_t cmp_value)
+{
+    NO_WARN_UNUSED(ctx);
+
+
 }

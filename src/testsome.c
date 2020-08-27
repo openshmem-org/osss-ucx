@@ -45,7 +45,7 @@
     size_t                                                              \
     shmem_##_opname##_test_some(_type *ivars, size_t nelems,            \
                                 size_t *indices,                        \
-                                int *status,                            \
+                                const int *status,                      \
                                 int cmp, _type cmp_value)               \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \

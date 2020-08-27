@@ -62,12 +62,17 @@ COMMS_CTX_TEST_SIZE(64, ge, >=)
     shmemc_ctx_test_all_##_opname##_size(shmem_ctx_t ctx,               \
                                          int##_size##_t *vars,          \
                                          size_t nelems,                 \
+                                         const int *status,             \
                                          int##_size##_t value)          \
     {                                                                   \
         size_t i;                                                       \
         int n = 0;                                                      \
                                                                         \
         for (i = 0; i < nelems; ++i) {                                  \
+            if ( (status != NULL) && ( status[i] != 0) ) {              \
+                continue;                                               \
+            }                                                           \
+                                                                        \
             n += shmemc_ctx_test_##_opname##_size(ctx,                  \
                                                   &(vars[i]), value);   \
         }                                                               \
@@ -109,7 +114,7 @@ COMMS_CTX_TEST_ALL_SIZE(64, ge)
                                           int##_size##_t * restrict vars, \
                                           size_t nelems,                \
                                           size_t * restrict idxs,       \
-                                          int * restrict status,        \
+                                          const int *status,            \
                                           int##_size##_t value)         \
     {                                                                   \
         size_t n;                                                       \
@@ -163,7 +168,7 @@ COMMS_CTX_TEST_SOME_SIZE(64, ge)
     shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,               \
                                          int##_size##_t * restrict vars, \
                                          size_t nelems,                 \
-                                         int * restrict status,         \
+                                         const int *status,             \
                                          int##_size##_t value)          \
     {                                                                   \
         size_t n;                                                       \
