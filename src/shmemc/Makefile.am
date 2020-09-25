@@ -119,5 +119,6 @@ endif # c++
 
 OSHRUN_TEMPLATE = oshrun.py.in
 
-oshrun:	$(OSHRUN_TEMPLATE)
-	sed -e 's,\@SHMEM_LAUNCHER\@,@SHMEM_LAUNCHER@,g' < $^ > $@
+oshrun: $(OSHRUN_TEMPLATE)
+	sed -e 's,\@PYTHON_BIN\@,@PYTHON_BIN@,g' \
+		-e 's,\@SHMEM_LAUNCHER\@,@SHMEM_LAUNCHER@,g' < $^ > $@
