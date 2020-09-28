@@ -96,7 +96,7 @@ enum signal_ops {
 };
 
 /*
- * default context, and context attributes
+ * default context, and context attributes (bitmask)
  */
 #define SHMEM_BIT_SET(_level) (1 << (_level))
 
@@ -113,11 +113,20 @@ extern shmem_ctx_t SHMEM_CTX_DEFAULT;
 #define SHMEM_CTX_INVALID NULL
 
 /*
+ * team context config parameters (bitmask)
+ */
+enum shmem_team_params {
+    SHMEM_TEAM_NUM_CONTEXTS = SHMEM_BIT_SET(0)
+};
+
+/*
  * malloc hints
  */
 
-#define SHMEM_MALLOC_ATOMICS_REMOTE 1
-#define SHMEM_MALLOC_SIGNAL_REMOTE  2
+enum shmem_malloc_hints {
+    SHMEM_MALLOC_ATOMICS_REMOTE = 0,
+    SHMEM_MALLOC_SIGNAL_REMOTE
+};
 
 /*
  * to declare AMOs

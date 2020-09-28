@@ -12,6 +12,6 @@
 thispe_info_t proc = {
     .status = SHMEMC_PE_UNKNOWN, /* uninitialized */
     .refcount = 0,               /* init never called */
-    .rank = -1,                  /* undefined position */
+    .li.rank = -1,               /* undefined position */
     .progress_thread = false,    /* no special progress */
 };

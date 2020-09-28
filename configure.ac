@@ -84,14 +84,16 @@ m4_include([config/m4/attribute_checks.m4])
 # do we have python?
 m4_include([config/m4/ax_python.m4])
 AX_PYTHON
+
 case "$ax_python_bin" in
     python*)
-	    AC_DEFINE_UNQUOTED([HAVE_PY_LAUNCHER], [1], [Enable Python-based launcher])
-	    AM_CONDITIONAL([HAVE_PY_LAUNCHER], [true])
-	    ;;
+        AC_DEFINE_UNQUOTED([HAVE_PY_LAUNCHER], [1], [Enable Python-based launcher])
+        AM_CONDITIONAL([HAVE_PY_LAUNCHER], [true])
+        AC_SUBST([PYTHON_BIN], [$ax_python_bin])
+        ;;
     *)
-	    AM_CONDITIONAL([HAVE_PY_LAUNCHER], [false])
-            ;;
+        AM_CONDITIONAL([HAVE_PY_LAUNCHER], [false])
+        ;;
 esac
 
 # c++ -specific checks
@@ -124,7 +126,7 @@ AC_CHECK_TYPES([ptrdiff_t])
 # AC_FUNC_MALLOC
 # AC_FUNC_REALLOC
 AC_FUNC_MMAP
-AC_CHECK_FUNCS([atexit _exit exit gettimeofday gethostname uname memset strlcat strlcpy sched_yield nanosleep])
+AC_CHECK_FUNCS([atexit _exit exit gettimeofday gethostname uname memset strlcat strlcpy sched_yield nanosleep setenv putenv])
 AC_CHECK_LIB([m], [log10])
 
 AM_INIT_AUTOMAKE
@@ -214,8 +216,8 @@ echo "  Profiling Support: $enable_pshmem"
 echo "  Default heap size: $shmem_heap_size"
 echo "     Install prefix: $prefix"
 echo
-echo "                UCX: version $UCX_VERSION_STRING in $UCX_DIR"
-echo "               PMIx: version $PMIX_VERSION_STRING in $PMIX_DIR"
+echo "                UCX: version $UCX_VERSION_STRING"
+echo "               PMIx: version $PMIX_VERSION_STRING"
 
 case "x$shcoll_happy" in
     xno)

@@ -116,7 +116,7 @@ shmemu_logger_init(void)
     }
 
     /* how wide to display things */
-    wd = ceil(log10((double) proc.nranks));
+    wd = ceil(log10((double) proc.li.nranks));
     pe_width = (int) wd;
     stamp_width = 30 - pe_width;
     if (stamp_width < 1) {
@@ -176,7 +176,7 @@ shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
 
         snprintf(tmp1, TRACE_MSG_BUF_SIZE_1,
                  "[%*d:%s:%d:%6.6f]",
-                 pe_width, proc.rank,
+                 pe_width, proc.li.rank,
                  proc.nodename,
                  mypid,
                  shmemu_timer()

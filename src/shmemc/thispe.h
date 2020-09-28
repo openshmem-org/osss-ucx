@@ -87,25 +87,33 @@ typedef struct env_info {
 } env_info_t;
 
 /*
+ * these are physical values from launch environment.  they get
+ * pulled apart during team creation
+ */
+typedef struct pmi_info {
+    int rank;                   /**< per-PE physical rank info */
+    int nranks;                 /**< number of ranks requested */
+    int maxranks;               /**< universe size (e.g. for spares) */
+    int nnodes;                 /**< number of nodes allocated */
+    int *peers;                 /**< peer PEs in a node group */
+    int npeers;                 /**< how many peers? */
+} pmi_info_t;
+
+/*
  * each PE has this state info
  */
 typedef struct thispe_info {
     comms_info_t comms;         /**< per-comms layer info */
     env_info_t env;             /**< environment vars */
     thread_desc_t td;           /**< threading model invoked */
-    int rank;                   /**< physical rank info */
-    int nranks;                 /**< number of ranks requested */
-    int maxranks;               /**< universe size (e.g. for spares) */
-    int nnodes;                 /**< number of nodes allocated */
+    pmi_info_t li;              /**< launcher-supplied info */
     shmemc_status_t status;     /**< up, down, out to lunch etc */
     int refcount;               /**< library initialization count */
-    int *peers;                 /**< peer PEs in a node group */
-    int npeers;                 /**< how many peers */
     bool leader;                /**< is this PE a node leader? */
     bool progress_thread;       /**< PE requests progress thread */
     char *nodename;             /**< node we're running on */
     shmemc_team_t *teams;       /**< PE teams we belong to */
-    size_t nteams;              /**< how many teams */
+    size_t nteams;              /**< how many teams? */
 } thispe_info_t;
 
 #endif /* ! _THISPE_H */

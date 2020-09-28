@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env @PYTHON_BIN@
 # For license: see LICENSE file at top-level
 
 import signal

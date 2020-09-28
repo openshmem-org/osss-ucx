@@ -45,7 +45,7 @@
     size_t                                                              \
     shmem_##_opname##_wait_until_some(_type *ivars, size_t nelems,      \
                                       size_t *idxs,                     \
-                                      int *status,                      \
+                                      const int *status,                \
                                       int cmp, _type cmp_value)         \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \

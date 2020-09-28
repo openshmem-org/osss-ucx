@@ -1,6 +1,8 @@
 # For license: see LICENSE file at top-level
 
-MY_INCLUDE             = -I../../include -I$(top_srcdir)/include
+MY_INCLUDE             = -I../../include \
+				-I$(top_srcdir)/include
+
 MY_SOURCES             = threading.c
 
 if ENABLE_THREADS

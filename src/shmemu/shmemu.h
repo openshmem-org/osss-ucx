@@ -55,7 +55,7 @@
 inline static int
 shmemu_shift(int pe)
 {
-    return (pe + proc.rank) % proc.nranks;
+    return (pe + proc.li.rank) % proc.li.nranks;
 }
 
 /*
@@ -64,7 +64,7 @@ shmemu_shift(int pe)
 inline static int
 shmemu_valid_pe_number(int pe)
 {
-    return (proc.nranks > pe) && (pe >= 0);
+    return (proc.li.nranks > pe) && (pe >= 0);
 }
 
 void shmemu_init(void);
@@ -73,8 +73,6 @@ void shmemu_finalize(void);
 /*
  * elapsed time in seconds since program started
  */
-void shmemu_timer_init(void);
-void shmemu_timer_finalize(void);
 double shmemu_timer(void);
 
 /*
@@ -124,22 +122,14 @@ void shmemu_logger(shmemu_log_t evt, const char *fmt, ...);
 void shmemu_deprecate(const char *fn, float version);
 
 # define logger(...) shmemu_logger(__VA_ARGS__)
-void shmemu_logger_init(void);
-void shmemu_logger_finalize(void);
 
 # define deprecate(...) shmemu_deprecate(__VA_ARGS__)
-void shmemu_deprecate_init(void);
-void shmemu_deprecate_finalize(void);
 
 #else  /* ENABLE_LOGGING */
 
 # define logger(...)
-# define shmemu_logger_init()
-# define shmemu_logger_finalize()
 
 # define deprecate(...)
-# define shmemu_deprecate_init()
-# define shmemu_deprecate_finalize()
 
 #endif  /* ENABLE_LOGGING */
 
@@ -167,7 +157,7 @@ void shmemu_deprecate_finalize(void);
  */
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)                \
     do {                                                        \
-        const int top_pe = proc.nranks - 1;                     \
+        const int top_pe = proc.li.nranks - 1;                  \
                                                                 \
         if (shmemu_unlikely((_pe < 0) || (_pe > top_pe))) {     \
             shmemu_fatal("In %s(), PE argument #%d is %d: "     \
@@ -184,7 +174,7 @@ void shmemu_deprecate_finalize(void);
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)                         \
     do {                                                                \
         if (shmemu_unlikely(! shmemc_addr_accessible(_addr,             \
-                                                     proc.rank))) {     \
+                                                     proc.li.rank))) {  \
             shmemu_fatal("In %s(), address %p in argument #%d "         \
                          "is not symmetric",                            \
                          __func__,                                      \

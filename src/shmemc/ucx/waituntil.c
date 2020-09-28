@@ -58,6 +58,7 @@ COMMS_CTX_WAIT_SIZE(64, ge)
     shmemc_ctx_wait_until_all_##_opname##_size(shmem_ctx_t ctx,         \
                                                int##_size##_t *vars,    \
                                                size_t nelems,           \
+                                               const int *status,       \
                                                int##_size##_t value)    \
     {                                                                   \
         size_t n = 0;                                                   \
@@ -65,6 +66,9 @@ COMMS_CTX_WAIT_SIZE(64, ge)
                                                                         \
         do {                                                            \
             for (i = 0; i < nelems; ++i) {                              \
+                if ( (status != NULL) && ( status[i] != 0) ) {          \
+                    continue;                                           \
+                }                                                       \
                 if (shmemc_ctx_test_##_opname##_size(ctx,               \
                                                      &(vars[i]),        \
                                                      value) != 0) {     \
@@ -104,7 +108,7 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge)
     shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,         \
                                                int##_size##_t * restrict vars, \
                                                size_t nelems,           \
-                                               int * restrict status,   \
+                                               const int *status,       \
                                                int##_size##_t value)    \
     {                                                                   \
         size_t winner;                                                  \
@@ -160,7 +164,7 @@ COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge)
                                                 int##_size##_t * restrict vars, \
                                                 size_t nelems,          \
                                                 size_t * restrict idxs, \
-                                                int * restrict status,  \
+                                                const int *status,      \
                                                 int##_size##_t value)   \
     {                                                                   \
         size_t i;                                                       \

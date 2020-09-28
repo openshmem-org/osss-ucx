@@ -210,14 +210,6 @@ info_output_features(FILE *strm, const char *prefix)
 void
 info_output_comms(FILE *strm, const char *prefix)
 {
-    output(strm, prefix, "Using UCX from",
-#ifdef HAVE_UCX
-           UCX_DIR
-#else
-           INTERNAL_ERROR
-#endif /* HAVE_UCX install */
-           );
-
     output(strm, prefix, "UCX Build Version",
 #ifdef HAVE_UCX
            UCX_VERSION_STRING
@@ -226,13 +218,6 @@ info_output_comms(FILE *strm, const char *prefix)
 #endif /* HAVE_UCX version */
            );
 
-    output(strm, prefix, "Using PMIx from",
-#ifdef HAVE_PMIX
-           PMIX_DIR
-#else
-           INTERNAL_ERROR
-#endif /* HAVE_PMIX install */
-           );
     output(strm, prefix, "PMIx Build Version",
 #ifdef HAVE_PMIX
            PMIX_VERSION_STRING

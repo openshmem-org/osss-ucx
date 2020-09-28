@@ -29,9 +29,6 @@ void shmemc_globalexit_init(void);
 void shmemc_globalexit_finalize(void);
 void shmemc_global_exit(int status);
 
-inline static int shmemc_my_pe(void) { return proc.rank; }
-inline static int shmemc_n_pes(void) { return proc.nranks; }
-
 void *shmemc_ctx_ptr(shmem_ctx_t ctx, const void *target, int pe);
 int shmemc_pe_accessible(int pe);
 int shmemc_addr_accessible(const void *addr, int pe);
@@ -133,6 +130,13 @@ int shmemc_team_split_2d(shmemc_team_h parh,
                          shmemc_team_h *yaxish);
 
 void shmemc_team_destroy(shmemc_team_h th);
+
+/*
+ * the implicit world queries.  we can short-circuit these because the
+ * world team is the same as the physically queried values.
+ */
+inline static int shmemc_my_pe(void) { return proc.li.rank; }
+inline static int shmemc_n_pes(void) { return proc.li.nranks; }
 
 /*
  * -- AMOs -------------------------------------------------------------------
@@ -279,6 +283,7 @@ SHMEMC_CTX_WAIT_UNTIL(64, ge)
     int shmemc_ctx_test_all_##_opname##_size(shmem_ctx_t ctx,           \
                                              int##_size##_t *vars,      \
                                              size_t nelems,             \
+                                             const int *status,         \
                                              int##_size##_t value);
 
 SHMEMC_CTX_TEST_ALL(16, eq)
@@ -310,7 +315,7 @@ SHMEMC_CTX_TEST_ALL(64, ge)
                                                  int##_size##_t * restrict vars,  \
                                                  size_t nelems,         \
                                                  size_t * restrict idxs, \
-                                                 int * restrict status, \
+                                                 const int *status,     \
                                                  int##_size##_t value);
 
 SHMEMC_CTX_TEST_SOME(16, eq)
@@ -341,7 +346,7 @@ SHMEMC_CTX_TEST_SOME(64, ge)
     size_t shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,        \
                                                 int##_size##_t * restrict vars,   \
                                                 size_t nelems,          \
-                                                int * restrict status,  \
+                                                const int *status,      \
                                                 int##_size##_t value);
 
 SHMEMC_CTX_TEST_ANY(16, eq)
@@ -372,6 +377,7 @@ SHMEMC_CTX_TEST_ANY(64, ge)
     void shmemc_ctx_wait_until_all_##_opname##_size(shmem_ctx_t ctx,    \
                                                     int##_size##_t *vars, \
                                                     size_t nelems,      \
+                                                    const int *status,  \
                                                     int##_size##_t value);
 
 SHMEMC_CTX_WAIT_UNTIL_ALL(16, eq)
@@ -403,7 +409,7 @@ SHMEMC_CTX_WAIT_UNTIL_ALL(64, ge)
                                                        int##_size##_t * restrict vars, \
                                                        size_t nelems,   \
                                                        size_t * restrict idxs, \
-                                                       int * restrict status, \
+                                                       const int *status, \
                                                        int##_size##_t value);
 
 SHMEMC_CTX_WAIT_UNTIL_SOME(16, eq)
@@ -434,7 +440,7 @@ SHMEMC_CTX_WAIT_UNTIL_SOME(64, ge)
     size_t shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,  \
                                                       int##_size##_t * restrict vars, \
                                                       size_t nelems,    \
-                                                      int * restrict status, \
+                                                      const int *status, \
                                                       int##_size##_t value);
 
 SHMEMC_CTX_WAIT_UNTIL_ANY(16, eq)
