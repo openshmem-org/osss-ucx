@@ -24,12 +24,8 @@ except ImportError:
 # -- defaults --------------------------------------------------------
 #
 
-DVM            = "prte"
-EXPECTED       = b"DVM ready"
+DVM            = "dvm"
 
-SPAWN_TIMEOUT  = 8
-
-PRTE_LAUNCHER  = "prun -x 'S{HMEM,MA}_*'"
 MPI_LAUNCHER   = "mpiexec"
 
 ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
@@ -105,33 +101,12 @@ else:
     launcher = "@SHMEM_LAUNCHER@" # override from configure?
 
 if launcher == "":
-    debug("init", "checking for DVM...")
-    #
-    # start the DVM if required
-    #
-    using_dvm = find_executable(DVM) != None
-    if using_dvm:
-        debug(DVM, "starting DVM")
-        lproc = Popen(shlex.split(DVM), stdout = PIPE, stderr = PIPE)
-        t = Timer(SPAWN_TIMEOUT, lproc.terminate)
-        try:
-            t.start()
-            line = lproc.stdout.readline().rstrip()
-        finally:
-            t.cancel()
-        if line != EXPECTED:
-            bail("unable to get greeting " + \
-                 "\"{0}\" from DVM \"{1}\"".format(EXPECTED, DVM))
-        debug(DVM, "DVM says \"{0}\"".format(line))
-        launcher = PRTE_LAUNCHER
-        debug(DVM, "talking with DVM \"{0}\"".format(DVM))
+    debug("init", "checking for MPI...")
+    if find_executable(MPI_LAUNCHER):
+        launcher = MPI_LAUNCHER
+        debug("init", "using MPI")
     else:
-        debug("init", "checking for MPI...")
-        if find_executable(MPI_LAUNCHER):
-            launcher = MPI_LAUNCHER
-            debug("init", "using MPI")
-        else:
-            bail("can't find a launcher")
+        bail("can't find MPI launcher")
 
 #
 # pull in what user wants to run
