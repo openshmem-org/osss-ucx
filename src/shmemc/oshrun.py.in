@@ -24,7 +24,9 @@ except ImportError:
 # -- defaults --------------------------------------------------------
 #
 
-DVM            = "dvm"
+DVM            = "prte"
+EXPECTED       = b"DVM ready"
+PRTE_LAUNCHER  = DVM + " " + "-x 'S{HMEM,MA}_*'"
 
 MPI_LAUNCHER   = "mpiexec"
 
@@ -101,12 +103,17 @@ else:
     launcher = "@SHMEM_LAUNCHER@" # override from configure?
 
 if launcher == "":
-    debug("init", "checking for MPI...")
-    if find_executable(MPI_LAUNCHER):
-        launcher = MPI_LAUNCHER
-        debug("init", "using MPI")
+    debug("init", "checking for DVM...")
+    if find_executable(DVM) != None:
+        launcher = PRTE_LAUNCHER
+        debug("init", "using DVM \"{0}\"", DVM)
     else:
-        bail("can't find MPI launcher")
+        debug("init", "checking for MPI...")
+        if find_executable(MPI_LAUNCHER):
+            launcher = MPI_LAUNCHER
+            debug("init", "using MPI")
+        else:
+            bail("can't find a launcher")
 
 #
 # pull in what user wants to run
@@ -125,7 +132,3 @@ debug(None, '-' * width)
 # run until we hit shutdown
 #
 os.system(cmd)
-
-if using_dvm:
-    debug(DVM, "killing DVM pid {0}".format(lproc.pid))
-    lproc.terminate()
