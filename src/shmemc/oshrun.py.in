@@ -26,7 +26,8 @@ except ImportError:
 
 DVM            = "prte"
 EXPECTED       = b"DVM ready"
-PRTE_LAUNCHER  = DVM + " " + "-x 'S{HMEM,MA}_*'"
+PRTE_PASS_ENV  = "-x 'SHMEM_*' -x 'SMA_*'"
+PRTE_LAUNCHER  = DVM + " " + PRTE_PASS_ENV
 
 MPI_LAUNCHER   = "mpiexec"
 
@@ -106,7 +107,7 @@ if launcher == "":
     debug("init", "checking for DVM...")
     if find_executable(DVM) != None:
         launcher = PRTE_LAUNCHER
-        debug("init", "using DVM \"{0}\"", DVM)
+        debug("init", "using DVM \"{0}\"".format(DVM))
     else:
         debug("init", "checking for MPI...")
         if find_executable(MPI_LAUNCHER):
