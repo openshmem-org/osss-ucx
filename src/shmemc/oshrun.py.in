@@ -4,10 +4,7 @@
 import signal
 import os
 import sys
-from subprocess import Popen, PIPE
 import re
-import shlex
-from threading import Timer
 from distutils.spawn import find_executable
 
 #
