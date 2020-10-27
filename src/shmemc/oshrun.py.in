@@ -33,7 +33,6 @@ ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
 width          = 70             # of terminal
 debugging      = False
 launcher       = None
-using_dvm      = False
 
 #
 # -- debug and error--------------------------------------------------
