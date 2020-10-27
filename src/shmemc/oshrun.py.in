@@ -34,7 +34,6 @@ width          = 70             # of terminal
 debugging      = False
 launcher       = None
 using_dvm      = False
-lproc          = None           # launcher process
 
 #
 # -- debug and error--------------------------------------------------
@@ -54,7 +53,6 @@ def debug(cat, *args):
 # crash out on error
 #
 def bail(*args):
-    lproc.terminate()
     err = progname + ": ERROR:" + \
         ' '.join(map(str, args)) + \
         "\n"
@@ -69,7 +67,6 @@ def bail(*args):
 # -- trap signals ----------------------------------------------------
 #
 def trap_out(signo, frame):
-    lproc.terminate()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, trap_out)
