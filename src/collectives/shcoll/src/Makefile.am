@@ -16,7 +16,8 @@ SOURCES                += util/bithacks.c \
 FIND_SHMEM_H            = -I$(top_srcdir)/include -I../../../../include
 
 # disable warnings here (should detect how to do this)
-BUILD_CFLAGS            = -w
+# BUILD_CFLAGS            = -w
+BUILD_CFLAGS            =
 BUILD_CFLAGS           += -I.. $(FIND_SHMEM_H)
 
 lib_LTLIBRARIES         = libshcoll.la
