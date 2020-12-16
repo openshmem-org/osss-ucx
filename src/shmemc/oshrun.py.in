@@ -21,11 +21,8 @@ except ImportError:
 # -- defaults --------------------------------------------------------
 #
 
-DVM            = "prte"
-EXPECTED       = b"DVM ready"
-PRTE_PASS_ENV  = "-x 'SHMEM_*' -x 'SMA_*'"
-PRTE_LAUNCHER  = DVM + " " + PRTE_PASS_ENV
-
+PRTE_LAUNCHER  = "prterun"
+PRTE_ARGS      = "--personality shmem -x 'SHMEM_*' -x 'SMA_*'"
 MPI_LAUNCHER   = "mpiexec"
 
 ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
@@ -97,10 +94,10 @@ else:
     launcher = "@SHMEM_LAUNCHER@" # override from configure?
 
 if launcher == "":
-    debug("init", "checking for DVM...")
-    if find_executable(DVM) != None:
-        launcher = PRTE_LAUNCHER
-        debug("init", "using DVM \"{0}\"".format(DVM))
+    debug("init", "checking for PRTE...")
+    if find_executable(PRTE_LAUNCHER) != None:
+        launcher = PRTE_LAUNCHER + " " + PRTE_ARGS
+        debug("init", "using PRTE")
     else:
         debug("init", "checking for MPI...")
         if find_executable(MPI_LAUNCHER):
@@ -122,7 +119,4 @@ cmd = launcher + ' ' + user_cmd
 debug(None, "running \"{0}\"".format(cmd))
 debug(None, '-' * width)
 
-#
-# run until we hit shutdown
-#
 os.system(cmd)
