@@ -22,7 +22,7 @@ except ImportError:
 #
 
 PRTE_LAUNCHER  = "prterun"
-PRTE_ARGS      = "--personality shmem -x 'SHMEM_*' -x 'SMA_*'"
+PRTE_ARGS      = "--personality shmem"
 MPI_LAUNCHER   = "mpiexec"
 
 ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
