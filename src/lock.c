@@ -9,6 +9,7 @@
 #include "shmemu.h"
 #include "state.h"
 #include "shmem/api.h"
+#include "shmemc.h"
 
 /*
  * this overlays an opaque blob we can move around with AMOs, and the
@@ -78,7 +79,7 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
         shmem_short_p(&(node->d.next), shmem_my_pe(), prev);
 
         /* sit here until unlocked */
-        shmem_short_wait_until(&(node->d.locked), SHMEM_CMP_EQ, 0);
+        shmemc_wait_until_eq16(&(node->d.locked), 0);
     }
 
 }
@@ -108,7 +109,7 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
         }
 
         /* wait for a chainer PE to appear */
-        shmem_short_wait_until(&(node->d.next), SHMEM_CMP_GE, 0);
+        shmemc_wait_until_ge16(&(node->d.next), 0);
     }
 
     /* unlock */
