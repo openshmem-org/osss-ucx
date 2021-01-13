@@ -1405,7 +1405,7 @@ extern "C"
                                const int *status,           \
                                int cmp, _type cmp_value)
 
-    API_DECL_TEST_ALL(short, short) _DEPRECATED;;
+    API_DECL_TEST_ALL(short, short) _DEPRECATED;
     API_DECL_TEST_ALL(int, int);
     API_DECL_TEST_ALL(long, long);
     API_DECL_TEST_ALL(longlong, long long);
