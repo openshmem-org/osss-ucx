@@ -753,7 +753,7 @@ inline static void shmem_generics_ignore(void) { }
 /* see \ref shmem_long_wait_until() */
 #define shmem_wait_until(...)                                   \
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),  \
-             short *: shmem_short_wait_until,                   \
+             short *: shmem_short_wait,                         \
              int *: shmem_int_wait_until,                       \
              long *: shmem_long_wait_until,                     \
              long long *: shmem_longlong_wait_until,            \
@@ -767,7 +767,7 @@ inline static void shmem_generics_ignore(void) { }
 /* see \ref shmem_long_test() */
 #define shmem_test(...)                                         \
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),  \
-             short *: shmem_short_test,                         \
+             short *: shmem_short_wait,                         \
              int *: shmem_int_test,                             \
              long *: shmem_long_test,                           \
              long long *: shmem_longlong_test,                  \
@@ -782,7 +782,7 @@ inline static void shmem_generics_ignore(void) { }
                              _status,                           \
                              _cmp, _cmp_value)                  \
     _Generic(* _ivars,                                          \
-             short: shmem_short_wait_until_all,                 \
+             short *: shmem_short_wait,                         \
              int: shmem_int_wait_until_all,                     \
              long: shmem_long_wait_until_all,                   \
              long long: shmem_longlong_wait_until_all,          \
@@ -796,7 +796,7 @@ inline static void shmem_generics_ignore(void) { }
                              _status,                           \
                              _cmp, _cmp_value)                  \
     _Generic(* _ivars,                                          \
-             short: shmem_short_wait_until_any,                 \
+             short *: shmem_short_wait,                         \
              int: shmem_int_wait_until_any,                     \
              long: shmem_long_wait_until_any,                   \
              long long: shmem_longlong_wait_until_any,          \
@@ -810,6 +810,7 @@ inline static void shmem_generics_ignore(void) { }
                               _status,                                  \
                               _cmp, _cmp_value)                         \
     _Generic(* _ivars,                                                  \
+             short *: shmem_short_wait,                                 \
              int: shmem_int_wait_until_some,                            \
              long: shmem_long_wait_until_some,                          \
              long long: shmem_longlong_wait_until_some,                 \
@@ -823,7 +824,7 @@ inline static void shmem_generics_ignore(void) { }
                        _status,                             \
                        _cmp, _cmp_value)                    \
     _Generic(* _ivars,                                      \
-             short: shmem_short_test_all,                   \
+             short *: shmem_short_wait,                     \
              int: shmem_int_test_all,                       \
              long: shmem_long_test_all,                     \
              long long: shmem_longlong_test_all,            \
@@ -837,7 +838,7 @@ inline static void shmem_generics_ignore(void) { }
                        _status,                             \
                        _cmp, _cmp_value)                    \
     _Generic(* _ivars,                                      \
-             short: shmem_short_test_any,                   \
+             short *: shmem_short_wait,                     \
              int: shmem_int_test_any,                       \
              long: shmem_long_test_any,                     \
              long long: shmem_longlong_test_any,            \
@@ -851,7 +852,7 @@ inline static void shmem_generics_ignore(void) { }
                         _status,                                        \
                         _cmp, _cmp_value)                               \
     _Generic(* _ivars,                                                  \
-             short: shmem_short_test_some,                              \
+             short *: shmem_short_wait,                                 \
              int: shmem_int_test_some,                                  \
              long: shmem_long_test_some,                                \
              long long: shmem_longlong_test_some,                       \

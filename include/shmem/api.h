@@ -1317,7 +1317,7 @@ extern "C"
     /* see \ref shmem_##_name##_opname() */                             \
     _rettype shmem_##_name##_##_opname(_type *ivar,                     \
                                        int cmp,                         \
-                                       _type cmp_value);
+                                       _type cmp_value)
 
     /**
      * @brief test for symmetric variable to change value
@@ -1337,24 +1337,25 @@ extern "C"
      * 1 if the comparison is true, 0 if not
      *
      */
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, longdouble, long double)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, schar, signed char)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, char, char)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, short, short)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int, int)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, long, long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, longlong, long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uchar, unsigned char)
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, longdouble, long double);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, schar, signed char);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, char, char);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, short, short) _DEPRECATED;
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int, int);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, long, long);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, longlong, long long);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uchar, unsigned char);
     API_DECL_TEST_AND_WAIT_UNTIL(test, int, ushort, unsigned short)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint, unsigned int)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulong, unsigned long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulonglong, unsigned long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int32, int32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int64, int64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint32, uint32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint64, uint64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, size, size_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ptrdiff, ptrdiff_t)
+        _DEPRECATED;
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint, unsigned int);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulong, unsigned long);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ulonglong, unsigned long long);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int32, int32_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, int64, int64_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint32, uint32_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, uint64, uint64_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, size, size_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(test, int, ptrdiff, ptrdiff_t);
 
     /**
      * @brief wait for a symmetric variable to change value with
@@ -1375,25 +1376,26 @@ extern "C"
      * None.
      *
      */
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, longdouble, long double)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, schar, signed char)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, char, char)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, short, short)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int, int)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, long, long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, longlong, long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uchar, unsigned char)
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, longdouble, long double);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, schar, signed char);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, char, char);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, short, short) _DEPRECATED;
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int, int);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, long, long);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, longlong, long long);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uchar, unsigned char);
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ushort, unsigned short)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint, unsigned int)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ulong, unsigned long)
+        _DEPRECATED;
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint, unsigned int);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ulong, unsigned long);
     API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ulonglong,
-                                 unsigned long long)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int32, int32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int64, int64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint32, uint32_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint64, uint64_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, size, size_t)
-    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ptrdiff, ptrdiff_t)
+                                 unsigned long long);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int32, int32_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, int64, int64_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint32, uint32_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, uint64, uint64_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, size, size_t);
+    API_DECL_TEST_AND_WAIT_UNTIL(wait_until, void, ptrdiff, ptrdiff_t);
 
 #undef API_DECL_TEST_AND_WAIT_UNTIL
 
@@ -1403,11 +1405,11 @@ extern "C"
                                const int *status,           \
                                int cmp, _type cmp_value)
 
-    API_DECL_TEST_ALL(short, short);
+    API_DECL_TEST_ALL(short, short) _DEPRECATED;;
     API_DECL_TEST_ALL(int, int);
     API_DECL_TEST_ALL(long, long);
     API_DECL_TEST_ALL(longlong, long long);
-    API_DECL_TEST_ALL(ushort, unsigned short);
+    API_DECL_TEST_ALL(ushort, unsigned short) _DEPRECATED;
     API_DECL_TEST_ALL(uint, unsigned int);
     API_DECL_TEST_ALL(ulong, unsigned long);
     API_DECL_TEST_ALL(ulonglong, unsigned long long);
@@ -1424,11 +1426,11 @@ extern "C"
                                const int *status,           \
                                int cmp, _type cmp_value)
 
-    API_DECL_TEST_ANY(short, short);
+    API_DECL_TEST_ANY(short, short) _DEPRECATED;
     API_DECL_TEST_ANY(int, int);
     API_DECL_TEST_ANY(long, long);
     API_DECL_TEST_ANY(longlong, long long);
-    API_DECL_TEST_ANY(ushort, unsigned short);
+    API_DECL_TEST_ANY(ushort, unsigned short) _DEPRECATED;
     API_DECL_TEST_ANY(uint, unsigned int);
     API_DECL_TEST_ANY(ulong, unsigned long);
     API_DECL_TEST_ANY(ulonglong, unsigned long long);
@@ -1446,11 +1448,11 @@ extern "C"
                                 const int *status,              \
                                 int cmp, _type cmp_value)
 
-    API_DECL_TEST_SOME(short, short);
+    API_DECL_TEST_SOME(short, short) _DEPRECATED;
     API_DECL_TEST_SOME(int, int);
     API_DECL_TEST_SOME(long, long);
     API_DECL_TEST_SOME(longlong, long long);
-    API_DECL_TEST_SOME(ushort, unsigned short);
+    API_DECL_TEST_SOME(ushort, unsigned short) _DEPRECATED;
     API_DECL_TEST_SOME(uint, unsigned int);
     API_DECL_TEST_SOME(ulong, unsigned long);
     API_DECL_TEST_SOME(ulonglong, unsigned long long);
@@ -1467,11 +1469,11 @@ extern "C"
                                      const int *status,             \
                                      int cmp, _type cmp_value)
 
-    API_DECL_WAIT_UNTIL_ALL(short, short);
+    API_DECL_WAIT_UNTIL_ALL(short, short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_ALL(int, int);
     API_DECL_WAIT_UNTIL_ALL(long, long);
     API_DECL_WAIT_UNTIL_ALL(longlong, long long);
-    API_DECL_WAIT_UNTIL_ALL(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_ALL(ushort, unsigned short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_ALL(uint, unsigned int);
     API_DECL_WAIT_UNTIL_ALL(ulong, unsigned long);
     API_DECL_WAIT_UNTIL_ALL(ulonglong, unsigned long long);
@@ -1488,11 +1490,11 @@ extern "C"
                                      const int *status,             \
                                      int cmp, _type cmp_value)
 
-    API_DECL_WAIT_UNTIL_ANY(short, short);
+    API_DECL_WAIT_UNTIL_ANY(short, short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_ANY(int, int);
     API_DECL_WAIT_UNTIL_ANY(long, long);
     API_DECL_WAIT_UNTIL_ANY(longlong, long long);
-    API_DECL_WAIT_UNTIL_ANY(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_ANY(ushort, unsigned short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_ANY(uint, unsigned int);
     API_DECL_WAIT_UNTIL_ANY(ulong, unsigned long);
     API_DECL_WAIT_UNTIL_ANY(ulonglong, unsigned long long);
@@ -1510,11 +1512,11 @@ extern "C"
                                       const int *status,                \
                                       int cmp, _type cmp_value)
 
-    API_DECL_WAIT_UNTIL_SOME(short, short);
+    API_DECL_WAIT_UNTIL_SOME(short, short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_SOME(int, int);
     API_DECL_WAIT_UNTIL_SOME(long, long);
     API_DECL_WAIT_UNTIL_SOME(longlong, long long);
-    API_DECL_WAIT_UNTIL_SOME(ushort, unsigned short);
+    API_DECL_WAIT_UNTIL_SOME(ushort, unsigned short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_SOME(uint, unsigned int);
     API_DECL_WAIT_UNTIL_SOME(ulong, unsigned long);
     API_DECL_WAIT_UNTIL_SOME(ulonglong, unsigned long long);

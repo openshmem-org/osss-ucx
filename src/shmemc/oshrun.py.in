@@ -4,10 +4,7 @@
 import signal
 import os
 import sys
-from subprocess import Popen, PIPE
 import re
-import shlex
-from threading import Timer
 from distutils.spawn import find_executable
 
 #
@@ -24,12 +21,8 @@ except ImportError:
 # -- defaults --------------------------------------------------------
 #
 
-DVM            = "prte"
-EXPECTED       = b"DVM ready"
-
-SPAWN_TIMEOUT  = 8
-
-PRTE_LAUNCHER  = "prun -x 'S{HMEM,MA}_*'"
+PRTE_LAUNCHER  = "prterun"
+PRTE_ARGS      = "--personality shmem"
 MPI_LAUNCHER   = "mpiexec"
 
 ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
@@ -37,8 +30,6 @@ ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
 width          = 70             # of terminal
 debugging      = False
 launcher       = None
-using_dvm      = False
-lproc          = None           # launcher process
 
 #
 # -- debug and error--------------------------------------------------
@@ -58,7 +49,6 @@ def debug(cat, *args):
 # crash out on error
 #
 def bail(*args):
-    lproc.terminate()
     err = progname + ": ERROR:" + \
         ' '.join(map(str, args)) + \
         "\n"
@@ -73,7 +63,6 @@ def bail(*args):
 # -- trap signals ----------------------------------------------------
 #
 def trap_out(signo, frame):
-    lproc.terminate()
     sys.exit(0)
 
 signal.signal(signal.SIGINT, trap_out)
@@ -105,26 +94,10 @@ else:
     launcher = "@SHMEM_LAUNCHER@" # override from configure?
 
 if launcher == "":
-    debug("init", "checking for DVM...")
-    #
-    # start the DVM if required
-    #
-    using_dvm = find_executable(DVM) != None
-    if using_dvm:
-        debug(DVM, "starting DVM")
-        lproc = Popen(shlex.split(DVM), stdout = PIPE, stderr = PIPE)
-        t = Timer(SPAWN_TIMEOUT, lproc.terminate)
-        try:
-            t.start()
-            line = lproc.stdout.readline().rstrip()
-        finally:
-            t.cancel()
-        if line != EXPECTED:
-            bail("unable to get greeting " + \
-                 "\"{0}\" from DVM \"{1}\"".format(EXPECTED, DVM))
-        debug(DVM, "DVM says \"{0}\"".format(line))
-        launcher = PRTE_LAUNCHER
-        debug(DVM, "talking with DVM \"{0}\"".format(DVM))
+    debug("init", "checking for PRTE...")
+    if find_executable(PRTE_LAUNCHER) != None:
+        launcher = PRTE_LAUNCHER + " " + PRTE_ARGS
+        debug("init", "using PRTE")
     else:
         debug("init", "checking for MPI...")
         if find_executable(MPI_LAUNCHER):
@@ -146,11 +119,4 @@ cmd = launcher + ' ' + user_cmd
 debug(None, "running \"{0}\"".format(cmd))
 debug(None, '-' * width)
 
-#
-# run until we hit shutdown
-#
 os.system(cmd)
-
-if using_dvm:
-    debug(DVM, "killing DVM pid {0}".format(lproc.pid))
-    lproc.terminate()
