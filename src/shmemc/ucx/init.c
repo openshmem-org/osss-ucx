@@ -129,7 +129,7 @@ get_globals_address_range(uint64_t *base_p, uint64_t *end_p)
 }
 
 inline static void
-register_globals()
+register_globals(void)
 {
     uint64_t g_base;
     uint64_t g_end;
