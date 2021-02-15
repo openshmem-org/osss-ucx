@@ -1728,6 +1728,7 @@ extern "C"
      * None.
      *
      */
+
     SHMEM_DECL_AMO2(fetch_add, long, long)
     /* see \ref shmem_long_atomic_fetch_add() */
     SHMEM_DECL_AMO2(fetch_add, int, int)
@@ -1751,6 +1752,30 @@ extern "C"
     SHMEM_DECL_AMO2(fetch_add, size, size_t)
     /* see \ref shmem_long_atomic_fetch_add() */
     SHMEM_DECL_AMO2(fetch_add, ptrdiff, ptrdiff_t)
+
+    SHMEM_DECL_AMO2_NBI(fetch_add, long, long)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, int, int)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, longlong, long long)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, uint, unsigned int)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, int32, int32_t)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, int64, int64_t)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, size, size_t)
+    /* see \ref shmem_long_atomic_fetch_add_nbi() */
+    SHMEM_DECL_AMO2_NBI(fetch_add, ptrdiff, ptrdiff_t)
 
     long shmem_long_fadd(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_fetch_add, 1.4) _WUR;
@@ -1802,6 +1827,30 @@ extern "C"
     /* see \ref shmem_long_atomic_fetch_inc() */
     SHMEM_DECL_AMO1(fetch_inc, ptrdiff, ptrdiff_t)
 
+    SHMEM_DECL_AMO1_NBI(fetch_inc, long, long)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, int, int)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, longlong, long long)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, uint, unsigned int)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, int32, int32_t)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, int64, int64_t)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, size, size_t)
+    /* see \ref shmem_long_atomic_fetch_inc_nbi() */
+    SHMEM_DECL_AMO1_NBI(fetch_inc, ptrdiff, ptrdiff_t)
+
     long shmem_long_finc(long *target, int pe)
         _DEPRECATED_BY(shmem_long_atomic_fetch_inc, 1.4) _WUR;
     int shmem_int_finc(int *target, int pe)
@@ -1811,7 +1860,7 @@ extern "C"
 
     /**
      * @brief add value to symmetric variable
-     * @page shmem_long_atomic_add
+     * @page shmem_long_atomic_inc
      * @section Synopsis
      *
      * @subsection c C/C++
@@ -1964,6 +2013,20 @@ extern "C"
     /* see \ref shmem_ulong_atomic_fetch_or() */
     SHMEM_DECL_AMO2(fetch_or, uint64, uint64_t)
 
+    SHMEM_DECL_AMO2_NBI(fetch_or, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2_NBI(fetch_or, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2_NBI(fetch_or, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2_NBI(fetch_or, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2_NBI(fetch_or, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2_NBI(fetch_or, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_or() */
+    SHMEM_DECL_AMO2_NBI(fetch_or, uint64, uint64_t)
+
     /**
      * @brief These routines perform an atomic "and" operation
      * between a data value and the target data object.
@@ -2016,6 +2079,20 @@ extern "C"
     SHMEM_DECL_VOID_AMO2(and, uint32, uint32_t)
     /* see \ref shmem_ulong_atomic_and() */
     SHMEM_DECL_VOID_AMO2(and, uint64, uint64_t)
+
+    SHMEM_DECL_AMO2_NBI(fetch_and, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, uint64, uint64_t)
 
     /**
      * @brief These routines perform an atomic "and"
@@ -2071,6 +2148,20 @@ extern "C"
     /* see \ref shmem_ulong_atomic_fetch_and() */
     SHMEM_DECL_AMO2(fetch_and, uint64, uint64_t)
 
+    SHMEM_DECL_AMO2_NBI(fetch_and, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_and, uint64, uint64_t)
+
     /**
      * @brief These routines perform an atomic "xor" operation
      * between a data value and the target data object.
@@ -2123,6 +2214,20 @@ extern "C"
     SHMEM_DECL_VOID_AMO2(xor, uint32, uint32_t)
     /* see \ref shmem_ulong_atomic_xor() */
     SHMEM_DECL_VOID_AMO2(xor, uint64, uint64_t)
+
+    SHMEM_DECL_AMO2_NBI(fetch_xor, ulong, unsigned long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_xor, uint, unsigned int)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_xor, ulonglong, unsigned long long)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_xor, int32, int32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_xor, int64, int64_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_xor, uint32, uint32_t)
+    /* see \ref shmem_ulong_atomic_fetch_and() */
+    SHMEM_DECL_AMO2_NBI(fetch_xor, uint64, uint64_t)
 
     /**
      * @brief These routines perform an atomic "xor"
@@ -2288,6 +2393,34 @@ extern "C"
     SHMEM_DECL_CONST_AMO1(fetch, size, size_t)
     /* see \ref shmem_long_atomic_fetch() */
     SHMEM_DECL_CONST_AMO1(fetch, ptrdiff, ptrdiff_t)
+
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, long, long)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, int, int)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, float, float)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, double, double)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, longlong, long long)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, uint, unsigned int)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, ulong, unsigned long)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, ulonglong, unsigned long long)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, int32, int32_t)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, int64, int64_t)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, uint32, uint32_t)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, uint64, uint64_t)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, size, size_t)
+    /* see \ref shmem_long_atomic_fetch_nbi() */
+    SHMEM_DECL_CONST_AMO1_NBI(fetch, ptrdiff, ptrdiff_t)
 
     int shmem_int_fetch(const int *dest, int pe)
         _DEPRECATED_BY(shmem_int_atomic_fetch, 1.4) _WUR;

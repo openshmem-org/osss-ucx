@@ -495,6 +495,7 @@ evhandler_reg_callbk(pmix_status_t status,
 {
     volatile int *act = (volatile int *) cbdata;
 
+    NO_WARN_UNUSED(status);     /* might be skipped by assert */
     NO_WARN_UNUSED(evhandler_ref);
 
     shmemu_assert(status == PMIX_SUCCESS,

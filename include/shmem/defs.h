@@ -171,6 +171,65 @@ enum shmem_malloc_hints {
                                           int pe);
 
 /*
+ * to declare _nbi AMOs
+ */
+#define SHMEM_DECL_AMO1_NBI(_op, _name, _type)                          \
+    void shmem_##_name##_atomic_##_op##_nbi(_type *fetch,               \
+                                            _type *target,              \
+                                            int pe);                    \
+    void shmem_ctx_##_name##_atomic_##_op##_nbi(shmem_ctx_t ctx,        \
+                                                _type *fetch,           \
+                                                _type *target,          \
+                                                int pe);
+
+#define SHMEM_DECL_CONST_AMO1_NBI(_op, _name, _type)                    \
+    void shmem_##_name##_atomic_##_op##_nbi(_type *fetch,               \
+                                            const _type *target,        \
+                                            int pe);                    \
+    void shmem_ctx_##_name##_atomic_##_op##_nbi(shmem_ctx_t ctx,        \
+                                                _type *fetch,           \
+                                                const _type *target,    \
+                                                int pe);
+
+#define SHMEM_DECL_AMO2_NBI(_op, _name, _type)                          \
+    void shmem_##_name##_atomic_##_op##_nbi(_type *fetch,               \
+                                            _type *target, _type value, \
+                                            int pe);                    \
+    void shmem_ctx_##_name##_atomic_##_op##_nbi(shmem_ctx_t ctx,        \
+                                                _type *fetch,           \
+                                                _type *target,          \
+                                                _type value,            \
+                                                int pe);
+
+#if 0
+
+/*
+ * under development
+ */
+
+#define SHMEM_DECL_AMO3(_op, _name, _type)                              \
+    _type shmem_##_name##_atomic_##_op(_type *target,                   \
+                                       _type cond, type value,          \
+                                       int pe) _WUR;                    \
+    _type shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,             \
+                                           _type *target,               \
+                                           _type cond, _type value,     \
+                                           int pe) _WUR;
+
+#define SHMEM_DECL_VOID_AMO1(_op, _name, _type)                     \
+    void shmem_##_name##_atomic_##_op(_type *target, int pe);       \
+    void shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,          \
+                                          _type *target, int pe);
+
+#define SHMEM_DECL_VOID_AMO2(_op, _name, _type)                         \
+    void shmem_##_name##_atomic_##_op(_type *target, _type value,       \
+                                      int pe);                          \
+    void shmem_ctx_##_name##_atomic_##_op(shmem_ctx_t ctx,              \
+                                          _type *target, _type value,   \
+                                          int pe);
+#endif
+
+/*
  * deprecated shmem constants
  */
 #define _SHMEM_MAJOR_VERSION            SHMEM_MAJOR_VERSION
