@@ -1,5 +1,10 @@
 # For license: see LICENSE file at top-level
 
+atomics_dir            = ./atomics
+atomics_cppflags       = -I$(top_srcdir)/src/$(shmemc_dir)
+atomics_ldflags        = -L$(atomics__dir)
+atomics_libs           = -lshmem-amo
+
 shmemc_dir             = ./shmemc
 shmemc_cppflags        = -I$(top_srcdir)/src/$(shmemc_dir)
 shmemc_ldflags         = -L$(shmemc_dir)
@@ -17,14 +22,14 @@ shmemt_libs            = -lshmemt
 
 MY_INCLUDE             = -I../include -I$(top_srcdir)/include
 
-all_cppflags           = $(shmemc_cppflags) \
+all_cppflags           = $(atomics_cppflags) \
+				$(shmemc_cppflags) \
 				$(shmemu_cppflags) \
 				$(shmemt_cppflags) \
 				$(MY_INCLUDE)
 
 MY_SOURCES             = \
 				accessible.c \
-				atomics.c \
 				contexts.c \
 				fence.c \
 				globalexit.c \
@@ -60,7 +65,11 @@ MY_SOURCES            += \
 			deprecated/shmalloc.c \
 			deprecated/waituntil.c
 
-SUBDIRS                = $(shmemu_dir) $(shmemc_dir) $(shmemt_dir) osh_info
+SUBDIRS                = $(atomics_dir) \
+				$(shmemu_dir) \
+				$(shmemc_dir) \
+				$(shmemt_dir) \
+				osh_info
 
 #
 # -- begin: SHCOLL --
@@ -133,8 +142,3 @@ libshmem_la_CFLAGS     = $(AM_CFLAGS)
 libshmem_la_CPPFLAGS   = $(all_cppflags)
 libshmem_la_LDFLAGS    = -version-info 0:0:0
 libshmem_la_LIBADD     = liballocator.la
-
-# lib_LIBRARIES          = libshmem.a
-# libshmem_a_SOURCES     = $(LIBSHMEM_SOURCES)
-# libshmem_a_CPPFLAGS    = $(all_cppflags)
-# libshmem_a_LIBADD      = liballocator.a

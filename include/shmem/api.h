@@ -1630,6 +1630,37 @@ extern "C"
 
 #undef API_CTX_DECL_SWAP
 
+#define API_CTX_DECL_SWAP_NBI(_name, _type)                             \
+    /* see \ref shmem_ctx_long_atomic_swap_nbi() */                     \
+    void shmem_ctx_##_name##_atomic_swap_nbi(shmem_ctx_t ctx,           \
+                                             _type *fetch,              \
+                                             _type *target,             \
+                                             _type value,               \
+                                             int pe);                   \
+    /* see \ref shmem_long_atomic_swap_nbi() */                         \
+    void shmem_##_name##_atomic_swap_nbi(_type *fetch,                  \
+                                         _type *target,                 \
+                                         _type value,                   \
+                                         int pe);
+
+    API_CTX_DECL_SWAP_NBI(float, float)
+    API_CTX_DECL_SWAP_NBI(double, double)
+    API_CTX_DECL_SWAP_NBI(int, int)
+    API_CTX_DECL_SWAP_NBI(long, long)
+    API_CTX_DECL_SWAP_NBI(longlong, long long)
+    API_CTX_DECL_SWAP_NBI(uchar, unsigned char)
+    API_CTX_DECL_SWAP_NBI(uint, unsigned int)
+    API_CTX_DECL_SWAP_NBI(ulong, unsigned long)
+    API_CTX_DECL_SWAP_NBI(ulonglong, unsigned long long)
+    API_CTX_DECL_SWAP_NBI(int32, int32_t)
+    API_CTX_DECL_SWAP_NBI(int64, int64_t)
+    API_CTX_DECL_SWAP_NBI(uint32, uint32_t)
+    API_CTX_DECL_SWAP_NBI(uint64, uint64_t)
+    API_CTX_DECL_SWAP_NBI(size, size_t)
+    API_CTX_DECL_SWAP_NBI(ptrdiff, ptrdiff_t)
+
+#undef API_CTX_DECL_SWAP_NBI
+
     long shmem_long_swap(long *target, long value, int pe)
         _DEPRECATED_BY(shmem_long_atomic_swap, 1.4) _WUR;
     int shmem_int_swap(int *target, int value, int pe)
@@ -1690,7 +1721,36 @@ extern "C"
     API_CTX_DECL_CSWAP(size, size_t)
     API_CTX_DECL_CSWAP(ptrdiff, ptrdiff_t)
 
-#undef API_CTX_DECL_SWAP
+#undef API_CTX_DECL_CSWAP
+
+#define API_CTX_DECL_CSWAP_NBI(_name, _type)                            \
+    /* see \ref shmem_ctx_long_atomic_compare_swap_nbi() */             \
+    void shmem_ctx_##_name##_atomic_compare_swap_nbi(shmem_ctx_t ctx,   \
+                                                     _type *fetch,      \
+                                                     _type *target,     \
+                                                     _type cond, _type value, \
+                                                     int pe);           \
+    /* see \ref shmem_long_atomic_compare_swap_nbi() */                 \
+    void shmem_##_name##_atomic_compare_swap_nbi(_type *target,         \
+                                                 _type *fetch,          \
+                                                 _type cond,_type value, \
+                                                 int pe);
+
+    /* no reals */
+    API_CTX_DECL_CSWAP_NBI(int, int)
+    API_CTX_DECL_CSWAP_NBI(long, long)
+    API_CTX_DECL_CSWAP_NBI(longlong, long long)
+    API_CTX_DECL_CSWAP_NBI(uint, unsigned int)
+    API_CTX_DECL_CSWAP_NBI(ulong, unsigned long)
+    API_CTX_DECL_CSWAP_NBI(ulonglong, unsigned long long)
+    API_CTX_DECL_CSWAP_NBI(int32, int32_t)
+    API_CTX_DECL_CSWAP_NBI(int64, int64_t)
+    API_CTX_DECL_CSWAP_NBI(uint32, uint32_t)
+    API_CTX_DECL_CSWAP_NBI(uint64, uint64_t)
+    API_CTX_DECL_CSWAP_NBI(size, size_t)
+    API_CTX_DECL_CSWAP_NBI(ptrdiff, ptrdiff_t)
+
+#undef API_CTX_DECL_CSWAP_NBI
 
     long shmem_long_cswap(long *target,
                           long cond, long value,
