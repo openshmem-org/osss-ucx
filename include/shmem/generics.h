@@ -445,6 +445,32 @@ inline static void shmem_generics_nomatch(void *blah, ...) { }
              default: shmem_generics_nomatch                            \
              )(__VA_ARGS__)
 
+/* see \ref shmem_long_atomic_swap_nbi() */
+#define shmem_atomic_swap_nbi(...)                                      \
+    _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
+             shmem_ctx_t:                                               \
+             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
+                      float *: shmem_ctx_float_atomic_swap_nbi,         \
+                      double *: shmem_ctx_double_atomic_swap_nbi,       \
+                      int *: shmem_ctx_int_atomic_swap_nbi,             \
+                      long *: shmem_ctx_long_atomic_swap_nbi,           \
+                      long long *: shmem_ctx_longlong_atomic_swap_nbi,  \
+                      unsigned int *: shmem_ctx_uint_atomic_swap_nbi,   \
+                      unsigned long *: shmem_ctx_ulong_atomic_swap_nbi, \
+                      unsigned long long *: shmem_ctx_ulonglong_atomic_swap_nbi, \
+                      default: shmem_generics_nomatch                   \
+                      ),                                                \
+             float *: shmem_float_atomic_swap_nbi,                      \
+             double *: shmem_double_atomic_swap_nbi,                    \
+             int *: shmem_int_atomic_swap_nbi,                          \
+             long *: shmem_long_atomic_swap_nbi,                        \
+             long long *: shmem_longlong_atomic_swap_nbi,               \
+             unsigned int *: shmem_uint_atomic_swap_nbi,                \
+             unsigned long *: shmem_ulong_atomic_swap_nbi,              \
+             unsigned long long *: shmem_ulonglong_atomic_swap_nbi,     \
+             default: shmem_generics_nomatch                            \
+             )(__VA_ARGS__)
+
 /* see \ref shmem_long_atomic_compare_swap() */
 #define shmem_atomic_compare_swap(...)                                  \
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \

@@ -191,6 +191,7 @@ AC_CONFIG_FILES([
 	src/osh_info/Makefile
 	src/collectives/shcoll/Makefile
 	src/collectives/shcoll/src/Makefile
+	src/atomics/Makefile
 	src/shmemc/Makefile
 	src/shmemc/osh_common
 	src/shmemu/Makefile
