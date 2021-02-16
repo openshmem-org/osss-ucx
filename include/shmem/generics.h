@@ -22,7 +22,7 @@
  * This stops the not-a-context case turning into an error when
  * the value type doesn't match anything
  */
-inline static void shmem_generics_nomatch(void *blah, ...) { }
+inline static void shmem_generics_nomatch(void) { }
 
 /*
  * get numbered args out of parameter list
