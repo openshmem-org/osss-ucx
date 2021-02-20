@@ -391,9 +391,16 @@ ucx_init_ready(void)
                   ucs_status_string(s));
 
     pm.field_mask =
-        UCP_PARAM_FIELD_FEATURES |
+#ifdef HAVE_UCP_PARAM_FIELD_NAME
+        UCP_PARAM_FIELD_NAME              |
+#endif /* HAVE_UCP_PARAM_FIELD_NAME */
+        UCP_PARAM_FIELD_FEATURES          |
         UCP_PARAM_FIELD_MT_WORKERS_SHARED |
         UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
+
+#ifdef HAVE_UCP_PARAM_FIELD_NAME
+    pm.name = PACKAGE_NAME;
+#endif /* HAVE_UCP_PARAM_FIELD_NAME */
 
     pm.features =
         UCP_FEATURE_RMA      |  /* put/get */
@@ -412,7 +419,8 @@ ucx_init_ready(void)
 
     /* sanity check that we got a context */
     if (proc.comms.ucx_ctxt == NULL) {
-        shmemu_fatal("UCX was initialized, but context is nil");
+        shmemu_fatal("UCX was initialized, "
+                     "but there is no communications context");
     }
 }
 
