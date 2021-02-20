@@ -396,7 +396,8 @@ ucx_init_ready(void)
 #endif /* HAVE_UCP_PARAM_FIELD_NAME */
         UCP_PARAM_FIELD_FEATURES          |
         UCP_PARAM_FIELD_MT_WORKERS_SHARED |
-        UCP_PARAM_FIELD_ESTIMATED_NUM_EPS;
+        UCP_PARAM_FIELD_ESTIMATED_NUM_EPS |
+        UCP_PARAM_FIELD_ESTIMATED_NUM_PPN;
 
 #ifdef HAVE_UCP_PARAM_FIELD_NAME
     pm.name = PACKAGE_NAME;
@@ -409,7 +410,9 @@ ucx_init_ready(void)
 
     pm.mt_workers_shared = (proc.td.osh_tl > SHMEM_THREAD_SINGLE);
 
+    /* estimated program size */
     pm.estimated_num_eps = proc.li.nranks;
+    pm.estimated_num_ppn = proc.li.npeers;
 
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
     if (s != UCS_OK) {
