@@ -93,27 +93,34 @@ AS_IF([test "x$ucx_happy" = "xno"], [
 	    	],
 	    	[AC_MSG_NOTICE([UCX: ucp_put_nb NOT found])
 	    	])
-	    AC_COMPILE_IFELSE(
-	    	[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nb])],
-	    	[AC_MSG_NOTICE([UCX: ucp_get_nb found])
-	       AC_DEFINE([HAVE_UCP_GET_NB], [1], [UCX has non-blocking ucp_get])
-	    	],
-	    	[AC_MSG_NOTICE([UCX: ucp_get_nb NOT found])
-	    	])
-	    AC_COMPILE_IFELSE(
-	    	[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nbi])],
-	    	[AC_MSG_NOTICE([UCX: ucp_put_nbi found])
-	       AC_DEFINE([HAVE_UCP_PUT_NBI], [1], [UCX has non-blocking implicit ucp_put])
-	    	],
-	    	[AC_MSG_NOTICE([UCX: ucp_put_nbi NOT found])
-	    	])
-	    AC_COMPILE_IFELSE(
-	    	[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nbi])],
-	    	[AC_MSG_NOTICE([UCX: ucp_get_nbi found])
-	       AC_DEFINE([HAVE_UCP_GET_NBI], [1], [UCX has non-blocking implicit ucp_get])
-	    	],
-	    	[AC_MSG_NOTICE([UCX: ucp_get_nbi NOT found])
-	    	])
+            AC_COMPILE_IFELSE(
+                [AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nb])],
+                [AC_MSG_NOTICE([UCX: ucp_get_nb found])
+               AC_DEFINE([HAVE_UCP_GET_NB], [1], [UCX has non-blocking ucp_get])
+                ],
+                [AC_MSG_NOTICE([UCX: ucp_get_nb NOT found])
+                ])
+            AC_COMPILE_IFELSE(
+                [AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nbi])],
+                [AC_MSG_NOTICE([UCX: ucp_put_nbi found])
+               AC_DEFINE([HAVE_UCP_PUT_NBI], [1], [UCX has non-blocking implicit ucp_put])
+                ],
+                [AC_MSG_NOTICE([UCX: ucp_put_nbi NOT found])
+                ])
+            AC_COMPILE_IFELSE(
+                [AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nbi])],
+                [AC_MSG_NOTICE([UCX: ucp_get_nbi found])
+               AC_DEFINE([HAVE_UCP_GET_NBI], [1], [UCX has non-blocking implicit ucp_get])
+                ],
+                [AC_MSG_NOTICE([UCX: ucp_get_nbi NOT found])
+                ])
+            # see if contexts can be named
+            AS_IF([fgrep -q UCP_PARAM_FIELD_NAME $ucp_hdr],
+                [AC_MSG_NOTICE([UCX: contexts can be named])
+               AC_DEFINE([HAVE_UCP_PARAM_FIELD_NAME], [1], [UCX contexts can be named])
+                ],
+                [AC_MSG_NOTICE([UCX: no context name field])
+                ])
 	    AC_LANG_POP([C])
 	    AC_SUBST([UCX_LIBS])
 
