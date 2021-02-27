@@ -158,7 +158,7 @@ void shmemc_ctx_cswap(shmem_ctx_t ctx,
                       void *retp);
 
 /*
- * adds and incs
+ * adds and incs (== add1)
  */
 
 void shmemc_ctx_add(shmem_ctx_t ctx,
@@ -169,6 +169,10 @@ void shmemc_ctx_fadd(shmem_ctx_t ctx,
                     void *target, void *value, size_t vals,
                     int pe,
                     void *retp);
+void shmemc_ctx_fadd_nbi(shmem_ctx_t ctx,
+                         void *target, void *value, size_t vals,
+                         int pe,
+                         void *retp);
 
 /*
  * bitwise
@@ -197,6 +201,15 @@ SHMEMC_CTX_DECL_FETCH_BITWISE(and)
 SHMEMC_CTX_DECL_FETCH_BITWISE(or)
 SHMEMC_CTX_DECL_FETCH_BITWISE(xor)
 
+#define SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(_op)                          \
+    void shmemc_ctx_fetch_##_op##_nbi(shmem_ctx_t ctx,                  \
+                                      void *target, void *value, size_t vals, \
+                                      int pe);
+
+SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(and)
+SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(or)
+SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(xor)
+
 /*
  * set/fetch
  */
@@ -208,6 +221,10 @@ void shmemc_ctx_fetch(shmem_ctx_t ctx,
                       void *tp, size_t ts,
                       int pe,
                       void *valp);
+void shmemc_ctx_fetch_nbi(shmem_ctx_t ctx,
+                          void *tp, size_t ts,
+                          int pe,
+                          void *valp);
 
 /*
  * locks
@@ -578,33 +595,37 @@ SHMEMC_DECL_COLLECT_SIZE(64)
 
 #define shmemc_add(...)                               \
     shmemc_ctx_add(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 #define shmemc_inc(...)                               \
     shmemc_ctx_inc(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fadd(...)                              \
+#define shmemc_fadd(...)                            \
     shmemc_ctx_fadd(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
+#define shmemc_fadd_nbi(...)                            \
+    shmemc_ctx_fadd_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 #define shmemc_finc(...)                              \
     shmemc_ctx_finc(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_finc_nbi(...)                        \
+    shmemc_ctx_finc_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #define shmemc_and(...)                               \
     shmemc_ctx_and(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 #define shmemc_or(...)                            \
     shmemc_ctx_or(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 #define shmemc_xor(...)                               \
     shmemc_ctx_xor(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fetch_and(...)                             \
+#define shmemc_fetch_and(...)                               \
     shmemc_ctx_fetch_and(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
+#define shmemc_fetch_and_nbi(...)                               \
+    shmemc_ctx_fetch_and_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 #define shmemc_fetch_or(...)                              \
     shmemc_ctx_fetch_or(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
-#define shmemc_fetch_xor(...)                             \
+#define shmemc_fetch_or_nbi(...)                            \
+    shmemc_ctx_fetch_or_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_xor(...)                               \
     shmemc_ctx_fetch_xor(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_xor_nbi(...)                               \
+    shmemc_ctx_fetch_xor_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #define shmemc_test_eq16(...)                         \
     shmemc_ctx_test_eq16(SHMEM_CTX_DEFAULT, __VA_ARGS__)

@@ -10,7 +10,7 @@
 #include "boolean.h"
 #include "threading.h"
 #include "shmem/teams.h"
-#include "../klib/khash.h"      /* TODO */
+#include "../../klib/khash.h"      /* TODO */
 
 #include <sys/types.h>
 #include <ucp/api/ucp.h>

@@ -46,10 +46,10 @@
                                              _type *target,             \
                                              _type value, int pe)       \
     {                                                                   \
-        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fadd(ctx,                     \
-                                               target,                  \
-                                               &value, sizeof(value),   \
-                                               pe, fetch));             \
+        SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_fadd_nbi(ctx,                 \
+                                                   target,              \
+                                                   &value, sizeof(value), \
+                                                   pe, fetch));         \
     }
 
 SHMEM_CTX_TYPE_FADD_NBI(int, int)

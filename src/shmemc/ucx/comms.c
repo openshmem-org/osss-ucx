@@ -7,6 +7,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
+#include "api.h"
 
 #include "shmem/defs.h"
 
@@ -193,14 +194,6 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 
 #endif  /* ENABLE_EXPERIMENTAL */
 
-void
-nb_callback(void *req, ucs_status_t status)
-{
-    NO_WARN_UNUSED(req);
-    /* TODO: check status */
-    NO_WARN_UNUSED(status);
-}
-
 /*
  * wait for some non-blocking request to complete on a worker
  *
@@ -277,9 +270,33 @@ helper_fetching_amo(shmemc_context_h ch,
     sp = ucp_atomic_fetch_nb(ep,
                              op,
                              rv, retp, vs,
-                             r_t, r_key, nb_callback);
+                             r_t, r_key, noop_callback);
 
     return check_wait_for_request(ch, sp);
+}
+
+static ucs_status_ptr_t
+helper_fetching_amo_nbi(shmemc_context_h ch,
+                       ucp_atomic_fetch_op_t op,
+                       void *t, void *vp, size_t vs,
+                       int pe,
+                       void *retp)
+{
+    ucp_rkey_h r_key;
+    uint64_t r_t;
+    ucp_ep_h ep;
+    uint64_t rv = *(uint64_t *) vp;
+    ucs_status_ptr_t sp;
+
+    get_remote_key_and_addr(ch, (uint64_t) t, pe, &r_key, &r_t);
+    ep = lookup_ucp_ep(ch, pe);
+
+    sp = ucp_atomic_fetch_nb(ep,
+                             op,
+                             rv, retp, vs,
+                             r_t, r_key, nb_callback);
+
+    return sp;
 }
 
 /**
@@ -440,6 +457,17 @@ shmemc_ctx_fadd(shmem_ctx_t ctx,
                         t, vp, vs, pe, retp);
 }
 
+void
+shmemc_ctx_fadd_nbi(shmem_ctx_t ctx,
+                    void *t, void *vp, size_t vs,
+                    int pe,
+                    void *retp)
+{
+    helper_fetching_amo_nbi(ctx,
+                            UCP_ATOMIC_FETCH_OP_FADD,
+                            t, vp, vs, pe, retp);
+}
+
 /*
  * fetch-and-inc: finc = fadd 1
  */
@@ -490,6 +518,46 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
                   ucs_status_string(s));
 }
 
+void
+shmemc_ctx_swap_nbi(shmem_ctx_t ctx,
+                    void *t, void *vp, size_t vs,
+                    int pe,
+                    void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    ucs_status_ptr_t sp;
+
+    sp = helper_fetching_amo_nbi(ch,
+                                 UCP_ATOMIC_FETCH_OP_SWAP,
+                                 t, vp, vs,
+                                 pe,
+                                 retp);
+
+    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+                  "AMO nbi swap failed");
+}
+
+void
+shmemc_ctx_cswap_nbi(shmem_ctx_t ctx,
+                     void *t, void *c, void *vp, size_t vs,
+                     int pe,
+                     void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    ucs_status_ptr_t sp;
+
+    memcpy(retp, vp, vs);       /* prime the value */
+
+    sp = helper_fetching_amo_nbi(ch,
+                                 UCP_ATOMIC_FETCH_OP_CSWAP,
+                                 t, c, vs,
+                                 pe,
+                                 retp);
+
+    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+                  "AMO nbi conditional swap failed");
+}
+
 /*
  * fetch handled via typed-0-swap
  */
@@ -530,6 +598,29 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
 HELPER_BITWISE_FETCH_ATOMIC(AND, and)
 HELPER_BITWISE_FETCH_ATOMIC(OR,  or)
 HELPER_BITWISE_FETCH_ATOMIC(XOR, xor)
+
+#define HELPER_BITWISE_FETCH_ATOMIC_NBI(_ucp_op, _opname)               \
+    inline static void                                                  \
+    helper_atomic_fetch_##_opname##_nbi(shmemc_context_h ch,            \
+                                        void *t, void *vp, size_t vs,   \
+                                        int pe,                         \
+                                        void *retp)                     \
+    {                                                                   \
+        const ucs_status_ptr_t sp =                                     \
+            helper_fetching_amo_nbi(ch,                                 \
+                                    MAKE_UCP_FETCH_OP(_ucp_op),         \
+                                    t, vp, vs,                          \
+                                    pe,                                 \
+                                    retp);                              \
+                                                                        \
+        shmemu_assert(! UCS_PTR_IS_ERR(sp),                             \
+                      "AMO fetch nbi op \"%s\" failed",                 \
+                      #_opname);                                        \
+    }
+
+HELPER_BITWISE_FETCH_ATOMIC_NBI(AND, and)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(OR,  or)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(XOR, xor)
 
 #define HELPER_BITWISE_ATOMIC(_ucp_op, _opname)                         \
     inline static void                                                  \
@@ -590,6 +681,23 @@ HELPER_BITWISE_ATOMIC(XOR, xor)
 HELPER_BITWISE_FETCH_ATOMIC(|, or)
 HELPER_BITWISE_FETCH_ATOMIC(&, and)
 HELPER_BITWISE_FETCH_ATOMIC(^, xor)
+
+#define HELPER_BITWISE_FETCH_ATOMIC_NBI(_ucp_op, _opname)               \
+    inline static void                                                  \
+    helper_atomic_fetch_##_opname##_nbi(shmemc_context_h ch,            \
+                                        void *t, void *vp, size_t vs,   \
+                                        int pe,                         \
+                                        void *retp)                     \
+    {                                                                   \
+        helper_atomic_fetch_##_opname(shmemc_context_h ch,              \
+                                      void *t, void *vp, size_t vs,     \
+                                      int pe,                           \
+                                      void *retp);                      \
+    }
+
+HELPER_BITWISE_FETCH_ATOMIC_NBI(AND, and)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(OR,  or)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(XOR, xor)
 
 #define HELPER_BITWISE_ATOMIC(_opname)                                  \
     inline static void                                                  \
@@ -678,6 +786,17 @@ shmemc_ctx_fetch(shmem_ctx_t ctx,
     uint64_t zero = 0;
 
     shmemc_ctx_fadd(ctx, tp, &zero, ts, pe, valp);
+}
+
+void
+shmemc_ctx_fetch_nbi(shmem_ctx_t ctx,
+                     void *tp, size_t ts,
+                     int pe,
+                     void *valp)
+{
+    uint64_t zero = 0;
+
+    shmemc_ctx_fadd_nbi(ctx, tp, &zero, ts, pe, valp);
 }
 
 /*
