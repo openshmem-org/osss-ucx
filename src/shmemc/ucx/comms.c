@@ -251,12 +251,13 @@ helper_posted_amo(shmemc_context_h ch,
  * fetching AMOs: target t, (optional) condition c, value v
  */
 
-static ucs_status_t
-helper_fetching_amo(shmemc_context_h ch,
-                    ucp_atomic_fetch_op_t op,
-                    void *t, void *vp, size_t vs,
-                    int pe,
-                    void *retp)
+inline static ucs_status_ptr_t
+helper_fetching_amo_internal(shmemc_context_h ch,
+                             ucp_atomic_fetch_op_t op,
+                             void *t, void *vp, size_t vs,
+                             int pe,
+                             void *retp,
+                             void *cb)
 {
     ucp_rkey_h r_key;
     uint64_t r_t;
@@ -271,7 +272,26 @@ helper_fetching_amo(shmemc_context_h ch,
                              op,
                              rv, retp, vs,
                              r_t, r_key,
-                             noop_callback);
+                             cb);
+
+    return sp;
+}
+
+static ucs_status_t
+helper_fetching_amo(shmemc_context_h ch,
+                    ucp_atomic_fetch_op_t op,
+                    void *t, void *vp, size_t vs,
+                    int pe,
+                    void *retp)
+{
+    ucs_status_ptr_t sp;
+
+    sp = helper_fetching_amo_internal(ch,
+                                      op,
+                                      t, vp, vs,
+                                      pe,
+                                      retp,
+                                      noop_callback);
 
     return check_wait_for_request(ch, sp);
 }
@@ -283,20 +303,14 @@ helper_fetching_amo_nbi(shmemc_context_h ch,
                        int pe,
                        void *retp)
 {
-    ucp_rkey_h r_key;
-    uint64_t r_t;
-    ucp_ep_h ep;
-    uint64_t rv = *(uint64_t *) vp;
     ucs_status_ptr_t sp;
 
-    get_remote_key_and_addr(ch, (uint64_t) t, pe, &r_key, &r_t);
-    ep = lookup_ucp_ep(ch, pe);
-
-    sp = ucp_atomic_fetch_nb(ep,
-                             op,
-                             rv, retp, vs,
-                             r_t, r_key,
-                             nb_callback);
+    sp = helper_fetching_amo_internal(ch,
+                                      op,
+                                      t, vp, vs,
+                                      pe,
+                                      retp,
+                                      nb_callback);
 
     return sp;
 }
