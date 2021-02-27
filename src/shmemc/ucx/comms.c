@@ -8,6 +8,7 @@
 #include "shmemc.h"
 #include "state.h"
 #include "api.h"
+#include "callbacks.h"
 
 #include "shmem/defs.h"
 
