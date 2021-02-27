@@ -270,7 +270,8 @@ helper_fetching_amo(shmemc_context_h ch,
     sp = ucp_atomic_fetch_nb(ep,
                              op,
                              rv, retp, vs,
-                             r_t, r_key, noop_callback);
+                             r_t, r_key,
+                             noop_callback);
 
     return check_wait_for_request(ch, sp);
 }
@@ -294,7 +295,8 @@ helper_fetching_amo_nbi(shmemc_context_h ch,
     sp = ucp_atomic_fetch_nb(ep,
                              op,
                              rv, retp, vs,
-                             r_t, r_key, nb_callback);
+                             r_t, r_key,
+                             nb_callback);
 
     return sp;
 }
@@ -822,7 +824,7 @@ shmemc_ctx_put(shmem_ctx_t ctx,
 
 #ifdef HAVE_UCP_PUT_NB
     sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
-                    nb_callback);
+                    noop_callback);
     s = check_wait_for_request(ch, sp);
 #else
     s = ucp_put(ep, src, nbytes, r_dest, r_key);
@@ -852,7 +854,7 @@ shmemc_ctx_get(shmem_ctx_t ctx,
 
 #ifdef HAVE_UCP_GET_NB
     sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
-                    nb_callback);
+                    noop_callback);
     s = check_wait_for_request(ch, sp);
 #else
     s = ucp_get(ep, dest, nbytes, r_src, r_key);

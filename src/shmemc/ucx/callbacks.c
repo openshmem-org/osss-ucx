@@ -10,6 +10,10 @@
 
 #include <ucp/api/ucp.h>
 
+/*
+ * callback for non-blocking(-implicit) ops, need to release request
+ */
+
 void
 nb_callback(void *req, ucs_status_t status)
 {
@@ -17,6 +21,10 @@ nb_callback(void *req, ucs_status_t status)
 
     NO_WARN_UNUSED(status);
 }
+
+/*
+ * dummy callback
+ */
 
 void
 noop_callback(void *req, ucs_status_t status)
