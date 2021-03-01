@@ -10,9 +10,9 @@ Here is a table showing tested configurations:
 
 |Launcher|PMIx|Stability level|Note|
 |---:|---:|---:|---:|
-|OMPI 4.0.2|3.1.4||Author's more stable env|
-|OMPI 4.0.2|github master|||
-|OMPI github master|3.1.4|||
+|OMPI 4.0.5|3.2.2||Author's more stable env|
+|OMPI 4.1.5|github master|||
+|OMPI github master|4.0.0|||
 |OMPI github master|github master|||
 |PRRTE github master|github master|lowest|Author's bleeding-edge env|
 
@@ -39,7 +39,8 @@ Tested with all releases and from github master:
 [Get UCX](https://github.com/openucx/ucx/)
 
 If you want to build threading support, UCX should be installed with
-`--enable-mt`.
+`--enable-mt`.  UCX has some sample configurations in its `contrib`
+directory.
 
 ## SHCOLL
 
@@ -123,6 +124,9 @@ srun: pmi2
 
 With this setup, you should be able to run OSSS-UCX OpenSHMEM programs
 directly with `srun`, avoiding Open-MPI/PRRTE and `oshrun` altogether.
+
+Other job schedulers, e.g. LSF, also provide PMIx-aware launchers like
+`jsrun`.
 
 ## OSSS-UCX Building Sequence
 
