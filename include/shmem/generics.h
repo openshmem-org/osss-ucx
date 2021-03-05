@@ -695,7 +695,7 @@ inline static void shmem_generics_nomatch(void) { }
 #define shmem_atomic_fetch_xor_nbi(...)                                 \
     _Generic(SHC11_TYPE_EVAL_PTR(SHC11_GET_ARG1(__VA_ARGS__)),          \
              shmem_ctx_t:                                               \
-             _Generic(SHC11_TYPE_EVAL_PTR_XOR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
+             _Generic(SHC11_TYPE_EVAL_PTR_OR_SCALAR(SHC11_GET_ARG2(__VA_ARGS__)), \
                       int32_t *: shmem_ctx_int32_atomic_fetch_xor_nbi,  \
                       int64_t *: shmem_ctx_int64_atomic_fetch_xor_nbi,  \
                       unsigned int *: shmem_ctx_uint_atomic_fetch_xor_nbi, \
