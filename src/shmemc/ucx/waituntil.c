@@ -220,11 +220,11 @@ COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ge)
 
 #define COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(_size, _opname)            \
     void                                                                \
-    shmemc_ctx_wait_until_all_vector##_opname##_size(shmem_ctx_t ctx,   \
-                                                     int##_size##_t *vars, \
-                                                     size_t nelems,     \
-                                                     const int *status, \
-                                                     void *values)      \
+    shmemc_ctx_wait_until_all_vector_##_opname##_size(shmem_ctx_t ctx,  \
+                                                      int##_size##_t *vars, \
+                                                      size_t nelems,    \
+                                                      const int *status, \
+                                                      void *values)     \
     {                                                                   \
         int##_size##_t *vs = (int##_size##_t *) values;                 \
         size_t n = 0;                                                   \
