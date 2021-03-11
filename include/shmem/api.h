@@ -1595,7 +1595,7 @@ extern "C"
     void                                                                \
     shmem_##_opname##_wait_until_all_vector(_type *ivars, size_t nelems, \
                                             const int *status,          \
-                                            int cmp, _type cmp_value)
+                                            int cmp, _type *cmp_values)
 
     API_DECL_WAIT_UNTIL_ALL_VECTOR(short, short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_ALL_VECTOR(int, int);
@@ -1616,7 +1616,7 @@ extern "C"
     size_t                                                              \
     shmem_##_opname##_wait_until_any_vector(_type *ivars, size_t nelems, \
                                             const int *status,          \
-                                            int cmp, _type cmp_value)
+                                            int cmp, _type *cmp_values)
 
     API_DECL_WAIT_UNTIL_ANY_VECTOR(short, short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_ANY_VECTOR(int, int);
@@ -1638,7 +1638,7 @@ extern "C"
     shmem_##_opname##_wait_until_some_vector(_type *ivars, size_t nelems, \
                                              size_t *indices,           \
                                              const int *status,         \
-                                             int cmp, _type cmp_value)
+                                             int cmp, _type *cmp_values)
 
     API_DECL_WAIT_UNTIL_SOME_VECTOR(short, short) _DEPRECATED;
     API_DECL_WAIT_UNTIL_SOME_VECTOR(int, int);

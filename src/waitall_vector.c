@@ -45,7 +45,7 @@
     void                                                                \
     shmem_##_opname##_wait_until_all_vector(_type *ivars, size_t nelems, \
                                             const int *status,          \
-                                            int cmp, _type *cmp_values)   \
+                                            int cmp, _type *cmp_values) \
     {                                                                   \
         SHMEMT_MUTEX_PROTECT                                            \
             (                                                           \

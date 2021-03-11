@@ -106,7 +106,7 @@ COMMS_CTX_WAIT_UNTIL_ALL_SIZE(64, ge)
 #define COMMS_CTX_WAIT_UNTIL_ANY_SIZE(_size, _opname)                   \
     size_t                                                              \
     shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,         \
-                                               int##_size##_t * restrict vars, \
+                                               int##_size##_t * vars,   \
                                                size_t nelems,           \
                                                const int *status,       \
                                                int##_size##_t value)    \
@@ -162,9 +162,9 @@ COMMS_CTX_WAIT_UNTIL_ANY_SIZE(64, ge)
 #define COMMS_CTX_WAIT_UNTIL_SOME_SIZE(_size, _opname)                  \
     size_t                                                              \
     shmemc_ctx_wait_until_some_##_opname##_size(shmem_ctx_t ctx,        \
-                                                int##_size##_t * restrict vars, \
+                                                int##_size##_t * vars,  \
                                                 size_t nelems,          \
-                                                size_t * restrict idxs, \
+                                                size_t * idxs,          \
                                                 const int *status,      \
                                                 int##_size##_t value)   \
     {                                                                   \
@@ -218,24 +218,66 @@ COMMS_CTX_WAIT_UNTIL_SOME_SIZE(16, ge)
 COMMS_CTX_WAIT_UNTIL_SOME_SIZE(32, ge)
 COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ge)
 
+#define COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(_size, _opname)            \
+    void                                                                \
+    shmemc_ctx_wait_until_all_vector##_opname##_size(shmem_ctx_t ctx,   \
+                                                     int##_size##_t *vars, \
+                                                     size_t nelems,     \
+                                                     const int *status, \
+                                                     void *values)      \
+    {                                                                   \
+        int##_size##_t *vs = (int##_size##_t *) values;                 \
+        size_t n = 0;                                                   \
+        size_t i;                                                       \
+                                                                        \
+        do {                                                            \
+            for (i = 0; i < nelems; ++i) {                              \
+                if ( (status != NULL) && ( status[i] != 0) ) {          \
+                    continue;                                           \
+                }                                                       \
+                if (shmemc_ctx_test_##_opname##_size(ctx,               \
+                                                     &(vars[i]),        \
+                                                     vs[i]) != 0) {     \
+                    ++n;                                                \
+                }                                                       \
+                yielder();                                              \
+            }                                                           \
+        } while (n < nelems);                                           \
+    }
 
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(16, eq)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(32, eq)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(64, eq)
 
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(16, ne)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(32, ne)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(64, ne)
 
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(16, gt)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(32, gt)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(64, gt)
 
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(16, le)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(32, le)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(64, le)
 
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(16, lt)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(32, lt)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(64, lt)
 
-
-
-
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(16, ge)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(32, ge)
+COMMS_CTX_WAIT_UNTIL_ALL_VECTOR_SIZE(64, ge)
 
 #define COMMS_CTX_WAIT_UNTIL_ANY_VECTOR_SIZE(_size, _opname)            \
     size_t                                                              \
     shmemc_ctx_wait_until_any_vector_##_opname##_size(shmem_ctx_t ctx,  \
-                                                      int##_size##_t * restrict vars, \
+                                                      int##_size##_t * vars, \
                                                       size_t nelems,    \
                                                       const int *status, \
-                                                      int##_size##_t *values) \
+                                                      void *values)     \
     {                                                                   \
+        int##_size##_t *vs = (int##_size##_t *) values;                 \
         size_t winner;                                                  \
         size_t i;                                                       \
                                                                         \
@@ -247,7 +289,7 @@ COMMS_CTX_WAIT_UNTIL_SOME_SIZE(64, ge)
                                                                         \
                 if (shmemc_ctx_test_##_opname##_size(ctx,               \
                                                      &(vars[i]),        \
-                                                     values[i]) != 0) { \
+                                                     vs[i]) != 0) {     \
                     winner = i;                                         \
                     goto ret;                                           \
                     /* NOT REACHED */                                   \
@@ -287,12 +329,13 @@ COMMS_CTX_WAIT_UNTIL_ANY_VECTOR_SIZE(64, ge)
 #define COMMS_CTX_WAIT_UNTIL_SOME_VECTOR_SIZE(_size, _opname)           \
     size_t                                                              \
     shmemc_ctx_wait_until_some_vector_##_opname##_size(shmem_ctx_t ctx, \
-                                                       int##_size##_t * restrict vars, \
+                                                       int##_size##_t * vars, \
                                                        size_t nelems,   \
-                                                       size_t * restrict idxs, \
+                                                       size_t * idxs,   \
                                                        const int *status, \
-                                                       int##_size##_t *values) \
+                                                       void *values)    \
     {                                                                   \
+        int##_size##_t *vs = (int##_size##_t *) values;                 \
         size_t i;                                                       \
         size_t hits = 0;                                                \
                                                                         \
@@ -301,7 +344,7 @@ COMMS_CTX_WAIT_UNTIL_ANY_VECTOR_SIZE(64, ge)
                                                                  vars,  \
                                                                  nelems, \
                                                                  status, \
-                                                                 values); \
+                                                                 vs);   \
         /* see which ones match */                                      \
         for (i = 0; i < nelems; ++i) {                                  \
             if ( (status != NULL) && (status[i] != 0) ) {               \
@@ -310,7 +353,7 @@ COMMS_CTX_WAIT_UNTIL_ANY_VECTOR_SIZE(64, ge)
                                                                         \
             if (shmemc_ctx_test_##_opname##_size(ctx,                   \
                                                  &(vars[i]),            \
-                                                 values[i]) != 0) {     \
+                                                 vs[i]) != 0) {         \
                 idxs[hits] = i;                                         \
                 ++hits;                                                 \
             }                                                           \

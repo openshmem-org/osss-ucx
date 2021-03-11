@@ -217,8 +217,9 @@ COMMS_CTX_TEST_ANY_SIZE(64, ge)
                                                 int##_size##_t *vars,   \
                                                 size_t nelems,          \
                                                 const int *status,      \
-                                                int##_size##_t *values) \
+                                                void *values)           \
     {                                                                   \
+        int##_size##_t *vs = (int##_size##_t *) values;                 \
         size_t i;                                                       \
         int n = 0;                                                      \
                                                                         \
@@ -229,7 +230,7 @@ COMMS_CTX_TEST_ANY_SIZE(64, ge)
                                                                         \
             n += shmemc_ctx_test_##_opname##_size(ctx,                  \
                                                   &(vars[i]),           \
-                                                  values[i]);           \
+                                                  vs[i]);               \
         }                                                               \
                                                                         \
         return ((size_t) n == nelems) ? 1 : 0;                          \
@@ -266,8 +267,9 @@ COMMS_CTX_TEST_ALL_VECTOR_SIZE(64, ge)
                                                  size_t nelems,         \
                                                  size_t * restrict idxs, \
                                                  const int *status,     \
-                                                 int##_size##_t *values) \
+                                                 void *values)          \
     {                                                                   \
+        int##_size##_t *vs = (int##_size##_t *) values;                 \
         size_t n;                                                       \
         size_t i = 0;                                                   \
                                                                         \
@@ -278,7 +280,7 @@ COMMS_CTX_TEST_ALL_VECTOR_SIZE(64, ge)
                                                                         \
             if (shmemc_ctx_test_##_opname##_size(ctx,                   \
                                                  &(vars[n]),            \
-                                                 values[n]) != 0) {     \
+                                                 vs[n]) != 0) {         \
                 idxs[i++] = n;                                          \
             }                                                           \
         }                                                               \
@@ -315,8 +317,9 @@ COMMS_CTX_TEST_SOME_VECTOR_SIZE(64, ge)
                                                 int##_size##_t * restrict vars, \
                                                 size_t nelems,          \
                                                 const int *status,      \
-                                                int##_size##_t *values) \
+                                                void *values)           \
     {                                                                   \
+        int##_size##_t *vs = (int##_size##_t *) values;                 \
         size_t n;                                                       \
                                                                         \
         for (n = 0; n < nelems; ++n) {                                  \
@@ -326,7 +329,7 @@ COMMS_CTX_TEST_SOME_VECTOR_SIZE(64, ge)
                                                                         \
             if (shmemc_ctx_test_##_opname##_size(ctx,                   \
                                                  &(vars[n]),            \
-                                                 values[n]) != 0) {     \
+                                                 vs[n]) != 0) {         \
                 return n;                                               \
             }                                                           \
         }                                                               \

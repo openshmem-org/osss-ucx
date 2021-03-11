@@ -484,109 +484,109 @@ SHMEMC_CTX_WAIT_UNTIL_ANY(16, ge)
 SHMEMC_CTX_WAIT_UNTIL_ANY(32, ge)
 SHMEMC_CTX_WAIT_UNTIL_ANY(64, ge)
 
-#define SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(_size, _opname)                \
-    void                                                                \
-    shmemc_ctx_test_until_all_vector_##_opname##_size(shmem_ctx_t ctx,  \
-                                                      int##_size##_t *vars, \
-                                                      size_t nelems,    \
-                                                      const int *status, \
-                                                      int##_size##_t *values);
+#define SHMEMC_CTX_TEST_ALL_VECTOR(_size, _opname)                      \
+    int                                                                 \
+    shmemc_ctx_test_all_vector_##_opname##_size(shmem_ctx_t ctx,        \
+                                                int##_size##_t *vars,   \
+                                                size_t nelems,          \
+                                                const int *status,      \
+                                                void *values);
 
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(16, eq)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(32, eq)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(64, eq)
+SHMEMC_CTX_TEST_ALL_VECTOR(16, eq)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, eq)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, eq)
 
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(16, ne)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(32, ne)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(64, ne)
+SHMEMC_CTX_TEST_ALL_VECTOR(16, ne)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, ne)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, ne)
 
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(16, gt)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(32, gt)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(64, gt)
+SHMEMC_CTX_TEST_ALL_VECTOR(16, gt)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, gt)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, gt)
 
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(16, le)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(32, le)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(64, le)
+SHMEMC_CTX_TEST_ALL_VECTOR(16, le)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, le)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, le)
 
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(16, lt)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(32, lt)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(64, lt)
+SHMEMC_CTX_TEST_ALL_VECTOR(16, lt)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, lt)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, lt)
 
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(16, ge)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(32, ge)
-SHMEMC_CTX_TEST_UNTIL_ALL_VECTOR(64, ge)
+SHMEMC_CTX_TEST_ALL_VECTOR(16, ge)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, ge)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, ge)
 
-#define SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(_size, _opname)               \
+#define SHMEMC_CTX_TEST_SOME_VECTOR(_size, _opname)                     \
     size_t                                                              \
-    shmemc_ctx_test_until_some_vector_##_opname##_size(shmem_ctx_t ctx, \
-                                                       int##_size##_t * restrict vars, \
-                                                       size_t nelems,   \
-                                                       size_t * restrict idxs, \
-                                                       const int *status, \
-                                                       int##_size##_t *values);
+    shmemc_ctx_test_some_vector_##_opname##_size(shmem_ctx_t ctx,       \
+                                                 int##_size##_t * restrict vars, \
+                                                 size_t nelems,         \
+                                                 size_t * restrict idxs, \
+                                                 const int *status,     \
+                                                 void *values);
 
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(16, eq)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(32, eq)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(64, eq)
+SHMEMC_CTX_TEST_SOME_VECTOR(16, eq)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, eq)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, eq)
 
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(16, ne)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(32, ne)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(64, ne)
+SHMEMC_CTX_TEST_SOME_VECTOR(16, ne)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, ne)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, ne)
 
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(16, gt)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(32, gt)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(64, gt)
+SHMEMC_CTX_TEST_SOME_VECTOR(16, gt)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, gt)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, gt)
 
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(16, le)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(32, le)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(64, le)
+SHMEMC_CTX_TEST_SOME_VECTOR(16, le)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, le)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, le)
 
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(16, lt)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(32, lt)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(64, lt)
+SHMEMC_CTX_TEST_SOME_VECTOR(16, lt)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, lt)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, lt)
 
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(16, ge)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(32, ge)
-SHMEMC_CTX_TEST_UNTIL_SOME_VECTOR(64, ge)
+SHMEMC_CTX_TEST_SOME_VECTOR(16, ge)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, ge)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, ge)
 
-#define SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(_size, _opname)                \
+#define SHMEMC_CTX_TEST_ANY_VECTOR(_size, _opname)                      \
     size_t                                                              \
-    shmemc_ctx_test_until_any_vector_##_opname##_size(shmem_ctx_t ctx,  \
-                                                      int##_size##_t * restrict vars, \
-                                                      size_t nelems,    \
-                                                      const int *status, \
-                                                      int##_size##_t *values);
+    shmemc_ctx_test_any_vector_##_opname##_size(shmem_ctx_t ctx,        \
+                                                int##_size##_t * restrict vars, \
+                                                size_t nelems,          \
+                                                const int *status,      \
+                                                void *values);
 
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(16, eq)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(32, eq)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(64, eq)
+SHMEMC_CTX_TEST_ANY_VECTOR(16, eq)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, eq)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, eq)
 
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(16, ne)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(32, ne)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(64, ne)
+SHMEMC_CTX_TEST_ANY_VECTOR(16, ne)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, ne)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, ne)
 
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(16, gt)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(32, gt)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(64, gt)
+SHMEMC_CTX_TEST_ANY_VECTOR(16, gt)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, gt)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, gt)
 
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(16, le)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(32, le)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(64, le)
+SHMEMC_CTX_TEST_ANY_VECTOR(16, le)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, le)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, le)
 
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(16, lt)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(32, lt)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(64, lt)
+SHMEMC_CTX_TEST_ANY_VECTOR(16, lt)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, lt)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, lt)
 
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(16, ge)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(32, ge)
-SHMEMC_CTX_TEST_UNTIL_ANY_VECTOR(64, ge)
+SHMEMC_CTX_TEST_ANY_VECTOR(16, ge)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, ge)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, ge)
 
 #define SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(_size, _opname)                \
     void shmemc_ctx_wait_until_all_vector_##_opname##_size(shmem_ctx_t ctx, \
                                                            int##_size##_t *vars, \
                                                            size_t nelems, \
                                                            const int *status, \
-                                                           int##_size##_t *values);
+                                                           void *values);
 
 SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, eq)
 SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, eq)
@@ -619,7 +619,7 @@ SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, ge)
                                                        size_t nelems,   \
                                                        size_t * restrict idxs, \
                                                        const int *status, \
-                                                       int##_size##_t *values);
+                                                       void *values);
 
 SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(16, eq)
 SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(32, eq)
@@ -651,7 +651,7 @@ SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, ge)
                                                       int##_size##_t * restrict vars, \
                                                       size_t nelems,    \
                                                       const int *status, \
-                                                      int##_size##_t *values);
+                                                      void *values);
 
 SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(16, eq)
 SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(32, eq)
