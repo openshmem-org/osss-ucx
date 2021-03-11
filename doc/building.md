@@ -150,8 +150,12 @@ options, e.g.
        --with-shcoll=/path/to/install/shcoll \
        --enable-debug \
        --enable-logging \
+       --enable-aligned-addresses \
        --with-heap-size=8G
 ```
+
+`--enabled-aligned-addresses` is an optimization for systems in which
+all the compute nodes have address space randomization turned off.
 
 Then
 
