@@ -22,7 +22,7 @@ AS_IF([test "x$with_ucx" = "xyes"], [
  		         UCX_CFLAGS="-I$ucx_include_dir"
 		     	 UCX_LIBS="-L$with_ucx/lib64 -Wl,-rpath -Wl,$with_ucx/lib64"
 		     	 UCX_LIBS="$UCX_LIBS -L$with_ucx/lib -Wl,-rpath -Wl,$with_ucx/lib"
-		     	 UCX_LIBS="$UCX_LIBS -lucp -lucs"
+			 UCX_LIBS="$UCX_LIBS -lucp"
 		     	 ucx_happy=yes
 		     ]
 		 )
