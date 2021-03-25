@@ -22,15 +22,15 @@ shmem_query_thread(int *provided)
 {
     SHMEMU_CHECK_INIT();
 
+    shmemu_assert(provided != NULL,
+                  "shmem: the argument of %s() may not be null",
+                  __func__);
+
     logger(LOG_INFO,
            "%s() -> %d",
            __func__,
            proc.td.osh_tl
            );
-
-    shmemu_assert(provided != NULL,
-                  "the argument of %s() must not be null",
-                  __func__);
 
     *provided = proc.td.osh_tl;
 }

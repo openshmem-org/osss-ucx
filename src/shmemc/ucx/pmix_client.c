@@ -55,7 +55,8 @@ shmemc_pmi_publish_worker(void)
     v.data.bo.size = proc.comms.xchg_wrkr_info[proc.li.rank].len;
 
     ps = PMIx_Put(PMIX_GLOBAL, k1, &v);
-    shmemu_assert(ps == PMIX_SUCCESS, "can't publish worker blob");
+    shmemu_assert(ps == PMIX_SUCCESS,
+                  "shmemc/pmix: can't publish worker blob");
 }
 
 static const char *rkey_exch_fmt   = "rkey:%lu:%d"; /* region, pe */
@@ -70,7 +71,8 @@ publish_one_rkeys(size_t r)
         shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.li.rank].mh,
                              &packed_rkey, &rkey_len
                              );
-    shmemu_assert(s == UCS_OK, "can't pack rkey");
+    shmemu_assert(s == UCS_OK,
+                  "shmemc/pmix: can't pack rkey");
 
     snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.li.rank);
 
@@ -80,7 +82,7 @@ publish_one_rkeys(size_t r)
 
     ps = PMIx_Put(PMIX_GLOBAL, k1, &v);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't publish rkey for memory region %lu",
+                  "shmemc/pmix: can't publish rkey for memory region %lu",
                   r);
 
     ucp_rkey_buffer_release(packed_rkey);
@@ -107,11 +109,11 @@ publish_one_heap(size_t r)
 
     ps = PMIx_Put(PMIX_GLOBAL, k1, &vb);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't publish heap base for memory region %lu",
+                  "shmemc/pmix: can't publish heap base for memory region %lu",
                   r);
     ps = PMIx_Put(PMIX_GLOBAL, k2, &vs);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't publish heap size for memory region %lu",
+                  "shmemc/pmix: can't publish heap size for memory region %lu",
                   r);
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
@@ -152,7 +154,7 @@ shmemc_pmi_exchange_workers(void)
 
         ps = PMIx_Get(&ex_pmix, k1, NULL, 0, &vp);
         shmemu_assert(ps == PMIX_SUCCESS,
-                      "can't find remote worker blob for PE %d",
+                      "shmemc/pmix: can't find remote worker blob for PE %d",
                       pe);
 
         bop = & vp->data.bo;
@@ -160,7 +162,8 @@ shmemc_pmi_exchange_workers(void)
         /* save published worker */
         proc.comms.xchg_wrkr_info[pe].buf = (char *) malloc(bop->size);
         shmemu_assert(proc.comms.xchg_wrkr_info[pe].buf != NULL,
-                      "can't allocate memory for remote workers for PE %d",
+                      "shmemc/pmix: can't allocate memory for "
+                      "remote workers for PE %d",
                       pe);
         memcpy(proc.comms.xchg_wrkr_info[pe].buf, bop->bytes, bop->size);
     }
@@ -183,12 +186,14 @@ exchange_one_heap(size_t r, int pe)
 
     ps = PMIx_Get(&ex_pmix, k1, NULL, 0, &vpb);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch heap base for memory region %lu from PE %d",
+                  "shmemc/pmix: can't fetch heap base for "
+                  "memory region %lu from PE %d",
                   r, pe);
 
     ps = PMIx_Get(&ex_pmix, k2, NULL, 0, &vps);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch heap size for memory region %lu from PE %d",
+                  "shmemc/pmix: can't fetch heap size for "
+                  "memory region %lu from PE %d",
                   r, pe);
 
     base = vpb->data.uint64;
@@ -216,7 +221,8 @@ exchange_one_rkeys(size_t r, int pe)
 
     ps = PMIx_Get(&ex_pmix, k1, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "can't fetch remote rkey for memory region %lu from PE %d",
+                  "shmemc/pmix: can't fetch remote rkey for "
+                  "memory region %lu from PE %d",
                   r, pe);
 
     bop = & vp->data.bo;
@@ -224,7 +230,7 @@ exchange_one_rkeys(size_t r, int pe)
     /* opaque rkey */
     proc.comms.orks[r].rkeys[pe].data = malloc(bop->size);
     shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,
-                  "can't allocate memory for rkey data"
+                  "shmemc/pmix: can't allocate memory for rkey data"
                   " for memory region %lu from PE %d",
                   r, pe);
 
@@ -283,7 +289,7 @@ shmemc_pmi_barrier_all(bool collect_data)
     /* put all info out there */
     ps = PMIx_Commit();
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx_Commit() failed: %s",
+                  "shmemc/pmix: PMIx_Commit() failed: %s",
                   PMIx_Error_string(ps));
 
     if (collect_data) {
@@ -298,7 +304,7 @@ shmemc_pmi_barrier_all(bool collect_data)
     }
 
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx_Fence() [collect=%s] failed: %s",
+                  "shmemc/pmix: PMIx_Fence() [collect=%s] failed: %s",
                   collect_data ? "true" : "false",
                   PMIx_Error_string(ps));
 }
@@ -343,12 +349,12 @@ init_ranks(void)
     /* we can get our own rank immediately */
     proc.li.rank = (int) my_pmix.rank;
     shmemu_assert(proc.li.rank >= 0,
-                  "PMIx PE rank %d must be >= 0",
+                  "shmemc/pmix: PMIx PE rank %d must be >= 0",
                   proc.li.rank);
 
     ps = PMIx_Get(&wc_pmix, PMIX_JOB_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't get program size: %s",
+                  "shmemc/pmix: PMIx can't get program size: %s",
                   PMIx_Error_string(ps));
 
     proc.li.nranks = (int) vp->data.uint32; /* number of ranks/PEs */
@@ -368,20 +374,20 @@ init_ranks(void)
 
     ps = PMIx_Get(&wc_pmix, PMIX_UNIV_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't get universe size: %s",
+                  "shmemc/pmix: PMIx can't get universe size: %s",
                   PMIx_Error_string(ps));
 
     proc.li.maxranks = (int) vp->data.uint32; /* total ranks available */
 
     /* is the world a sane size? */
     shmemu_assert(proc.li.nranks > 0,
-                  "PMIx PE count is %d, but must be > 0",
+                  "shmemc/pmix: PMIx PE count is %d, but must be > 0",
                   proc.li.nranks);
     shmemu_assert(proc.li.maxranks > 0,
-                  "PMIx universe size is %d, but must be > 0",
+                  "shmemc/pmix: PMIx universe size is %d, but must be > 0",
                   proc.li.maxranks);
     shmemu_assert(shmemu_valid_pe_number(proc.li.rank),
-                  "PMIx PE rank %d is not in range [0...%d)",
+                  "shmemc/pmix: PMIx PE rank %d is not in range [0...%d)",
                   proc.li.rank, proc.li.nranks);
 
     PMIX_VALUE_RELEASE(vp);
@@ -395,16 +401,17 @@ init_peers(void)
     /* what's on this node? */
     ps = PMIx_Get(&wc_pmix, PMIX_LOCAL_SIZE, NULL, 0, &vp);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't look up PE's peers: %s",
+                  "shmemc/pmix: PMIx can't look up PE's peers: %s",
                   PMIx_Error_string(ps));
 
     proc.li.npeers = (int) vp->data.uint32;
     /* how's the 'hood look? */
     shmemu_assert(proc.li.npeers > 0,
-                  "PMIx PE's peer count %d must be > 0",
+                  "shmemc/pmix: PMIx PE's peer count %d must be > 0",
                   proc.li.npeers);
     shmemu_assert(proc.li.npeers <= proc.li.nranks,
-                  "PMIx PE's peer count %d bigger than program size %d",
+                  "shmemc/pmix: PMIx PE's peer count %d bigger than "
+                  "program size %d",
                   proc.li.npeers, proc.li.nranks);
 
     PMIX_VALUE_RELEASE(vp);
@@ -418,7 +425,8 @@ init_peers(void)
                 shmemu_parse_csv(vp->data.string, &proc.li.peers, &n);
             NO_WARN_UNUSED(n);
             shmemu_assert(s > 0,
-                          "Unable to parse peer PE numbers \"%s\"",
+                          "shmemc/pmix: Unable to parse peer PE"
+                          "numbers \"%s\"",
                           vp->data.string);
         }
     }
@@ -472,7 +480,7 @@ notification_fn(size_t evhdlr_registration_id,
 
     ps = PMIx_Abort(ret, "global_exit", NULL, 0);
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't abort: %s",
+                  "shmemc/pmix: PMIx can't abort: %s",
                   PMIx_Error_string(ps));
 
     if (cbfunc != NULL) {
@@ -499,7 +507,8 @@ evhandler_reg_callbk(pmix_status_t status,
     NO_WARN_UNUSED(evhandler_ref);
 
     shmemu_assert(status == PMIX_SUCCESS,
-                  "couldn't register event handler for global exit");
+                  "shmemc/pmix: couldn't register event handler for "
+                  "global exit");
 
     *act = status;
 }
@@ -519,7 +528,8 @@ init_event_handler(void)
     while (active == -1) {}
 
     shmemu_assert(active == 0,
-                  "global exit event handler registration failed");
+                  "shmemc/pmix: global exit event handler "
+                  "registration failed");
 }
 
 /*
@@ -543,7 +553,7 @@ shmemc_pmi_client_abort(const char *msg, int status)
                            NULL, NULL);
 
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't notify global exit: %s",
+                  "shmemc/pmix: PMIx can't notify global exit: %s",
                   PMIx_Error_string(ps));
 }
 
@@ -557,7 +567,7 @@ shmemc_pmi_client_finalize(void)
     ps = pmix_finalize_wrapper();
 
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't finalize: %s",
+                  "shmemc/pmix: PMIx can't finalize: %s",
                   PMIx_Error_string(ps));
 
     /* clean up memory recording peer PEs */
@@ -574,7 +584,7 @@ shmemc_pmi_client_init(void)
     ps = pmix_init_wrapper(&my_pmix);
 
     shmemu_assert(ps == PMIX_SUCCESS,
-                  "PMIx can't initialize: %s",
+                  "shmemc/pmix: PMIx can't initialize: %s",
                   PMIx_Error_string(ps));
 
     /* make a new proc to query things not linked to a specific rank */

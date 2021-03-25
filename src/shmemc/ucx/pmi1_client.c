@@ -64,7 +64,7 @@ shmemc_pmi_publish_worker(void)
 
     ps = PMI_KVS_Put(kvs_name, key, val);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "put of worker blob failed (status %d)",
+                  "shmemc/pmi1: put() of worker blob failed (status %d)",
                   ps);
 }
 
@@ -86,7 +86,7 @@ publish_one_rkeys(size_t r)
                       proc.comms.regions[r].minfo[proc.rank].racc.mh,
                       &packed_rkey, &rkey_len
                       );
-    shmemu_assert(s == UCS_OK, "can't pack rkey");
+    shmemu_assert(s == UCS_OK, "shmemc/pmi1: can't pack rkey");
 
     snprintf(key, kvs_max_key_len, rkey_exch_fmt, proc.rank);
 
@@ -97,7 +97,7 @@ publish_one_rkeys(size_t r)
 
     ps = PMI_KVS_Put(kvs_name, key, val);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "put of worker blob failed (status %d)",
+                  "shmemc/pmi1: put of worker blob failed (status %d)",
                   ps);
 
     ucp_rkey_buffer_release(packed_rkey);
@@ -118,7 +118,7 @@ publish_one_heap(size_t r)
 
     ps = PMI_KVS_Put(kvs_name, key, val);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "put of heap blob failed (status %d)",
+                  "shmemc/pmi1: put() of heap blob failed (status %d)",
                   ps);
 }
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
@@ -155,14 +155,15 @@ shmemc_pmi_exchange_workers(void)
 
         ps = PMI_KVS_Get(kvs_name, key, val, kvs_max_value_len);
         shmemu_assert(ps == PMI_SUCCESS,
-                      "get of remote worker blob failed (status %d)",
+                      "shmemc/pmi1: get() of remote worker blob failed (status %d)",
                       ps);
 
         wp = (worker_info_t *) val;
 
         proc.comms.xchg_wrkr_info[i].buf = (char *) malloc(wp->len);
         shmemu_assert(proc.comms.xchg_wrkr_info[i].buf != NULL,
-                      "can't allocate memory for remote worker blob");
+                      "shmemc/pmi1: can't allocate memory for "
+                      "remote worker blob");
         memcpy(proc.comms.xchg_wrkr_info[i].buf, wp->addr, wp->len);
     }
 }
@@ -181,7 +182,7 @@ exchange_one_rkeys(size_t r, int pe)
 
     ps = PMI_KVS_Get(kvs_name, key, val, kvs_max_value_len);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "fetch of rkey from PE %d failed (status %d)",
+                  "shmemc/pmi1: fetch of rkey from PE %d failed (status %d)",
                   i, ps);
 
     sscanf(val, "%8lu", (unsigned long *) &len);
@@ -189,13 +190,14 @@ exchange_one_rkeys(size_t r, int pe)
     proc.comms.regions[r].minfo[i].racc.rkey =
         (ucp_rkey_h) malloc(len);
     shmemu_assert(proc.comms.regions[r].minfo[i].racc.rkey != NULL,
-                  "can't allocate memory for remote rkey");
+                  "shmemc/pmi1: can't allocate memory for remote rkey");
 
     s = ucp_ep_rkey_unpack(proc.comms.eps[i],
                            val + len,
                            &proc.comms.regions[r].minfo[i].racc.rkey
                            );
-    shmemu_assert(s == UCS_OK, "can't unpack remote rkey");
+    shmemu_assert(s == UCS_OK,
+                  "shmemc/pmi1: can't unpack remote rkey");
 }
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -211,7 +213,7 @@ exchange_one_heap(size_t r, int pe)
 
     ps = PMI_KVS_Get(kvs_name, key, val, kvs_max_value_len);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "fetch of rkey from PE %d failed (status %d)",
+                  "shmemc/pmi1: fetch of rkey from PE %d failed (status %d)",
                   pe, ps);
 
     mp = (mem_info_t *) val;
@@ -282,12 +284,12 @@ shmemc_pmi_barrier_all(void)
 
     ps = PMI_KVS_Commit(kvs_name);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "worker blob commit failed (status %d)",
+                  "shmemc/pmi1: worker blob commit failed (status %d)",
                   ps);
 
     ps = PMI_Barrier();
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI barrier failed (status %d)",
+                  "shmemc/pmi1: PMI barrier failed (status %d)",
                   ps);
 }
 
@@ -303,29 +305,29 @@ shmemc_pmi_client_init(void)
 
     ps = PMI_Init(&spawned);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "can't initialize PMI (status %d)",
+                  "shmemc/pmi1: can't initialize PMI (status %d)",
                   ps);
 
     ps = PMI_Get_rank(&proc.rank);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't get PE rank (status %d)",
+                  "shmemc/pmi1: PMI can't get PE rank (status %d)",
                   ps);
 
     shmemu_assert(proc.rank >= 0,
-                  "PMI PE rank is not valid (status %d)",
+                  "shmemc/pmi1: PMI PE rank is not valid (status %d)",
                   ps);
 
     ps = PMI_Get_size(&proc.nranks);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't get program size (status %d)",
+                  "shmemc/pmi1: PMI can't get program size (status %d)",
                   ps);
 
     /* is the world a sane size? */
     shmemu_assert(proc.nranks > 0,
-                  "PMI count of PE ranks %d is not valid",
+                  "shmemc/pmi1: PMI count of PE ranks %d is not valid",
                   proc.nranks);
     shmemu_assert(shmemu_valid_pe_number(proc.rank),
-                  "PMI PE rank %d is not valid",
+                  "shmemc/pmi1: PMI PE rank %d is not valid",
                   proc.rank);
 
     /* I have no peer info (at present) */
@@ -334,33 +336,34 @@ shmemc_pmi_client_init(void)
 
     ps = PMI_KVS_Get_name_length_max(&kvs_max_name_len);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't get max name length (status %d)",
+                  "shmemc/pmi1: PMI can't get max name length (status %d)",
                   ps);
 
     ps = PMI_KVS_Get_key_length_max(&kvs_max_key_len);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't get max key length (status %d)",
+                  "shmemc/pmi1: PMI can't get max key length (status %d)",
                   ps);
 
     ps = PMI_KVS_Get_value_length_max(&kvs_max_value_len);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't get max value length (status %d)",
+                  "shmemc/pmi1: PMI can't get max value length (status %d)",
                   ps);
 
     kvs_name = alloc_string(kvs_max_name_len);
-    shmemu_assert(kvs_name != NULL, "PMI can't allocate name string");
+    shmemu_assert(kvs_name != NULL,
+                  "shmemc/pmi1: PMI can't allocate name string");
 
     ps = PMI_KVS_Get_my_name(kvs_name, kvs_max_name_len);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't find its name (status %d)",
+                  "shmemc/pmi1: PMI can't find its name (status %d)",
                   ps);
 
     key = alloc_string(kvs_max_key_len);
     shmemu_assert(key != NULL,
-                  "PMI can't allocate memory for key holder");
+                  "shmemc/pmi1: PMI can't allocate memory for key holder");
     val = alloc_string(kvs_max_value_len);
     shmemu_assert(val != NULL,
-                  "PMI can't allocate memory for value holder");
+                  "shmemc/pmi1: PMI can't allocate memory for value holder");
 }
 
 void
@@ -371,7 +374,7 @@ shmemc_pmi_client_finalize(void)
 
     ps = PMI_Finalize();
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't finalize (status %d)",
+                  "shmemc/pmi1: PMI can't finalize (status %d)",
                   ps);
 
     /* TODO: PMI client common code below */
@@ -400,6 +403,6 @@ shmemc_pmi_client_abort(const char *msg, int status)
 
     ps = PMI_Abort(status, msg);
     shmemu_assert(ps == PMI_SUCCESS,
-                  "PMI can't abort (status %d)",
+                  "shmemc/pmi1: PMI can't abort (status %d)",
                   ps);
 }

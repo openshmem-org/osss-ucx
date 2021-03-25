@@ -157,7 +157,7 @@ progress_init(void)
 
         s = threadwrap_thread_create(&thr, start_progress, NULL);
         shmemu_assert(s == 0,
-                      "Could not create progress thread (%s)",
+                      "shmem: could not create progress thread (%s)",
                       strerror(s));
     }
 }
@@ -176,7 +176,7 @@ progress_finalize(void)
 
         s = threadwrap_thread_join(thr, NULL);
         shmemu_assert(s == 0,
-                      "Could not terminate progress thread (%s)",
+                      "shmem: could not terminate progress thread (%s)",
                       strerror(s));
 
     }
