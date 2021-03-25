@@ -10,6 +10,8 @@
  */
 
 void nb_callback(void *request, ucs_status_t status);
+void nb_callbackx(void *request, ucs_status_t status, void *user_data);
+
 void noop_callback(void *request, ucs_status_t status);
 void noop_callbackx(void *request, ucs_status_t status, void *user_data);
 
