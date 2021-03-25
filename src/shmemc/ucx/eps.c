@@ -54,7 +54,7 @@ ep_disconnect_nb(ucp_ep_h ep)
 #ifdef HAVE_UCP_EP_CLOSE_NBX
     const ucp_request_param_t prm = { .op_attr_mask = 0 };
 
-    sp = ucp_ep_close_nb(ep, &prm);
+    sp = ucp_ep_close_nbx(ep, &prm);
 #elif defined(HAVE_UCP_EP_CLOSE_NB)
     sp = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
 #else /* ! HAVE_UCP_EP_CLOSE_NB */
@@ -193,7 +193,16 @@ shmemc_ucx_worker_wireup(shmemc_context_h ch)
 {
     ucs_status_ptr_t req;
 
+#ifdef HAVE_UCP_EP_FLUSH_NBX
+    const ucp_request_param_t prm = {
+        .op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK,
+        .cb.send = noop_callbackx
+    };
+
+    req = ucp_worker_flush_nbx(ch->w, &prm);
+#else /* ! HAVE_UCP_EP_FLUSH_NBX */
     req = ucp_worker_flush_nb(ch->w, 0, nb_callback);
+#endif /* HAVE_UCP_EP_FLUSH_NBX */
 
     if (req == UCS_OK) {
         return UCS_OK;
