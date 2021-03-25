@@ -829,21 +829,30 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     uint64_t r_dest;            /* address on other PE */
     ucp_rkey_h r_key;            /* rkey for remote address */
     ucp_ep_h ep;
-#ifdef HAVE_UCP_PUT_NB
+#if defined(HAVE_UCP_PUT_NBX) || defined(HAVE_UCP_PUT_NB)
     ucs_status_ptr_t sp;
-#endif /* HAVE_UCP_PUT_NB */
+#endif /* HAVE_UCP_PUT_NBX || HAVE_UCP_PUT_NB */
     ucs_status_t s;
 
     get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
     ep = lookup_ucp_ep(ch, pe);
 
-#ifdef HAVE_UCP_PUT_NB
+#ifdef HAVE_UCP_PUT_NBX
+    const ucp_request_param_t prm = {
+        .op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK,
+        .cb.send = noop_callbackx
+    };
+
+    sp = ucp_put_nbx(ep, src, nbytes, r_dest, r_key,
+                     &prm);
+    s = check_wait_for_request(ch, sp);
+#elif defined(HAVE_UCP_PUT_NB)
     sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
                     noop_callback);
     s = check_wait_for_request(ch, sp);
-#else
+#else /* ! HAVE_UCP_PUT_NB */
     s = ucp_put(ep, src, nbytes, r_dest, r_key);
-#endif /* HAVE_UCP_PUT_NB */
+#endif /* HAVE_UCP_PUT_NBX */
 
     shmemu_assert(s == UCS_OK,
                   "put failed (status: %s)",
@@ -859,19 +868,28 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     uint64_t r_src;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
-#ifdef HAVE_UCP_GET_NB
+#if defined(HAVE_UCP_GET_NBX) || defined(HAVE_UCP_GET_NB)
     ucs_status_ptr_t sp;
-#endif /* HAVE_UCP_GET_NB */
+#endif /* HAVE_UCP_GET_NBX || HAVE_UCP_GET_NB */
     ucs_status_t s;
 
     get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
     ep = lookup_ucp_ep(ch, pe);
 
-#ifdef HAVE_UCP_GET_NB
+#ifdef HAVE_UCP_GET_NBX
+    const ucp_request_param_t prm = {
+        .op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK,
+        .cb.send = noop_callbackx
+    };
+
+    sp = ucp_get_nbx(ep, dest, nbytes, r_src, r_key,
+                     &prm);
+    s = check_wait_for_request(ch, sp);
+#elif defined(HAVE_UCP_GET_NB)
     sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
                     noop_callback);
     s = check_wait_for_request(ch, sp);
-#else
+#else /* ! HAVE_UCP_GET_NB */
     s = ucp_get(ep, dest, nbytes, r_src, r_key);
 #endif /* HAVE_UCP_GET_NB */
 

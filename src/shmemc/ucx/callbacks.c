@@ -17,8 +17,7 @@
 void
 nb_callback(void *req, ucs_status_t status)
 {
-    ucp_request_free(req);
-
+    NO_WARN_UNUSED(req);
     NO_WARN_UNUSED(status);
 }
 
@@ -30,6 +29,17 @@ void
 noop_callback(void *req, ucs_status_t status)
 {
     NO_WARN_UNUSED(req);
-
     NO_WARN_UNUSED(status);
+}
+
+/*
+ * dummy callback for _nbx
+ */
+
+void
+noop_callbackx(void *req, ucs_status_t status, void *user_data)
+{
+    NO_WARN_UNUSED(req);
+    NO_WARN_UNUSED(status);
+    NO_WARN_UNUSED(user_data);
 }

@@ -87,12 +87,26 @@ AS_IF([test "x$ucx_happy" = "xno"], [
 	    	[AC_MSG_NOTICE([UCX: ucp_get NOT found])
 	    	])
 	    AC_COMPILE_IFELSE(
+	    	[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nbx])],
+	    	[AC_MSG_NOTICE([UCX: ucp_put_nbx found])
+	       AC_DEFINE([HAVE_UCP_PUT_NBX], [1], [UCX has non-blocking extended ucp_put])
+	    	],
+	    	[AC_MSG_NOTICE([UCX: ucp_put_nbx NOT found])
+	    	])
+	    AC_COMPILE_IFELSE(
 	    	[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_put_nb])],
 	    	[AC_MSG_NOTICE([UCX: ucp_put_nb found])
 	       AC_DEFINE([HAVE_UCP_PUT_NB], [1], [UCX has non-blocking ucp_put])
 	    	],
 	    	[AC_MSG_NOTICE([UCX: ucp_put_nb NOT found])
 	    	])
+            AC_COMPILE_IFELSE(
+                [AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nbx])],
+                [AC_MSG_NOTICE([UCX: ucp_get_nbx found])
+               AC_DEFINE([HAVE_UCP_GET_NBX], [1], [UCX has non-blocking extended ucp_get])
+                ],
+                [AC_MSG_NOTICE([UCX: ucp_get_nbx NOT found])
+                ])
             AC_COMPILE_IFELSE(
                 [AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_get_nb])],
                 [AC_MSG_NOTICE([UCX: ucp_get_nb found])
