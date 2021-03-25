@@ -44,20 +44,24 @@ shmemc_ucx_deallocate_eps_table(shmemc_context_h ch)
 inline static ucs_status_ptr_t
 ep_disconnect_nb(ucp_ep_h ep)
 {
-    ucs_status_ptr_t req;
+    ucs_status_ptr_t sp;
 
     if (ep == NULL) {
         return NULL;
         /* NOT REACHED */
     }
 
-#ifdef HAVE_UCP_EP_CLOSE_NB
-    req = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
-#else
-    req = ucp_disconnect_nb(ep);
+#ifdef HAVE_UCP_EP_CLOSE_NBX
+    const ucp_request_param_t prm = { .op_attr_mask = 0 };
+
+    sp = ucp_ep_close_nb(ep, &prm);
+#elif defined(HAVE_UCP_EP_CLOSE_NB)
+    sp = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
+#else /* ! HAVE_UCP_EP_CLOSE_NB */
+    sp = ucp_disconnect_nb(ep);
 #endif  /* HAVE_UCP_EP_CLOSE_NB */
 
-    return req;
+    return sp;
 }
 
 /*
