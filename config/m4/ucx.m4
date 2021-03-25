@@ -47,6 +47,13 @@ AS_IF([test "x$ucx_happy" = "xno"], [
 	    	[AC_MSG_NOTICE([UCX: ucp_ep_close_nb NOT found])
 	    	])
 	    AC_COMPILE_IFELSE(
+	    	[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_ep_close_nbx])],
+	    	[AC_MSG_NOTICE([UCX: ucp_ep_close_nbx found])
+	       AC_DEFINE([HAVE_UCP_EP_CLOSE_NBX], [1], [UCX has extended ucp_ep_close_nbx])
+	    	],
+	    	[AC_MSG_NOTICE([UCX: ucp_ep_close_nbx NOT found])
+	    	])
+	    AC_COMPILE_IFELSE(
 	    	[AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_rkey_ptr])],
 	    	[AC_MSG_NOTICE([UCX: ucp_rkey_ptr found])
 	       AC_DEFINE([HAVE_UCP_RKEY_PTR], [1], [UCX has ucp_rkey_ptr])
