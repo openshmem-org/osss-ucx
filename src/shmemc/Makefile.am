@@ -19,6 +19,7 @@ LIBSHMEMC_SOURCES         = \
 # -- begin: UCX sources --
 #
 LIBSHMEMC_SOURCES        += \
+				ucx/callbacks.c \
 				ucx/comms.c \
 				ucx/contexts.c \
 				ucx/eps.c \

@@ -7,6 +7,8 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "state.h"
+#include "api.h"
+#include "callbacks.h"
 
 #include "shmem/defs.h"
 
@@ -135,7 +137,7 @@ get_remote_key_and_addr(shmemc_context_h ch,
     const long r = lookup_region(local_addr);
 
     shmemu_assert(r >= 0,
-                  "can't find memory region for %p",
+                  "shmemc/ucx: can't find memory region for %p",
                   (void *) local_addr);
 
     *rkey_p = lookup_rkey(ch, r, pe);
@@ -162,7 +164,7 @@ get_remote_key_and_addr(shmemc_context_h ch,
                 const ucs_status_t s = ucp_worker_##_ucp_op(ch->w);     \
                                                                         \
                 shmemu_assert(s == UCS_OK,                              \
-                              "%s() failed (status: %s)", #_op,         \
+                              "shmemc/ucx: %s() failed (status: %s)", #_op, \
                               ucs_status_string(s));                    \
             }                                                           \
         }                                                               \
@@ -192,14 +194,6 @@ shmemc_ctx_quiet_test(shmem_ctx_t ctx)
 }
 
 #endif  /* ENABLE_EXPERIMENTAL */
-
-void
-nb_callback(void *req, ucs_status_t status)
-{
-    NO_WARN_UNUSED(req);
-    /* TODO: check status */
-    NO_WARN_UNUSED(status);
-}
 
 /*
  * wait for some non-blocking request to complete on a worker
@@ -258,12 +252,13 @@ helper_posted_amo(shmemc_context_h ch,
  * fetching AMOs: target t, (optional) condition c, value v
  */
 
-static ucs_status_t
-helper_fetching_amo(shmemc_context_h ch,
-                    ucp_atomic_fetch_op_t op,
-                    void *t, void *vp, size_t vs,
-                    int pe,
-                    void *retp)
+inline static ucs_status_ptr_t
+helper_fetching_amo_internal(shmemc_context_h ch,
+                             ucp_atomic_fetch_op_t op,
+                             void *t, void *vp, size_t vs,
+                             int pe,
+                             void *retp,
+                             void *cb)
 {
     ucp_rkey_h r_key;
     uint64_t r_t;
@@ -277,9 +272,48 @@ helper_fetching_amo(shmemc_context_h ch,
     sp = ucp_atomic_fetch_nb(ep,
                              op,
                              rv, retp, vs,
-                             r_t, r_key, nb_callback);
+                             r_t, r_key,
+                             cb);
+
+    return sp;
+}
+
+static ucs_status_t
+helper_fetching_amo(shmemc_context_h ch,
+                    ucp_atomic_fetch_op_t op,
+                    void *t, void *vp, size_t vs,
+                    int pe,
+                    void *retp)
+{
+    ucs_status_ptr_t sp;
+
+    sp = helper_fetching_amo_internal(ch,
+                                      op,
+                                      t, vp, vs,
+                                      pe,
+                                      retp,
+                                      noop_callback);
 
     return check_wait_for_request(ch, sp);
+}
+
+static ucs_status_ptr_t
+helper_fetching_amo_nbi(shmemc_context_h ch,
+                       ucp_atomic_fetch_op_t op,
+                       void *t, void *vp, size_t vs,
+                       int pe,
+                       void *retp)
+{
+    ucs_status_ptr_t sp;
+
+    sp = helper_fetching_amo_internal(ch,
+                                      op,
+                                      t, vp, vs,
+                                      pe,
+                                      retp,
+                                      nb_callback);
+
+    return sp;
 }
 
 /**
@@ -440,6 +474,17 @@ shmemc_ctx_fadd(shmem_ctx_t ctx,
                         t, vp, vs, pe, retp);
 }
 
+void
+shmemc_ctx_fadd_nbi(shmem_ctx_t ctx,
+                    void *t, void *vp, size_t vs,
+                    int pe,
+                    void *retp)
+{
+    helper_fetching_amo_nbi(ctx,
+                            UCP_ATOMIC_FETCH_OP_FADD,
+                            t, vp, vs, pe, retp);
+}
+
 /*
  * fetch-and-inc: finc = fadd 1
  */
@@ -464,7 +509,7 @@ shmemc_ctx_swap(shmem_ctx_t ctx,
                             retp);
 
     shmemu_assert(s == UCS_OK,
-                  "AMO swap failed (status: %s)",
+                  "shmemc/ucx: AMO swap failed (status: %s)",
                   ucs_status_string(s));
 }
 
@@ -486,8 +531,48 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
                             retp);
 
     shmemu_assert(s == UCS_OK,
-                  "AMO conditional swap failed (status: %s)",
+                  "shmemc/ucx: AMO conditional swap failed (status: %s)",
                   ucs_status_string(s));
+}
+
+void
+shmemc_ctx_swap_nbi(shmem_ctx_t ctx,
+                    void *t, void *vp, size_t vs,
+                    int pe,
+                    void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    ucs_status_ptr_t sp;
+
+    sp = helper_fetching_amo_nbi(ch,
+                                 UCP_ATOMIC_FETCH_OP_SWAP,
+                                 t, vp, vs,
+                                 pe,
+                                 retp);
+
+    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+                  "shmemc/ucx: AMO nbi swap failed");
+}
+
+void
+shmemc_ctx_cswap_nbi(shmem_ctx_t ctx,
+                     void *t, void *c, void *vp, size_t vs,
+                     int pe,
+                     void *retp)
+{
+    shmemc_context_h ch = (shmemc_context_h) ctx;
+    ucs_status_ptr_t sp;
+
+    memcpy(retp, vp, vs);       /* prime the value */
+
+    sp = helper_fetching_amo_nbi(ch,
+                                 UCP_ATOMIC_FETCH_OP_CSWAP,
+                                 t, c, vs,
+                                 pe,
+                                 retp);
+
+    shmemu_assert(! UCS_PTR_IS_ERR(sp),
+                  "shmemc/ucx: AMO nbi conditional swap failed");
 }
 
 /*
@@ -523,13 +608,36 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
                                                                         \
         /* value came back? */                                          \
         shmemu_assert(s == UCS_OK,                                      \
-                      "AMO fetch op \"%s\" failed (status: %s)",        \
+                      "shmemc/ucx: AMO fetch op \"%s\" failed (status: %s)", \
                       #_opname, ucs_status_string(s));                  \
     }
 
 HELPER_BITWISE_FETCH_ATOMIC(AND, and)
 HELPER_BITWISE_FETCH_ATOMIC(OR,  or)
 HELPER_BITWISE_FETCH_ATOMIC(XOR, xor)
+
+#define HELPER_BITWISE_FETCH_ATOMIC_NBI(_ucp_op, _opname)               \
+    inline static void                                                  \
+    helper_atomic_fetch_##_opname##_nbi(shmemc_context_h ch,            \
+                                        void *t, void *vp, size_t vs,   \
+                                        int pe,                         \
+                                        void *retp)                     \
+    {                                                                   \
+        const ucs_status_ptr_t sp =                                     \
+            helper_fetching_amo_nbi(ch,                                 \
+                                    MAKE_UCP_FETCH_OP(_ucp_op),         \
+                                    t, vp, vs,                          \
+                                    pe,                                 \
+                                    retp);                              \
+                                                                        \
+        shmemu_assert(! UCS_PTR_IS_ERR(sp),                             \
+                      "shmemc/ucx: AMO fetch nbi op \"%s\" failed",     \
+                      #_opname);                                        \
+    }
+
+HELPER_BITWISE_FETCH_ATOMIC_NBI(AND, and)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(OR,  or)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(XOR, xor)
 
 #define HELPER_BITWISE_ATOMIC(_ucp_op, _opname)                         \
     inline static void                                                  \
@@ -544,7 +652,7 @@ HELPER_BITWISE_FETCH_ATOMIC(XOR, xor)
                               pe);                                      \
                                                                         \
         shmemu_assert(s == UCS_OK,                                      \
-                      "AMO post op \"%s\" failed (status: %s)",         \
+                      "shmemc/ucx: AMO post op \"%s\" failed (status: %s)", \
                       #_opname, ucs_status_string(s));                  \
     }
 
@@ -576,7 +684,7 @@ HELPER_BITWISE_ATOMIC(XOR, xor)
             s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
                         r_t, r_key);                                    \
             shmemu_assert(s == UCS_OK,                                  \
-                          "AMO fetch failed in CAS (status: %s)",       \
+                          "shmemc/ucx: AMO fetch failed in CAS (status: %s)", \
                           ucs_status_string(s));                        \
             rval = (rval_orig) _op vcomp;                               \
                                                                         \
@@ -590,6 +698,23 @@ HELPER_BITWISE_ATOMIC(XOR, xor)
 HELPER_BITWISE_FETCH_ATOMIC(|, or)
 HELPER_BITWISE_FETCH_ATOMIC(&, and)
 HELPER_BITWISE_FETCH_ATOMIC(^, xor)
+
+#define HELPER_BITWISE_FETCH_ATOMIC_NBI(_ucp_op, _opname)               \
+    inline static void                                                  \
+    helper_atomic_fetch_##_opname##_nbi(shmemc_context_h ch,            \
+                                        void *t, void *vp, size_t vs,   \
+                                        int pe,                         \
+                                        void *retp)                     \
+    {                                                                   \
+        helper_atomic_fetch_##_opname(shmemc_context_h ch,              \
+                                      void *t, void *vp, size_t vs,     \
+                                      int pe,                           \
+                                      void *retp);                      \
+    }
+
+HELPER_BITWISE_FETCH_ATOMIC_NBI(AND, and)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(OR,  or)
+HELPER_BITWISE_FETCH_ATOMIC_NBI(XOR, xor)
 
 #define HELPER_BITWISE_ATOMIC(_opname)                                  \
     inline static void                                                  \
@@ -680,6 +805,17 @@ shmemc_ctx_fetch(shmem_ctx_t ctx,
     shmemc_ctx_fadd(ctx, tp, &zero, ts, pe, valp);
 }
 
+void
+shmemc_ctx_fetch_nbi(shmem_ctx_t ctx,
+                     void *tp, size_t ts,
+                     int pe,
+                     void *valp)
+{
+    uint64_t zero = 0;
+
+    shmemc_ctx_fadd_nbi(ctx, tp, &zero, ts, pe, valp);
+}
+
 /*
  * -- puts & gets --------------------------------------------------------
  */
@@ -693,24 +829,33 @@ shmemc_ctx_put(shmem_ctx_t ctx,
     uint64_t r_dest;            /* address on other PE */
     ucp_rkey_h r_key;            /* rkey for remote address */
     ucp_ep_h ep;
-#ifdef HAVE_UCP_PUT_NB
+#if defined(HAVE_UCP_PUT_NBX) || defined(HAVE_UCP_PUT_NB)
     ucs_status_ptr_t sp;
-#endif /* HAVE_UCP_PUT_NB */
+#endif /* HAVE_UCP_PUT_NBX || HAVE_UCP_PUT_NB */
     ucs_status_t s;
 
     get_remote_key_and_addr(ch, (uint64_t) dest, pe, &r_key, &r_dest);
     ep = lookup_ucp_ep(ch, pe);
 
-#ifdef HAVE_UCP_PUT_NB
-    sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
-                    nb_callback);
+#ifdef HAVE_UCP_PUT_NBX
+    const ucp_request_param_t prm = {
+        .op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK,
+        .cb.send = noop_callbackx
+    };
+
+    sp = ucp_put_nbx(ep, src, nbytes, r_dest, r_key,
+                     &prm);
     s = check_wait_for_request(ch, sp);
-#else
+#elif defined(HAVE_UCP_PUT_NB)
+    sp = ucp_put_nb(ep, src, nbytes, r_dest, r_key,
+                    noop_callback);
+    s = check_wait_for_request(ch, sp);
+#else /* ! HAVE_UCP_PUT_NB */
     s = ucp_put(ep, src, nbytes, r_dest, r_key);
-#endif /* HAVE_UCP_PUT_NB */
+#endif /* HAVE_UCP_PUT_NBX */
 
     shmemu_assert(s == UCS_OK,
-                  "put failed (status: %s)",
+                  "shmemc/ucx: put failed (status: %s)",
                   ucs_status_string(s));
 }
 
@@ -723,24 +868,33 @@ shmemc_ctx_get(shmem_ctx_t ctx,
     uint64_t r_src;
     ucp_rkey_h r_key;
     ucp_ep_h ep;
-#ifdef HAVE_UCP_GET_NB
+#if defined(HAVE_UCP_GET_NBX) || defined(HAVE_UCP_GET_NB)
     ucs_status_ptr_t sp;
-#endif /* HAVE_UCP_GET_NB */
+#endif /* HAVE_UCP_GET_NBX || HAVE_UCP_GET_NB */
     ucs_status_t s;
 
     get_remote_key_and_addr(ch, (uint64_t) src, pe, &r_key, &r_src);
     ep = lookup_ucp_ep(ch, pe);
 
-#ifdef HAVE_UCP_GET_NB
-    sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
-                    nb_callback);
+#ifdef HAVE_UCP_GET_NBX
+    const ucp_request_param_t prm = {
+        .op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK,
+        .cb.send = noop_callbackx
+    };
+
+    sp = ucp_get_nbx(ep, dest, nbytes, r_src, r_key,
+                     &prm);
     s = check_wait_for_request(ch, sp);
-#else
+#elif defined(HAVE_UCP_GET_NB)
+    sp = ucp_get_nb(ep, dest, nbytes, r_src, r_key,
+                    noop_callback);
+    s = check_wait_for_request(ch, sp);
+#else /* ! HAVE_UCP_GET_NB */
     s = ucp_get(ep, dest, nbytes, r_src, r_key);
 #endif /* HAVE_UCP_GET_NB */
 
     shmemu_assert(s == UCS_OK,
-                  "get failed (status: %s)",
+                  "shmemc/ucx: get failed (status: %s)",
                   ucs_status_string(s));
 }
 
@@ -769,7 +923,7 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
     shmemu_assert(s == UCS_OK || s == UCS_INPROGRESS,
-                  "non-blocking put failed");
+                  "shmemc/ucx: non-blocking put failed");
 }
 
 void
@@ -788,7 +942,7 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
     shmemu_assert(s == UCS_OK || s == UCS_INPROGRESS,
-                  "non-blocking get failed");
+                  "shmemc/ucx: non-blocking get failed");
 }
 
 /*
@@ -819,7 +973,7 @@ shmemc_ctx_put_signal(shmem_ctx_t ctx,
         shmemc_ctx_add(ctx, sig_addr, &signal, sizeof(signal), pe);
         break;
     default:
-        shmemu_fatal("unknown signal operation code %d",
+        shmemu_fatal("shmemc: unknown signal operation code %d",
                      sig_op);
         /* NOT REACHED */
         break;
@@ -854,7 +1008,7 @@ shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
         shmemc_ctx_add(ctx, sig_addr, &signal, sizeof(signal), pe);
         break;
     default:
-        shmemu_fatal("unknown signal operation code %d",
+        shmemu_fatal("shmemc: unknown signal operation code %d",
                      sig_op);
         /* NOT REACHED */
         break;

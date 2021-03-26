@@ -46,24 +46,37 @@ MY_SOURCES             = \
 				shmalloc.c \
 				teams.c \
 				tl_query.c \
-				version.c \
+				version.c
+
 MY_SOURCES            += \
 				test.c \
 				testall.c \
 				testany.c \
-				testsome.c \
-				waitall.c \
-				waitany.c \
-				waitsome.c \
-				waituntil.c
+				testsome.c
 
 MY_SOURCES            += \
-			deprecated/atomics.c \
-			deprecated/cache.c \
-			deprecated/init.c \
-			deprecated/ranks.c \
-			deprecated/shmalloc.c \
-			deprecated/waituntil.c
+				waituntil.c \
+				waitall.c \
+				waitany.c \
+				waitsome.c
+
+MY_SOURCES            += \
+				testall_vector.c \
+				testany_vector.c \
+				testsome_vector.c
+
+MY_SOURCES            += \
+				waitall_vector.c \
+				waitany_vector.c \
+				waitsome_vector.c
+
+MY_SOURCES            += \
+				deprecated/atomics.c \
+				deprecated/cache.c \
+				deprecated/init.c \
+				deprecated/ranks.c \
+				deprecated/shmalloc.c \
+				deprecated/waituntil.c
 
 SUBDIRS                = $(atomics_dir) \
 				$(shmemu_dir) \

@@ -23,7 +23,7 @@ simplify this process and set up other SHMEM environment variables
 that might be of interest, e.g. something like:
 
 ```shell
-#%Module1.0#############################################
+#%Module1.0######
 
 set             openmpi_root      /path/to/install/openmpi
 prepend-path    PATH              $openmpi_root/bin

@@ -24,7 +24,7 @@ shmemc_nodename_init(void)
     const int s = gethostname(nodename, MAXHOSTNAMELEN);
 
     if (s == 0) {
-        proc.nodename = strdup(nodename);
+        proc.nodename = strdup(nodename); /* free@end */
         return;
         /* NOT REACHED */
     }
@@ -35,14 +35,14 @@ shmemc_nodename_init(void)
     const int s = uname(&u);
 
     if (s == 0) {
-        proc.nodename = strdup(u.nodename);
+        proc.nodename = strdup(u.nodename); /* free@end */
         return;
         /* NOT REACHED */
     }
 
 #endif /* hostname check */
 
-    proc.nodename = "unknown";
+    proc.nodename = strdup("unknown"); /* free@end */
 }
 
 void

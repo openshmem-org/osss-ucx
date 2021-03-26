@@ -22,7 +22,11 @@ shmem_query_thread(int *provided)
 {
     SHMEMU_CHECK_INIT();
 
-    logger(LOG_FINALIZE,
+    shmemu_assert(provided != NULL,
+                  "shmem: the argument of %s() may not be null",
+                  __func__);
+
+    logger(LOG_INFO,
            "%s() -> %d",
            __func__,
            proc.td.osh_tl

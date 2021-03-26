@@ -1463,6 +1463,70 @@ extern "C"
     API_DECL_TEST_SOME(size, size_t);
     API_DECL_TEST_SOME(ptrdiff, ptrdiff_t);
 
+#define API_DECL_TEST_ALL_VECTOR(_opname, _type)                   \
+    int                                                            \
+    shmem_##_opname##_test_all_vector(_type *ivars, size_t nelems, \
+                                      const int *status,           \
+                                      int cmp, _type *cmp_values)
+
+    API_DECL_TEST_ALL_VECTOR(short, short) _DEPRECATED;
+    API_DECL_TEST_ALL_VECTOR(int, int);
+    API_DECL_TEST_ALL_VECTOR(long, long);
+    API_DECL_TEST_ALL_VECTOR(longlong, long long);
+    API_DECL_TEST_ALL_VECTOR(ushort, unsigned short) _DEPRECATED;
+    API_DECL_TEST_ALL_VECTOR(uint, unsigned int);
+    API_DECL_TEST_ALL_VECTOR(ulong, unsigned long);
+    API_DECL_TEST_ALL_VECTOR(ulonglong, unsigned long long);
+    API_DECL_TEST_ALL_VECTOR(int32, int32_t);
+    API_DECL_TEST_ALL_VECTOR(int64, int64_t);
+    API_DECL_TEST_ALL_VECTOR(uint32, uint32_t);
+    API_DECL_TEST_ALL_VECTOR(uint64, uint64_t);
+    API_DECL_TEST_ALL_VECTOR(size, size_t);
+    API_DECL_TEST_ALL_VECTOR(ptrdiff, ptrdiff_t);
+
+#define API_DECL_TEST_ANY_VECTOR(_opname, _type)                    \
+    size_t                                                          \
+    shmem_##_opname##_test_any_vector(_type *ivars, size_t nelems,  \
+                                      const int *status,            \
+                                      int cmp, _type *cmp_values)
+
+    API_DECL_TEST_ANY_VECTOR(short, short) _DEPRECATED;
+    API_DECL_TEST_ANY_VECTOR(int, int);
+    API_DECL_TEST_ANY_VECTOR(long, long);
+    API_DECL_TEST_ANY_VECTOR(longlong, long long);
+    API_DECL_TEST_ANY_VECTOR(ushort, unsigned short) _DEPRECATED;
+    API_DECL_TEST_ANY_VECTOR(uint, unsigned int);
+    API_DECL_TEST_ANY_VECTOR(ulong, unsigned long);
+    API_DECL_TEST_ANY_VECTOR(ulonglong, unsigned long long);
+    API_DECL_TEST_ANY_VECTOR(int32, int32_t);
+    API_DECL_TEST_ANY_VECTOR(int64, int64_t);
+    API_DECL_TEST_ANY_VECTOR(uint32, uint32_t);
+    API_DECL_TEST_ANY_VECTOR(uint64, uint64_t);
+    API_DECL_TEST_ANY_VECTOR(size, size_t);
+    API_DECL_TEST_ANY_VECTOR(ptrdiff, ptrdiff_t);
+
+#define API_DECL_TEST_SOME_VECTOR(_opname, _type)                   \
+    size_t                                                          \
+    shmem_##_opname##_test_some_vector(_type *ivars, size_t nelems, \
+                                       size_t *indices,             \
+                                       const int *status,           \
+                                       int cmp, _type *cmp_values)
+
+    API_DECL_TEST_SOME_VECTOR(short, short) _DEPRECATED;
+    API_DECL_TEST_SOME_VECTOR(int, int);
+    API_DECL_TEST_SOME_VECTOR(long, long);
+    API_DECL_TEST_SOME_VECTOR(longlong, long long);
+    API_DECL_TEST_SOME_VECTOR(ushort, unsigned short) _DEPRECATED;
+    API_DECL_TEST_SOME_VECTOR(uint, unsigned int);
+    API_DECL_TEST_SOME_VECTOR(ulong, unsigned long);
+    API_DECL_TEST_SOME_VECTOR(ulonglong, unsigned long long);
+    API_DECL_TEST_SOME_VECTOR(int32, int32_t);
+    API_DECL_TEST_SOME_VECTOR(int64, int64_t);
+    API_DECL_TEST_SOME_VECTOR(uint32, uint32_t);
+    API_DECL_TEST_SOME_VECTOR(uint64, uint64_t);
+    API_DECL_TEST_SOME_VECTOR(size, size_t);
+    API_DECL_TEST_SOME_VECTOR(ptrdiff, ptrdiff_t);
+
 #define API_DECL_WAIT_UNTIL_ALL(_opname, _type)                     \
     void                                                            \
     shmem_##_opname##_wait_until_all(_type *ivars, size_t nelems,   \
@@ -1527,12 +1591,82 @@ extern "C"
     API_DECL_WAIT_UNTIL_SOME(size, size_t);
     API_DECL_WAIT_UNTIL_SOME(ptrdiff, ptrdiff_t);
 
+#define API_DECL_WAIT_UNTIL_ALL_VECTOR(_opname, _type)                  \
+    void                                                                \
+    shmem_##_opname##_wait_until_all_vector(_type *ivars, size_t nelems, \
+                                            const int *status,          \
+                                            int cmp, _type *cmp_values)
+
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(short, short) _DEPRECATED;
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(int, int);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(long, long);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(longlong, long long);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(ushort, unsigned short) _DEPRECATED;
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(int32, int32_t);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(int64, int64_t);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(size, size_t);
+    API_DECL_WAIT_UNTIL_ALL_VECTOR(ptrdiff, ptrdiff_t);
+
+#define API_DECL_WAIT_UNTIL_ANY_VECTOR(_opname, _type)                  \
+    size_t                                                              \
+    shmem_##_opname##_wait_until_any_vector(_type *ivars, size_t nelems, \
+                                            const int *status,          \
+                                            int cmp, _type *cmp_values)
+
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(short, short) _DEPRECATED;
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(int, int);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(long, long);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(longlong, long long);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(ushort, unsigned short) _DEPRECATED;
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(int32, int32_t);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(int64, int64_t);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(size, size_t);
+    API_DECL_WAIT_UNTIL_ANY_VECTOR(ptrdiff, ptrdiff_t);
+
+#define API_DECL_WAIT_UNTIL_SOME_VECTOR(_opname, _type)                 \
+    size_t                                                              \
+    shmem_##_opname##_wait_until_some_vector(_type *ivars, size_t nelems, \
+                                             size_t *indices,           \
+                                             const int *status,         \
+                                             int cmp, _type *cmp_values)
+
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(short, short) _DEPRECATED;
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(int, int);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(long, long);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(longlong, long long);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(ushort, unsigned short) _DEPRECATED;
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(uint, unsigned int);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(ulong, unsigned long);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(ulonglong, unsigned long long);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(int32, int32_t);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(int64, int64_t);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(uint32, uint32_t);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(uint64, uint64_t);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(size, size_t);
+    API_DECL_WAIT_UNTIL_SOME_VECTOR(ptrdiff, ptrdiff_t);
+
 #undef API_DECL_TEST_ALL
 #undef API_DECL_TEST_ANY
 #undef API_DECL_TEST_SOME
 #undef API_DECL_WAIT_UNTIL_ALL
 #undef API_DECL_WAIT_UNTIL_ANY
 #undef API_DECL_WAIT_UNTIL_SOME
+#undef API_DECL_WAIT_UNTIL_ALL_VECTOR
+#undef API_DECL_WAIT_UNTIL_ANY_VECTOR
+#undef API_DECL_WAIT_UNTIL_SOME_VECTOR
+#undef API_DECL_WAIT_UNTIL_ALL_VECTOR
+#undef API_DECL_WAIT_UNTIL_ANY_VECTOR
+#undef API_DECL_WAIT_UNTIL_SOME_VECTOR
 
     /**
      * @brief wait for symmetric variable to change value

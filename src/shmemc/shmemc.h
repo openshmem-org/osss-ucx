@@ -158,7 +158,7 @@ void shmemc_ctx_cswap(shmem_ctx_t ctx,
                       void *retp);
 
 /*
- * adds and incs
+ * adds and incs (== add1)
  */
 
 void shmemc_ctx_add(shmem_ctx_t ctx,
@@ -169,6 +169,10 @@ void shmemc_ctx_fadd(shmem_ctx_t ctx,
                     void *target, void *value, size_t vals,
                     int pe,
                     void *retp);
+void shmemc_ctx_fadd_nbi(shmem_ctx_t ctx,
+                         void *target, void *value, size_t vals,
+                         int pe,
+                         void *retp);
 
 /*
  * bitwise
@@ -197,6 +201,15 @@ SHMEMC_CTX_DECL_FETCH_BITWISE(and)
 SHMEMC_CTX_DECL_FETCH_BITWISE(or)
 SHMEMC_CTX_DECL_FETCH_BITWISE(xor)
 
+#define SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(_op)                          \
+    void shmemc_ctx_fetch_##_op##_nbi(shmem_ctx_t ctx,                  \
+                                      void *target, void *value, size_t vals, \
+                                      int pe);
+
+SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(and)
+SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(or)
+SHMEMC_CTX_DECL_FETCH_BITWISE_NBI(xor)
+
 /*
  * set/fetch
  */
@@ -208,6 +221,10 @@ void shmemc_ctx_fetch(shmem_ctx_t ctx,
                       void *tp, size_t ts,
                       int pe,
                       void *valp);
+void shmemc_ctx_fetch_nbi(shmem_ctx_t ctx,
+                          void *tp, size_t ts,
+                          int pe,
+                          void *valp);
 
 /*
  * locks
@@ -467,6 +484,199 @@ SHMEMC_CTX_WAIT_UNTIL_ANY(16, ge)
 SHMEMC_CTX_WAIT_UNTIL_ANY(32, ge)
 SHMEMC_CTX_WAIT_UNTIL_ANY(64, ge)
 
+#define SHMEMC_CTX_TEST_ALL_VECTOR(_size, _opname)                      \
+    int                                                                 \
+    shmemc_ctx_test_all_vector_##_opname##_size(shmem_ctx_t ctx,        \
+                                                int##_size##_t *vars,   \
+                                                size_t nelems,          \
+                                                const int *status,      \
+                                                void *values);
+
+SHMEMC_CTX_TEST_ALL_VECTOR(16, eq)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, eq)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, eq)
+
+SHMEMC_CTX_TEST_ALL_VECTOR(16, ne)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, ne)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, ne)
+
+SHMEMC_CTX_TEST_ALL_VECTOR(16, gt)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, gt)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, gt)
+
+SHMEMC_CTX_TEST_ALL_VECTOR(16, le)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, le)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, le)
+
+SHMEMC_CTX_TEST_ALL_VECTOR(16, lt)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, lt)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, lt)
+
+SHMEMC_CTX_TEST_ALL_VECTOR(16, ge)
+SHMEMC_CTX_TEST_ALL_VECTOR(32, ge)
+SHMEMC_CTX_TEST_ALL_VECTOR(64, ge)
+
+#define SHMEMC_CTX_TEST_SOME_VECTOR(_size, _opname)                     \
+    size_t                                                              \
+    shmemc_ctx_test_some_vector_##_opname##_size(shmem_ctx_t ctx,       \
+                                                 int##_size##_t * restrict vars, \
+                                                 size_t nelems,         \
+                                                 size_t * restrict idxs, \
+                                                 const int *status,     \
+                                                 void *values);
+
+SHMEMC_CTX_TEST_SOME_VECTOR(16, eq)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, eq)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, eq)
+
+SHMEMC_CTX_TEST_SOME_VECTOR(16, ne)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, ne)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, ne)
+
+SHMEMC_CTX_TEST_SOME_VECTOR(16, gt)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, gt)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, gt)
+
+SHMEMC_CTX_TEST_SOME_VECTOR(16, le)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, le)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, le)
+
+SHMEMC_CTX_TEST_SOME_VECTOR(16, lt)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, lt)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, lt)
+
+SHMEMC_CTX_TEST_SOME_VECTOR(16, ge)
+SHMEMC_CTX_TEST_SOME_VECTOR(32, ge)
+SHMEMC_CTX_TEST_SOME_VECTOR(64, ge)
+
+#define SHMEMC_CTX_TEST_ANY_VECTOR(_size, _opname)                      \
+    size_t                                                              \
+    shmemc_ctx_test_any_vector_##_opname##_size(shmem_ctx_t ctx,        \
+                                                int##_size##_t * restrict vars, \
+                                                size_t nelems,          \
+                                                const int *status,      \
+                                                void *values);
+
+SHMEMC_CTX_TEST_ANY_VECTOR(16, eq)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, eq)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, eq)
+
+SHMEMC_CTX_TEST_ANY_VECTOR(16, ne)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, ne)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, ne)
+
+SHMEMC_CTX_TEST_ANY_VECTOR(16, gt)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, gt)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, gt)
+
+SHMEMC_CTX_TEST_ANY_VECTOR(16, le)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, le)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, le)
+
+SHMEMC_CTX_TEST_ANY_VECTOR(16, lt)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, lt)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, lt)
+
+SHMEMC_CTX_TEST_ANY_VECTOR(16, ge)
+SHMEMC_CTX_TEST_ANY_VECTOR(32, ge)
+SHMEMC_CTX_TEST_ANY_VECTOR(64, ge)
+
+#define SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(_size, _opname)                \
+    void shmemc_ctx_wait_until_all_vector_##_opname##_size(shmem_ctx_t ctx, \
+                                                           int##_size##_t *vars, \
+                                                           size_t nelems, \
+                                                           const int *status, \
+                                                           void *values);
+
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, eq)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, eq)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, eq)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, ne)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, ne)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, ne)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, gt)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, gt)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, gt)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, le)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, le)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, le)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, lt)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, lt)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, lt)
+
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, ge)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, ge)
+SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, ge)
+
+#define SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(_size, _opname)   \
+    size_t                                                              \
+    shmemc_ctx_wait_until_some_vector_##_opname##_size(shmem_ctx_t ctx, \
+                                                       int##_size##_t * restrict vars, \
+                                                       size_t nelems,   \
+                                                       size_t * restrict idxs, \
+                                                       const int *status, \
+                                                       void *values);
+
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(16, eq)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(32, eq)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, eq)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(16, ne)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(32, ne)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, ne)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(16, gt)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(32, gt)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, gt)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(16, le)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(32, le)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, le)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(16, lt)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(32, lt)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, lt)
+
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(16, ge)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(32, ge)
+SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, ge)
+
+#define SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(_size, _opname)                \
+    size_t                                                              \
+    shmemc_ctx_wait_until_any_vector_##_opname##_size(shmem_ctx_t ctx,  \
+                                                      int##_size##_t * restrict vars, \
+                                                      size_t nelems,    \
+                                                      const int *status, \
+                                                      void *values);
+
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(16, eq)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(32, eq)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(64, eq)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(16, ne)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(32, ne)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(64, ne)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(16, gt)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(32, gt)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(64, gt)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(16, le)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(32, le)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(64, le)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(16, lt)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(32, lt)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(64, lt)
+
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(16, ge)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(32, ge)
+SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(64, ge)
+
 /*
  * -- Context management -----------------------------------------------------
  *
@@ -578,33 +788,37 @@ SHMEMC_DECL_COLLECT_SIZE(64)
 
 #define shmemc_add(...)                               \
     shmemc_ctx_add(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 #define shmemc_inc(...)                               \
     shmemc_ctx_inc(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fadd(...)                              \
+#define shmemc_fadd(...)                            \
     shmemc_ctx_fadd(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
+#define shmemc_fadd_nbi(...)                            \
+    shmemc_ctx_fadd_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 #define shmemc_finc(...)                              \
     shmemc_ctx_finc(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_finc_nbi(...)                        \
+    shmemc_ctx_finc_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #define shmemc_and(...)                               \
     shmemc_ctx_and(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 #define shmemc_or(...)                            \
     shmemc_ctx_or(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
 #define shmemc_xor(...)                               \
     shmemc_ctx_xor(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
-#define shmemc_fetch_and(...)                             \
+#define shmemc_fetch_and(...)                               \
     shmemc_ctx_fetch_and(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
+#define shmemc_fetch_and_nbi(...)                               \
+    shmemc_ctx_fetch_and_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 #define shmemc_fetch_or(...)                              \
     shmemc_ctx_fetch_or(SHMEM_CTX_DEFAULT, __VA_ARGS__)
-
-#define shmemc_fetch_xor(...)                             \
+#define shmemc_fetch_or_nbi(...)                            \
+    shmemc_ctx_fetch_or_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_xor(...)                               \
     shmemc_ctx_fetch_xor(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_xor_nbi(...)                               \
+    shmemc_ctx_fetch_xor_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
 #define shmemc_test_eq16(...)                         \
     shmemc_ctx_test_eq16(SHMEM_CTX_DEFAULT, __VA_ARGS__)

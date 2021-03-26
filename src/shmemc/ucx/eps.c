@@ -1,4 +1,3 @@
-
 /* For license: see LICENSE file at top-level */
 
 #ifdef HAVE_CONFIG_H
@@ -8,7 +7,7 @@
 #include "state.h"
 #include "shmemc.h"
 #include "shmemu.h"
-#include "ucx/api.h"
+#include "callbacks.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -26,7 +25,7 @@ shmemc_ucx_allocate_eps_table(shmemc_context_h ch)
     ch->eps = (ucp_ep_h *)
         calloc(proc.li.nranks, sizeof(*(ch->eps)));
     shmemu_assert(ch->eps != NULL,
-                  "can't allocate memory "
+                  "shmemc/ucx: can't allocate memory "
                   "for remotely accessible endpoints: %s",
                   strerror(errno));
 }
@@ -44,20 +43,24 @@ shmemc_ucx_deallocate_eps_table(shmemc_context_h ch)
 inline static ucs_status_ptr_t
 ep_disconnect_nb(ucp_ep_h ep)
 {
-    ucs_status_ptr_t req;
+    ucs_status_ptr_t sp;
 
     if (ep == NULL) {
         return NULL;
         /* NOT REACHED */
     }
 
-#ifdef HAVE_UCP_EP_CLOSE_NB
-    req = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
-#else
-    req = ucp_disconnect_nb(ep);
+#ifdef HAVE_UCP_EP_CLOSE_NBX
+    const ucp_request_param_t prm = { .op_attr_mask = 0 };
+
+    sp = ucp_ep_close_nbx(ep, &prm);
+#elif defined(HAVE_UCP_EP_CLOSE_NB)
+    sp = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
+#else /* ! HAVE_UCP_EP_CLOSE_NB */
+    sp = ucp_disconnect_nb(ep);
 #endif  /* HAVE_UCP_EP_CLOSE_NB */
 
-    return req;
+    return sp;
 }
 
 /*
@@ -108,7 +111,7 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 
     req = (ucs_status_ptr_t *) calloc(proc.li.nranks, sizeof(*req));
     shmemu_assert(req != NULL,
-                  "failed to allocate memory "
+                  "shmemc/ucx: failed to allocate memory "
                   "for UCP endpoint disconnect: %s",
                   strerror(errno));
 
@@ -136,13 +139,13 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
     ch->racc = (mem_region_access_t *) calloc(proc.comms.nregions,
                                               sizeof(mem_region_access_t));
     shmemu_assert(ch->racc != NULL,
-                  "can't allocate memory for remote access rkeys");
+                  "shmemc/ucx: can't allocate memory for remote access rkeys");
 
     for (r = 0; r < proc.comms.nregions; ++r) {
         ch->racc[r].rinfo = (mem_access_t *) calloc(proc.li.nranks,
                                                     sizeof(mem_access_t));
         shmemu_assert(ch->racc[r].rinfo != NULL,
-                      "can't allocate remote access info "
+                      "shmemc/ucx: can't allocate remote access info "
                       "for memory region %lu: %s",
                       (unsigned long) r,
                       strerror(errno));
@@ -150,7 +153,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
 
     ch->eps = (ucp_ep_h *) calloc(proc.li.nranks, sizeof(ucp_ep_h));
     shmemu_assert(ch->eps != NULL,
-                  "can't allocate memory for endpoints "
+                  "shmemc/ucx: can't allocate memory for endpoints "
                   "for context %lu: %s",
                   ch->id,
                   strerror(errno));
@@ -166,7 +169,8 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
         s = ucp_ep_create(ch->w, &epm, & ch->eps[pe]);
 
         shmemu_assert(s == UCS_OK,
-                      "Unable to create remote endpoints for PE %d: %s",
+                      "shmemc/ucx: Unable to create remote endpoints "
+                      "for PE %d: %s",
                       pe, ucs_status_string(s)
                       );
 
@@ -176,7 +180,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
                                    & ch->racc[r].rinfo[pe].rkey
                                    );
             shmemu_assert(s == UCS_OK,
-                          "can't unpack remote rkey "
+                          "shmemc/ucx: can't unpack remote rkey "
                           "for memory region %lu, PE %d: %s",
                           (unsigned long) r, pe,
                           ucs_status_string(s));
@@ -189,7 +193,16 @@ shmemc_ucx_worker_wireup(shmemc_context_h ch)
 {
     ucs_status_ptr_t req;
 
+#ifdef HAVE_UCP_EP_FLUSH_NBX
+    const ucp_request_param_t prm = {
+        .op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK,
+        .cb.send = nb_callbackx
+    };
+
+    req = ucp_worker_flush_nbx(ch->w, &prm);
+#else /* ! HAVE_UCP_EP_FLUSH_NBX */
     req = ucp_worker_flush_nb(ch->w, 0, nb_callback);
+#endif /* HAVE_UCP_EP_FLUSH_NBX */
 
     if (req == UCS_OK) {
         return UCS_OK;
