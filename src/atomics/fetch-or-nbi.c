@@ -13,20 +13,20 @@
 #include "common.h"
 
 #ifdef ENABLE_PSHMEM
-#pragma weak shmem_uint_atomic_fetch_or = pshmem_uint_atomic_fetch_or
-#define shmem_uint_atomic_fetch_or pshmem_uint_atomic_fetch_or
-#pragma weak shmem_ulong_atomic_fetch_or = pshmem_ulong_atomic_fetch_or
-#define shmem_ulong_atomic_fetch_or pshmem_ulong_atomic_fetch_or
-#pragma weak shmem_ulonglong_atomic_fetch_or = pshmem_ulonglong_atomic_fetch_or
-#define shmem_ulonglong_atomic_fetch_or pshmem_ulonglong_atomic_fetch_or
-#pragma weak shmem_int32_atomic_fetch_or = pshmem_int32_atomic_fetch_or
-#define shmem_int32_atomic_fetch_or pshmem_int32_atomic_fetch_or
-#pragma weak shmem_int64_atomic_fetch_or = pshmem_int64_atomic_fetch_or
-#define shmem_int64_atomic_fetch_or pshmem_int64_atomic_fetch_or
-#pragma weak shmem_uint32_atomic_fetch_or = pshmem_uint32_atomic_fetch_or
-#define shmem_uint32_atomic_fetch_or pshmem_uint32_atomic_fetch_or
-#pragma weak shmem_uint64_atomic_fetch_or = pshmem_uint64_atomic_fetch_or
-#define shmem_uint64_atomic_fetch_or pshmem_uint64_atomic_fetch_or
+#pragma weak shmem_uint_atomic_fetch_or_nbi = pshmem_uint_atomic_fetch_or_nbi
+#define shmem_uint_atomic_fetch_or_nbi pshmem_uint_atomic_fetch_or_nbi
+#pragma weak shmem_ulong_atomic_fetch_or_nbi = pshmem_ulong_atomic_fetch_or_nbi
+#define shmem_ulong_atomic_fetch_or_nbi pshmem_ulong_atomic_fetch_or_nbi
+#pragma weak shmem_ulonglong_atomic_fetch_or_nbi = pshmem_ulonglong_atomic_fetch_or_nbi
+#define shmem_ulonglong_atomic_fetch_or_nbi pshmem_ulonglong_atomic_fetch_or_nbi
+#pragma weak shmem_int32_atomic_fetch_or_nbi = pshmem_int32_atomic_fetch_or_nbi
+#define shmem_int32_atomic_fetch_or_nbi pshmem_int32_atomic_fetch_or_nbi
+#pragma weak shmem_int64_atomic_fetch_or_nbi = pshmem_int64_atomic_fetch_or_nbi
+#define shmem_int64_atomic_fetch_or_nbi pshmem_int64_atomic_fetch_or_nbi
+#pragma weak shmem_uint32_atomic_fetch_or_nbi = pshmem_uint32_atomic_fetch_or_nbi
+#define shmem_uint32_atomic_fetch_or_nbi pshmem_uint32_atomic_fetch_or_nbi
+#pragma weak shmem_uint64_atomic_fetch_or_nbi = pshmem_uint64_atomic_fetch_or_nbi
+#define shmem_uint64_atomic_fetch_or_nbi pshmem_uint64_atomic_fetch_or_nbi
 #endif /* ENABLE_PSHMEM */
 
 SHMEM_CTX_TYPE_FETCH_BITWISE_NBI(or, uint, unsigned int)
