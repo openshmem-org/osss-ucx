@@ -258,7 +258,7 @@ helper_fetching_amo_internal(shmemc_context_h ch,
                              void *t, void *vp, size_t vs,
                              int pe,
                              void *retp,
-                             void *cb)
+                             ucp_send_callback_t cb)
 {
     ucp_rkey_h r_key;
     uint64_t r_t;
