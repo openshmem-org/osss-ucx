@@ -26,7 +26,7 @@
  */
 
 static bool
-option_enabled_test(char *str)
+option_enabled_test(const char *str)
 {
     if (str == NULL) {
         return false;
