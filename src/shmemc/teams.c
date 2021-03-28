@@ -33,7 +33,7 @@ shmemc_team_contexts_destroy(shmemc_team_h th)
     free(th->ctxts);
 }
 
-#if 1
+#if 0
 static void
 dump_team(shmemc_team_h th)
 {
