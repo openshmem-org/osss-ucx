@@ -78,7 +78,7 @@ if de != None:
     if not re.match('^[n0]', de, re.IGNORECASE):
         debugging = True
 
-debug(None, "== OSSS-UCX Python-based Launcher ==")
+debug(None, "== OSSS-UCX Launcher ==")
 
 #
 # off we go
