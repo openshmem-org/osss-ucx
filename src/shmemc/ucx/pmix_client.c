@@ -40,7 +40,7 @@ static pmix_status_t ps;        /* re-usable pmix status */
  * Make local info avaialable to PMIx
  */
 
-static const char *wrkr_exch_fmt   = "wrkr:%d";     /* pe */
+static const char *wrkr_exch_fmt   = "w:%d"; /* pe */
 
 void
 shmemc_pmi_publish_worker(void)
@@ -59,7 +59,7 @@ shmemc_pmi_publish_worker(void)
                   "shmemc/pmix: can't publish worker blob");
 }
 
-static const char *rkey_exch_fmt   = "rkey:%lu:%d"; /* region, pe */
+static const char *rkey_exch_fmt   = "r:%lu:%d"; /* region, pe */
 
 inline static void
 publish_one_rkeys(size_t r)
@@ -72,7 +72,8 @@ publish_one_rkeys(size_t r)
                              &packed_rkey, &rkey_len
                              );
     shmemu_assert(s == UCS_OK,
-                  "shmemc/pmix: can't pack rkey");
+                  "shmemc/pmix: can't pack rkey for memory region %lu",
+                  (unsigned long) r);
 
     snprintf(k1, PMIX_MAX_KEYLEN, rkey_exch_fmt, r, proc.li.rank);
 
@@ -83,14 +84,14 @@ publish_one_rkeys(size_t r)
     ps = PMIx_Put(PMIX_GLOBAL, k1, &v);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "shmemc/pmix: can't publish rkey for memory region %lu",
-                  r);
+                  (unsigned long) r);
 
     ucp_rkey_buffer_release(packed_rkey);
 }
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
-static const char *region_base_fmt = "base:%lu:%d"; /* region, pe */
-static const char *region_size_fmt = "size:%lu:%d"; /* region, pe */
+static const char *region_base_fmt = "b:%lu:%d"; /* region, pe */
+static const char *region_size_fmt = "s:%lu:%d"; /* region, pe */
 #endif /* ! ENABLE_ALIGNED_ADDRESSES */
 
 #ifndef ENABLE_ALIGNED_ADDRESSES
@@ -188,13 +189,13 @@ exchange_one_heap(size_t r, int pe)
     shmemu_assert(ps == PMIX_SUCCESS,
                   "shmemc/pmix: can't fetch heap base for "
                   "memory region %lu from PE %d",
-                  r, pe);
+                  (unsigned long) r, pe);
 
     ps = PMIx_Get(&ex_pmix, k2, NULL, 0, &vps);
     shmemu_assert(ps == PMIX_SUCCESS,
                   "shmemc/pmix: can't fetch heap size for "
                   "memory region %lu from PE %d",
-                  r, pe);
+                  (unsigned long) r, pe);
 
     base = vpb->data.uint64;
     len  = vps->data.size;
@@ -223,7 +224,7 @@ exchange_one_rkeys(size_t r, int pe)
     shmemu_assert(ps == PMIX_SUCCESS,
                   "shmemc/pmix: can't fetch remote rkey for "
                   "memory region %lu from PE %d",
-                  r, pe);
+                  (unsigned long) r, pe);
 
     bop = & vp->data.bo;
 
@@ -232,7 +233,7 @@ exchange_one_rkeys(size_t r, int pe)
     shmemu_assert(proc.comms.orks[r].rkeys[pe].data != NULL,
                   "shmemc/pmix: can't allocate memory for rkey data"
                   " for memory region %lu from PE %d",
-                  r, pe);
+                  (unsigned long) r, pe);
 
     memcpy(proc.comms.orks[r].rkeys[pe].data, bop->bytes, bop->size);
 
