@@ -263,6 +263,16 @@ extern "C"
      */
     void shmem_info_get_name(char *name);
 
+#ifdef PR463
+    /*
+     * https://github.com/openshmem-org/specification/issues/463
+     *
+     */
+
+    void shmem_info_get_version_number(int *version);
+    void shmem_info_get_vendor_version(int *major, int *minor, int *patch);
+    void shmem_info_get_vendor_version_number(int *version);
+#endif
     /**
      * @brief Allows the user to control profiling
      * @section Synopsis
