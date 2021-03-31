@@ -33,8 +33,8 @@ AC_DEFINE_UNQUOTED([CONFIG_FLAGS],
 AC_SUBST([SHMEM_MAJOR_VERSION], [spec_major_version])
 AC_SUBST([SHMEM_MINOR_VERSION], [spec_minor_version])
 AC_SUBST([SHMEM_MAX_NAME_LEN],  [spec_max_name_len])
-AC_SUBST([SHMEM_VENDOR_STRING], [spec_vendor_string])
 
+AC_SUBST([SHMEM_VENDOR_STRING], [spec_vendor_string])
 AC_SUBST([SHMEM_VENDOR_MAJOR_VERSION], [pkg_major])
 AC_SUBST([SHMEM_VENDOR_MINOR_VERSION], [pkg_minor])
 AC_SUBST([SHMEM_VENDOR_PATCH_VERSION], [pkg_patch])
