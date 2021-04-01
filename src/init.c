@@ -15,6 +15,7 @@
 #ifdef ENABLE_ALIGNED_ADDRESSES
 # include "asr.h"
 #endif /* ENABLE_ALIGNED_ADDRESSES */
+#include "module.h"
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
@@ -103,7 +104,7 @@ init_thread_helper(int requested, int *provided)
     case SHMEM_THREAD_MULTIPLE:
         break;
     default:
-        shmemu_fatal("unknown thread level %d requested", requested);
+        shmemu_fatal(MODULE ": unknown thread level %d requested", requested);
         /* NOT REACHED */
         break;
     }
@@ -130,7 +131,7 @@ init_thread_helper(int requested, int *provided)
 
     s = atexit(finalize_helper);
     if (s != 0) {
-        shmemu_fatal("unable to register atexit() handler: %s",
+        shmemu_fatal(MODULE ": unable to register atexit() handler: %s",
                      strerror(errno)
                      );
         /* NOT REACHED */

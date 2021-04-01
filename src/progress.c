@@ -20,6 +20,7 @@
 #include "shmemu.h"
 #include "threading.h"
 #include "progress.h"
+#include "module.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,7 +110,7 @@ check_if_progress_required(void)
     /* shmemu_parse_csv zaps the input string */
     copy = strdup(proc.env.progress_threads);
     if (copy == NULL) {
-        shmemu_fatal("Unable to allocate memory during "
+        shmemu_fatal(MODULE ": unable to allocate memory during "
                      "progress thread check: %s",
                      strerror(errno)
                      );
@@ -157,7 +158,7 @@ progress_init(void)
 
         s = threadwrap_thread_create(&thr, start_progress, NULL);
         shmemu_assert(s == 0,
-                      "shmem: could not create progress thread (%s)",
+                      MODULE ": could not create progress thread (%s)",
                       strerror(s));
     }
 }
@@ -176,7 +177,7 @@ progress_finalize(void)
 
         s = threadwrap_thread_join(thr, NULL);
         shmemu_assert(s == 0,
-                      "shmem: could not terminate progress thread (%s)",
+                      MODULE ": could not terminate progress thread (%s)",
                       strerror(s));
 
     }
