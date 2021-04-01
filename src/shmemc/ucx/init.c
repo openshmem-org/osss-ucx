@@ -14,6 +14,7 @@
 #include "allocator/memalloc.h"
 
 #include "api.h"
+#include "module.h"
 
 #include <stdlib.h>             /* getenv */
 #include <string.h>
@@ -30,7 +31,7 @@ allocate_xworkers_table(void)
     proc.comms.xchg_wrkr_info = (worker_info_t *)
         calloc(proc.li.nranks, sizeof(*(proc.comms.xchg_wrkr_info)));
     shmemu_assert(proc.comms.xchg_wrkr_info != NULL,
-                  "shmemc/ucx: can't allocate memory for worker exchange");
+                  MODULE ": can't allocate memory for worker exchange");
 }
 
 inline static void
@@ -153,7 +154,7 @@ register_globals(void)
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &globals->mh);
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: can't map global variables memory: %s",
+                  MODULE ": can't map global variables memory: %s",
                   ucs_status_string(s));
 
     /* don't need allocator, variables already there */
@@ -166,7 +167,7 @@ deregister_globals(void)
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, globals->mh);
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: can't unmap global memory: %s",
+                  MODULE ": can't unmap global memory: %s",
                   ucs_status_string(s));
 }
 
@@ -184,7 +185,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     const unsigned long hn = (unsigned long) heapno; /* printing */
 
     shmemu_assert(proc.env.heaps.heapsize[heapno] > 0,
-                  "shmemc/ucx: cannot register empty symmetric heap #%lu",
+                  MODULE ": cannot register empty symmetric heap #%lu",
                   hn);
 
     /* now register it with UCX */
@@ -200,7 +201,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
 
     s = ucp_mem_map(proc.comms.ucx_ctxt, &mp, &mip->mh);
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: can't map memory for symmetric heap #%lu: %s",
+                  MODULE ": can't map memory for symmetric heap #%lu: %s",
                   hn, ucs_status_string(s));
 
     mip->id = hn;
@@ -217,7 +218,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
 
     s = ucp_mem_query(mip->mh, &attr);
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: can't query extent of memory for "
+                  MODULE ": can't query extent of memory for "
                   "symmetric heap #%lu: %s",
                   hn, ucs_status_string(s));
 
@@ -240,7 +241,7 @@ deregister_symmetric_heap(mem_info_t *mip)
 
     s = ucp_mem_unmap(proc.comms.ucx_ctxt, mip->mh);
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: can't unmap memory for "
+                  MODULE ": can't unmap memory for "
                   "symmetric heap #%lu: %s",
                   hn, ucs_status_string(s));
 }
@@ -257,14 +258,14 @@ opaque_rkeys_init(void)
     proc.comms.orks = (mem_opaque_t *)
         calloc(proc.comms.nregions, sizeof(mem_opaque_t));
     shmemu_assert(proc.comms.orks != NULL,
-                  "shmemc/ucx: can't allocate memory for opaque rkeys");
+                  MODULE ": can't allocate memory for opaque rkeys");
 
     for (r = 0; r < proc.comms.nregions; ++r) {
         proc.comms.orks[r].rkeys =
             (mem_opaque_rkey_t *) calloc(proc.li.nranks,
                                          sizeof(mem_opaque_rkey_t));
         shmemu_assert(proc.comms.orks[r].rkeys != NULL,
-                      "shmemc/ucx: can't allocate memory for opaque rkeys");
+                      MODULE ": can't allocate memory for opaque rkeys");
     }
 }
 
@@ -294,14 +295,14 @@ init_memory_regions(void)
     proc.comms.regions =
         (mem_region_t *) calloc(proc.comms.nregions, sizeof(mem_region_t));
     shmemu_assert(proc.comms.regions != NULL,
-                  "shmemc/ucx: can't allocate memory for memory regions");
+                  MODULE ": can't allocate memory for memory regions");
 
     /* now prep for all PEs to exchange */
     for (i = 0; i < proc.comms.nregions; ++i) {
         proc.comms.regions[i].minfo =
             (mem_info_t *) calloc(proc.li.nranks, sizeof(mem_info_t));
         shmemu_assert(proc.comms.regions[i].minfo != NULL,
-                      "shmemc/ucx: can't allocate memory region metadata");
+                      MODULE ": can't allocate memory region metadata");
     }
 
     /* to access global variables */
@@ -391,7 +392,7 @@ ucx_init_ready(void)
 
     s = ucp_config_read(NULL, NULL, &proc.comms.ucx_cfg);
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: can't read UCX config: %s",
+                  MODULE ": can't read UCX config: %s",
                   ucs_status_string(s));
 
     pm.field_mask =
@@ -420,13 +421,13 @@ ucx_init_ready(void)
 
     s = ucp_init(&pm, proc.comms.ucx_cfg, &proc.comms.ucx_ctxt);
     if (s != UCS_OK) {
-        shmemu_fatal("can't initialize UCX: %s",
+        shmemu_fatal(MODULE ": can't initialize UCX: %s",
                      ucs_status_string(s));
     }
 
     /* sanity check that we got a context */
     if (proc.comms.ucx_ctxt == NULL) {
-        shmemu_fatal("UCX was initialized, "
+        shmemu_fatal(MODULE ": UCX was initialized, "
                      "but there is no communications context");
     }
 }
