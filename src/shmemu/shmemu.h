@@ -271,6 +271,7 @@ void shmemu_deprecate(const char *fn, float version);
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
 # define SHMEMU_CHECK_INIT()
+# define SHMEMU_CHECK_NOT_NULL(_ptr)
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)
 # define SHMEMU_CHECK_HEAP_INDEX(_idx)
 # define SHMEMU_CHECK_ALLOC(_addr, _bytes)
