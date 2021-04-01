@@ -18,6 +18,8 @@ void
 shmem_info_get_version(int *major, int *minor)
 {
     SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_NOT_NULL(major);
+    SHMEMU_CHECK_NOT_NULL(minor);
 
     *major = SHMEM_MAJOR_VERSION;
     *minor = SHMEM_MINOR_VERSION;
@@ -27,6 +29,7 @@ void
 shmem_info_get_name(char *name)
 {
     SHMEMU_CHECK_INIT();
+    SHMEMU_CHECK_NOT_NULL(name);
 
     STRNCPY_SAFE(name, SHMEM_VENDOR_STRING, SHMEM_MAX_NAME_LEN);
 }
