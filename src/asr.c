@@ -45,12 +45,12 @@ test_asr_mismatch(void)
 
     n = read(fd, &inp, 1);
     if (n < 1) {
-        return;                 /* can't read file, carry on */
+        goto close_ret;         /* can't read file, carry on */
         /* NOT REACHED */
     }
 
     if (inp == '0') {
-        return;                 /* file starts with "0", ASR turned off */
+        goto close_ret;     /* file starts with "0", ASR turned off */
         /* NOT REACHED */
     }
 
@@ -60,4 +60,7 @@ test_asr_mismatch(void)
                     "(%s = %c)",
                     proc.nodename, RAND_VARIABLE, inp);
     }
+
+ close_ret:
+    (void) close(fd);
 }
