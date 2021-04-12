@@ -1,3 +1,9 @@
+/*
+ * REMOVAL NOTICE: PMIx IS GETTING RID OF PMI{1,2} SUPPORT
+ *
+ */
+
+
 /* For license: see LICENSE file at top-level */
 
 #ifdef HAVE_CONFIG_H

@@ -6,7 +6,8 @@
 m4_define([pkg_name],       [osss-ucx])
 m4_define([pkg_major],      [1])
 m4_define([pkg_minor],      [0])
-m4_define([pkg_version],    [pkg_major.pkg_minor])
+m4_define([pkg_patch],      [0])
+m4_define([pkg_version],    [pkg_major.pkg_minor.pkg_patch])
 m4_define([pkg_bugreport],  [anthony.curtis@stonybrook.edu])
 m4_define([pkg_url],        [https://github.com/openshmem-org/osss-ucx.git])
 
@@ -32,7 +33,11 @@ AC_DEFINE_UNQUOTED([CONFIG_FLAGS],
 AC_SUBST([SHMEM_MAJOR_VERSION], [spec_major_version])
 AC_SUBST([SHMEM_MINOR_VERSION], [spec_minor_version])
 AC_SUBST([SHMEM_MAX_NAME_LEN],  [spec_max_name_len])
+
 AC_SUBST([SHMEM_VENDOR_STRING], [spec_vendor_string])
+AC_SUBST([SHMEM_VENDOR_MAJOR_VERSION], [pkg_major])
+AC_SUBST([SHMEM_VENDOR_MINOR_VERSION], [pkg_minor])
+AC_SUBST([SHMEM_VENDOR_PATCH_VERSION], [pkg_patch])
 
 AC_DEFINE_UNQUOTED([SHMEM_MAJOR_VERSION],
 			[spec_major_version],

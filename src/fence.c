@@ -7,8 +7,6 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem_mutex.h"
-#include "shmem/api.h"
-#include "shmemx.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_fence = pshmem_ctx_fence

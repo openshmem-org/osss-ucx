@@ -195,6 +195,16 @@ void shmemu_deprecate(const char *fn, float version);
         }                                                               \
     } while (0)
 
+# define SHMEMU_CHECK_NOT_NULL(_ptr)                                    \
+    do {                                                                \
+        if ((_ptr) == NULL) {                                           \
+            shmemu_fatal("In %s(), parameter \"%s\" cannot be NULL",    \
+                         __func__, #_ptr                                \
+                         );                                             \
+            /* NOT REACHED */                                           \
+        }                                                               \
+    } while (0)
+
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)                                 \
     do {                                                                \
         if (shmemu_likely(ctx != SHMEM_CTX_INVALID)) {                  \
@@ -261,6 +271,7 @@ void shmemu_deprecate(const char *fn, float version);
 # define SHMEMU_CHECK_PE_ARG_RANGE(_pe, _argpos)
 # define SHMEMU_CHECK_SYMMETRIC(_addr, _argpos)
 # define SHMEMU_CHECK_INIT()
+# define SHMEMU_CHECK_NOT_NULL(_ptr)
 # define SHMEMU_CHECK_SAME_THREAD(_ctx)
 # define SHMEMU_CHECK_HEAP_INDEX(_idx)
 # define SHMEMU_CHECK_ALLOC(_addr, _bytes)

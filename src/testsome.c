@@ -5,7 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem_mutex.h"
-
+#include "module.h"
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem/api.h"
@@ -52,55 +52,55 @@
             (                                                           \
              switch (cmp) {                                             \
              case SHMEM_CMP_EQ:                                         \
-             return shmemc_ctx_test_some_eq##_size(SHMEM_CTX_DEFAULT,   \
-                                                   (int##_size##_t *) ivars, \
-                                                   nelems,              \
-                                                   indices, status,     \
-                                                   cmp_value);          \
-             break;                                                     \
+                 return shmemc_ctx_test_some_eq##_size(SHMEM_CTX_DEFAULT, \
+                                                       (int##_size##_t *) ivars, \
+                                                       nelems,          \
+                                                       indices, status, \
+                                                       cmp_value);      \
+                 break;                                                 \
              case SHMEM_CMP_NE:                                         \
-             return shmemc_ctx_test_some_ne##_size(SHMEM_CTX_DEFAULT,   \
-                                                   (int##_size##_t *) ivars, \
-                                                   nelems,              \
-                                                   indices, status,     \
-                                                   cmp_value);          \
-             break;                                                     \
+                 return shmemc_ctx_test_some_ne##_size(SHMEM_CTX_DEFAULT, \
+                                                       (int##_size##_t *) ivars, \
+                                                       nelems,          \
+                                                       indices, status, \
+                                                       cmp_value);      \
+                 break;                                                 \
              case SHMEM_CMP_GT:                                         \
-             return shmemc_ctx_test_some_gt##_size(SHMEM_CTX_DEFAULT,   \
-                                                   (int##_size##_t *) ivars, \
-                                                   nelems,              \
-                                                   indices, status,     \
-                                                   cmp_value);          \
-             break;                                                     \
+                 return shmemc_ctx_test_some_gt##_size(SHMEM_CTX_DEFAULT, \
+                                                       (int##_size##_t *) ivars, \
+                                                       nelems,          \
+                                                       indices, status, \
+                                                       cmp_value);      \
+                 break;                                                 \
              case SHMEM_CMP_LE:                                         \
-             return shmemc_ctx_test_some_le##_size(SHMEM_CTX_DEFAULT,   \
-                                                   (int##_size##_t *) ivars, \
-                                                   nelems,              \
-                                                   indices, status,     \
-                                                   cmp_value);          \
-             break;                                                     \
+                 return shmemc_ctx_test_some_le##_size(SHMEM_CTX_DEFAULT, \
+                                                       (int##_size##_t *) ivars, \
+                                                       nelems,          \
+                                                       indices, status, \
+                                                       cmp_value);      \
+                 break;                                                 \
              case SHMEM_CMP_LT:                                         \
-             return shmemc_ctx_test_some_lt##_size(SHMEM_CTX_DEFAULT,   \
-                                                   (int##_size##_t *) ivars, \
-                                                   nelems,              \
-                                                   indices, status,     \
-                                                   cmp_value);          \
-             break;                                                     \
+                 return shmemc_ctx_test_some_lt##_size(SHMEM_CTX_DEFAULT, \
+                                                       (int##_size##_t *) ivars, \
+                                                       nelems,          \
+                                                       indices, status, \
+                                                       cmp_value);      \
+                 break;                                                 \
              case SHMEM_CMP_GE:                                         \
-             return shmemc_ctx_test_some_ge##_size(SHMEM_CTX_DEFAULT,   \
-                                                   (int##_size##_t *) ivars, \
-                                                   nelems,              \
-                                                   indices, status,     \
-                                                   cmp_value);          \
-             break;                                                     \
+                 return shmemc_ctx_test_some_ge##_size(SHMEM_CTX_DEFAULT, \
+                                                       (int##_size##_t *) ivars, \
+                                                       nelems,          \
+                                                       indices, status, \
+                                                       cmp_value);      \
+                 break;                                                 \
              default:                                                   \
-             shmemu_fatal("unknown operator (code %d) in \"%s\"",       \
-                          cmp,                                          \
-                          __func__                                      \
-                          );                                            \
-             return -1;                                                 \
-             /* NOT REACHED */                                          \
-             break;                                                     \
+                 shmemu_fatal(MODULE ":unknown operator (code %d) in \"%s\"", \
+                              cmp,                                      \
+                              __func__                                  \
+                              );                                        \
+                 return -1;                                             \
+                 /* NOT REACHED */                                      \
+                 break;                                                 \
              }                                                          \
                                                                         ); \
     }

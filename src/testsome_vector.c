@@ -5,7 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem_mutex.h"
-
+#include "module.h"
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem/api.h"
@@ -94,7 +94,7 @@
                                                               cmp_values); \
                  break;                                                 \
              default:                                                   \
-                 shmemu_fatal("unknown operator (code %d) in \"%s\"",   \
+                 shmemu_fatal(MODULE ": unknown operator (code %d) in \"%s\"", \
                               cmp,                                      \
                               __func__                                  \
                               );                                        \

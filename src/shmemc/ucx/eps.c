@@ -8,6 +8,7 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "callbacks.h"
+#include "module.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +26,7 @@ shmemc_ucx_allocate_eps_table(shmemc_context_h ch)
     ch->eps = (ucp_ep_h *)
         calloc(proc.li.nranks, sizeof(*(ch->eps)));
     shmemu_assert(ch->eps != NULL,
-                  "shmemc/ucx: can't allocate memory "
+                  MODULE ": can't allocate memory "
                   "for remotely accessible endpoints: %s",
                   strerror(errno));
 }
@@ -111,7 +112,7 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 
     req = (ucs_status_ptr_t *) calloc(proc.li.nranks, sizeof(*req));
     shmemu_assert(req != NULL,
-                  "shmemc/ucx: failed to allocate memory "
+                  MODULE ": failed to allocate memory "
                   "for UCP endpoint disconnect: %s",
                   strerror(errno));
 
@@ -139,13 +140,13 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
     ch->racc = (mem_region_access_t *) calloc(proc.comms.nregions,
                                               sizeof(mem_region_access_t));
     shmemu_assert(ch->racc != NULL,
-                  "shmemc/ucx: can't allocate memory for remote access rkeys");
+                  MODULE ": can't allocate memory for remote access rkeys");
 
     for (r = 0; r < proc.comms.nregions; ++r) {
         ch->racc[r].rinfo = (mem_access_t *) calloc(proc.li.nranks,
                                                     sizeof(mem_access_t));
         shmemu_assert(ch->racc[r].rinfo != NULL,
-                      "shmemc/ucx: can't allocate remote access info "
+                      MODULE ": can't allocate remote access info "
                       "for memory region %lu: %s",
                       (unsigned long) r,
                       strerror(errno));
@@ -153,7 +154,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
 
     ch->eps = (ucp_ep_h *) calloc(proc.li.nranks, sizeof(ucp_ep_h));
     shmemu_assert(ch->eps != NULL,
-                  "shmemc/ucx: can't allocate memory for endpoints "
+                  MODULE ": can't allocate memory for endpoints "
                   "for context %lu: %s",
                   ch->id,
                   strerror(errno));
@@ -169,7 +170,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
         s = ucp_ep_create(ch->w, &epm, & ch->eps[pe]);
 
         shmemu_assert(s == UCS_OK,
-                      "shmemc/ucx: Unable to create remote endpoints "
+                      MODULE ": Unable to create remote endpoints "
                       "for PE %d: %s",
                       pe, ucs_status_string(s)
                       );
@@ -180,7 +181,7 @@ shmemc_ucx_make_eps(shmemc_context_h ch)
                                    & ch->racc[r].rinfo[pe].rkey
                                    );
             shmemu_assert(s == UCS_OK,
-                          "shmemc/ucx: can't unpack remote rkey "
+                          MODULE ": can't unpack remote rkey "
                           "for memory region %lu, PE %d: %s",
                           (unsigned long) r, pe,
                           ucs_status_string(s));

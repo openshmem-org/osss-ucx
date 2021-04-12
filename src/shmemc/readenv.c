@@ -9,6 +9,7 @@
 #include "shmemc.h"
 #include "boolean.h"
 #include "collectives/defaults.h"
+#include "module.h"
 
 #include <stdio.h>
 #include <stdlib.h>             /* getenv */
@@ -26,7 +27,7 @@
  */
 
 static bool
-option_enabled_test(char *str)
+option_enabled_test(const char *str)
 {
     if (str == NULL) {
         return false;
@@ -91,13 +92,13 @@ shmemc_env_init(void)
         (size_t *) malloc(proc.env.heaps.nheaps *
                           sizeof(*proc.env.heaps.heapsize));
     shmemu_assert(proc.env.heaps.heapsize != NULL,
-                  "shmemc: can't allocate memory for heap size declaration");
+                  MODULE ": can't allocate memory for heap size declaration");
 
     CHECK_ENV(e, SYMMETRIC_SIZE);
     r = shmemu_parse_size(e != NULL ? e : SHMEM_DEFAULT_HEAP_SIZE,
                           &proc.env.heaps.heapsize[0]);
     if (r != 0) {
-        shmemu_fatal("Couldn't work out requested heap size \"%s\"",
+        shmemu_fatal(MODULE ": couldn't work out requested heap size \"%s\"",
                      e != NULL ? e : "(null)");
     }
 
@@ -184,8 +185,9 @@ shmemc_env_init(void)
     r = shmemu_parse_size(e != NULL ? e : "1000" /* magic, empirical */,
                           &proc.env.progress_delay_ns);
     if (r != 0) {
-        shmemu_fatal("Couldn't work out requested progress delay time \"%s\"",
-                     e != NULL ? e : "(null)");
+        shmemu_fatal(MODULE ": couldn't work out requested "
+                     "progress delay time \"%s\"",
+                     e != NULL ? e : "1000");
     }
 
     proc.env.prealloc_contexts = 64; /* magic number */

@@ -21,10 +21,7 @@ void
 shmem_query_thread(int *provided)
 {
     SHMEMU_CHECK_INIT();
-
-    shmemu_assert(provided != NULL,
-                  "shmem: the argument of %s() may not be null",
-                  __func__);
+    SHMEMU_CHECK_NOT_NULL(provided);
 
     logger(LOG_INFO,
            "%s() -> %d",

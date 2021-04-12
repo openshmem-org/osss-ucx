@@ -9,6 +9,7 @@
 #include "state.h"
 #include "api.h"
 #include "callbacks.h"
+#include "module.h"
 
 #include "shmem/defs.h"
 
@@ -137,7 +138,7 @@ get_remote_key_and_addr(shmemc_context_h ch,
     const long r = lookup_region(local_addr);
 
     shmemu_assert(r >= 0,
-                  "shmemc/ucx: can't find memory region for %p",
+                  MODULE ": can't find memory region for %p",
                   (void *) local_addr);
 
     *rkey_p = lookup_rkey(ch, r, pe);
@@ -164,7 +165,7 @@ get_remote_key_and_addr(shmemc_context_h ch,
                 const ucs_status_t s = ucp_worker_##_ucp_op(ch->w);     \
                                                                         \
                 shmemu_assert(s == UCS_OK,                              \
-                              "shmemc/ucx: %s() failed (status: %s)", #_op, \
+                              MODULE ": %s() failed (status: %s)", #_op, \
                               ucs_status_string(s));                    \
             }                                                           \
         }                                                               \
@@ -258,7 +259,7 @@ helper_fetching_amo_internal(shmemc_context_h ch,
                              void *t, void *vp, size_t vs,
                              int pe,
                              void *retp,
-                             void *cb)
+                             ucp_send_callback_t cb)
 {
     ucp_rkey_h r_key;
     uint64_t r_t;
@@ -509,7 +510,7 @@ shmemc_ctx_swap(shmem_ctx_t ctx,
                             retp);
 
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: AMO swap failed (status: %s)",
+                  MODULE ": AMO swap failed (status: %s)",
                   ucs_status_string(s));
 }
 
@@ -531,7 +532,7 @@ shmemc_ctx_cswap(shmem_ctx_t ctx,
                             retp);
 
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: AMO conditional swap failed (status: %s)",
+                  MODULE ": AMO conditional swap failed (status: %s)",
                   ucs_status_string(s));
 }
 
@@ -551,7 +552,7 @@ shmemc_ctx_swap_nbi(shmem_ctx_t ctx,
                                  retp);
 
     shmemu_assert(! UCS_PTR_IS_ERR(sp),
-                  "shmemc/ucx: AMO nbi swap failed");
+                  MODULE ": AMO nbi swap failed");
 }
 
 void
@@ -572,7 +573,7 @@ shmemc_ctx_cswap_nbi(shmem_ctx_t ctx,
                                  retp);
 
     shmemu_assert(! UCS_PTR_IS_ERR(sp),
-                  "shmemc/ucx: AMO nbi conditional swap failed");
+                  MODULE ": AMO nbi conditional swap failed");
 }
 
 /*
@@ -608,7 +609,7 @@ shmemc_ctx_cswap_nbi(shmem_ctx_t ctx,
                                                                         \
         /* value came back? */                                          \
         shmemu_assert(s == UCS_OK,                                      \
-                      "shmemc/ucx: AMO fetch op \"%s\" failed (status: %s)", \
+                      MODULE ": AMO fetch op \"%s\" failed (status: %s)", \
                       #_opname, ucs_status_string(s));                  \
     }
 
@@ -631,7 +632,7 @@ HELPER_BITWISE_FETCH_ATOMIC(XOR, xor)
                                     retp);                              \
                                                                         \
         shmemu_assert(! UCS_PTR_IS_ERR(sp),                             \
-                      "shmemc/ucx: AMO fetch nbi op \"%s\" failed",     \
+                      MODULE ": AMO fetch nbi op \"%s\" failed",        \
                       #_opname);                                        \
     }
 
@@ -652,7 +653,7 @@ HELPER_BITWISE_FETCH_ATOMIC_NBI(XOR, xor)
                               pe);                                      \
                                                                         \
         shmemu_assert(s == UCS_OK,                                      \
-                      "shmemc/ucx: AMO post op \"%s\" failed (status: %s)", \
+                      MODULE ": AMO post op \"%s\" failed (status: %s)", \
                       #_opname, ucs_status_string(s));                  \
     }
 
@@ -684,7 +685,7 @@ HELPER_BITWISE_ATOMIC(XOR, xor)
             s = ucp_get(ep, &rval_orig, sizeof(rval_orig),              \
                         r_t, r_key);                                    \
             shmemu_assert(s == UCS_OK,                                  \
-                          "shmemc/ucx: AMO fetch failed in CAS (status: %s)", \
+                          MODULE ": AMO fetch failed in CAS (status: %s)", \
                           ucs_status_string(s));                        \
             rval = (rval_orig) _op vcomp;                               \
                                                                         \
@@ -855,7 +856,7 @@ shmemc_ctx_put(shmem_ctx_t ctx,
 #endif /* HAVE_UCP_PUT_NBX */
 
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: put failed (status: %s)",
+                  MODULE ": put failed (status: %s)",
                   ucs_status_string(s));
 }
 
@@ -894,7 +895,7 @@ shmemc_ctx_get(shmem_ctx_t ctx,
 #endif /* HAVE_UCP_GET_NB */
 
     shmemu_assert(s == UCS_OK,
-                  "shmemc/ucx: get failed (status: %s)",
+                  MODULE ": get failed (status: %s)",
                   ucs_status_string(s));
 }
 
@@ -923,7 +924,7 @@ shmemc_ctx_put_nbi(shmem_ctx_t ctx,
 
     s = ucp_put_nbi(ep, src, nbytes, r_dest, r_key);
     shmemu_assert(s == UCS_OK || s == UCS_INPROGRESS,
-                  "shmemc/ucx: non-blocking put failed");
+                  MODULE ": non-blocking put failed");
 }
 
 void
@@ -942,7 +943,7 @@ shmemc_ctx_get_nbi(shmem_ctx_t ctx,
 
     s = ucp_get_nbi(ep, dest, nbytes, r_src, r_key);
     shmemu_assert(s == UCS_OK || s == UCS_INPROGRESS,
-                  "shmemc/ucx: non-blocking get failed");
+                  MODULE ": non-blocking get failed");
 }
 
 /*
@@ -973,7 +974,7 @@ shmemc_ctx_put_signal(shmem_ctx_t ctx,
         shmemc_ctx_add(ctx, sig_addr, &signal, sizeof(signal), pe);
         break;
     default:
-        shmemu_fatal("shmemc: unknown signal operation code %d",
+        shmemu_fatal(MODULE ": unknown signal operation code %d",
                      sig_op);
         /* NOT REACHED */
         break;
@@ -1008,7 +1009,7 @@ shmemc_ctx_put_signal_nbi(shmem_ctx_t ctx,
         shmemc_ctx_add(ctx, sig_addr, &signal, sizeof(signal), pe);
         break;
     default:
-        shmemu_fatal("shmemc: unknown signal operation code %d",
+        shmemu_fatal(MODULE ": unknown signal operation code %d",
                      sig_op);
         /* NOT REACHED */
         break;
