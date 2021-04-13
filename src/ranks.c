@@ -22,7 +22,7 @@ shmem_my_pe(void)
 
     SHMEMU_CHECK_INIT();
 
-    my = shmemc_my_pe();
+    my = shmem_team_my_pe(SHMEM_TEAM_WORLD);
 
     logger(LOG_RANKS, "%s() -> %d", __func__, my);
 
@@ -36,7 +36,7 @@ shmem_n_pes(void)
 
     SHMEMU_CHECK_INIT();
 
-    n = shmemc_n_pes();
+    n = shmemc_team_n_pes(SHMEM_TEAM_WORLD);
 
     logger(LOG_RANKS, "%s() -> %d", __func__, n);
 
