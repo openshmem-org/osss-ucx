@@ -11,6 +11,7 @@
 #include "threading.h"
 #include "shmem/teams.h"
 #include "../../klib/khash.h"      /* TODO */
+#include "shmem/defs.h"
 
 #include <sys/types.h>
 #include <ucp/api/ucp.h>
@@ -72,7 +73,7 @@ typedef struct mem_region {
 typedef struct shmemc_context *shmemc_context_h;
 
 /*
- * PEs can belong to teams
+ * PEs belong to teams
  */
 typedef struct shmemc_team *shmemc_team_h;
 
@@ -93,6 +94,10 @@ typedef struct shmemc_team {
     const char *name;           /**< if predef, who we are (else NULL) */
     shmemc_team_h parent;       /**< parent team we split from,
                                    NULL if predef */
+
+    /* now need to add pSync arrays for collectives */
+#define SHMEMC_NUM_PSYNCS 2
+    long *pSyncs[SHMEMC_NUM_PSYNCS];
 } shmemc_team_t;
 
 

@@ -8,6 +8,8 @@
 #include "shmemc.h"
 #include "shmem/teams.h"
 #include "ucx/api.h"
+#include "../allocator/memalloc.h"
+#include "module.h"
 
 #include <stdlib.h>
 
@@ -63,6 +65,40 @@ dump_team(shmemc_team_h th)
 }
 #endif
 
+static void
+initialize_psync_buffers(shmemc_team_h th)
+{
+    unsigned nsync;
+
+    for (nsync = 0; nsync < SHMEMC_NUM_PSYNCS; ++nsync) {
+        unsigned i;
+
+        const size_t nbytes = SHMEM_BARRIER_SYNC_SIZE * sizeof(*(th->pSyncs));
+        th->pSyncs[nsync] = (long *) shmema_malloc(nbytes);
+
+        shmemu_assert(th->pSyncs[nsync] != NULL,
+                      MODULE ": can't allocate sync memory "
+                      "#%u in %s team (%p)",
+                      nsync,
+                      th->parent == NULL ? th->name : "created",
+                      th);
+
+        for (i = 0; i < SHMEM_BARRIER_SYNC_SIZE; ++i) {
+            th->pSyncs[nsync][i] = SHMEM_SYNC_VALUE;
+        }
+    }
+}
+
+static void
+finalize_psync_buffers(shmemc_team_h th)
+{
+    unsigned nsync;
+
+    for (nsync = 0; nsync < SHMEMC_NUM_PSYNCS; ++nsync) {
+        shmema_free(th->pSyncs[nsync]);
+    }
+}
+
 /*
  * common setup
  */
@@ -80,6 +116,8 @@ initialize_common_team(shmemc_team_h th, const char *name, int cfg_nctxts)
 
     th->fwd = kh_init(map);
     th->rev = kh_init(map);
+
+    initialize_psync_buffers(th);
 }
 
 /*
@@ -91,15 +129,17 @@ static void
 initialize_team_world(void)
 {
     int i;
-    khiter_t k;
     int absent;
 
     initialize_common_team(world, "world", proc.env.prealloc_contexts);
 
+    /* populate from launch info */
     world->rank = proc.li.rank;
     world->nranks = proc.li.nranks;
 
     for (i = 0; i < proc.li.nranks; ++i) {
+        khiter_t k;
+
         k = kh_put(map, world->fwd, i, &absent);
         kh_val(world->fwd, k) = i;
         k = kh_put(map, world->rev, i, &absent);
@@ -111,7 +151,6 @@ static void
 initialize_team_shared(void)
 {
     int i;
-    khiter_t k;
     int absent;
 
     initialize_common_team(shared, "shared",
@@ -121,6 +160,8 @@ initialize_team_shared(void)
     shared->nranks = proc.li.npeers;
 
     for (i = 0; i < proc.li.npeers; ++i) {
+        khiter_t k;
+
         if (proc.li.rank == proc.li.peers[i]) {
             shared->rank = i;
         }
@@ -133,12 +174,14 @@ initialize_team_shared(void)
 }
 
 /*
- * clean up world/shared allocated resources at end
+ * clean up team resources at end
  */
 
 static void
 finalize_team(shmemc_team_h th)
 {
+    finalize_psync_buffers(th);
+
     shmemc_team_contexts_destroy(th);
 }
 
@@ -226,7 +269,6 @@ shmemc_team_split_strided(shmemc_team_h parh,
     int i;                      /* new team PE # */
     int walk;                   /* iterate over parent PEs */
     shmemc_team_h newt;
-    khint_t k;
     int absent;
     int nc;
 
@@ -246,6 +288,8 @@ shmemc_team_split_strided(shmemc_team_h parh,
 
     walk = start;
     for (i = 0; i < size; ++i) {
+        khint_t k;
+
         k = kh_get(map, parh->fwd, walk);
         const int up = kh_val(parh->fwd, k);
 
