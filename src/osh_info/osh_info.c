@@ -25,22 +25,24 @@ output_help(void)
             "Usage: %s [options]\n\n",
             progname);
     fprintf(stderr,
-            "    -V   | --version    only output OpenSHMEM"
-            " package version info\n");
+            "    -V   | --version"
+            "only output OpenSHMEM package version info\n");
     fprintf(stderr,
-            "    -p S | --prefix=S   string to insert before output lines"
+            "    -p S | --prefix=S"
+            "string to insert before output lines"
             " (default \"%s\")\n", prefix);
     fprintf(stderr,
-            "    -h   | --help       show this help message\n");
+            "    -h   | --help"
+            "show this help message\n");
     fprintf(stderr,
             "\n");
 }
 
 static struct option opts[] = {
-    { "version", no_argument, NULL, 'V' },
-    { "help",    no_argument, NULL, 'h' },
-    { "prefix",  no_argument, NULL, 'p' },
-    { NULL,      no_argument, NULL, 0   }
+    { "version", no_argument,       NULL, 'V' },
+    { "help",    no_argument,       NULL, 'h' },
+    { "prefix",  required_argument, NULL, 'p' },
+    { NULL,      no_argument,       NULL, 0   }
 };
 
 
