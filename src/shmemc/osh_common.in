@@ -51,7 +51,7 @@ do
     esac
 done
 
-pthread_cflags="${PTHREAD_CFLAGS-@PTHREAD_CFLAGS@}"
-pthread_libs="${PTHREAD_LIBS-@PTHREAD_LIBS@}"
+pthreads_cflags="${OSH_PTHREADS_CFLAGS-@OSH_PTHREADS_CFLAGS@}"
+pthreads_libs="${OSH_PTHREADS_LIBS-@OSH_PTHREADS_LIBS@}"
 
-$compiler -I$shmem_include $pthread_cflags "$@" $libs_stanza $pthread_libs
+$compiler -I$shmem_include $pthreads_cflags "$@" $libs_stanza $pthreads_libs
