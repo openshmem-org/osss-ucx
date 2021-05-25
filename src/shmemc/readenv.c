@@ -48,12 +48,17 @@ option_enabled_test(const char *str)
  * read & save all our environment variables
  */
 
-#define CHECK_ENV(_e, _name)                        \
-    do {                                            \
-        (_e) = getenv("SHMEM_" #_name);             \
-        if ((_e) == NULL) {                         \
-            (_e) = getenv("SMA_" #_name);           \
-        }                                           \
+#define CHECK_ENV(_e, _name)                    \
+    do {                                        \
+        (_e) = getenv("SHMEM_" #_name);         \
+    } while (0)
+
+#define CHECK_ENV_WITH_DEPRECATION(_e, _name)   \
+    do {                                        \
+        CHECK_ENV(_e, _name);                   \
+        if ((_e) == NULL) {                     \
+            (_e) = getenv("SMA_" #_name);       \
+        }                                       \
     } while (0)
 
 void
@@ -70,15 +75,15 @@ shmemc_env_init(void)
     proc.env.print_info    = false;
     proc.env.debug         = false;
 
-    CHECK_ENV(e, VERSION);
+    CHECK_ENV_WITH_DEPRECATION(e, VERSION);
     if (e != NULL) {
         proc.env.print_version = option_enabled_test(e);
     }
-    CHECK_ENV(e, INFO);
+    CHECK_ENV_WITH_DEPRECATION(e, INFO);
     if (e != NULL) {
         proc.env.print_info = option_enabled_test(e);
     }
-    CHECK_ENV(e, DEBUG);
+    CHECK_ENV_WITH_DEPRECATION(e, DEBUG);
     if (e != NULL) {
         proc.env.debug = option_enabled_test(e);
     }
@@ -94,7 +99,7 @@ shmemc_env_init(void)
     shmemu_assert(proc.env.heaps.heapsize != NULL,
                   MODULE ": can't allocate memory for heap size declaration");
 
-    CHECK_ENV(e, SYMMETRIC_SIZE);
+    CHECK_ENV_WITH_DEPRECATION(e, SYMMETRIC_SIZE);
     r = shmemu_parse_size(e != NULL ? e : SHMEM_DEFAULT_HEAP_SIZE,
                           &proc.env.heaps.heapsize[0]);
     if (r != 0) {
