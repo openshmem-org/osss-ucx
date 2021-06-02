@@ -9,6 +9,7 @@
 #include "state.h"
 #include "api.h"
 #include "callbacks.h"
+#include "memfence.h"
 #include "module.h"
 
 #include "shmem/defs.h"
@@ -146,57 +147,6 @@ get_remote_key_and_addr(shmemc_context_h ch,
 }
 
 /*
- * -- ordering -----------------------------------------------------------
- */
-
-/*
- * fence and quiet only do something on storable contexts, but
- * currently, progress is on the default context
- */
-
-#define SHMEMC_FENCE_QUIET(_op, _ucp_op)                                \
-    void                                                                \
-    shmemc_ctx_##_op(shmem_ctx_t ctx)                                   \
-    {                                                                   \
-        if (ctx != SHMEM_CTX_INVALID) {                                 \
-            shmemc_context_h ch = (shmemc_context_h) ctx;               \
-                                                                        \
-            if (! ch->attr.nostore) {                                   \
-                const ucs_status_t s = ucp_worker_##_ucp_op(ch->w);     \
-                                                                        \
-                shmemu_assert(s == UCS_OK,                              \
-                              MODULE ": %s() failed (status: %s)", #_op, \
-                              ucs_status_string(s));                    \
-            }                                                           \
-        }                                                               \
-    }
-
-SHMEMC_FENCE_QUIET(fence, fence)
-SHMEMC_FENCE_QUIET(quiet, flush)
-
-#ifdef ENABLE_EXPERIMENTAL
-
-/*
- * This should be correct, but not optimal.  Gets us going.
- */
-
-int
-shmemc_ctx_fence_test(shmem_ctx_t ctx)
-{
-    shmemc_ctx_fence(ctx);
-    return 1;
-}
-
-int
-shmemc_ctx_quiet_test(shmem_ctx_t ctx)
-{
-    shmemc_ctx_quiet(ctx);
-    return 1;
-}
-
-#endif  /* ENABLE_EXPERIMENTAL */
-
-/*
  * wait for some non-blocking request to complete on a worker
  *
  * TODO: possible consolidation with EP disconnect code
@@ -231,6 +181,83 @@ check_wait_for_request(shmemc_context_h ch, void *req)
         return s;
     }
 }
+
+/*
+ * -- ordering -----------------------------------------------------------
+ */
+
+/*
+ * fence and quiet only do something on storable contexts, but
+ * currently, progress is on the default context
+ */
+
+void
+shmemc_ctx_fence(shmem_ctx_t ctx)
+{
+    if (ctx != SHMEM_CTX_INVALID) {
+        shmemc_context_h ch = (shmemc_context_h) ctx;
+
+        if (! ch->attr.nostore) {
+            const ucs_status_t s = ucp_worker_fence(ch->w);
+
+            shmemu_assert(s == UCS_OK,
+                          MODULE ": %s() failed (status: %s)",
+                          __func__, ucs_status_string(s));
+        }
+    }
+}
+
+void
+shmemc_ctx_quiet(shmem_ctx_t ctx)
+{
+    if (ctx != SHMEM_CTX_INVALID) {
+        shmemc_context_h ch = (shmemc_context_h) ctx;
+
+        if (! ch->attr.nostore) {
+            ucs_status_t s;
+
+#ifdef HAVE_UCP_WORKER_FLUSH_NBX
+            const ucp_request_param_t prm = {
+                .op_attr_mask = UCP_OP_ATTR_FIELD_CALLBACK,
+                .cb.send = noop_callbackx
+            };
+            const ucs_status_ptr_t sp = ucp_worker_flush_nbx(ch->w, &prm);
+
+            s = check_wait_for_request(ch, sp);
+#else
+            s = ucp_worker_flush(ch->w);
+#endif  /* HAVE_UCP_WORKER_FLUSH_NBX */
+
+            /* LOAD_STORE_FENCE(); */
+
+            shmemu_assert(s == UCS_OK,
+                          MODULE ": %s() failed (status: %s)",
+                          __func__, ucs_status_string(s));
+        }
+    }
+}
+
+#ifdef ENABLE_EXPERIMENTAL
+
+/*
+ * This should be correct, but not optimal.  Gets us going.
+ */
+
+int
+shmemc_ctx_fence_test(shmem_ctx_t ctx)
+{
+    shmemc_ctx_fence(ctx);
+    return 1;
+}
+
+int
+shmemc_ctx_quiet_test(shmem_ctx_t ctx)
+{
+    shmemc_ctx_quiet(ctx);
+    return 1;
+}
+
+#endif  /* ENABLE_EXPERIMENTAL */
 
 static ucs_status_t
 helper_posted_amo(shmemc_context_h ch,

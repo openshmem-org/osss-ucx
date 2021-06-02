@@ -149,6 +149,13 @@ AS_IF([test "x$ucx_happy" = "xno"], [
                 ],
                 [AC_MSG_NOTICE([UCX: ucp_get_nbx NOT found])
                 ])
+            AC_COMPILE_IFELSE(
+                [AC_LANG_PROGRAM([[#include <ucp/api/ucp.h>]], [ucp_worker_flush_nbx])],
+		[AC_MSG_NOTICE([UCX: ucp_worker_flush_nbx found])
+               AC_DEFINE([HAVE_UCP_WORKER_FLUSH_NBX], [1], [UCX has non-blocking extended ucp_worker_flush])
+                ],
+                [AC_MSG_NOTICE([UCX: ucp_worker_flush_nbx NOT found])
+                ])
             AC_LANG_POP([C])
             AC_SUBST([UCX_LIBS])
 
