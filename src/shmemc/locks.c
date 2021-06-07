@@ -73,7 +73,9 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
 
         node->d.locked = 1;
 
-        shmemc_put(&(node->d.next), &(me), sizeof(me), prev);
+        shmemc_set(&(node->d.next), sizeof(node->d.ext),
+                   &me, sizeof(me),
+                   prev);
 
         /* sit here until unlocked */
         shmemc_wait_until_eq16(&(node->d.locked), 0);
@@ -107,8 +109,9 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
         shmemc_wait_until_ne16(&(node->d.next), SHMEM_LOCK_FREE);
     }
 
-    shmemc_put(&(node->d.locked), &zero, sizeof(zero), node->d.next);
-    // fprintf(stderr, "DEBUG(%d): leave %s\n", proc.rank, __func__);
+    shmemc_set(&(node->d.locked), sizeof(node->d.next),
+                &zero, sizeof(zero),
+                node->d.next);
 }
 
 inline static int

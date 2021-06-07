@@ -780,6 +780,13 @@ SHMEMC_DECL_COLLECT_SIZE(64)
 #define shmemc_get_nbi(...)                             \
     shmemc_ctx_get_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
+#define shmemc_set(...)                             \
+    shmemc_ctx_set(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch(...)                             \
+    shmemc_ctx_fetch(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+#define shmemc_fetch_nbi(...)                             \
+    shmemc_ctx_fetch_nbi(SHMEM_CTX_DEFAULT, __VA_ARGS__)
+
 #define shmemc_swap(...)                              \
     shmemc_ctx_swap(SHMEM_CTX_DEFAULT, __VA_ARGS__)
 
