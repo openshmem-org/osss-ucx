@@ -86,9 +86,7 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
 
         node->d.locked = SHMEM_LOCK_SET;
 
-        shmem_short_p(&(node->d.next),
-                    me,
-                    prev);
+        shmem_short_p(&(node->d.next), me, prev);
         shmem_quiet();
 
         /* sit here until unlocked */
@@ -104,7 +102,7 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
 static void
 clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
-    int me = shmem_my_pe();
+    const int me = shmem_my_pe();
 
     if (node->d.next == SHMEM_LOCK_SET) {
         shmem_lock_t t;
