@@ -15,6 +15,7 @@
 #include "shmemc.h"
 #include "shmem.h"
 
+#include <stdint.h>
 #include <sys/types.h>
 
 /*
