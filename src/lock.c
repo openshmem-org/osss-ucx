@@ -35,13 +35,28 @@ enum shmem_lock_state {
 /*
  * spread lock ownership around PEs
  */
+
+#define SHIFT 3
+
 inline static int
 lock_owner(void *addr)
 {
-    const uintptr_t la = (uintptr_t) addr;
-    const int pe = (la >> 3) % shmem_n_pes();
+    /*
+     * can only agree on distributed owners if we all agree on aligned
+     * addresses
+     */
+#ifdef ENABLE_ALIGNED_ADDRESSES
+    const uintptr_t la = ( (uintptr_t) addr ) >> SHIFT;
+    const int owner = la % shmem_n_pes();
 
-    return pe;
+    logger(LOG_LOCKS, "addr = %ld, owner = %d", la, owner);
+#else
+    const int owner = shmem_n_pes() - 1;
+
+    NO_WARN_UNUSED(addr);
+#endif /* ENABLE_ALIGNED_ADDRESSES */
+
+    return owner;
 }
 
 static void
