@@ -227,14 +227,6 @@ void shmemc_ctx_fetch_nbi(shmem_ctx_t ctx,
                           void *valp);
 
 /*
- * locks
- */
-
-void shmemc_set_lock(long *lp);
-void shmemc_clear_lock(long *lp);
-int  shmemc_test_lock(long *lp);
-
-/*
  * routine per-type and test to avoid branching
  */
 
