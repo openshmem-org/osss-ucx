@@ -1,5 +1,12 @@
 /* For license: see LICENSE file at top-level */
 
+/*
+ * Rewrite of an original MCS lock code by
+ *
+ *    Copyright (c) 1996-2002 by Quadrics Supercomputers World Ltd.
+ *    Copyright (c) 2003-2005 by Quadrics Ltd.
+ */
+
 #ifdef HAVE_CONFIG_H
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
@@ -9,8 +16,6 @@
 #include "shmem.h"
 
 #include <sys/types.h>
-
-#define MEMBAR __sync_synchronize()
 
 /*
  * this overlays an opaque blob we can move around with AMOs, and the
