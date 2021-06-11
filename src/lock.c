@@ -127,8 +127,6 @@ clear_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
                    shmem_lock_t *cmp)
 {
     if (node->d.next < 0) {
-        shmem_lock_t t;
-
         /* request ownership */
         cmp->d.locked = 1;
         cmp->d.next = me;
@@ -146,6 +144,8 @@ clear_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
                    int me,
                    shmem_lock_t *cmp)
 {
+    NO_WARN_UNUSED(lock);
+
     if (node->d.next < 0) {
         /* any more chainers? */
         if (cmp->d.next == me) {
@@ -169,6 +169,8 @@ test_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
                   int me,
                   shmem_lock_t *cmp)
 {
+    NO_WARN_UNUSED(node);
+
     /* request ownership */
     cmp->d.locked = 1;
     cmp->d.next = me;
@@ -184,19 +186,20 @@ test_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
  * test lock
  */
 
-inline static int
+inline static void
 test_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
                   int me,
-                  shmem_lock_t *cmp)
+                  shmem_lock_t *cmp,
+                  int *rc)
 {
     if (cmp->blob == 0) {
         /* grabbed unset lock, now go on to set the rest of the lock */
         set_lock_execute(node, lock, me, cmp);
-        return 0;
+        *rc = 0;
     }
     else {
         /* nope, go around again */
-        return 1;
+        *rc = 1;
     }
 }
 
@@ -229,9 +232,12 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
     const int me = shmem_my_pe();
     shmem_lock_t t;
+    int rc;
 
     test_lock_request(node, lock, me, &t);
-    return test_lock_execute(node, lock, me, &t);
+    test_lock_execute(node, lock, me, &t, &rc);
+
+    return rc;
 }
 
 /**
