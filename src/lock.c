@@ -208,30 +208,27 @@ test_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
  * internal blocking calls
  */
 
-static void
-set_lock(shmem_lock_t *node, shmem_lock_t *lock)
+inline static void
+set_lock(shmem_lock_t *node, shmem_lock_t *lock, int me)
 {
-    const int me = shmem_my_pe();
     shmem_lock_t t;
 
     set_lock_request(node, lock, me, &t);
     set_lock_execute(node, lock, me, &t);
 }
 
-static void
-clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
+inline static void
+clear_lock(shmem_lock_t *node, shmem_lock_t *lock, int me)
 {
-    const int me = shmem_my_pe();
     shmem_lock_t t;
 
     clear_lock_request(node, lock, me, &t);
     clear_lock_execute(node, lock, me, &t);
 }
 
-static int
-test_lock(shmem_lock_t *node, shmem_lock_t *lock)
+inline static int
+test_lock(shmem_lock_t *node, shmem_lock_t *lock, int me)
 {
-    const int me = shmem_my_pe();
     shmem_lock_t t;
     int rc;
 
@@ -272,7 +269,7 @@ shmem_set_lock(long *lp)
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
 
-    set_lock(node, lock);
+    set_lock(node, lock, shmem_my_pe());
 }
 
 void
@@ -286,7 +283,7 @@ shmem_clear_lock(long *lp)
     /* required to flush comms before clearing lock */
     shmem_quiet();
 
-    clear_lock(node, lock);
+    clear_lock(node, lock, shmem_my_pe());
 }
 
 int
@@ -297,5 +294,5 @@ shmem_test_lock(long *lp)
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
 
-    return test_lock(node, lock);
+    return test_lock(node, lock, shmem_my_pe());
 }
