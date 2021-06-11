@@ -33,11 +33,6 @@ typedef union shmem_lock {
     int32_t blob;               /* for AMOs & owner transfer */
 } shmem_lock_t;
 
-enum shmem_lock_state {
-    SHMEM_LOCK_RESET = 0,
-    SHMEM_LOCK_SET
-};
-
 /*
  * spread lock ownership around PEs
  */
@@ -53,7 +48,7 @@ lock_owner(void *addr)
     const uintptr_t la = ( (uintptr_t) addr ) >> 3;
     const int owner = la % shmem_n_pes();
 
-    logger(LOG_LOCKS, "addr = %ld, owner = %d", la, owner);
+    // logger(LOG_LOCKS, "addr = %ld, owner = %d", la, owner);
 #else
     const int owner = shmem_n_pes() - 1;
 
@@ -63,41 +58,50 @@ lock_owner(void *addr)
     return owner;
 }
 
-static void
-set_lock(shmem_lock_t *node, shmem_lock_t *lock)
+static inline void
+set_lock_phase1(shmem_lock_t *node, shmem_lock_t *lock,
+                int me,
+                shmem_lock_t *cmp)
 {
-    shmem_lock_t t;
-    int locked, prev;
-    const int me = shmem_my_pe();
-
-    node->d.next = SHMEM_LOCK_RESET;
-
     /* request for ownership */
-    t.d.locked = SHMEM_LOCK_SET;
-    t.d.next = me;
+    cmp->d.locked = 1;
+    cmp->d.next = me;
 
-    t.blob = shmem_int_atomic_swap(&(lock->blob),
-                                   t.blob,
-                                   lock_owner(lock));
+    cmp->blob = shmem_int_atomic_swap(&(lock->blob),
+                                      cmp->blob,
+                                      lock_owner(lock));
+}
 
-    locked = t.d.locked;
-    prev = t.d.next;
+static inline void
+set_lock_phase2(shmem_lock_t *node, shmem_lock_t *lock,
+                int me,
+                shmem_lock_t *cmp)
+{
+    /* tail */
+    node->d.next = -1;
 
-    if (locked) {
+    if (cmp->d.locked) {
+        node->d.locked = 1;
 
-        node->d.locked = SHMEM_LOCK_SET;
-
-        shmem_short_p(&(node->d.next), me, prev);
+        /* chain me on */
+        shmem_short_p(&(node->d.next), me, cmp->d.next);
         shmem_quiet();
 
         /* sit here until unlocked */
-        do {
+        while (node->d.locked) {
             shmemc_progress();
-            if (node->d.locked == SHMEM_LOCK_RESET) {
-                break;
-            }
-        } while (1);
+        }
     }
+}
+
+static void
+set_lock(shmem_lock_t *node, shmem_lock_t *lock)
+{
+    const int me = shmem_my_pe();
+    shmem_lock_t t;
+
+    set_lock_phase1(node, lock, me, &t);
+    set_lock_phase2(node, lock, me, &t);
 }
 
 static void
@@ -105,52 +109,56 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
     const int me = shmem_my_pe();
 
-    if (node->d.next == SHMEM_LOCK_SET) {
+    if (node->d.next < 0) {
         shmem_lock_t t;
 
-        t.d.locked = SHMEM_LOCK_SET;
+        t.d.locked = 1;
         t.d.next = me;
 
         t.blob = shmem_int_atomic_compare_swap(&(lock->blob),
                                                t.blob,
-                                               SHMEM_LOCK_RESET,
+                                               0,
                                                lock_owner(lock));
 
+        /* any more chainers? */
         if (t.d.next == me) {
             return;
             /* NOT REACHED */
         }
 
-        /* wait for a chainer PE to appear */
-        do {
+        /* otherwise, wait for a chainer PE to appear */
+        while (node->d.next < 0) {
             shmemc_progress();
-            if (node->d.next == SHMEM_LOCK_SET) {
-                break;
-            }
-        } while (1);
+        }
     }
 
-    shmem_short_p(&(node->d.locked), SHMEM_LOCK_RESET, node->d.next);
+    /* tell next pe about release */
+    shmem_short_p(&(node->d.locked), 0, node->d.next);
     shmem_quiet();
 }
 
 static int
 test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 {
+    const int me = shmem_my_pe();
     shmem_lock_t t;
-    int ret;
 
-    t.blob = shmem_int_g(&(lock->blob), lock_owner(lock));
+    /* request ownership */
+    t.d.locked = 1;
+    t.d.next = me;
 
-    if (t.blob == SHMEM_LOCK_RESET) {
-        set_lock(node, lock);
-        ret = 0;
+    t.blob = shmem_int_atomic_compare_swap(&(lock->blob),
+                                           0,
+                                           t.blob,
+                                           lock_owner(lock));
+
+    if (t.blob == 0) {
+        set_lock_phase2(node, lock, me, &t);
+        return 0;
     }
     else {
-        ret = 1;
+        return 1;
     }
-
-    return ret;
 }
 
 /**
@@ -166,7 +174,7 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 #define shmem_clear_lock pshmem_clear_lock
 #endif /* ENABLE_PSHMEM */
 
-#define UNPACK                                          \
+#define UNPACK()                                        \
     shmem_lock_t *base = (shmem_lock_t *) lp;           \
     shmem_lock_t *node = base + 1;                      \
     shmem_lock_t *lock = base + 0
@@ -174,7 +182,7 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 void
 shmem_set_lock(long *lp)
 {
-    UNPACK;
+    UNPACK();
 
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
@@ -185,7 +193,7 @@ shmem_set_lock(long *lp)
 void
 shmem_clear_lock(long *lp)
 {
-    UNPACK;
+    UNPACK();
 
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
@@ -197,7 +205,7 @@ shmem_clear_lock(long *lp)
 int
 shmem_test_lock(long *lp)
 {
-    UNPACK;
+    UNPACK();
 
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
