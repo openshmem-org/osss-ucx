@@ -14,6 +14,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem.h"
+#include <boolean.h>
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -84,7 +85,7 @@ set_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
     NO_WARN_UNUSED(node);
 
     /* request ownership */
-    cmp->d.locked = 1;
+    cmp->d.locked = true;
     cmp->d.next = me;
 
     /* push my claim into the owner */
@@ -104,7 +105,7 @@ set_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
     node->d.next = -1;
 
     if (cmp->d.locked) {
-        node->d.locked = 1;
+        node->d.locked = true;
 
         /* chain me on */
         shmem_short_p(&(node->d.next), me, cmp->d.next);
@@ -134,7 +135,7 @@ clear_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
         /* onwer can reset */
         cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
                                                   cmp->blob,
-                                                  0,
+                                                  false,
                                                   lock_owner(lock));
     }
 }
@@ -160,7 +161,7 @@ clear_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
     }
 
     /* tell next pe about release */
-    shmem_short_p(&(node->d.locked), 0, node->d.next);
+    shmem_short_p(&(node->d.locked), false, node->d.next);
     shmem_quiet();
 }
 
@@ -172,12 +173,12 @@ test_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
     NO_WARN_UNUSED(node);
 
     /* request ownership */
-    cmp->d.locked = 1;
+    cmp->d.locked = true;
     cmp->d.next = me;
 
     /* if owner is unset, grab the lock */
     cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                              0,
+                                              false,
                                               cmp->blob,
                                               lock_owner(lock));
 }
