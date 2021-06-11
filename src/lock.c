@@ -132,7 +132,7 @@ clear_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
         cmp->d.locked = 1;
         cmp->d.next = me;
 
-        /* onwer can reset */
+        /* owner can reset */
         cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
                                                   cmp->blob,
                                                   false,
