@@ -58,25 +58,35 @@ lock_owner(void *addr)
     return owner;
 }
 
+/*
+ * split the lock claim into request + execute.  "cmp" contains the
+ * claim and connects the 2 phases
+ */
+
 static inline void
-set_lock_phase1(shmem_lock_t *node, shmem_lock_t *lock,
-                int me,
-                shmem_lock_t *cmp)
+set_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
+                 int me,
+                 shmem_lock_t *cmp)
 {
-    /* request for ownership */
+    NO_WARN_UNUSED(node);
+
+    /* request ownership */
     cmp->d.locked = 1;
     cmp->d.next = me;
 
+    /* push my claim into the owner */
     cmp->blob = shmem_int_atomic_swap(&(lock->blob),
                                       cmp->blob,
                                       lock_owner(lock));
 }
 
 static inline void
-set_lock_phase2(shmem_lock_t *node, shmem_lock_t *lock,
-                int me,
-                shmem_lock_t *cmp)
+set_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
+                 int me,
+                 shmem_lock_t *cmp)
 {
+    NO_WARN_UNUSED(lock);
+
     /* tail */
     node->d.next = -1;
 
@@ -100,8 +110,8 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock)
     const int me = shmem_my_pe();
     shmem_lock_t t;
 
-    set_lock_phase1(node, lock, me, &t);
-    set_lock_phase2(node, lock, me, &t);
+    set_lock_request(node, lock, me, &t);
+    set_lock_execute(node, lock, me, &t);
 }
 
 static void
@@ -112,9 +122,11 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
     if (node->d.next < 0) {
         shmem_lock_t t;
 
+        /* request ownership */
         t.d.locked = 1;
         t.d.next = me;
 
+        /* onwer can reset */
         t.blob = shmem_int_atomic_compare_swap(&(lock->blob),
                                                t.blob,
                                                0,
@@ -147,16 +159,19 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
     t.d.locked = 1;
     t.d.next = me;
 
+    /* if owner is unset, grab the lock */
     t.blob = shmem_int_atomic_compare_swap(&(lock->blob),
                                            0,
                                            t.blob,
                                            lock_owner(lock));
 
     if (t.blob == 0) {
-        set_lock_phase2(node, lock, me, &t);
+        /* grabbed unset lock, now go on to set the rest of the lock */
+        set_lock_execute(node, lock, me, &t);
         return 0;
     }
     else {
+        /* nope, go around again */
         return 1;
     }
 }
@@ -173,6 +188,11 @@ test_lock(shmem_lock_t *node, shmem_lock_t *lock)
 #pragma weak shmem_clear_lock = pshmem_clear_lock
 #define shmem_clear_lock pshmem_clear_lock
 #endif /* ENABLE_PSHMEM */
+
+/*
+ * split the "big" user-visible lock into the internal management
+ * types
+ */
 
 #define UNPACK()                                        \
     shmem_lock_t *base = (shmem_lock_t *) lp;           \
@@ -198,7 +218,9 @@ shmem_clear_lock(long *lp)
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
 
+    /* required to flush comms before clearing lock */
     shmem_quiet();
+
     clear_lock(node, lock);
 }
 
