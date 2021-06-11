@@ -187,13 +187,13 @@ check_wait_for_request(shmemc_context_h ch, void *req)
  */
 
 int
-shmemc_managed_address(void *addr)
+shmemc_managed_address(uint64_t addr)
 {
     return lookup_region(addr) > 0;
 }
 
 int
-shmemc_global_address(void *addr)
+shmemc_global_address(uint64_t addr)
 {
     return lookup_region(addr) == 0;
 }

@@ -72,7 +72,11 @@ lock_owner(void *addr)
  * claim and connects the 2 phases
  */
 
-static inline void
+/*
+ * set lock
+ */
+
+inline static void
 set_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
                  int me,
                  shmem_lock_t *cmp)
@@ -89,7 +93,7 @@ set_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
                                       lock_owner(lock));
 }
 
-static inline void
+inline static void
 set_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
                  int me,
                  shmem_lock_t *cmp)
@@ -113,36 +117,38 @@ set_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
     }
 }
 
-static void
-set_lock(shmem_lock_t *node, shmem_lock_t *lock)
+/*
+ * clear lock
+ */
+
+inline static void
+clear_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
+                   int me,
+                   shmem_lock_t *cmp)
 {
-    const int me = shmem_my_pe();
-    shmem_lock_t t;
-
-    set_lock_request(node, lock, me, &t);
-    set_lock_execute(node, lock, me, &t);
-}
-
-static void
-clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
-{
-    const int me = shmem_my_pe();
-
     if (node->d.next < 0) {
         shmem_lock_t t;
 
         /* request ownership */
-        t.d.locked = 1;
-        t.d.next = me;
+        cmp->d.locked = 1;
+        cmp->d.next = me;
 
         /* onwer can reset */
-        t.blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                               t.blob,
-                                               0,
-                                               lock_owner(lock));
+        cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
+                                                  cmp->blob,
+                                                  0,
+                                                  lock_owner(lock));
+    }
+}
 
+inline static void
+clear_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
+                   int me,
+                   shmem_lock_t *cmp)
+{
+    if (node->d.next < 0) {
         /* any more chainers? */
-        if (t.d.next == me) {
+        if (cmp->d.next == me) {
             return;
             /* NOT REACHED */
         }
@@ -158,31 +164,74 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
     shmem_quiet();
 }
 
-static int
-test_lock(shmem_lock_t *node, shmem_lock_t *lock)
+inline static void
+test_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
+                  int me,
+                  shmem_lock_t *cmp)
 {
-    const int me = shmem_my_pe();
-    shmem_lock_t t;
-
     /* request ownership */
-    t.d.locked = 1;
-    t.d.next = me;
+    cmp->d.locked = 1;
+    cmp->d.next = me;
 
     /* if owner is unset, grab the lock */
-    t.blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                           0,
-                                           t.blob,
-                                           lock_owner(lock));
+    cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
+                                              0,
+                                              cmp->blob,
+                                              lock_owner(lock));
+}
 
-    if (t.blob == 0) {
+/*
+ * test lock
+ */
+
+inline static int
+test_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
+                  int me,
+                  shmem_lock_t *cmp)
+{
+    if (cmp->blob == 0) {
         /* grabbed unset lock, now go on to set the rest of the lock */
-        set_lock_execute(node, lock, me, &t);
+        set_lock_execute(node, lock, me, cmp);
         return 0;
     }
     else {
         /* nope, go around again */
         return 1;
     }
+}
+
+/*
+ * internal blocking calls
+ */
+
+static void
+set_lock(shmem_lock_t *node, shmem_lock_t *lock)
+{
+    const int me = shmem_my_pe();
+    shmem_lock_t t;
+
+    set_lock_request(node, lock, me, &t);
+    set_lock_execute(node, lock, me, &t);
+}
+
+static void
+clear_lock(shmem_lock_t *node, shmem_lock_t *lock)
+{
+    const int me = shmem_my_pe();
+    shmem_lock_t t;
+
+    clear_lock_request(node, lock, me, &t);
+    clear_lock_execute(node, lock, me, &t);
+}
+
+static int
+test_lock(shmem_lock_t *node, shmem_lock_t *lock)
+{
+    const int me = shmem_my_pe();
+    shmem_lock_t t;
+
+    test_lock_request(node, lock, me, &t);
+    return test_lock_execute(node, lock, me, &t);
 }
 
 /**

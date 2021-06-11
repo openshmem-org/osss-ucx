@@ -41,8 +41,8 @@ void shmemc_print_env_vars(FILE *stream, const char *prefix);
  * determine if addr is a global or dynamically managed variable
  */
 
-int shmemc_global_address(void *addr);
-int shmemc_managed_address(void *addr);
+int shmemc_global_address(uint64_t addr);
+int shmemc_managed_address(uint64_t addr);
 
 /*
  * -- Per-context routines ---------------------------------------------------
