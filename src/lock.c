@@ -38,21 +38,30 @@ typedef union shmem_lock {
  */
 
 inline static int
+get_owner_spread(uint64_t addr)
+{
+    return (addr >> 3) % shmem_n_pes();
+}
+
+inline static int
 lock_owner(void *addr)
 {
+    uint64_t la = (uint64_t) addr;
+    int owner;
+
     /*
      * can only agree on distributed owners if we all agree on aligned
      * addresses
      */
 #ifdef ENABLE_ALIGNED_ADDRESSES
-    const uintptr_t la = ( (uintptr_t) addr ) >> 3;
-    const int owner = la % shmem_n_pes();
-
-    // logger(LOG_LOCKS, "addr = %ld, owner = %d", la, owner);
+    owner = get_owner_spread(la);
 #else
-    const int owner = shmem_n_pes() - 1;
-
-    NO_WARN_UNUSED(addr);
+    if (shmemc_global_address(la)) {
+        owner = get_owner_spread(la);
+    }
+    else {
+        owner = shmem_n_pes() - 1;
+    }
 #endif /* ENABLE_ALIGNED_ADDRESSES */
 
     return owner;

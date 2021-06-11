@@ -183,6 +183,22 @@ check_wait_for_request(shmemc_context_h ch, void *req)
 }
 
 /*
+ * is a given symmetric variable global or managed?
+ */
+
+int
+shmemc_managed_address(void *addr)
+{
+    return lookup_region(addr) > 0;
+}
+
+int
+shmemc_global_address(void *addr)
+{
+    return lookup_region(addr) == 0;
+}
+
+/*
  * -- ordering -----------------------------------------------------------
  */
 

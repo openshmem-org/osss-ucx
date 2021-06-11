@@ -38,6 +38,13 @@ void shmemc_env_finalize(void);
 void shmemc_print_env_vars(FILE *stream, const char *prefix);
 
 /*
+ * determine if addr is a global or dynamically managed variable
+ */
+
+int shmemc_global_address(void *addr);
+int shmemc_managed_address(void *addr);
+
+/*
  * -- Per-context routines ---------------------------------------------------
  */
 
