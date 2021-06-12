@@ -14,7 +14,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "shmem.h"
-#include <boolean.h>
+#include "boolean.h"
 
 #include <stdint.h>
 #include <sys/types.h>
