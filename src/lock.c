@@ -165,6 +165,10 @@ clear_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
     shmem_quiet();
 }
 
+/*
+ * test lock
+ */
+
 inline static void
 test_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
                   int me,
@@ -182,10 +186,6 @@ test_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
                                               cmp->blob,
                                               lock_owner(lock));
 }
-
-/*
- * test lock
- */
 
 inline static void
 test_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
