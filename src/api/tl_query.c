@@ -21,7 +21,7 @@ void
 shmem_query_thread(int *provided)
 {
     SHMEMU_CHECK_INIT();
-    SHMEMU_CHECK_NOT_NULL(provided);
+    SHMEMU_CHECK_NOT_NULL(provided, 1);
 
     logger(LOG_INFO,
            "%s() -> %d",
