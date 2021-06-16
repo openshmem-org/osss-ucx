@@ -193,14 +193,15 @@ AC_CONFIG_FILES([
 	pkgconfig/Makefile
 	pkgconfig/osss-ucx.pc
 	src/Makefile
-	src/osh_info/Makefile
-	src/collectives/shcoll/Makefile
-	src/collectives/shcoll/src/Makefile
-	src/atomics/Makefile
 	src/shmemc/Makefile
 	src/shmemc/osh_common
-	src/shmemu/Makefile
 	src/shmemt/Makefile
+	src/shmemu/Makefile
+	src/shcoll/Makefile
+	src/shcoll/src/Makefile
+	src/api/Makefile
+	src/api/osh_info/Makefile
+	src/api/atomics/Makefile
         ])
 
 AC_OUTPUT

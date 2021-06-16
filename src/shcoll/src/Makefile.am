@@ -13,7 +13,8 @@ SOURCES                += util/bithacks.c \
 				util/scan.c \
 				util/trees.c
 
-FIND_SHMEM_H            = -I$(top_srcdir)/include -I../../../../include
+FIND_SHMEM_H            = -I$(top_srcdir)/include \
+				-I../../../include
 
 # disable warnings here (should detect how to do this)
 # BUILD_CFLAGS            = -w
@@ -23,10 +24,6 @@ BUILD_CFLAGS           += -I.. $(FIND_SHMEM_H)
 lib_LTLIBRARIES         = libshcoll.la
 libshcoll_la_SOURCES    = $(SOURCES)
 libshcoll_la_CFLAGS     = $(BUILD_CFLAGS)
-
-# lib_LIBRARIES           = libshcoll.a
-# libshcoll_a_SOURCES     = $(SOURCES)
-# libshcoll_a_CFLAGS      = $(BUILD_CFLAGS)
 
 nobase_include_HEADERS  = shcoll.h \
 				shcoll/alltoall.h \

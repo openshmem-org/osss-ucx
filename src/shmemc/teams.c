@@ -8,7 +8,7 @@
 #include "shmemc.h"
 #include "shmem/teams.h"
 #include "ucx/api.h"
-#include "../allocator/memalloc.h"
+#include "allocator/memalloc.h"
 #include "module.h"
 
 #include <stdlib.h>

@@ -2,10 +2,10 @@
 
 OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 				-I$(srcdir)/../shmemt \
+				-I$(top_srcdir)/src/klib \
+				-I$(top_srcdir)/src/api \
 				-I../../include \
-				-I$(srcdir)/../klib \
-				-I$(top_srcdir)/include \
-				-I$(srcdir)/..
+				-I$(top_srcdir)/include
 LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				globalexit.c \
@@ -42,10 +42,6 @@ endif
 lib_LTLIBRARIES           = libshmemc-ucx.la
 libshmemc_ucx_la_SOURCES  = $(LIBSHMEMC_SOURCES)
 libshmemc_ucx_la_CFLAGS   = $(UCX_CFLAGS) $(EXTRA_CFLAGS) $(OTHER_CPPFLAGS)
-
-# lib_LIBRARIES             = libshmemc-ucx.a
-# libshmemc_ucx_a_SOURCES   = $(LIBSHMEMC_SOURCES)
-# libshmemc_ucx_a_CFLAGS    = $(UCX_CFLAGS) $(EXTRA_CFLAGS) $(OTHER_CPPFLAGS)
 
 # support C by default, plus something to run it with
 

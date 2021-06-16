@@ -15,7 +15,7 @@ shmemt_cppflags        = -I$(top_srcdir)/src/$(shmemt_dir)
 shmemt_ldflags         = -L$(shmemt_dir)
 shmemt_libs            = -lshmemt
 
-MY_INCLUDE             = -I../../include -I$(top_srcdir)/include
+MY_INCLUDE             = -I../../../include -I$(top_srcdir)/include
 
 all_cppflags           = $(shmemc_cppflags) \
 				$(shmemu_cppflags) \

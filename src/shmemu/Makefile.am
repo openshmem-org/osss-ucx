@@ -1,11 +1,10 @@
 # For license: see LICENSE file at top-level
 
-OTHER_CPPFLAGS            = -I../../include \
+OTHER_CPPFLAGS            = 	-I../../include \
 				-I$(top_srcdir)/include \
-				-I$(srcdir)/.. \
 				-I$(srcdir)/../shmemc \
 				-I$(srcdir)/../shmemt \
-				-I$(srcdir)/../allocator
+				-I$(srcdir)/../api/allocator
 
 LIBSHMEMU_SOURCES         = init.c \
 				carp.c \

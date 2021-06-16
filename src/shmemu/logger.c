@@ -9,7 +9,7 @@
 #include "shmemc.h"
 #include "boolean.h"
 
-#include "klib/khash.h"
+#include "../klib/khash.h"
 
 #include <stdio.h>
 #include <stdlib.h>

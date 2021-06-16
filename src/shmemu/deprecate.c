@@ -7,7 +7,7 @@
 #include "shmemu.h"
 #include "boolean.h"
 
-#include "klib/khash.h"
+#include "../klib/khash.h"
 
 KHASH_MAP_INIT_STR(deprecations, bool)
 

@@ -13,7 +13,7 @@
 
 #include "shmem/defs.h"
 
-#include "klib/klist.h"
+#include "../klib/klist.h"
 
 #include <stdlib.h>
 
