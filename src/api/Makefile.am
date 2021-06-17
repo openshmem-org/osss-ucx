@@ -107,25 +107,33 @@ endif
 #
 # separate out the memory allocation routines
 #
-liballocator_a_SOURCES = allocator/internal-malloc.c allocator/memalloc.c
+ALLOC_DIR                 = $(srcdir)/allocator
+
+liballocator_a_SOURCES    = ../ptmalloc/ptmalloc.c $(ALLOC_DIR)/memalloc.c
 
 if ENABLE_EXPERIMENTAL
-liballocator_a_SOURCES += allocator/xmemalloc.c
+liballocator_a_SOURCES   += $(ALLOC_DIR)/xmemalloc.c
 endif # experimental
 
-liballocator_a_CFLAGS  = \
-			-DFOOTERS=1 \
-			-DCORRUPTION_ERROR_ACTION=report_corruption \
-			-DUSAGE_ERROR_ACTION=report_usage_error \
-			-DONLY_MSPACES=1 \
-			-DHAVE_MORECORE=0 \
-			-DHAVE_MMAP=0 \
-			-DUSE_LOCKS=1 \
-			-DREALLOC_ZERO_BYTES_FREES=1
-liballocator_la_SOURCES = $(liballocator_a_SOURCES)
-liballocator_la_CFLAGS  = $(liballocator_a_CFLAGS)
-noinst_LIBRARIES       = liballocator.a
-noinst_LTLIBRARIES     = liballocator.la
+liballocator_a_CPPFLAGS   = -I$(ALLOC_DIR)
+liballocator_a_CFLAGS     = \
+				-DFOOTERS=1 \
+				-DCORRUPTION_ERROR_ACTION=report_corruption \
+				-DUSAGE_ERROR_ACTION=report_usage_error \
+				-DONLY_MSPACES=1 \
+				-DHAVE_MORECORE=0 \
+				-DHAVE_MMAP=0 \
+				-DUSE_LOCKS=1 \
+				-DREALLOC_ZERO_BYTES_FREES=1
+liballocator_la_SOURCES   = $(liballocator_a_SOURCES)
+liballocator_la_CFLAGS    = $(liballocator_a_CFLAGS)
+liballocator_la_CPPFLAGS  = $(liballocator_a_CPPFLAGS)
+noinst_LIBRARIES          = liballocator.a
+noinst_LTLIBRARIES        = liballocator.la
+
+#
+#
+#
 
 if ENABLE_EXPERIMENTAL
 
