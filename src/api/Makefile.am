@@ -107,15 +107,14 @@ endif
 #
 # separate out the memory allocation routines
 #
-ALLOC_DIR                 = $(srcdir)/allocator
 
-liballocator_a_SOURCES    = ../ptmalloc/ptmalloc.c $(ALLOC_DIR)/memalloc.c
+liballocator_a_SOURCES    = ../ptmalloc/ptmalloc.c allocator/memalloc.c
 
 if ENABLE_EXPERIMENTAL
-liballocator_a_SOURCES   += $(ALLOC_DIR)/xmemalloc.c
+liballocator_a_SOURCES   += allocator/xmemalloc.c
 endif # experimental
 
-liballocator_a_CPPFLAGS   = -I$(ALLOC_DIR)
+liballocator_a_CPPFLAGS   = -I$(srcdir)/allocator
 liballocator_a_CFLAGS     = \
 				-DFOOTERS=1 \
 				-DCORRUPTION_ERROR_ACTION=report_corruption \
