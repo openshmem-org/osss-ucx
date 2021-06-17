@@ -270,6 +270,12 @@ shmem_set_lock(long *lp)
     SHMEMU_CHECK_NOT_NULL(lp, 1);
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
 
+    logger(LOG_LOCKS,
+           "%s(lock=%p)",
+           __func__,
+           lock
+           );
+
     set_lock(node, lock, shmem_my_pe());
 }
 
@@ -281,6 +287,12 @@ shmem_clear_lock(long *lp)
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_NOT_NULL(lp, 1);
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
+
+    logger(LOG_LOCKS,
+           "%s(lock=%p)",
+           __func__,
+           lock
+           );
 
     /* required to flush comms before clearing lock */
     shmem_quiet();
@@ -296,6 +308,12 @@ shmem_test_lock(long *lp)
     SHMEMU_CHECK_INIT();
     SHMEMU_CHECK_NOT_NULL(lp, 1);
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
+
+    logger(LOG_LOCKS,
+           "%s(lock=%p)",
+           __func__,
+           lock
+           );
 
     return test_lock(node, lock, shmem_my_pe());
 }
