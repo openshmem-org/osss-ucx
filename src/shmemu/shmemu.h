@@ -83,6 +83,8 @@ int shmemu_human_number(double bytes, char *buf, size_t buflen);
 const char *shmemu_human_option(int v);
 int shmemu_parse_csv(char *str, int **out, size_t *nout);
 
+const char *shmemu_plural(size_t n);
+
 /*
  * message logging (cf. logger.c to init these)
  */

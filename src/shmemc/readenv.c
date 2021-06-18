@@ -66,6 +66,8 @@ shmemc_env_init(void)
 {
     char *e;
     int r;
+    size_t hs;
+    char *delay;
 
     /*
      * defined in spec
@@ -92,20 +94,24 @@ shmemc_env_init(void)
      * heaps need a bit more handling
      */
 
-    proc.env.heaps.nheaps = 1;  /* TODO: will be parsed out of env */
-    proc.env.heaps.heapsize =
-        (size_t *) malloc(proc.env.heaps.nheaps *
-                          sizeof(*proc.env.heaps.heapsize));
+    /* for now: could change with multiple heaps */
+    proc.env.heaps.nheaps = 1;
+
+    hs = proc.env.heaps.nheaps * sizeof(*proc.env.heaps.heapsize);
+
+    proc.env.heaps.heapsize = (size_t *) malloc(hs);
+
     shmemu_assert(proc.env.heaps.heapsize != NULL,
-                  MODULE ": can't allocate memory for heap size declaration");
+                  MODULE ": can't allocate memory for %lu heap%s",
+                  proc.env.heaps.nheaps,
+                  shmemu_plural(proc.env.heaps.nheaps));
 
     CHECK_ENV_WITH_DEPRECATION(e, SYMMETRIC_SIZE);
     r = shmemu_parse_size(e != NULL ? e : SHMEM_DEFAULT_HEAP_SIZE,
                           &proc.env.heaps.heapsize[0]);
-    if (r != 0) {
-        shmemu_fatal(MODULE ": couldn't work out requested heap size \"%s\"",
-                     e != NULL ? e : "(null)");
-    }
+    shmemu_assert(r == 0,
+                  MODULE ": couldn't work out requested heap size \"%s\"",
+                  e != NULL ? e : "(null)");
 
     /*
      * this implementation also has...
@@ -146,35 +152,35 @@ shmemc_env_init(void)
 
     CHECK_ENV(e, BARRIER_ALGO);
     proc.env.coll.barrier =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER ); /* free@end */
     CHECK_ENV(e, BARRIER_ALL_ALGO);
     proc.env.coll.barrier_all =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER_ALL );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER_ALL ); /* free@end */
     CHECK_ENV(e, SYNC_ALGO);
     proc.env.coll.sync =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC ); /* free@end */
     CHECK_ENV(e, SYNC_ALL_ALGO);
     proc.env.coll.sync_all =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC_ALL );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC_ALL ); /* free@end */
     CHECK_ENV(e, BROADCAST_ALGO);
     proc.env.coll.broadcast =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BROADCAST );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BROADCAST ); /* free@end */
     CHECK_ENV(e, COLLECT_ALGO);
     proc.env.coll.collect =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_COLLECT );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_COLLECT ); /* free@end */
     CHECK_ENV(e, FCOLLECT_ALGO);
     proc.env.coll.fcollect =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_FCOLLECT );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_FCOLLECT ); /* free@end */
     CHECK_ENV(e, ALLTOALL_ALGO);
     proc.env.coll.alltoall =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALL );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALL ); /* free@end */
     CHECK_ENV(e, ALLTOALLS_ALGO);
     proc.env.coll.alltoalls =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALLS );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALLS ); /* free@end */
     CHECK_ENV(e, REDUCE_ALGO);
     /* TODO currently ignored */
     proc.env.coll.reductions =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_REDUCTIONS );
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_REDUCTIONS ); /* free@end */
     /* collectives to free@end */
 
     proc.env.progress_threads = NULL;
@@ -184,16 +190,16 @@ shmemc_env_init(void)
         proc.env.progress_threads = strdup(e); /* free@end */
     }
 
-    proc.env.progress_delay_ns = 1000; /* magic, empirical */
+    proc.env.progress_delay_ns = 1000; /* these 2: magic, empirical */
+    delay = "1000";
 
     CHECK_ENV(e, PROGRESS_DELAY);
-    r = shmemu_parse_size(e != NULL ? e : "1000" /* magic, empirical */,
+    r = shmemu_parse_size(e != NULL ? e : delay,
                           &proc.env.progress_delay_ns);
-    if (r != 0) {
-        shmemu_fatal(MODULE ": couldn't work out requested "
-                     "progress delay time \"%s\"",
-                     e != NULL ? e : "1000");
-    }
+    shmemu_assert(r == 0,
+                  MODULE ": couldn't work out requested "
+                  "progress delay time \"%s\"",
+                  e != NULL ? e : delay);
 
     proc.env.prealloc_contexts = 64; /* magic number */
 

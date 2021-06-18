@@ -10,6 +10,7 @@ LIBSHMEMU_SOURCES         = init.c \
 				carp.c \
 				memcheck.c \
 				parse_csv.c \
+				plural.c \
 				timer.c \
 				unitparse.c
 
