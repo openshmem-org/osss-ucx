@@ -113,8 +113,8 @@ void shmemc_team_finalize(shmemc_team_h th);
 void shmemc_teams_init(void);
 void shmemc_teams_finalize(void);
 
-inline int shmemc_team_my_pe(shmemc_team_h th) { return th->rank; }
-inline int shmemc_team_n_pes(shmemc_team_h th) { return th->nranks; }
+int shmemc_team_my_pe(shmemc_team_h th);
+int shmemc_team_n_pes(shmemc_team_h th);
 
 int shmemc_team_get_config(shmemc_team_h th,
                            shmem_team_config_t *config);

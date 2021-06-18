@@ -204,8 +204,20 @@ shmemc_teams_finalize(void)
  */
 
 /*
- * per-team rank queries handled inline in shmemc.h
+ * per-team rank queries
  */
+
+int
+shmemc_team_my_pe(shmemc_team_h th)
+{
+    return th->rank;
+}
+
+int
+shmemc_team_n_pes(shmemc_team_h th)
+{
+    return th->nranks;
+}
 
 /*
  * retrieve the team's configuration
