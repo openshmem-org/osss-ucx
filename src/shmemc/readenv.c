@@ -103,7 +103,7 @@ shmemc_env_init(void)
 
     shmemu_assert(proc.env.heaps.heapsize != NULL,
                   MODULE ": can't allocate memory for %lu heap%s",
-                  proc.env.heaps.nheaps,
+                  (unisgned long) proc.env.heaps.nheaps,
                   shmemu_plural(proc.env.heaps.nheaps));
 
     CHECK_ENV_WITH_DEPRECATION(e, SYMMETRIC_SIZE);
