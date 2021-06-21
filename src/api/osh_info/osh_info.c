@@ -25,14 +25,14 @@ output_help(void)
             "Usage: %s [options]\n\n",
             progname);
     fprintf(stderr,
-            "    -V   | --version"
+            "    -V   | --version    "
             "only output OpenSHMEM package version info\n");
     fprintf(stderr,
-            "    -p S | --prefix=S"
+            "    -p S | --prefix=S   "
             "string to insert before output lines"
             " (default \"%s\")\n", prefix);
     fprintf(stderr,
-            "    -h   | --help"
+            "    -h   | --help       "
             "show this help message\n");
     fprintf(stderr,
             "\n");
