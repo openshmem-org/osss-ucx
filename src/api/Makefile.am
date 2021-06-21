@@ -77,7 +77,7 @@ MY_SOURCES            += \
 				deprecated/shmalloc.c \
 				deprecated/waituntil.c
 
-SUBDIRS                = 	atomics osh_info
+SUBDIRS                = 	atomics
 
 #
 # -- begin: SHCOLL --

@@ -200,8 +200,8 @@ AC_CONFIG_FILES([
 	src/shcoll/Makefile
 	src/shcoll/src/Makefile
 	src/api/Makefile
-	src/api/osh_info/Makefile
 	src/api/atomics/Makefile
+	src/osh_info/Makefile
         ])
 
 AC_OUTPUT
