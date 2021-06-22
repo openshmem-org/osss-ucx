@@ -89,14 +89,21 @@ lookup_region(uint64_t addr)
  * variables
  */
 #ifdef ENABLE_ALIGNED_ADDRESSES
+
 # define translate_region_address(_local_addr, _region, _pe) (_local_addr)
 # define translate_address(_local_addr, _pe) (_local_addr)
+
 #else
 
 /*
  * where the heap lives on PE "pe"
  */
-# define get_base(_region, _pe) proc.comms.regions[_region].minfo[_pe].base
+
+inline static size_t
+get_base(size_t region, int pe)
+{
+    return proc.comms.regions[region].minfo[pe].base;
+}
 
 inline static uint64_t
 translate_region_address(uint64_t local_addr, size_t region, int pe)
@@ -126,6 +133,7 @@ translate_address(uint64_t local_addr, int pe)
 
     return translate_region_address(local_addr, r, pe);
 }
+
 #endif  /* ENABLE_ALIGNED_ADDRESSES */
 
 /*
