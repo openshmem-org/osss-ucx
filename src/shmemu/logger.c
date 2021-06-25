@@ -8,6 +8,7 @@
 #include "shmemu.h"
 #include "shmemc.h"
 #include "boolean.h"
+#include "module.h"
 
 #include "../klib/khash.h"
 
@@ -106,7 +107,7 @@ shmemu_logger_init(void)
     if (proc.env.logging_file != NULL) {
         log_stream = fopen(proc.env.logging_file, "a");
         if (log_stream == NULL) {
-            shmemu_fatal("can't append to log file \"%s\"",
+            shmemu_fatal(MODULE ": can't append to log file \"%s\"",
                          proc.env.logging_file);
             /* NOT REACHED */
         }
