@@ -750,14 +750,26 @@ SHMEMC_DECL_COLLECT_SIZE(64)
  * hardware assist or similar
  */
 
+
+/*
+ * -- Routines that operate on world team context ----------------------------
+ */
+
+inline static int
+shmemc_my_pe(void)
+{
+    return shmemc_team_my_pe(SHMEM_TEAM_WORLD);
+}
+
+inline static int
+shmemc_n_pes()
+{
+    return shmemc_team_n_pes(SHMEM_TEAM_WORLD);
+}
+
 /*
  * -- Routines that now operate on default context ---------------------------
  */
-
-#define shmemc_my_pe()                          \
-    shmemc_team_my_pe(SHMEM_CTX_DEFAULT)
-#define shmemc_n_pes()                          \
-    shmemc_team_n_pes(SHMEM_CTX_DEFAULT)
 
 #define shmemc_fence()                          \
     shmemc_ctx_fence(SHMEM_CTX_DEFAULT)
