@@ -14,7 +14,7 @@
 
 static char *progname;
 
-static char *prefix = "# ";
+static char *default_prefix = "# ";
 
 static void
 output_help(void)
@@ -30,7 +30,7 @@ output_help(void)
     fprintf(stderr,
             "    -p S | --prefix=S   "
             "string to insert before output lines"
-            " (default \"%s\")\n", prefix);
+            " (default \"%s\")\n", default_prefix);
     fprintf(stderr,
             "    -h   | --help       "
             "show this help message\n");
@@ -52,6 +52,7 @@ main(int argc, char *argv[])
     FILE *out = stdout;
     int just_version = 0;
     int help = 0;
+    char *prefix = NULL;
 
     progname = basename(argv[0]);
 
@@ -86,6 +87,10 @@ main(int argc, char *argv[])
         output_help();
         return EXIT_FAILURE;
         /* NOT REACHED */
+    }
+
+    if (prefix == NULL) {
+        prefix = default_prefix;
     }
 
     if (just_version) {
