@@ -123,7 +123,6 @@ static mem_info_t *globals;
 /*
  * from the executable
  *
- * N.B. this will be extended when FreeBSD support is on the table.
  */
 
 inline static void
