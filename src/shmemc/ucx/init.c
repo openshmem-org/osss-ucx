@@ -200,7 +200,6 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     ucp_mem_map_params_t mp;
     ucp_mem_attr_t attr;
     const unsigned long hn = (unsigned long) heapno; /* printing */
-    int st;
 
     shmemu_assert(proc.env.heaps.heapsize[heapno] > 0,
                   MODULE ": cannot register empty symmetric heap #%lu",
@@ -240,11 +239,15 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
                   hn, ucs_status_string(s));
 
 #ifdef MADV_DONTFORK
-    st = madvise(attr.address, attr.length, MADV_DONTFORK);
-    shmemu_assert(st == 0,
-                  MODULE
-                  ": can't madvise(addr = %p, size = %zu, MADV_DONTFORK): %s",
-                  attr.address, attr.length, strerror(errno));
+    {
+        const int st = madvise(attr.address, attr.length, MADV_DONTFORK);
+
+        shmemu_assert(st == 0,
+                      MODULE ": can't "
+                      "madvise(addr = %p, size = %zu, MADV_DONTFORK): %s",
+                      attr.address, attr.length,
+                      strerror(errno));
+    }
 #endif /* MADV_DONTFORK */
 
     /* tell the PE what was given */
