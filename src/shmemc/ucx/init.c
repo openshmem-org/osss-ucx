@@ -126,14 +126,24 @@ static mem_info_t *globals;
  * N.B. this will be extended when FreeBSD support is on the table.
  */
 
-extern char data_start;
-extern char end;
-
 inline static void
 get_globals_address_range(uint64_t *base_p, uint64_t *end_p)
 {
+#ifdef __linux__
+    extern char data_start;
+    extern char end;
+
     *base_p = (uint64_t) &data_start;
     *end_p  = (uint64_t) &end;
+#elif defined(__FreeBSD__)
+    extern char _start;
+    extern char _end;
+
+    *base_p = (uint64_t) &__start;
+    *end_p  = (uint64_t) &_end;
+#else
+# error "Unsupported platform, don't know how to find global variables"
+#endif
 }
 
 inline static void
