@@ -120,6 +120,48 @@ extern "C"
      */
     void shmem_finalize(void);
 
+#if 1
+
+    /**
+     * @brief is the OpenSHMEM environment initialized on the calling PE?
+     * @page shmem_initialized
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     int shmem_initialized(void);
+     @endcode
+     *
+     * @section Effect Checks if the OpenSHMEM environment has been
+     * initialized on the calling PE.
+     *
+     * @section Return
+     * 1 if initialized, 0 if not.
+     *
+     */
+    int shmem_initialized(void);
+
+    /**
+     * @brief has the openSHMEM environment been finalized on the calling PE?
+     * @page shmem_finalized
+     * @section Synopsis
+     *
+     * @subsection c C/C++
+     @code
+     int shmem_finalized(void);
+     @endcode
+     *
+     * @section Effect Checks if the OpenSHMEM environment has been
+     * finalized on the calling PE.
+     *
+     * @section Return
+     * 1 if finalized, 0 if not.
+     *
+     */
+    int shmem_finalized(void);
+
+#endif /* PR470 */
+
     /**
      * @brief causes immediate exit from the OpenSHMEM program on all PEs.
      * @page shmem_global_exit

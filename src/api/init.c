@@ -79,7 +79,7 @@ finalize_helper(void)
     shmemxa_finalize();
 #endif  /* ENABLE_EXPERIMENTAL */
 
-    proc.refcount = 0;      /* finalized is finalized */
+    --proc.refcount;
     proc.status = SHMEMC_PE_SHUTDOWN;
 }
 
@@ -93,6 +93,26 @@ init_thread_helper(int requested, int *provided)
         return 0;
     }
 
+    /* save and return thread level */
+    proc.td.osh_tl = requested;
+    if (provided != NULL) {
+        *provided = proc.td.osh_tl;
+    }
+
+    proc.td.invoking_thread = threadwrap_thread_id();
+
+#ifdef ENABLE_ALIGNED_ADDRESSES
+    test_asr_mismatch();
+#endif /* ENABLE_ALIGNED_ADDRESSES */
+
+    /* set up comms, read environment */
+    shmemc_init();
+    /* utiltiies */
+    shmemt_init();
+    shmemu_init();
+    collectives_init();
+    progress_init();
+
     /* for now */
     switch(requested) {
     case SHMEM_THREAD_SINGLE:
@@ -104,26 +124,12 @@ init_thread_helper(int requested, int *provided)
     case SHMEM_THREAD_MULTIPLE:
         break;
     default:
-        shmemu_fatal(MODULE ": unknown thread level %d requested", requested);
+        shmemu_fatal(MODULE
+                     ": unknown thread level %d requested",
+                     requested);
         /* NOT REACHED */
         break;
     }
-
-    /* save and return thread level */
-    proc.td.osh_tl = requested;
-    if (provided != NULL) {
-        *provided = proc.td.osh_tl;
-    }
-
-    proc.td.invoking_thread = threadwrap_thread_id();
-
-    /* set up comms, read environment */
-    shmemc_init();
-    /* utiltiies */
-    shmemt_init();
-    shmemu_init();
-    collectives_init();
-    progress_init();
 
 #ifdef ENABLE_EXPERIMENTAL
     shmemxa_init(proc.env.heaps.nheaps);
@@ -156,10 +162,6 @@ init_thread_helper(int requested, int *provided)
            requested, proc.td.osh_tl
            );
 
-#ifdef ENABLE_ALIGNED_ADDRESSES
-    test_asr_mismatch();
-#endif /* ENABLE_ALIGNED_ADDRESSES */
-
     /* make sure all symmetric memory ready */
     shmem_barrier_all();
 
@@ -188,3 +190,19 @@ shmem_init(void)
 {
     (void) init_thread_helper(SHMEM_THREAD_SINGLE, NULL);
 }
+
+#ifdef PR470
+
+int
+shmem_initialized(void)
+{
+    return proc.refcount > 0;
+}
+
+int
+shmem_finalized(void)
+{
+    return proc.refcount < 1;
+}
+
+#endif /* PR470 */
