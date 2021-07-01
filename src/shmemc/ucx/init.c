@@ -16,6 +16,12 @@
 #include "api.h"
 #include "module.h"
 
+#ifdef HAVE_SYS_MMAN_H
+# include <sys/mman.h>
+#endif /* HAVE_SYS_MMAN_H */
+#ifdef HAVE_ERRNO_H
+# include <errno.h>
+#endif /* HAVE_ERRNO_H */
 #include <stdlib.h>             /* getenv */
 #include <string.h>
 #include <strings.h>
@@ -119,6 +125,7 @@ static mem_info_t *globals;
  *
  * N.B. this will be extended when FreeBSD support is on the table.
  */
+
 extern char data_start;
 extern char end;
 
@@ -183,6 +190,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     ucp_mem_map_params_t mp;
     ucp_mem_attr_t attr;
     const unsigned long hn = (unsigned long) heapno; /* printing */
+    int st;
 
     shmemu_assert(proc.env.heaps.heapsize[heapno] > 0,
                   MODULE ": cannot register empty symmetric heap #%lu",
@@ -211,7 +219,6 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
      * aligned/padded)
      */
 
-    /* the attributes we want to inspect */
     attr.field_mask =
         UCP_MEM_ATTR_FIELD_ADDRESS |
         UCP_MEM_ATTR_FIELD_LENGTH;
@@ -221,6 +228,14 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
                   MODULE ": can't query extent of memory for "
                   "symmetric heap #%lu: %s",
                   hn, ucs_status_string(s));
+
+#ifdef MADV_DONTFORK
+    st = madvise(attr.address, attr.length, MADV_DONTFORK);
+    shmemu_assert(st == 0,
+                  MODULE
+                  ": can't madvise(addr = %p, size = %zu, MADV_DONTFORK): %s",
+                  attr.address, attr.length, strerror(errno));
+#endif /* MADV_DONTFORK */
 
     /* tell the PE what was given */
     mip->base = (uint64_t) attr.address;
