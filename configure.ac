@@ -113,7 +113,7 @@ AS_IF([test "x$enable_shared" = "xyes"],
 	    )
 
 # Checks for header files.
-AC_CHECK_HEADERS([stdlib.h unistd.h string.h strings.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h sched.h sys/mman.h errno.h])
+AC_CHECK_HEADERS([stdlib.h unistd.h string.h strings.h time.h sys/time.h sys/utsname.h sys/types.h fcntl.h stddef.h sys/param.h assert.h stdarg.h stdbool.h sched.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_CHECK_HEADER_STDBOOL

@@ -252,8 +252,6 @@ shmemc_ctx_quiet(shmem_ctx_t ctx)
             s = ucp_worker_flush(ch->w);
 #endif  /* HAVE_UCP_WORKER_FLUSH_NBX */
 
-            /* LOAD_STORE_FENCE(); */
-
             shmemu_assert(s == UCS_OK,
                           MODULE ": %s() failed (status: %s)",
                           __func__, ucs_status_string(s));

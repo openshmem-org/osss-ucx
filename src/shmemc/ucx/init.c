@@ -16,12 +16,6 @@
 #include "api.h"
 #include "module.h"
 
-#ifdef HAVE_SYS_MMAN_H
-# include <sys/mman.h>
-#endif /* HAVE_SYS_MMAN_H */
-#ifdef HAVE_ERRNO_H
-# include <errno.h>
-#endif /* HAVE_ERRNO_H */
 #include <stdlib.h>             /* getenv */
 #include <string.h>
 #include <strings.h>
@@ -236,18 +230,6 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
                   MODULE ": can't query extent of memory for "
                   "symmetric heap #%lu: %s",
                   hn, ucs_status_string(s));
-
-#ifdef MADV_DONTFORK
-    {
-        const int st = madvise(attr.address, attr.length, MADV_DONTFORK);
-
-        shmemu_assert(st == 0,
-                      MODULE ": can't "
-                      "madvise(addr = %p, size = %zu, MADV_DONTFORK): %s",
-                      attr.address, attr.length,
-                      strerror(errno));
-    }
-#endif /* MADV_DONTFORK */
 
     /* tell the PE what was given */
     mip->base = (uint64_t) attr.address;
