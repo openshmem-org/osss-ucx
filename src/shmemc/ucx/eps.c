@@ -41,7 +41,7 @@ shmemc_ucx_deallocate_eps_table(shmemc_context_h ch)
  * Fire off the EP disconnect process
  */
 
-inline static ucs_status_ptr_t
+static ucs_status_ptr_t
 ep_disconnect_nb(ucp_ep_h ep)
 {
     ucs_status_ptr_t sp;
@@ -68,7 +68,7 @@ ep_disconnect_nb(ucp_ep_h ep)
  * Complete the EP disconnect process
  */
 
-inline static void
+static void
 ep_wait(shmemc_context_h ch, ucs_status_ptr_t req)
 {
     ucs_status_t s;
@@ -101,30 +101,19 @@ shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
 }
 
 /*
- * Start the disconnects for all PEs, and then wait for completion
+ * Disconnect EPs
  */
 
 void
 shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 {
-    ucs_status_ptr_t *req;
     int i;
-
-    req = (ucs_status_ptr_t *) calloc(proc.li.nranks, sizeof(*req));
-    shmemu_assert(req != NULL,
-                  MODULE ": failed to allocate memory "
-                  "for UCP endpoint disconnect: %s",
-                  strerror(errno));
+    ucs_status_ptr_t req;
 
     for (i = 0; i < proc.li.nranks; ++i) {
-        req[i] = ep_disconnect_nb(ch->eps[i]);
+        req = ep_disconnect_nb(ch->eps[i]);
+        ep_wait(ch, req);
     }
-
-    for (i = 0; i < proc.li.nranks; ++i) {
-        ep_wait(ch, req[i]);
-    }
-
-    free(req);
 }
 
 void
