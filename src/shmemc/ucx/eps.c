@@ -91,15 +91,6 @@ ep_wait(shmemc_context_h ch, ucs_status_ptr_t req)
     ucp_request_free(req);
 }
 
-ucs_status_t
-shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
-{
-    return ucp_rkey_pack(proc.comms.ucx_ctxt,
-                         mh,
-                         packed_rkey_p, rkey_len_p
-                         );
-}
-
 /*
  * Disconnect EPs
  */
@@ -114,6 +105,15 @@ shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
         req = ep_disconnect_nb(ch->eps[i]);
         ep_wait(ch, req);
     }
+}
+
+ucs_status_t
+shmemc_ucx_rkey_pack(ucp_mem_h mh, void **packed_rkey_p, size_t *rkey_len_p)
+{
+    return ucp_rkey_pack(proc.comms.ucx_ctxt,
+                         mh,
+                         packed_rkey_p, rkey_len_p
+                         );
 }
 
 void
