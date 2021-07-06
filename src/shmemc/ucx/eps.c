@@ -55,9 +55,21 @@ ep_disconnect_nb(ucp_ep_h ep)
      * TODO update to DC transport causing hangs on exit
      *
      * So just drop to simpler code for now; avoid ucp_ep_close_nbx()
-     * while investigating
+     * while investigating.  Code below commented-out seems to be
+     * working but not sure why
      *
      */
+
+#if 0
+#ifdef HAVE_UCP_EP_CLOSE_NBX
+    const ucp_request_param_t prm = {
+        .op_attr_mask = UCP_OP_ATTR_FIELD_FLAGS,
+        .flags = UCP_OP_ATTR_FLAG_FAST_CMPL
+    };
+
+    sp = ucp_ep_close_nbx(ep, &prm);
+#endif
+#endif
 
 #ifdef HAVE_UCP_EP_CLOSE_NB
     sp = ucp_ep_close_nb(ep, UCP_EP_CLOSE_MODE_FLUSH);
