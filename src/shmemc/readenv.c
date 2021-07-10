@@ -31,15 +31,19 @@ option_enabled_test(const char *str)
 {
     if (str == NULL) {
         return false;
+        /* NOT REACHED */
     }
     if (tolower(*str) == 'y') {
         return true;
+        /* NOT REACHED */
     }
     if (strncasecmp(str, "on", 2) == 0) {
         return true;
+        /* NOT REACHED */
     }
     if (strtol(str, NULL, 10) != 0L) {
         return true;
+        /* NOT REACHED */
     }
     return false;
 }
@@ -152,35 +156,35 @@ shmemc_env_init(void)
 
     CHECK_ENV(e, BARRIER_ALGO);
     proc.env.coll.barrier =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER );
     CHECK_ENV(e, BARRIER_ALL_ALGO);
     proc.env.coll.barrier_all =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER_ALL )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BARRIER_ALL );
     CHECK_ENV(e, SYNC_ALGO);
     proc.env.coll.sync =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC );
     CHECK_ENV(e, SYNC_ALL_ALGO);
     proc.env.coll.sync_all =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC_ALL )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_SYNC_ALL );
     CHECK_ENV(e, BROADCAST_ALGO);
     proc.env.coll.broadcast =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BROADCAST )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_BROADCAST );
     CHECK_ENV(e, COLLECT_ALGO);
     proc.env.coll.collect =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_COLLECT )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_COLLECT );
     CHECK_ENV(e, FCOLLECT_ALGO);
     proc.env.coll.fcollect =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_FCOLLECT )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_FCOLLECT );
     CHECK_ENV(e, ALLTOALL_ALGO);
     proc.env.coll.alltoall =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALL )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALL );
     CHECK_ENV(e, ALLTOALLS_ALGO);
     proc.env.coll.alltoalls =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALLS )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_ALLTOALLS );
     CHECK_ENV(e, REDUCE_ALGO);
     /* TODO currently ignored */
     proc.env.coll.reductions =
-        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_REDUCTIONS )
+        strdup( (e != NULL) ? e : COLLECTIVES_DEFAULT_REDUCTIONS );
     /* collectives to free@end */
 
     proc.env.progress_threads = NULL;
