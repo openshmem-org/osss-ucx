@@ -9,7 +9,6 @@
 #include "shmemc.h"
 #include "state.h"
 #include "globalexit.h"
-#include "readenv.h"
 
 #include "allocator/memalloc.h"
 
