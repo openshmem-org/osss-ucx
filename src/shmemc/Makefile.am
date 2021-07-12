@@ -9,7 +9,7 @@ OTHER_CPPFLAGS            = -I$(srcdir)/../shmemu \
 LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				globalexit.c \
-				readenv.c \
+				env.c \
 				init.c \
 				nodename.c \
 				state.c \
