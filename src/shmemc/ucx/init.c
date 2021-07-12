@@ -70,9 +70,7 @@ teardown_context(shmemc_context_h ch)
     size_t r;
     int pe;
 
-    if (! proc.env.teardown_kludge) {
-        shmemc_ucx_disconnect_all_eps(ch);
-    }
+    shmemc_ucx_disconnect_all_eps(ch);
     /* release remote access memory */
     for (r = 0; r < proc.comms.nregions; ++r) {
         for (pe = 0; pe < proc.li.nranks; ++pe) {

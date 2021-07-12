@@ -124,7 +124,6 @@ shmemc_env_init(void)
     proc.env.logging           = false;
     proc.env.logging_events    = NULL;
     proc.env.logging_file      = NULL;
-    proc.env.teardown_kludge   = false;
 
     CHECK_ENV(e, LOGGING);
     if (e != NULL) {
@@ -137,10 +136,6 @@ shmemc_env_init(void)
     CHECK_ENV(e, LOGGING_EVENTS);
     if (e != NULL) {
         proc.env.logging_events = strdup(e); /* free@end */
-    }
-    CHECK_ENV(e, TEARDOWN_KLUDGE);
-    if (e != NULL) {
-        proc.env.teardown_kludge = option_enabled_test(e);
     }
 
     proc.env.coll.barrier       = NULL;
@@ -393,15 +388,6 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
             var_width, "SHMEM_MEMERR_FATAL",
             val_width, proc.env.memfatal ? "yes" : "no",
             "abort if symmetric memory corruption");
-
-#if 0
-    fprintf(stream, "%s\n", prefix);
-    fprintf(stream, "%s%-*s %-*s %s\n",
-            prefix,
-            var_width, "SHMEM_TEARDOWN_KLUDGE",
-            val_width, shmemu_human_option(proc.env.teardown_kludge),
-            "avoid endpoint tear-down bug (temporary fix)");
-#endif
 
     /* ---------------------------------------------------------------- */
 
