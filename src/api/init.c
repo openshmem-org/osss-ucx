@@ -132,7 +132,7 @@ init_thread_helper(int requested, int *provided)
     }
 
 #ifdef ENABLE_EXPERIMENTAL
-    shmemxa_init(proc.env.heaps.nheaps);
+    shmemxa_init(proc.heaps.nheaps);
 #endif  /* ENABLE_EXPERIMENTAL */
 
     s = atexit(finalize_helper);

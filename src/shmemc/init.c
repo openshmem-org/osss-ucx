@@ -17,6 +17,9 @@ shmemc_init(void)
     /* find launch info */
     shmemc_pmi_client_init();
 
+    /* user-supplied setup */
+    shmemc_env_init();
+
     /* launch and connect my heap to network resources */
     shmemc_ucx_init();
 
@@ -52,6 +55,8 @@ shmemc_finalize(void)
     shmemc_pmi_barrier_all(false);
 
     shmemc_ucx_finalize();
+
+    shmemc_env_finalize();
 
     shmemc_pmi_client_finalize();
 

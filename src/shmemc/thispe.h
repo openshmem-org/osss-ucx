@@ -65,7 +65,6 @@ typedef struct env_info {
      */
     bool print_version;         /**< produce info output? */
     bool print_info;            /**< show settings at program start? */
-    heapinfo_t heaps;           /**< the heaps we manage */
     bool debug;                 /**< are we doing sanity debugging? */
 
     /*
@@ -105,6 +104,7 @@ typedef struct pmi_info {
 typedef struct thispe_info {
     comms_info_t comms;         /**< per-comms layer info */
     env_info_t env;             /**< environment vars */
+    heapinfo_t heaps;           /**< the heaps we manage */
     thread_desc_t td;           /**< threading model invoked */
     pmi_info_t li;              /**< launcher-supplied info */
     shmemc_status_t status;     /**< up, down, out to lunch etc */

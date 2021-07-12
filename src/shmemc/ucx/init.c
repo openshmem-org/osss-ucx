@@ -194,7 +194,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
     ucp_mem_attr_t attr;
     const unsigned long hn = (unsigned long) heapno; /* printing */
 
-    shmemu_assert(proc.env.heaps.heapsize[heapno] > 0,
+    shmemu_assert(proc.heaps.heapsize[heapno] > 0,
                   MODULE ": cannot register empty symmetric heap #%lu",
                   hn);
 
@@ -203,7 +203,7 @@ register_symmetric_heap(size_t heapno, mem_info_t *mip)
         UCP_MEM_MAP_PARAM_FIELD_LENGTH |
         UCP_MEM_MAP_PARAM_FIELD_FLAGS;
 
-    mp.length = proc.env.heaps.heapsize[heapno];
+    mp.length = proc.heaps.heapsize[heapno];
 
     mp.flags =
         UCP_MEM_MAP_NONBLOCK |
@@ -298,7 +298,7 @@ init_memory_regions(void)
     size_t i;
 
     /* 1 globals region, plus symmetric heaps */
-    proc.comms.nregions = 1 + proc.env.heaps.nheaps;
+    proc.comms.nregions = 1 + proc.heaps.nheaps;
 
     /* init that many regions on me */
     proc.comms.regions =
@@ -459,9 +459,6 @@ shmemc_ucx_init(void)
 {
     ucx_init_ready();
 
-    /* user-supplied setup */
-    shmemc_env_init();
-
     /* make remote memory usable */
     init_memory_regions();
     register_memory_regions();
@@ -511,8 +508,6 @@ shmemc_ucx_finalize(void)
     opaque_rkeys_finalize();
 
     deregister_memory_regions();
-
-    shmemc_env_finalize();
 
     ucx_cleanup();
 }

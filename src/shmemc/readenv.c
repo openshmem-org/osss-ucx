@@ -99,20 +99,20 @@ shmemc_env_init(void)
      */
 
     /* for now: could change with multiple heaps */
-    proc.env.heaps.nheaps = 1;
+    proc.heaps.nheaps = 1;
 
-    hs = proc.env.heaps.nheaps * sizeof(*proc.env.heaps.heapsize);
+    hs = proc.heaps.nheaps * sizeof(*proc.heaps.heapsize);
 
-    proc.env.heaps.heapsize = (size_t *) malloc(hs);
+    proc.heaps.heapsize = (size_t *) malloc(hs);
 
-    shmemu_assert(proc.env.heaps.heapsize != NULL,
+    shmemu_assert(proc.heaps.heapsize != NULL,
                   MODULE ": can't allocate memory for %lu heap%s",
-                  (unsigned long) proc.env.heaps.nheaps,
-                  shmemu_plural(proc.env.heaps.nheaps));
+                  (unsigned long) proc.heaps.nheaps,
+                  shmemu_plural(proc.heaps.nheaps));
 
     CHECK_ENV_WITH_DEPRECATION(e, SYMMETRIC_SIZE);
     r = shmemu_parse_size(e != NULL ? e : SHMEM_DEFAULT_HEAP_SIZE,
-                          &proc.env.heaps.heapsize[0]);
+                          &proc.heaps.heapsize[0]);
     shmemu_assert(r == 0,
                   MODULE ": couldn't work out requested heap size \"%s\"",
                   e != NULL ? e : "(null)");
@@ -246,7 +246,7 @@ shmemc_env_finalize(void)
 
     free(proc.env.progress_threads);
 
-    free(proc.env.heaps.heapsize);
+    free(proc.heaps.heapsize);
 }
 
 /*
@@ -301,7 +301,7 @@ shmemc_print_env_vars(FILE *stream, const char *prefix)
         char buf[BUFSIZE];
 
         /* TODO hardwired index */
-        (void) shmemu_human_number(proc.env.heaps.heapsize[0], buf, BUFSIZE);
+        (void) shmemu_human_number(proc.heaps.heapsize[0], buf, BUFSIZE);
         fprintf(stream, "%s%-*s %-*s %s\n",
                 prefix,
                 var_width, "SHMEM_SYMMETRIC_SIZE",
