@@ -189,10 +189,11 @@ shmemc_env_init(void)
         proc.env.progress_threads = strdup(e); /* free@end */
     }
 
-    proc.env.progress_delay_ns = 1000; /* these 2: magic, empirical */
-    delay = "1000";
+    delay = "1000";             /* magic number */
+    proc.env.progress_delay_ns = atol(delay);
 
     CHECK_ENV(e, PROGRESS_DELAY);
+
     r = shmemu_parse_size(e != NULL ? e : delay,
                           &proc.env.progress_delay_ns);
     shmemu_assert(r == 0,
@@ -221,6 +222,7 @@ shmemc_env_init(void)
 }
 
 #undef CHECK_ENV
+#undef CHECK_ENV_WITH_DEPRECATION
 
 void
 shmemc_env_finalize(void)
