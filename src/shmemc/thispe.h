@@ -48,15 +48,6 @@ typedef enum shmemc_status {
 } shmemc_status_t;
 
 /*
- * Describe a heap
- */
-
-typedef struct heapinfo {
-    size_t nheaps;              /**< how many heaps requested */
-    size_t *heapsize;           /**< array of their sizes */
-} heapinfo_t;
-
-/*
  * implementations support some environment variables
  */
 typedef struct env_info {
@@ -66,6 +57,7 @@ typedef struct env_info {
     bool print_version;         /**< produce info output? */
     bool print_info;            /**< show settings at program start? */
     bool debug;                 /**< are we doing sanity debugging? */
+    char *heap_spec;            /**< how user told us about heap size */
 
     /*
      * this implementation
@@ -96,6 +88,15 @@ typedef struct pmi_info {
     int *peers;                 /**< peer PEs in a node group */
     int npeers;                 /**< how many peers? */
 } pmi_info_t;
+
+/*
+ * Describe the heap(s)
+ */
+
+typedef struct heapinfo {
+    size_t nheaps;              /**< how many heaps requested */
+    size_t *heapsize;           /**< array of their sizes */
+} heapinfo_t;
 
 /*
  * each PE has this state info

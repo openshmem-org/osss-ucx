@@ -70,7 +70,6 @@ shmemc_env_init(void)
 {
     char *e;
     int r;
-    size_t hs;
     char *delay;
 
     /*
@@ -80,6 +79,7 @@ shmemc_env_init(void)
     proc.env.print_version = false;
     proc.env.print_info    = false;
     proc.env.debug         = false;
+    proc.env.heap_spec     = strdup(SHMEM_DEFAULT_HEAP_SIZE); /* free@end */
 
     CHECK_ENV_WITH_DEPRECATION(e, VERSION);
     if (e != NULL) {
@@ -93,29 +93,10 @@ shmemc_env_init(void)
     if (e != NULL) {
         proc.env.debug = option_enabled_test(e);
     }
-
-    /*
-     * heaps need a bit more handling
-     */
-
-    /* for now: could change with multiple heaps */
-    proc.heaps.nheaps = 1;
-
-    hs = proc.heaps.nheaps * sizeof(*proc.heaps.heapsize);
-
-    proc.heaps.heapsize = (size_t *) malloc(hs);
-
-    shmemu_assert(proc.heaps.heapsize != NULL,
-                  MODULE ": can't allocate memory for %lu heap%s",
-                  (unsigned long) proc.heaps.nheaps,
-                  shmemu_plural(proc.heaps.nheaps));
-
     CHECK_ENV_WITH_DEPRECATION(e, SYMMETRIC_SIZE);
-    r = shmemu_parse_size(e != NULL ? e : SHMEM_DEFAULT_HEAP_SIZE,
-                          &proc.heaps.heapsize[0]);
-    shmemu_assert(r == 0,
-                  MODULE ": couldn't work out requested heap size \"%s\"",
-                  e != NULL ? e : "(null)");
+    if (e != NULL) {
+        proc.env.heap_spec = strdup(e); /* free@end */
+    }
 
     /*
      * this implementation also has...
@@ -190,7 +171,7 @@ shmemc_env_init(void)
     }
 
     delay = "1000";             /* magic number */
-    proc.env.progress_delay_ns = atol(delay);
+    proc.env.progress_delay_ns = strtol(delay, NULL, 10);
 
     CHECK_ENV(e, PROGRESS_DELAY);
 
@@ -229,6 +210,7 @@ shmemc_env_finalize(void)
 {
     free(proc.env.logging_file);
     free(proc.env.logging_events);
+    free(proc.env.heap_spec);
 
     free(proc.env.coll.reductions);
     free(proc.env.coll.alltoalls);
@@ -243,7 +225,6 @@ shmemc_env_finalize(void)
 
     free(proc.env.progress_threads);
 
-    free(proc.heaps.heapsize);
 }
 
 /*

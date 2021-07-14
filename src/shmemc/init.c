@@ -5,9 +5,11 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "ucx/api.h"
+#include "boolean.h"
 #include "shmemc.h"
 #include "nodename.h"
 #include "pmi_client.h"
+#include "heaps.h"
 
 void
 shmemc_init(void)
@@ -19,6 +21,8 @@ shmemc_init(void)
 
     /* user-supplied setup */
     shmemc_env_init();
+
+    shmemc_heaps_init();
 
     /* launch and connect my heap to network resources */
     shmemc_ucx_init();
@@ -55,6 +59,8 @@ shmemc_finalize(void)
     shmemc_pmi_barrier_all(false);
 
     shmemc_ucx_finalize();
+
+    shmemc_heaps_finalize();
 
     shmemc_env_finalize();
 

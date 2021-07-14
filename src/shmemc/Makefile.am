@@ -10,6 +10,7 @@ LIBSHMEMC_SOURCES         = \
 				contexts.c \
 				globalexit.c \
 				env.c \
+				heaps.c \
 				init.c \
 				nodename.c \
 				state.c \
