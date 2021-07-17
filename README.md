@@ -23,7 +23,8 @@ Implementation on top of OpenUCX (UCX) and PMIx.
 | :------- | :--- |
 | OpenSHMEM | [https://github.com/openshmem-org/osss-ucx/](https://github.com/openshmem-org/osss-ucx/) |
 | OpenUCX   | [http://www.openucx.org/](http://www.openucx.org/) |
-| PMIx      | [https://pmix.github.io/pmix/](https://pmix.github.io/pmix/) |
+| PMIx      | [https://github.com/openpmix/openpmix](https://github.com/openpmix/openpmix) |
+| PRRTE     | [https://github.com/openpmix/prrte](https://github.com/openpmix/prrte) |
 | Open-MPI  | [http://www.open-mpi.org/](http://www.open-mpi.org/) |
 
 ## License

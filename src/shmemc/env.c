@@ -79,7 +79,6 @@ shmemc_env_init(void)
     proc.env.print_version = false;
     proc.env.print_info    = false;
     proc.env.debug         = false;
-    proc.env.heap_spec     = strdup(SHMEM_DEFAULT_HEAP_SIZE); /* free@end */
 
     CHECK_ENV_WITH_DEPRECATION(e, VERSION);
     if (e != NULL) {
@@ -94,9 +93,11 @@ shmemc_env_init(void)
         proc.env.debug = option_enabled_test(e);
     }
     CHECK_ENV_WITH_DEPRECATION(e, SYMMETRIC_SIZE);
-    if (e != NULL) {
-        proc.env.heap_spec = strdup(e); /* free@end */
-    }
+    proc.env.heap_spec = strdup(
+                                e != NULL
+                                ? e
+                                : SHMEM_DEFAULT_HEAP_SIZE
+                                );
 
     /*
      * this implementation also has...
