@@ -97,7 +97,7 @@ shmemc_env_init(void)
                                 e != NULL
                                 ? e
                                 : SHMEM_DEFAULT_HEAP_SIZE
-                                );
+                                ); /* free@end */
 
     /*
      * this implementation also has...
