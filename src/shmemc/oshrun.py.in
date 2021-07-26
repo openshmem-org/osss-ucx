@@ -27,9 +27,18 @@ MPI_LAUNCHER   = "mpiexec"
 
 ENV_LAUNCH_VAR = "SHMEM_LAUNCHER"
 
-width          = 70             # of terminal
 debugging      = False
 launcher       = None
+
+try:
+    width, _ = os.get_terminal_size()
+except:
+    width = 80                  # default terminal cols
+
+width = width - 10              # but leave some space
+
+if width < 10:
+    width = 10
 
 #
 # -- debug and error--------------------------------------------------
@@ -116,7 +125,7 @@ user_cmd = ' '.join(map(str, sys.argv[1:]))
 #
 cmd = launcher + ' ' + user_cmd
 
-debug(None, "running \"{0}\"".format(cmd))
+debug("run", "calling \"{0}\"".format(cmd))
 debug(None, '-' * width)
 
 os.system(cmd)
