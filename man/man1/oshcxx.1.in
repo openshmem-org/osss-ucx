@@ -33,7 +33,11 @@ The OpenSHMEM specification does not say anything normative about how
 OpenSHMEM programs are compiled, linked and launched.  These wrapper
 programs are supplied as part of the Reference Library for
 convenience.
+.SH PKG-CONFIG
+The underlying flags/options are accessible via pkg-config(1) with the
+name \f(CRosss-ucx\fP.
 .SH SEE ALSO
-osh_intro(1).
+osh_intro(1),
+pkg-config(1).
 .SH OPENSHMEM
 http://www.openshmem.org/
