@@ -227,11 +227,15 @@ info_output_comms(FILE *strm, const char *prefix)
            );
 
     output(strm, prefix, "Using SHCOLL from",
-#ifdef HAVE_SHCOLL_INTERNAL
-           PACKAGE_STRING
-#else
+#ifdef HAVE_SHCOLL
+# ifdef HAVE_SHCOLL_INTERNAL
+           PACKAGE_STRING " [internal]"
+# else
            SHCOLL_DIR
-#endif  /* HAVE_SHCOLL_INTERNAL */
+# endif  /* HAVE_SHCOLL_INTERNAL */
+#else
+           INTERNAL_ERROR
+#endif  /* HAVE_SHCOLL */
            );
 
     output(strm, prefix, "Using launcher",
