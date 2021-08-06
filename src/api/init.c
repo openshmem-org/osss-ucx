@@ -12,9 +12,6 @@
 #include "shmem_mutex.h"
 #include "progress.h"
 #include "collectives/collectives.h"
-#ifdef ENABLE_ALIGNED_ADDRESSES
-# include "asr.h"
-#endif /* ENABLE_ALIGNED_ADDRESSES */
 #include "module.h"
 
 #ifdef ENABLE_EXPERIMENTAL
@@ -102,7 +99,7 @@ init_thread_helper(int requested, int *provided)
     proc.td.invoking_thread = threadwrap_thread_id();
 
 #ifdef ENABLE_ALIGNED_ADDRESSES
-    test_asr_mismatch();
+    shmemu_test_asr_mismatch();
 #endif /* ENABLE_ALIGNED_ADDRESSES */
 
     /* set up comms, read environment */

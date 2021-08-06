@@ -100,10 +100,6 @@ endif
 MY_SOURCES            += collectives/shcoll-shim.c
 MY_SOURCES            += collectives/table.c
 
-if ENABLE_ALIGNED_ADDRESSES
-MY_SOURCES            += asr.c
-endif
-
 #
 # separate out the memory allocation routines
 #

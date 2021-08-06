@@ -6,13 +6,17 @@ OTHER_CPPFLAGS            = 	-I../../include \
 				-I$(srcdir)/../shmemt \
 				-I$(srcdir)/../api/allocator
 
-LIBSHMEMU_SOURCES         = init.c \
+LIBSHMEMU_SOURCES         =	init.c \
 				carp.c \
 				memcheck.c \
 				parse_csv.c \
 				plural.c \
 				timer.c \
 				unitparse.c
+
+if ENABLE_ALIGNED_ADDRESSES
+LIBSHMEMU_SOURCES        += asr.c
+endif
 
 if ENABLE_LOGGING
 LIBSHMEMU_SOURCES        += deprecate.c logger.c

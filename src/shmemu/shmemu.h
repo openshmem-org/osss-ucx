@@ -75,6 +75,10 @@ void shmemu_finalize(void);
  */
 double shmemu_timer(void);
 
+#ifdef ENABLE_ALIGNED_ADDRESSES
+void shmemu_test_asr_mismatch(void);
+#endif /* ENABLE_ALIGNED_ADDRESSES */
+
 /*
  * number manipulators
  */

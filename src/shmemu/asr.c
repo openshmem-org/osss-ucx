@@ -24,7 +24,7 @@
 #define PERSONALITY_QUERY 0xffffffff
 
 void
-test_asr_mismatch(void)
+shmemu_test_asr_mismatch(void)
 {
     int p;
     int fd;
