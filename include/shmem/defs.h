@@ -1,4 +1,4 @@
-/* For license: see LICENSE file at top-level */
+//* For license: see LICENSE file at top-level */
 
 #ifndef _SHMEM_DEFINES_H
 #define _SHMEM_DEFINES_H 1
@@ -90,7 +90,7 @@ enum shmem_thread_levels {
 /*
  * signal operators
  */
-enum signal_ops {
+enum shmem_signal_ops {
     SHMEM_SIGNAL_SET = 0,
     SHMEM_SIGNAL_ADD
 };
