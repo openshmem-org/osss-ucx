@@ -4,6 +4,7 @@
 #define _SHMEM_H 1
 
 #include <shmem/defs.h>
+#include <shmem/defs_subst.h>
 #include <shmem/depr.h>
 #include <shmem/api.h>
 
