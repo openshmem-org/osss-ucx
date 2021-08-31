@@ -756,10 +756,10 @@ HELPER_BITWISE_FETCH_ATOMIC(^, xor)
                                         int pe,                         \
                                         void *retp)                     \
     {                                                                   \
-        helper_atomic_fetch_##_opname(shmemc_context_h ch,              \
-                                      void *t, void *vp, size_t vs,     \
-                                      int pe,                           \
-                                      void *retp);                      \
+        helper_atomic_fetch_##_opname(ch,                               \
+                                      t, vp, vs,                        \
+                                      pe,                               \
+                                      retp);                            \
     }
 
 HELPER_BITWISE_FETCH_ATOMIC_NBI(AND, and)
