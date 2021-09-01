@@ -4,8 +4,6 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include "shmemu.h"
-
 #include <stdio.h>
 #include <sys/time.h>
 
@@ -14,14 +12,14 @@ static double epoch;
 inline static double
 shmemu_read_time(void)
 {
-    struct timeval t;
+    struct timeval now;
 
-    if (gettimeofday(&t, NULL) != 0) {
+    if (gettimeofday(&now, NULL) != 0) {
         return 0.0;
         /* NOT REACHED */
     }
 
-    return (double) (t.tv_sec + (t.tv_usec / 1.0e6));
+    return (double) (now.tv_sec + (now.tv_usec / 1.0e6));
 }
 
 void
