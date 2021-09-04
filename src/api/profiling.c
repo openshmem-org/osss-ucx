@@ -9,12 +9,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static int profiling_level = 1; /* default per spec 1.5 ++ */
-
-/**
+/*
  * stub for the profiling (PSHMEM) interface
  *
+ * See OpenSHMEM 1.5 spec, p. 141.  Appears to be typo re. level 2,
+ * assume last entry is > 2 instead of >= 2.
  */
+
+static int profiling_level = 1; /* default */
 
 void
 shmem_pcontrol(const int level, ...)
