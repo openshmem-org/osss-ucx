@@ -427,6 +427,7 @@ init_peers(void)
             size_t n;
             const int s =
                 shmemu_parse_csv(vp->data.string, &proc.li.peers, &n);
+
             NO_WARN_UNUSED(n);
             shmemu_assert(s > 0,
                           MODULE ": PMIx unable to parse peer PE"
