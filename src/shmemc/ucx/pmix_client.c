@@ -373,7 +373,7 @@ init_ranks(void)
     }
     else {
         /* this seems somewhat sane if we can't query */
-        proc.li.nnodes = 1;
+        proc.li.nnodes = proc.li.nranks;
     }
 
     ps = PMIx_Get(&wc_pmix, PMIX_UNIV_SIZE, NULL, 0, &vp);
