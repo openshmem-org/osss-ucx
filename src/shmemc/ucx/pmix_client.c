@@ -321,24 +321,20 @@ inline static pmix_status_t
 pmix_init_wrapper(pmix_proc_t *pp)
 {
 #ifdef HAVE_PMIX_NO_INIT_HINTS
-    ps = PMIx_Init(pp);
+    return PMIx_Init(pp);
 #else
-    ps = PMIx_Init(pp, NULL, 0);
+    return PMIx_Init(pp, NULL, 0);
 #endif  /* HAVE_PMIX_NO_INIT_HINTS */
-
-    return ps;
 }
 
 inline static pmix_status_t
 pmix_finalize_wrapper(void)
 {
 #ifdef HAVE_PMIX_NO_INIT_HINTS
-    ps = PMIx_Finalize();
+    return PMIx_Finalize();
 #else
-    ps = PMIx_Finalize(NULL, 0);
+    return PMIx_Finalize(NULL, 0);
 #endif  /* HAVE_PMIX_NO_INIT_HINTS */
-
-    return ps;
 }
 
 /*
