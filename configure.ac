@@ -133,8 +133,6 @@ AC_FUNC_MMAP
 AC_CHECK_FUNCS([atexit _exit exit gettimeofday gethostname uname memset strlcat strlcpy sched_yield nanosleep setenv putenv])
 AC_CHECK_LIB([m], [log10])
 
-AM_INIT_AUTOMAKE
-
 now="`date`"
 AC_DEFINE_UNQUOTED([CONFIG_BUILD_DATE],["$now"],[When this package was compiled])
 host="`hostname`"
