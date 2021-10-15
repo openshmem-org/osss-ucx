@@ -45,9 +45,7 @@ shmema_base(void)
 void *
 shmema_malloc(size_t size)
 {
-    void *addr = mspace_malloc(myspace, size);
-
-    return addr;
+    return mspace_malloc(myspace, size);
 }
 
 /**
@@ -57,9 +55,7 @@ shmema_malloc(size_t size)
 void *
 shmema_calloc(size_t count, size_t size)
 {
-    void *addr = mspace_calloc(myspace, count, size);
-
-    return addr;
+    return = mspace_calloc(myspace, count, size);
 }
 
 /**
@@ -77,9 +73,7 @@ shmema_free(void *addr)
 void *
 shmema_realloc(void *addr, size_t new_size)
 {
-    void *new_addr = mspace_realloc(myspace, addr, new_size);
-
-    return new_addr;
+    return mspace_realloc(myspace, addr, new_size);
 }
 
 /**
@@ -88,7 +82,5 @@ shmema_realloc(void *addr, size_t new_size)
 void *
 shmema_align(size_t alignment, size_t size)
 {
-    void *aligned_addr = mspace_memalign(myspace, alignment, size);
-
-    return aligned_addr;
+    return mspace_memalign(myspace, alignment, size);
 }
