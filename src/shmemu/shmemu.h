@@ -253,18 +253,18 @@ void shmemu_deprecate(const char *fn, float version);
 
 # define SHMEMU_CHECK_ALLOC(_addr, _bytes)                              \
     do {                                                                \
-    if ((_addr) == NULL) {                                              \
-        char buf_b[16];                                                 \
-        char buf_h[16];                                                 \
+        if ((_addr) == NULL) {                                          \
+            char buf_b[16];                                             \
+            char buf_h[16];                                             \
                                                                         \
-        shmemu_human_number(proc.heaps.heapsize[0], buf_h, 15);         \
-        shmemu_human_number(_bytes, buf_b, 15);                         \
-        shmemu_warn("allocating %s would overrun heap size of %s",      \
-                    buf_b, buf_h                                        \
-                    );                                                  \
-        shmemu_warn("try setting environment variable "                 \
-                    "SHMEM_SYMMETRIC_SIZE");                            \
-                    }                                                   \
+            shmemu_human_number(proc.heaps.heapsize[0], buf_h, 15);     \
+            shmemu_human_number(_bytes, buf_b, 15);                     \
+            shmemu_warn("allocating %s would overrun heap size of %s",  \
+                        buf_b, buf_h                                    \
+                        );                                              \
+            shmemu_warn("try setting environment variable "             \
+                        "SHMEM_SYMMETRIC_SIZE");                        \
+        }                                                               \
     } while (0)
 
 #else  /* ! ENABLE_DEBUG */
