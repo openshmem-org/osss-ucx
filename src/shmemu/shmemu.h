@@ -259,10 +259,13 @@ void shmemu_deprecate(const char *fn, float version);
                                                                         \
             shmemu_human_number(proc.heaps.heapsize[0], buf_h, 15);     \
             shmemu_human_number(_bytes, buf_b, 15);                     \
-            shmemu_warn("allocating %s would overrun heap size of %s",  \
+                                                                        \
+            shmemu_warn("allocating %s would overrun "                  \
+                        "heap size of %s",                              \
                         buf_b, buf_h                                    \
                         );                                              \
-            shmemu_warn("try setting environment variable "             \
+            shmemu_warn("try increasing value of "                      \
+                        "environment variable "                         \
                         "SHMEM_SYMMETRIC_SIZE");                        \
         }                                                               \
     } while (0)
