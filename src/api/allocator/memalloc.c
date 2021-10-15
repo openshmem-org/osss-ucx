@@ -55,7 +55,7 @@ shmema_malloc(size_t size)
 void *
 shmema_calloc(size_t count, size_t size)
 {
-    return = mspace_calloc(myspace, count, size);
+    return mspace_calloc(myspace, count, size);
 }
 
 /**
