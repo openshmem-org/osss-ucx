@@ -35,8 +35,6 @@ static pmix_key_t k1;           /* re-usable key spaces */
 static pmix_key_t k2;
 #endif /* ENABLE_ALIGNED_ADDRESSES */
 
-static pmix_status_t ps;        /* re-usable pmix status */
-
 /*
  * Make local info avaialable to PMIx
  */
@@ -46,6 +44,7 @@ static const char *wrkr_exch_fmt   = "w:%d"; /* pe */
 void
 shmemc_pmi_publish_worker(void)
 {
+    pmix_status_t ps;
     pmix_value_t v;
 
     /* everyone publishes their info */
@@ -68,10 +67,12 @@ publish_one_rkeys(size_t r)
     pmix_value_t v;
     void *packed_rkey;
     size_t rkey_len;
+    pmix_status_t ps;
     const ucs_status_t s =
         shmemc_ucx_rkey_pack(proc.comms.regions[r].minfo[proc.li.rank].mh,
                              &packed_rkey, &rkey_len
                              );
+
     shmemu_assert(s == UCS_OK,
                   MODULE ": PMIx can't pack rkey for memory region %lu",
                   (unsigned long) r);
@@ -99,6 +100,7 @@ static const char *region_size_fmt = "s:%lu:%d"; /* region, pe */
 inline static void
 publish_one_heap(size_t r)
 {
+    pmix_status_t ps;
     pmix_value_t vb, vs;
 
     snprintf(k1, PMIX_MAX_KEYLEN, region_base_fmt, r, proc.li.rank);
@@ -147,6 +149,7 @@ shmemc_pmi_publish_rkeys_and_heaps(void)
 void
 shmemc_pmi_exchange_workers(void)
 {
+    pmix_status_t ps;
     pmix_value_t *vp = NULL;
     int pe;
 
@@ -178,6 +181,7 @@ shmemc_pmi_exchange_workers(void)
 inline static void
 exchange_one_heap(size_t r, int pe)
 {
+    pmix_status_t ps;
     pmix_value_t *vpb = NULL;
     pmix_value_t *vps = NULL;
     uint64_t base;
@@ -216,6 +220,7 @@ exchange_one_heap(size_t r, int pe)
 inline static void
 exchange_one_rkeys(size_t r, int pe)
 {
+    pmix_status_t ps;
     pmix_value_t *vp = NULL;
     pmix_byte_object_t *bop;
 
@@ -290,6 +295,8 @@ shmemc_pmi_exchange_rkeys_and_heaps(void)
 void
 shmemc_pmi_barrier_all(bool collect_data)
 {
+    pmix_status_t ps;
+
     /* put all info out there */
     ps = PMIx_Commit();
     shmemu_assert(ps == PMIX_SUCCESS,
@@ -344,6 +351,7 @@ pmix_finalize_wrapper(void)
 inline static void
 init_ranks(void)
 {
+    pmix_status_t ps;
     pmix_value_t *vp;           /* holds things we get from PMIx */
 
     /* we can get our own rank immediately */
@@ -396,6 +404,7 @@ init_ranks(void)
 inline static void
 init_peers(void)
 {
+    pmix_status_t ps;
     pmix_value_t *vp = NULL;    /* holds things we get from PMIx */
 
     /* what's on this node? */
@@ -470,6 +479,7 @@ notification_fn(size_t evhdlr_registration_id,
                 pmix_event_notification_cbfunc_fn_t cbfunc,
                 void *cbdata)
 {
+    pmix_status_t ps;
     /* unpack passed PMIx info for exit code */
     const int ret = info[0].value.data.integer;
 
@@ -540,6 +550,7 @@ init_event_handler(void)
 void
 shmemc_pmi_client_abort(const char *msg, int status)
 {
+    pmix_status_t ps;
     pmix_info_t si;
 
     NO_WARN_UNUSED(msg);
@@ -565,7 +576,7 @@ shmemc_pmi_client_abort(const char *msg, int status)
 void
 shmemc_pmi_client_finalize(void)
 {
-    ps = pmix_finalize_wrapper();
+    const pmix_status_t ps = pmix_finalize_wrapper();
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   MODULE ": PMIx can't finalize itself: %s",
@@ -582,7 +593,7 @@ shmemc_pmi_client_finalize(void)
 void
 shmemc_pmi_client_init(void)
 {
-    ps = pmix_init_wrapper(&my_pmix);
+    const pmix_status_t ps = pmix_init_wrapper(&my_pmix);
 
     shmemu_assert(ps == PMIX_SUCCESS,
                   MODULE ": PMIx can't initialize itself: %s",
