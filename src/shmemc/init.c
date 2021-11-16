@@ -10,6 +10,7 @@
 #include "nodename.h"
 #include "pmi_client.h"
 #include "heaps.h"
+#include "env.h"
 
 void
 shmemc_init(void)
