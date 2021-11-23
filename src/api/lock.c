@@ -53,7 +53,7 @@ get_owner_spread(uint64_t addr)
 inline static int
 lock_owner(void *addr)
 {
-    uint64_t la = (uint64_t) addr;
+    const uint64_t la = (uint64_t) addr;
     int owner;
 
     /*
@@ -84,45 +84,53 @@ lock_owner(void *addr)
  */
 
 inline static void
-set_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
+try_request_lock(shmem_lock_t *lock, int me, shmem_lock_t *cmp)
+{
+    const shmem_lock_t tmp = {
+        .d.locked  = SHMEM_LOCK_ACQUIRED,
+        .d.next = me
+    };
+
+    cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
+                                              SHMEM_LOCK_RESET,
+                                              tmp.blob,
+                                              lock_owner(lock)
+                                              );
+}
+
+inline static void
+try_clear_lock(shmem_lock_t *lock, int me, shmem_lock_t *cmp)
+{
+    const shmem_lock_t tmp = {
+        .d.locked  = SHMEM_LOCK_ACQUIRED,
+        .d.next = me
+    };
+
+    cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
+                                              tmp.blob,
+                                              SHMEM_LOCK_RESET,
+                                              lock_owner(lock)
+                                              );
+}
+
+inline static void
+set_lock_request(shmem_lock_t *lock,
                  int me,
                  shmem_lock_t *cmp)
 {
-    shmem_lock_t tmp;
-
-    NO_WARN_UNUSED(node);
-
-    /* request ownership */
-    tmp.d.locked = SHMEM_LOCK_ACQUIRED;
-    tmp.d.next = me;
-
     /* push my claim into the owner */
     do {
-        cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                                  SHMEM_LOCK_RESET,
-                                                  tmp.blob,
-                                                  lock_owner(lock));
+        try_request_lock(lock, me, cmp);
     } while (cmp->blob != SHMEM_LOCK_RESET);
 }
 
 inline static void
-test_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
+test_lock_request(shmem_lock_t *lock,
                   int me,
                   shmem_lock_t *cmp)
 {
-    shmem_lock_t tmp;
-
-    NO_WARN_UNUSED(node);
-
-    /* request ownership */
-    tmp.d.locked = SHMEM_LOCK_ACQUIRED;
-    tmp.d.next = me;
-
     /* if owner is unset, grab the lock */
-    cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                              SHMEM_LOCK_RESET,
-                                              tmp.blob,
-                                              lock_owner(lock));
+    try_request_lock(lock, me, cmp);
 }
 
 inline static void
@@ -130,18 +138,8 @@ clear_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
                    int me,
                    shmem_lock_t *cmp)
 {
-    shmem_lock_t tmp;
-
     if (node->d.next == SHMEM_LOCK_FREE) {
-        /* request ownership */
-        tmp.d.locked = SHMEM_LOCK_ACQUIRED;
-        tmp.d.next = me;
-
-        /* owner can reset */
-        cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                                  tmp.blob,
-                                                  SHMEM_LOCK_RESET,
-                                                  lock_owner(lock));
+        try_clear_lock(lock, me, cmp);
     }
 }
 
@@ -150,12 +148,10 @@ clear_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
  */
 
 inline static void
-set_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
+set_lock_execute(shmem_lock_t *node,
                  int me,
                  shmem_lock_t *cmp)
 {
-    NO_WARN_UNUSED(lock);
-
     /* tail */
     node->d.next = SHMEM_LOCK_FREE;
 
@@ -174,13 +170,13 @@ set_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
 }
 
 inline static int
-test_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
+test_lock_execute(shmem_lock_t *node,
                   int me,
                   shmem_lock_t *cmp)
 {
     if (cmp->blob == SHMEM_LOCK_RESET) {
         /* grabbed unset lock, now go on to set the rest of the lock */
-        set_lock_execute(node, lock, me, cmp);
+        set_lock_execute(node, me, cmp);
         return 0;
     }
     else {
@@ -190,12 +186,10 @@ test_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
 }
 
 inline static void
-clear_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
+clear_lock_execute(shmem_lock_t *node,
                    int me,
                    shmem_lock_t *cmp)
 {
-    NO_WARN_UNUSED(lock);
-
     /* any more chainers? */
     if (cmp->d.next == me) {
         return;
@@ -209,7 +203,6 @@ clear_lock_execute(shmem_lock_t *node, shmem_lock_t *lock,
 
     /* tell next pe about release */
     shmem_short_p(&(node->d.locked), SHMEM_LOCK_RESET, node->d.next);
-    shmem_quiet();
 }
 
 /*
@@ -221,8 +214,8 @@ set_lock(shmem_lock_t *node, shmem_lock_t *lock, int me)
 {
     shmem_lock_t t;
 
-    set_lock_request(node, lock, me, &t);
-    set_lock_execute(node, lock, me, &t);
+    set_lock_request(lock, me, &t);
+    set_lock_execute(node, me, &t);
 }
 
 inline static void
@@ -231,19 +224,16 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock, int me)
     shmem_lock_t t;
 
     clear_lock_request(node, lock, me, &t);
-    clear_lock_execute(node, lock, me, &t);
+    clear_lock_execute(node, me, &t);
 }
 
 inline static int
 test_lock(shmem_lock_t *node, shmem_lock_t *lock, int me)
 {
     shmem_lock_t t;
-    int rc;
 
-    test_lock_request(node, lock, me, &t);
-    rc = test_lock_execute(node, lock, me, &t);
-
-    return rc;
+    test_lock_request(lock, me, &t);
+    return test_lock_execute(node, me, &t);
 }
 
 /**
