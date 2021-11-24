@@ -53,7 +53,7 @@ get_owner_spread(uint64_t addr)
 inline static int
 lock_owner(void *addr)
 {
-    const uint64_t la = (uint64_t) addr;
+    const uint64_t la = (const uint64_t) addr;
     int owner;
 
     /*
@@ -67,6 +67,7 @@ lock_owner(void *addr)
         owner = get_owner_spread(la);
     }
     else {
+        /* don't choose PE 0, as it is often used for work allocation */
         owner = shmem_n_pes() - 1;
     }
 #endif /* ENABLE_ALIGNED_ADDRESSES */
@@ -75,12 +76,34 @@ lock_owner(void *addr)
 }
 
 /*
- * split the lock claim into request + execute.  "cmp" contains the
- * claim and connects the 2 phases
+ * split the lock claim into 2-phase request + execute.
+ *
+ * "cmp" contains the claim and connects the 2 phases
  */
 
 /*
+ *
  * lock requests
+ *
+ */
+
+/*
+ * common lock action
+ */
+
+inline static void
+try_lock_action(shmem_lock_t *lock,
+                int cond, int value,
+                shmem_lock_t *cmp)
+{
+    cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
+                                              cond, value,
+                                              lock_owner(lock)
+                                              );
+}
+
+/*
+ * attempt to get set/clear a lock
  */
 
 inline static void
@@ -91,11 +114,7 @@ try_request_lock(shmem_lock_t *lock, int me, shmem_lock_t *cmp)
         .d.next = me
     };
 
-    cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                              SHMEM_LOCK_RESET,
-                                              tmp.blob,
-                                              lock_owner(lock)
-                                              );
+    try_lock_action(lock, SHMEM_LOCK_RESET, tmp.blob, cmp);
 }
 
 inline static void
@@ -106,12 +125,12 @@ try_clear_lock(shmem_lock_t *lock, int me, shmem_lock_t *cmp)
         .d.next = me
     };
 
-    cmp->blob = shmem_int_atomic_compare_swap(&(lock->blob),
-                                              tmp.blob,
-                                              SHMEM_LOCK_RESET,
-                                              lock_owner(lock)
-                                              );
+    try_lock_action(lock, tmp.blob, SHMEM_LOCK_RESET, cmp);
 }
+
+/*
+ * request phase for each routine
+ */
 
 inline static void
 set_lock_request(shmem_lock_t *lock,
@@ -268,11 +287,7 @@ shmem_set_lock(long *lp)
     SHMEMU_CHECK_NOT_NULL(lp, 1);
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
 
-    logger(LOG_LOCKS,
-           "%s(lock=%p)",
-           __func__,
-           lock
-           );
+    logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
     SHMEMT_MUTEX_NOPROTECT(set_lock(node, lock, shmem_my_pe()));
 }
@@ -286,11 +301,7 @@ shmem_clear_lock(long *lp)
     SHMEMU_CHECK_NOT_NULL(lp, 1);
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
 
-    logger(LOG_LOCKS,
-           "%s(lock=%p)",
-           __func__,
-           lock
-           );
+    logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
     /* required to flush comms before clearing lock */
     shmem_quiet();
@@ -308,11 +319,7 @@ shmem_test_lock(long *lp)
     SHMEMU_CHECK_NOT_NULL(lp, 1);
     SHMEMU_CHECK_SYMMETRIC(lp, 1);
 
-    logger(LOG_LOCKS,
-           "%s(lock=%p)",
-           __func__,
-           lock
-           );
+    logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
     SHMEMT_MUTEX_NOPROTECT(ret = test_lock(node, lock, shmem_my_pe()));
 
