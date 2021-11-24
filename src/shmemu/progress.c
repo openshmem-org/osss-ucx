@@ -19,7 +19,6 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "threading.h"
-#include "progress.h"
 #include "module.h"
 
 #include <stdio.h>
@@ -142,7 +141,7 @@ check_if_progress_required(void)
  */
 
 void
-progress_init(void)
+shmemu_progress_init(void)
 {
     proc.progress_thread = check_if_progress_required();
 
@@ -168,7 +167,7 @@ progress_init(void)
  */
 
 void
-progress_finalize(void)
+shmemu_progress_finalize(void)
 {
     if (proc.progress_thread) {
         int s;
@@ -188,7 +187,7 @@ progress_finalize(void)
  */
 
 void
-progress_set_delay(long newdelay)
+shmemu_progress_set_delay(long newdelay)
 {
     delay_ns = newdelay;
 }

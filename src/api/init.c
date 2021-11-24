@@ -10,7 +10,6 @@
 #include "info.h"
 #include "threading.h"
 #include "shmem_mutex.h"
-#include "progress.h"
 #include "collectives/collectives.h"
 #include "module.h"
 
@@ -66,7 +65,8 @@ finalize_helper(void)
     /* implicit barrier on finalize */
     shmem_barrier_all();
 
-    progress_finalize();
+    shmemu_progress_finalize();
+
     shmemc_finalize();
     collectives_finalize();
     /* don't need a shmemt_finalize() */
@@ -108,7 +108,8 @@ init_thread_helper(int requested, int *provided)
     shmemt_init();
     shmemu_init();
     collectives_init();
-    progress_init();
+
+    shmemu_progress_init();
 
     /* for now */
     switch(requested) {

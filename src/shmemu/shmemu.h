@@ -50,6 +50,14 @@
 #endif /* HAVE_STRLCAT */
 
 /*
+ * communication progress
+ */
+
+void shmemu_progress_init(void);
+void shmemu_progress_finalize(void);
+void shmemu_progress_set_delay(long newdelay);
+
+/*
  * rotate/spread PE communications
  */
 inline static int

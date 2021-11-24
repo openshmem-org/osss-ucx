@@ -37,7 +37,6 @@ MY_SOURCES             = \
 				init.c \
 				lock.c \
 				profiling.c \
-				progress.c \
 				ptr.c \
 				putget.c \
 				put_signal.c \
