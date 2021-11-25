@@ -5,10 +5,8 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem_mutex.h"
-
 #include "shmemu.h"
 #include "shmemc.h"
-#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_short_wait_until_any = pshmem_short_wait_until_any

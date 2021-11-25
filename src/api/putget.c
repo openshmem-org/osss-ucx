@@ -5,7 +5,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemc.h"
-#include "shmem/api.h"
 
 #include "putget.h"
 

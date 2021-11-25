@@ -17,8 +17,6 @@
 #include "allocator/xmemalloc.h"
 #endif  /* ENABLE_EXPERIMENTAL */
 
-#include "shmem/api.h"
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -63,7 +61,7 @@ finalize_helper(void)
     }
 
     /* implicit barrier on finalize */
-    shmem_barrier_all();
+    shmemc_barrier_all();
 
     shmemu_progress_finalize();
 
@@ -161,7 +159,7 @@ init_thread_helper(int requested, int *provided)
            );
 
     /* make sure all symmetric memory ready */
-    shmem_barrier_all();
+    shmemc_barrier_all();
 
     /* just declare success */
     return 0;

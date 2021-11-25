@@ -5,7 +5,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
-#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_info_get_version = pshmem_info_get_version

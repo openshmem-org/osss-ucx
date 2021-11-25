@@ -5,8 +5,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemc.h"
-#include "shmem/api.h"
-
 #include "put_signal.h"
 
 #ifdef ENABLE_PSHMEM

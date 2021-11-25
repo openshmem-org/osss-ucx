@@ -6,7 +6,6 @@
 
 #include "shmemc.h"
 #include "shmemu.h"
-#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_my_pe = pshmem_my_pe

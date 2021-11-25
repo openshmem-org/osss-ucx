@@ -8,7 +8,6 @@
 #include "module.h"
 #include "shmemu.h"
 #include "shmemc.h"
-#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_short_test_any_vector = pshmem_short_test_any_vector
