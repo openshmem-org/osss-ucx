@@ -7,6 +7,7 @@
 #include "shmem_mutex.h"
 #include "shmemu.h"
 #include "shmemc.h"
+#include "shmem/api.h"
 
 #include <bits/wordsize.h>
 #include <sys/types.h>
