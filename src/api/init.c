@@ -12,6 +12,7 @@
 #include "shmem_mutex.h"
 #include "collectives/collectives.h"
 #include "module.h"
+#include "shmem/api.h"
 
 #ifdef ENABLE_EXPERIMENTAL
 #include "allocator/xmemalloc.h"
@@ -61,7 +62,7 @@ finalize_helper(void)
     }
 
     /* implicit barrier on finalize */
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     shmemu_progress_finalize();
 
@@ -159,7 +160,7 @@ init_thread_helper(int requested, int *provided)
            );
 
     /* make sure all symmetric memory ready */
-    shmemc_barrier_all();
+    shmem_barrier_all();
 
     /* just declare success */
     return 0;
