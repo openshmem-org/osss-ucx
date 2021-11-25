@@ -8,12 +8,9 @@
 #include "shmemc.h"
 #include "shmemu.h"
 #include "boolean.h"
-
-#include "ucx/api.h"
-
 #include "shmem/defs.h"
-
 #include "../klib/klist.h"
+#include "ucx/api.h"
 
 #include <stdlib.h>
 

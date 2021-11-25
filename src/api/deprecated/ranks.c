@@ -5,7 +5,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
-#include "shmem/api.h"
 
 #ifdef ENABLE_PSHMEM
 #pragma weak _my_pe = p_my_pe

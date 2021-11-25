@@ -5,7 +5,6 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmemu.h"
-#include "shmem/api.h"
 
 /*
  * These are compatibility routines for older SGI architectures.  They

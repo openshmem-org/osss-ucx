@@ -4,9 +4,8 @@
 # include "config.h"
 #endif /* HAVE_CONFIG_H */
 
+#include "shmemc.h"
 #include "shmemu.h"
-
-#include "shmem/api.h"
 
 /*
  * deprecated
@@ -22,7 +21,7 @@ start_pes(int n)
 {
     NO_WARN_UNUSED(n);
 
-    shmem_init();
+    shmemc_init();
 
     /* can't tell anyone until init has really happened */
     deprecate(__func__, 1.2);

@@ -3,8 +3,6 @@
 #ifndef _SHMEM_PUTGET_COMPLEX_H
 #define _SHMEM_PUTGET_COMPLEX_H 1
 
-#include "shmem/api.h"
-
 #define DECL_TYPED_CTX_PUT_PROTO(_name, _type)                      \
     void shmem_ctx_##_name##_put(shmem_ctx_t ctx,                   \
                                  _type *dest, const _type *src,     \

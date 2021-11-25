@@ -5,9 +5,7 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem_mutex.h"
-
 #include "shmemu.h"
-#include "shmem/api.h"
 
 /**
  * deprecated @ 1.4

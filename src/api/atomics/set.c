@@ -5,11 +5,8 @@
 #endif /* HAVE_CONFIG_H */
 
 #include "shmem_mutex.h"
-
 #include "shmemu.h"
 #include "shmemc.h"
-#include "shmem/api.h"
-
 #include "common.h"
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_ctx_int_atomic_set = pshmem_ctx_int_atomic_set
