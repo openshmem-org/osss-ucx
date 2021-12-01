@@ -101,12 +101,24 @@ void
 shmemc_ucx_disconnect_all_eps(shmemc_context_h ch)
 {
     int i;
-    ucs_status_ptr_t req;
+    ucs_status_ptr_t *reqs;
+
+    reqs = (ucs_status_ptr_t *) malloc(proc.li.nranks * sizeof(*reqs));
+
+    shmemu_assert(reqs != NULL,
+                  MODULE ": can't allocate requests for EP disconnect "
+                  "for context %p",
+                  ch,
+                  strerror(errno));
 
     for (i = 0; i < proc.li.nranks; ++i) {
-        req = ep_disconnect_nb(ch->eps[i]);
-        ep_wait(ch, req);
+        reqs[i] = ep_disconnect_nb(ch->eps[i]);
     }
+    for (i = 0; i < proc.li.nranks; ++i) {
+        ep_wait(ch, reqs[i]);
+    }
+
+    free(reqs);
 }
 
 ucs_status_t
