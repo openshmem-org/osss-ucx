@@ -47,7 +47,7 @@ typedef union shmem_lock {
 inline static int
 get_owner_spread(uint64_t addr)
 {
-    return (addr >> 3) % shmem_n_pes();
+    return (addr >> 3) % shmemc_n_pes();
 }
 
 inline static int
@@ -68,7 +68,7 @@ lock_owner(void *addr)
     }
     else {
         /* don't choose PE 0, as it is often used for work allocation */
-        owner = shmem_n_pes() - 1;
+        owner = shmemc_n_pes() - 1;
     }
 #endif /* ENABLE_ALIGNED_ADDRESSES */
 
@@ -173,7 +173,6 @@ set_lock_execute(shmem_lock_t *node, int me, shmem_lock_t *cmp)
 
         /* chain me on */
         shmem_short_p(&(node->d.next), me, cmp->d.next);
-        shmem_quiet();
 
         /* sit here until unlocked */
         do {
@@ -232,6 +231,9 @@ clear_lock(shmem_lock_t *node, shmem_lock_t *lock, int me)
 {
     shmem_lock_t t;
 
+    /* required to flush comms before clearing lock */
+    shmemc_quiet();
+
     clear_lock_request(node, lock, me, &t);
     clear_lock_execute(node, me, &t);
 }
@@ -279,7 +281,7 @@ shmem_set_lock(long *lp)
 
     logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
-    SHMEMT_MUTEX_NOPROTECT(set_lock(node, lock, shmem_my_pe()));
+    SHMEMT_MUTEX_NOPROTECT(set_lock(node, lock, shmemc_my_pe()));
 }
 
 void
@@ -293,10 +295,7 @@ shmem_clear_lock(long *lp)
 
     logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
-    /* required to flush comms before clearing lock */
-    shmem_quiet();
-
-    SHMEMT_MUTEX_NOPROTECT(clear_lock(node, lock, shmem_my_pe()));
+    SHMEMT_MUTEX_NOPROTECT(clear_lock(node, lock, shmemc_my_pe()));
 }
 
 int
@@ -311,7 +310,7 @@ shmem_test_lock(long *lp)
 
     logger(LOG_LOCKS, "%s(lock=%p)", __func__, lock);
 
-    SHMEMT_MUTEX_NOPROTECT(ret = test_lock(node, lock, shmem_my_pe()));
+    SHMEMT_MUTEX_NOPROTECT(ret = test_lock(node, lock, shmemc_my_pe()));
 
     return ret;
 }
