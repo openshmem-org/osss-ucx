@@ -133,9 +133,7 @@ try_clear_lock(shmem_lock_t *lock, int me, shmem_lock_t *cmp)
  */
 
 inline static void
-set_lock_request(shmem_lock_t *lock,
-                 int me,
-                 shmem_lock_t *cmp)
+set_lock_request(shmem_lock_t *lock, int me, shmem_lock_t *cmp)
 {
     /* push my claim into the owner */
     do {
@@ -144,9 +142,7 @@ set_lock_request(shmem_lock_t *lock,
 }
 
 inline static void
-test_lock_request(shmem_lock_t *lock,
-                  int me,
-                  shmem_lock_t *cmp)
+test_lock_request(shmem_lock_t *lock, int me, shmem_lock_t *cmp)
 {
     /* if owner is unset, grab the lock */
     try_request_lock(lock, me, cmp);
@@ -167,9 +163,7 @@ clear_lock_request(shmem_lock_t *node, shmem_lock_t *lock,
  */
 
 inline static void
-set_lock_execute(shmem_lock_t *node,
-                 int me,
-                 shmem_lock_t *cmp)
+set_lock_execute(shmem_lock_t *node, int me, shmem_lock_t *cmp)
 {
     /* tail */
     node->d.next = SHMEM_LOCK_FREE;
@@ -189,9 +183,7 @@ set_lock_execute(shmem_lock_t *node,
 }
 
 inline static int
-test_lock_execute(shmem_lock_t *node,
-                  int me,
-                  shmem_lock_t *cmp)
+test_lock_execute(shmem_lock_t *node, int me, shmem_lock_t *cmp)
 {
     if (cmp->blob == SHMEM_LOCK_RESET) {
         /* grabbed unset lock, now go on to set the rest of the lock */
@@ -205,9 +197,7 @@ test_lock_execute(shmem_lock_t *node,
 }
 
 inline static void
-clear_lock_execute(shmem_lock_t *node,
-                   int me,
-                   shmem_lock_t *cmp)
+clear_lock_execute(shmem_lock_t *node, int me, shmem_lock_t *cmp)
 {
     /* any more chainers? */
     if (cmp->d.next == me) {
