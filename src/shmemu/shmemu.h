@@ -148,6 +148,13 @@ void shmemu_deprecate(const char *fn, float version);
 #endif  /* ENABLE_LOGGING */
 
 /*
+ * translate between tread levels and their names
+ */
+
+const char *shmemu_thread_name(int tl);
+int shmemu_thread_level(const char *tn);
+
+/*
  * mark args as unused
  */
 #define NO_WARN_UNUSED(_obj) (void)(_obj)

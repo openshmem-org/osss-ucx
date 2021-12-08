@@ -89,14 +89,6 @@ init_thread_helper(int requested, int *provided)
         return 0;
     }
 
-    /* save and return thread level */
-    proc.td.osh_tl = requested;
-    if (provided != NULL) {
-        *provided = proc.td.osh_tl;
-    }
-
-    proc.td.invoking_thread = threadwrap_thread_id();
-
 #ifdef ENABLE_ALIGNED_ADDRESSES
     shmemu_test_asr_mismatch();
 #endif /* ENABLE_ALIGNED_ADDRESSES */
@@ -110,16 +102,14 @@ init_thread_helper(int requested, int *provided)
 
     shmemu_progress_init();
 
-    /* for now */
+    /* save and return thread level */
+#ifdef ENABLE_THREADS
     switch(requested) {
     case SHMEM_THREAD_SINGLE:
-        break;
     case SHMEM_THREAD_FUNNELED:
-        break;
     case SHMEM_THREAD_SERIALIZED:
-        break;
     case SHMEM_THREAD_MULTIPLE:
-        break;
+        break;                  /* nothing to do for now */
     default:
         shmemu_fatal(MODULE
                      ": unknown thread level %d requested",
@@ -127,6 +117,17 @@ init_thread_helper(int requested, int *provided)
         /* NOT REACHED */
         break;
     }
+
+    proc.td.osh_tl = requested;
+#else
+    proc.td.osh_tl = SHMEM_THREAD_SINGLE;
+#endif /* ENABLE_THREADS */
+
+    if (provided != NULL) {
+        *provided = proc.td.osh_tl;
+    }
+
+    proc.td.invoking_thread = threadwrap_thread_id();
 
 #ifdef ENABLE_EXPERIMENTAL
     shmemxa_init(proc.heaps.nheaps);
@@ -154,9 +155,10 @@ init_thread_helper(int requested, int *provided)
     }
 
     logger(LOG_INIT,
-           "%s(requested=%d, provided->%d)",
+           "%s(requested=%s [%d], provided->%s [%d])",
            __func__,
-           requested, proc.td.osh_tl
+           shmemu_thread_name(requested), requested,
+           shmemu_thread_name(proc.td.osh_tl), proc.td.osh_tl
            );
 
     /* make sure all symmetric memory ready */
