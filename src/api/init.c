@@ -89,16 +89,16 @@ init_thread_helper(int requested, int *provided)
         return 0;
     }
 
-#ifdef ENABLE_ALIGNED_ADDRESSES
-    shmemu_test_asr_mismatch();
-#endif /* ENABLE_ALIGNED_ADDRESSES */
-
     /* set up comms, read environment */
     shmemc_init();
     /* utiltiies */
     shmemt_init();
     shmemu_init();
     collectives_init();
+
+#ifdef ENABLE_ALIGNED_ADDRESSES
+    shmemu_test_asr_mismatch();
+#endif /* ENABLE_ALIGNED_ADDRESSES */
 
     shmemu_progress_init();
 
