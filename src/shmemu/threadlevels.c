@@ -12,10 +12,7 @@
 
 #define GLUE(_thr) { SHMEM_THREAD_##_thr,  #_thr }
 
-/*
- * some value that's not a valid level
- */
-#define TERMINATOR -100
+#define NONE (SHMEM_THREAD_SINGLE - 1)
 
 static struct thread_encdec {
     int level;
@@ -25,7 +22,7 @@ static struct thread_encdec {
     GLUE(FUNNELED),
     GLUE(SERIALIZED),
     GLUE(MULTIPLE),
-    { TERMINATOR, NULL }
+    { NONE, "unknown" }
 };
 
 const char *
@@ -33,28 +30,27 @@ shmemu_thread_name(int tl)
 {
     struct thread_encdec *tp = threads_table;
 
-    while (tp->level != TERMINATOR) {
+    while (tp->level != NONE) {
         if (tp->level == tl) {
             return tp->name;
             /* NOT REACHED */
         }
         ++tp;
     }
-    return "unknown";
+    return tp->name;
 }
 
 int
 shmemu_thread_level(const char *tn)
 {
-    const int len = strlen(tn);
     struct thread_encdec *tp = threads_table;
 
-    while (tp->level != TERMINATOR) {
-        if (strncmp(tp->name, tn, len) == 0) {
+    while (tp->level != NONE) {
+        if (strncmp(tp->name, tn, strlen(tp->name)) == 0) {
             return tp->level;
             /* NOT REACHED */
         }
         ++tp;
     }
-    return TERMINATOR;
+    return tp->level;
 }
