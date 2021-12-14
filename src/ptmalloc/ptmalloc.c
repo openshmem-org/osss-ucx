@@ -1721,7 +1721,7 @@ static FORCEINLINE int pthread_init_lock (MLOCK_T *sl) {
 static FORCEINLINE int pthread_islocked (MLOCK_T *sl) {
   if(!pthread_try_lock(sl)){
     int ret = (sl->c != 0);
-    pthread_mutex_unlock(sl);
+    pthread_mutex_unlock((pthread_mutex_t *) sl);
     return ret;
   }
   return 0;
