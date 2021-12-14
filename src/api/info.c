@@ -145,7 +145,7 @@ info_output_features(FILE *strm, const char *prefix)
 #endif /* ENABLE_SHARED */
            );
 
-    output(strm, prefix, "C++ compiler",
+    output(strm, prefix, "C++ support",
 #ifdef ENABLE_CXX
            "on"
 #else
@@ -177,11 +177,6 @@ info_output_features(FILE *strm, const char *prefix)
 #endif /* ENABLE_ALIGNED_ADDRESSES */
            );
 
-#ifdef SHMEM_DEFAULT_HEAP_SIZE
-    output(strm, prefix, "Default symmetric heap size",
-           SHMEM_DEFAULT_HEAP_SIZE);
-#endif /* SHMEM_DEFAULT_HEAP_SIZE */
-
     output(strm, prefix, "Thread support",
 #ifdef ENABLE_THREADS
            "on"
@@ -205,6 +200,11 @@ info_output_features(FILE *strm, const char *prefix)
            "off"
 #endif /* ENABLE_PSHMEM */
            );
+
+#ifdef SHMEM_DEFAULT_HEAP_SIZE
+    output(strm, prefix, "Default symmetric heap size",
+           SHMEM_DEFAULT_HEAP_SIZE);
+#endif /* SHMEM_DEFAULT_HEAP_SIZE */
 }
 
 void
