@@ -50,7 +50,7 @@ shmemu_test_asr_mismatch(void)
             /* NOT REACHED */
         }
 
-        if (inp != '0') {
+        if (inp == '0') {
             goto close_ret;     /* file starts with "0", ASR turned off */
             /* NOT REACHED */
         }
