@@ -26,41 +26,41 @@
 void
 shmemu_test_asr_mismatch(void)
 {
-    int p;
-    int fd;
-    ssize_t n;
-    char inp;
-
-    p = personality(PERSONALITY_QUERY);
-    if (p & ADDR_NO_RANDOMIZE) {
-        return;                 /* ASR disabled in this process */
-        /* NOT REACHED */
-    }
-
-    fd = open(RAND_FILE, O_RDONLY, 0);
-    if (fd < 0) {
-        return;                 /* no file, carry on */
-        /* NOT REACHED */
-    }
-
-    n = read(fd, &inp, 1);
-    if (n < 1) {
-        goto close_ret;         /* can't read file, carry on */
-        /* NOT REACHED */
-    }
-
-    if (inp == '0') {
-        goto close_ret;     /* file starts with "0", ASR turned off */
-        /* NOT REACHED */
-    }
-
     if (proc.leader) {
-        shmemu_warn("aligned addresses requested, "
-                    "but this node (%s) appears to have ASR enabled "
+        int p;
+        int fd;
+        ssize_t n;
+        char inp;
+
+        p = personality(PERSONALITY_QUERY);
+        if (p & ADDR_NO_RANDOMIZE) {
+            return;                 /* ASR disabled in this process */
+            /* NOT REACHED */
+        }
+
+        fd = open(RAND_FILE, O_RDONLY, 0);
+        if (fd < 0) {
+            return;                 /* no file, carry on */
+            /* NOT REACHED */
+        }
+
+        n = read(fd, &inp, 1);
+        if (n < 1) {
+            goto close_ret;         /* can't read file, carry on */
+            /* NOT REACHED */
+        }
+
+        if (inp != '0') {
+            goto close_ret;     /* file starts with "0", ASR turned off */
+            /* NOT REACHED */
+        }
+
+        shmemu_warn("aligned addresses requested, but this node (%s) "
+                    "appears to have randomization enabled "
                     "(%s = %c)",
                     proc.nodename, RAND_VARIABLE, inp);
-    }
 
- close_ret:
-    (void) close(fd);
+    close_ret:
+        (void) close(fd);
+    }
 }
