@@ -43,8 +43,10 @@ info_output_spec_version(FILE *strm, const char *prefix)
     snprintf(buf, BUFMAX,
              "%d.%d",
              SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
-    output(strm, prefix, "OpenSHMEM Specification", buf);
+#else
+    strncpy(buf, UNKNOWN, BUFMAX);
 #endif /* spec. version check */
+    output(strm, prefix, "OpenSHMEM Specification", buf);
 }
 
 void
