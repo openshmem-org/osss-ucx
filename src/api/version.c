@@ -40,11 +40,11 @@ shmem_info_get_name(char *name)
  *
  */
 
-#define SHMEM_VERSION_CVT(_maj, _min) \
-    ( (100 * _maj) + _min )
+#define SHMEM_VERSION_CVT(_maj, _min)           \
+    ( (100 * (_maj)) + (_mi)n )
 
-#define SHMEM_VENDOR_VERSION_CVT(_maj, _min, _pth)      \
-    ( ( 100 * SHMEM_VERSION_CVT(_maj, _min) ) + _pth )
+#define SHMEM_VENDOR_VERSION_CVT(_maj, _min, _pth)          \
+    ( ( 100 * SHMEM_VERSION_CVT(_maj, _min) ) + (_pth) )
 
 static const int saved_version =
     SHMEM_VERSION_CVT(SHMEM_MAJOR_VERSION, SHMEM_MINOR_VERSION);
