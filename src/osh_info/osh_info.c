@@ -66,7 +66,7 @@ main(int argc, char *argv[])
             /* NOT REACHED */
         }
 
-        switch (c) {
+        switch ((char) c) {
         case 'h':
             help = 1;
             break;
