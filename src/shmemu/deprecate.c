@@ -21,7 +21,7 @@ static khash_t(deprecations) *table;
  *
  */
 void
-shmemu_deprecate(const char *fn_name, int maj, int min)
+shmemu_deprecate(const char *fn_name, const shmemu_version_t *vp)
 {
     khiter_t k;
     int ret;
@@ -41,7 +41,7 @@ shmemu_deprecate(const char *fn_name, int maj, int min)
     logger(LOG_DEPRECATE,
            "\"%s\" is deprecated as of specification %d.%d",
            fn_name,
-           maj, min
+           vp->major, vp->minor
            );
 }
 

@@ -13,8 +13,7 @@
  * wait is just wait_until with inequality/change test
  */
 
-#define DEPR_MAJOR 1
-#define DEPR_MINOR 4
+static const shmemu_version_t v = { .major = 1, .minor = 4 };
 
 #ifdef ENABLE_PSHMEM
 #pragma weak shmem_short_wait = pshmem_short_wait
@@ -51,7 +50,7 @@
     void                                                            \
     shmem_##_name##_wait(_type *ivar, _type cmp_value)              \
     {                                                               \
-        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);                \
+        deprecate(__func__, &v);                                    \
         shmemc_ctx_wait_until_ne##_size(SHMEM_CTX_DEFAULT,          \
                                         (int##_size##_t *) ivar,    \
                                         cmp_value);                 \

@@ -13,19 +13,18 @@
 #define _num_pes p_num_pes
 #endif /* ENABLE_PSHMEM */
 
-#define DEPR_MAJOR 1
-#define DEPR_MINOR 2
+static const shmemu_version_t v = { .major = 1, .minor = 2 };
 
 int
 _my_pe(void)
 {
-    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
+    deprecate(__func__, &v);
     return shmemc_my_pe();
 }
 
 int
 _num_pes(void)
 {
-    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
+    deprecate(__func__, &v);
     return shmemc_n_pes();
 }

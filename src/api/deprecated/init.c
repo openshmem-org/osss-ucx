@@ -11,8 +11,7 @@
  * deprecated
  */
 
-#define DEPR_MAJOR 1
-#define DEPR_MINOR 2
+static const shmemu_version_t v = { .major = 1, .minor = 2 };
 
 #ifdef ENABLE_PSHMEM
 #pragma weak start_pes = pstart_pes
@@ -27,5 +26,5 @@ start_pes(int n)
     shmemc_init();
 
     /* can't tell anyone until init has really happened */
-    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
+    deprecate(__func__, &v);
 }
