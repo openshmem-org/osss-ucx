@@ -23,32 +23,33 @@
 #define shmemalign pshmemalign
 #endif /* ENABLE_PSHMEM */
 
-#define DEPR_SINCE 1.2
+#define DEPR_MAJOR 1
+#define DEPR_MINOR 2
 
 void *
 shmalloc(size_t s)
 {
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
     return shmem_malloc(s);
 }
 
 void
 shfree(void *p)
 {
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
     shmem_free(p);
 }
 
 void *
 shrealloc(void *p, size_t s)
 {
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
     return shmem_realloc(p, s);
 }
 
 void *
 shmemalign(size_t a, size_t s)
 {
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
     return shmem_align(a, s);
 }

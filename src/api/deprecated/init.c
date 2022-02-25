@@ -11,6 +11,9 @@
  * deprecated
  */
 
+#define DEPR_MAJOR 1
+#define DEPR_MINOR 2
+
 #ifdef ENABLE_PSHMEM
 #pragma weak start_pes = pstart_pes
 #define start_pes pstart_pes
@@ -24,5 +27,5 @@ start_pes(int n)
     shmemc_init();
 
     /* can't tell anyone until init has really happened */
-    deprecate(__func__, 1.2);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
 }

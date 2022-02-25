@@ -23,22 +23,23 @@
  *
  */
 
-#define DEPR_SINCE 1.4
+#define DEPR_MAJOR 1
+#define DEPR_MINOR 4
 
-#define SHMEM_DEPRECATE_VOID_AMO1(_old, _new, _name, _type) \
-    void                                                    \
-    shmem_##_name##_##_old(_type *target, int pe)           \
-    {                                                       \
-        deprecate(__func__, DEPR_SINCE);                    \
-        shmem_##_name##_atomic_##_new(target, pe);          \
+#define SHMEM_DEPRECATE_VOID_AMO1(_old, _new, _name, _type)             \
+    void                                                                \
+    shmem_##_name##_##_old(_type *target, int pe)                       \
+    {                                                                   \
+        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);                    \
+        shmem_##_name##_atomic_##_new(target, pe);                      \
     }
 
 #define SHMEM_DEPRECATE_VOID_AMO2(_old, _new, _name, _type)             \
     void                                                                \
     shmem_##_name##_##_old(_type *target, _type value, int pe)          \
     {                                                                   \
-        deprecate(__func__, DEPR_SINCE);                                \
-        shmem_##_name##_atomic_##_new(target, value, pe); \
+        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);                    \
+        shmem_##_name##_atomic_##_new(target, value, pe);               \
     }
 
 #define SHMEM_DEPRECATE_VOID_AMO3(_old, _new, _name, _type)             \
@@ -47,15 +48,15 @@
                            _type cond, _type value,                     \
                            int pe)                                      \
     {                                                                   \
-        deprecate(__func__, DEPR_SINCE);                                \
-        shmem_##_name##_atomic_##_new(target, cond, value, pe); \
+        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);                    \
+        shmem_##_name##_atomic_##_new(target, cond, value, pe);         \
     }
 
-#define SHMEM_DEPRECATE_AMO1(_old, _new, _name, _type)  \
-    _type                                               \
-    shmem_##_name##_##_old(_type *target, int pe)       \
-    {                                                   \
-        deprecate(__func__, DEPR_SINCE);                \
+#define SHMEM_DEPRECATE_AMO1(_old, _new, _name, _type)     \
+    _type                                                  \
+    shmem_##_name##_##_old(_type *target, int pe)          \
+    {                                                      \
+        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);       \
         return shmem_##_name##_atomic_##_new(target, pe);  \
     }
 
@@ -63,16 +64,16 @@
     _type                                                           \
     shmem_##_name##_##_old(const _type *target, int pe)             \
     {                                                               \
-        deprecate(__func__, DEPR_SINCE);                            \
-        return shmem_##_name##_atomic_##_new(target, pe);    \
+        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);                \
+        return shmem_##_name##_atomic_##_new(target, pe);           \
     }
 
 #define SHMEM_DEPRECATE_AMO2(_old, _new, _name, _type)                  \
     _type                                                               \
     shmem_##_name##_##_old(_type *target, _type value, int pe)          \
     {                                                                   \
-        deprecate(__func__, DEPR_SINCE);                                \
-        return shmem_##_name##_atomic_##_new(target, value, pe); \
+        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);                    \
+        return shmem_##_name##_atomic_##_new(target, value, pe);        \
     }
 
 #define SHMEM_DEPRECATE_AMO3(_old, _new, _name, _type)                  \
@@ -81,8 +82,8 @@
                            _type cond, _type value,                     \
                            int pe)                                      \
     {                                                                   \
-        deprecate(__func__, DEPR_SINCE);                                \
-        return shmem_##_name##_atomic_##_new(target, cond, value, pe); \
+        deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);                    \
+        return shmem_##_name##_atomic_##_new(target, cond, value, pe);  \
     }
 
 #ifdef ENABLE_PSHMEM

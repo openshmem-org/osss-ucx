@@ -30,18 +30,19 @@
  * Compatibility no-op cache routines
  */
 
-#define DEPR_SINCE 1.3
+#define DEPR_MAJOR 1
+#define DEPR_MINOR 3
 
 void
 shmem_set_cache_inv(void)
 {
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
 }
 
 void
 shmem_clear_cache_inv(void)
 {
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
 }
 
 void
@@ -49,7 +50,7 @@ shmem_set_cache_line_inv(void *target)
 {
     NO_WARN_UNUSED(target);
 
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
 }
 
 void
@@ -57,13 +58,13 @@ shmem_clear_cache_line_inv(void *target)
 {
     NO_WARN_UNUSED(target);
 
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
 }
 
 void
 shmem_udcflush(void)
 {
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
 }
 
 void
@@ -71,5 +72,5 @@ shmem_udcflush_line(void *target)
 {
     NO_WARN_UNUSED(target);
 
-    deprecate(__func__, DEPR_SINCE);
+    deprecate(__func__, DEPR_MAJOR, DEPR_MINOR);
 }
