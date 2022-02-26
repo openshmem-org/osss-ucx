@@ -126,6 +126,11 @@ const char *shmemu_plural(size_t n);
 void shmemu_fatal(const char *fmt, ...);
 void shmemu_warn(const char *fmt, ...);
 
+typedef struct shmemu_version {
+    int major;
+    int minor;
+} shmemu_version_t;
+
 #ifdef ENABLE_LOGGING
 
 typedef const char *shmemu_log_t;
@@ -133,11 +138,6 @@ typedef const char *shmemu_log_t;
 typedef shmemu_log_t *shmemu_log_table_t;
 
 void shmemu_logger(shmemu_log_t evt, const char *fmt, ...);
-
-typedef struct shmemu_version {
-    int major;
-    int minor;
-} shmemu_version_t;
 
 void shmemu_deprecate(const char *fn, const shmemu_version_t *vp);
 
