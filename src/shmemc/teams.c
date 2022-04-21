@@ -296,6 +296,8 @@ shmemc_team_split_strided(shmemc_team_h parh,
 
     initialize_common_team(newt, NULL, nc);
 
+    newt->parent = parh;
+
     newt->nranks = size;
 
     walk = start;
