@@ -45,20 +45,16 @@ shmemx_quiet_test(void)
 #define shmemx_pe_quiet pshmemx_pe_quiet
 #endif /* ENABLE_PSHMEM */
 
-int
+void
 shmemx_pe_quiet(shmem_ctx_t ctx, int pe)
 {
-    int s;
-
     NO_WARN_UNUSED(pe);
 
-    SHMEMT_MUTEX_NOPROTECT(s = shmemc_ctx_quiet_test(ctx));
+    SHMEMT_MUTEX_NOPROTECT(shmemc_ctx_quiet(ctx));
 
     logger(LOG_QUIET,
-           "%s(ctx=%lu) -> %d",
+           "%s(ctx=%lu)",
            __func__,
-           shmemc_context_id(ctx), s
+           shmemc_context_id(ctx)
            );
-
-    return s;
 }
