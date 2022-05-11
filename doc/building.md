@@ -6,15 +6,13 @@ For all users, any version of UCX should be fine.  Features are
 auto-detected by our configure script.
 
 The interaction with most impact is that of PMIx and the launcher.
-Here is a table showing tested configurations:
+Here are some tested configurations:
 
 |Launcher|PMIx|Stability level|Note|
 |---:|---:|---:|---:|
-|OMPI 4.0.5|3.2.2||Author's more stable env|
-|OMPI 4.1.5|github master|||
-|OMPI github master|4.0.0|||
-|OMPI github master|github master|||
-|PRRTE github master|github master|lowest|Author's bleeding-edge env|
+|OMPI 4.1.3|4.1.2||Author's more stable env|
+|OMPI github main|4.1.2||Author's less stable env|
+|PRRTE github main|github master|lowest|Author's bleeding-edge env|
 
 # Prerequisites
 
