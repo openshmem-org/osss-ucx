@@ -1,7 +1,7 @@
 /* For license: see LICENSE file at top-level */
 
 #include "xmemalloc.h"
-#include "klib/khash.h"
+#include "../klib/khash.h"
 
 #include "internal-malloc.h"
 
