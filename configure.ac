@@ -231,7 +231,7 @@ case "x$shcoll_happy" in
 	;;
 esac
 case "x$SHMEM_LAUNCHER" in
-    x)
+    xno)
         ;;
     *)
         echo "           Launcher: $SHMEM_LAUNCHER"
