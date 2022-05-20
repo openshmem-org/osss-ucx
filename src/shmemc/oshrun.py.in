@@ -5,7 +5,7 @@ import signal
 import os
 import sys
 import re
-from distutils.spawn import find_executable
+import shutil
 
 #
 # try to highlight debugging output, don't worry if we can't
@@ -96,7 +96,7 @@ debug("init", "looking for launcher")
 
 launcher = os.getenv(ENV_LAUNCH_VAR)
 if launcher != None:
-    if not find_executable(launcher):
+    if not shutil.which(launcher):
         bail("can't find launcher \"{0}\" in ".format(launcher) + \
              "environment variable \"{0}\"".format(ENV_LAUNCH_VAR))
 else:
@@ -104,12 +104,12 @@ else:
 
 if launcher == "":
     debug("init", "checking for PRTE...")
-    if find_executable(PRTE_LAUNCHER) != None:
+    if shutil.which(PRTE_LAUNCHER) != None:
         launcher = PRTE_LAUNCHER + " " + PRTE_ARGS
         debug("config", "using PRTE ({0})".format(PRTE_LAUNCHER))
     else:
         debug("init", "checking for MPI...")
-        if find_executable(MPI_LAUNCHER):
+        if shutil.which(MPI_LAUNCHER):
             launcher = MPI_LAUNCHER
             debug("config", "using MPI ({0})".format(MPI_LAUNCHER))
         else:
