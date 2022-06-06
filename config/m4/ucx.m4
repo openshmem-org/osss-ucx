@@ -3,7 +3,9 @@
 ucx_happy=no
 
 AC_ARG_WITH([ucx],
-            [AS_HELP_STRING([--with-ucx@<:@=DIR@:>@], [Use UCX library])])
+            [AS_HELP_STRING([--with-ucx@<:@=DIR@:>@], [Use UCX library])],
+	    [],
+	    [with_ucx=yes])
 
 AS_IF([test "x$with_ucx" = "xyes"], [
         PKG_CHECK_MODULES([UCX], [ucx], [
