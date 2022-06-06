@@ -66,7 +66,7 @@ AS_IF([test "x$pmix_happy" = "xno"], [
 	min_pmix_version=3
 
 	AS_IF([test $maj -lt $min_pmix_version], [
-	   AC_MSG_ERROR([PMIx version $PMIX_VERSION_STRING is too old.  Use version $min_pmix_version and above])
+	   AC_MSG_ERROR([PMIx version $PMIX_VERSION_STRING is too old.  Please use version $min_pmix_version and above])
 	 ]
 	)
 
