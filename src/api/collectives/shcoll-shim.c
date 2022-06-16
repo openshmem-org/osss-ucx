@@ -52,6 +52,8 @@ void
 shmem_alltoall32(void *target, const void *source, size_t nelems,
                  int PE_start, int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.alltoall.f32(target, source, nelems,
                        PE_start, logPE_stride, PE_size, pSync);
 }
@@ -60,6 +62,8 @@ void
 shmem_alltoall64(void *target, const void *source, size_t nelems,
                  int PE_start, int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.alltoall.f64(target, source, nelems,
                        PE_start, logPE_stride, PE_size, pSync);
 }
@@ -77,6 +81,8 @@ shmem_alltoalls32(void *target, const void *source,
                   int PE_start, int logPE_stride, int PE_size,
                   long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.alltoalls.f32(target, source,
                         dst, sst, nelems,
                         PE_start, logPE_stride, PE_size,
@@ -89,6 +95,8 @@ shmem_alltoalls64(void *target, const void *source,
                   int PE_start, int logPE_stride, int PE_size,
                   long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.alltoalls.f64(target, source,
                         dst, sst, nelems,
                         PE_start, logPE_stride, PE_size,
@@ -106,6 +114,8 @@ void
 shmem_collect32(void *target, const void *source, size_t nelems,
                 int PE_start, int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.collect.f32(target, source, nelems,
                       PE_start, logPE_stride, PE_size, pSync);
 }
@@ -129,6 +139,8 @@ void
 shmem_fcollect32(void *target, const void *source, size_t nelems,
                  int PE_start, int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.fcollect.f32(target, source, nelems,
                        PE_start, logPE_stride, PE_size, pSync);
 }
@@ -137,6 +149,8 @@ void
 shmem_fcollect64(void *target, const void *source, size_t nelems,
                  int PE_start, int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.fcollect.f64(target, source, nelems,
                        PE_start, logPE_stride, PE_size, pSync);
 }
@@ -149,6 +163,8 @@ shmem_fcollect64(void *target, const void *source, size_t nelems,
 void
 shmem_barrier(int PE_start, int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.barrier.f(PE_start, logPE_stride, PE_size, pSync);
 }
 
@@ -166,6 +182,8 @@ extern long *shmemc_sync_all_psync;
 void
 shmem_barrier_all(void)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.barrier_all.f(shmemc_barrier_all_psync);
 }
 
@@ -177,6 +195,8 @@ shmem_barrier_all(void)
 void
 shmem_sync(int PE_start, int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.sync.f(PE_start, logPE_stride, PE_size, pSync);
 }
 
@@ -188,6 +208,8 @@ shmem_sync(int PE_start, int logPE_stride, int PE_size, long *pSync)
 void
 shmem_sync_all(void)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.sync_all.f(shmemc_sync_all_psync);
 }
 
@@ -203,6 +225,8 @@ shmem_broadcast32(void *target, const void *source,
                   size_t nelems, int PE_root, int PE_start,
                   int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.broadcast.f32(target, source,
                         nelems, PE_root, PE_start,
                         logPE_stride, PE_size, pSync);
@@ -213,6 +237,8 @@ shmem_broadcast64(void *target, const void *source,
                   size_t nelems, int PE_root, int PE_start,
                   int logPE_stride, int PE_size, long *pSync)
 {
+    logger(LOG_COLLECTIVES, "%s()", __func__);
+
     colls.broadcast.f64(target, source,
                         nelems, PE_root, PE_start,
                         logPE_stride, PE_size, pSync);

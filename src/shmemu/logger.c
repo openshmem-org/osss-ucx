@@ -126,21 +126,21 @@ shmemu_logger_init(void)
 
     events = kh_init(events_hash);
 
-    event_set(LOG_INIT,       false);
-    event_set(LOG_FINALIZE,   false);
-    event_set(LOG_MEMORY,     false);
-    event_set(LOG_FENCE,      false);
-    event_set(LOG_QUIET,      false);
-    event_set(LOG_HEAPS,      false);
-    event_set(LOG_RMA,        false);
-    event_set(LOG_CONTEXTS,   false);
-    event_set(LOG_RANKS,      false);
-    event_set(LOG_INFO,       false);
-    event_set(LOG_REDUCTIONS, false);
-    event_set(LOG_BARRIERS,   false);
-    event_set(LOG_DEPRECATE,  false);
-    event_set(LOG_LOCKS,      false);
-    event_set(LOG_ATOMICS,    false);
+    event_set(LOG_INIT,        false);
+    event_set(LOG_FINALIZE,    false);
+    event_set(LOG_MEMORY,      false);
+    event_set(LOG_FENCE,       false);
+    event_set(LOG_QUIET,       false);
+    event_set(LOG_HEAPS,       false);
+    event_set(LOG_RMA,         false);
+    event_set(LOG_CONTEXTS,    false);
+    event_set(LOG_RANKS,       false);
+    event_set(LOG_INFO,        false);
+    event_set(LOG_REDUCTIONS,  false);
+    event_set(LOG_COLLECTIVES, false);
+    event_set(LOG_DEPRECATE,   false);
+    event_set(LOG_LOCKS,       false);
+    event_set(LOG_ATOMICS,     false);
 
     parse_log_events();
 
