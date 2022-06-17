@@ -154,7 +154,7 @@ void shmemu_deprecate(const char *fn, const shmemu_version_t *vp);
 #endif  /* ENABLE_LOGGING */
 
 /*
- * translate between tread levels and their names
+ * translate between thread levels and their names
  */
 
 const char *shmemu_thread_name(int tl);

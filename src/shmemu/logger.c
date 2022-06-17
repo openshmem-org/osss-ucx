@@ -97,17 +97,15 @@ parse_log_events(void)
 void
 shmemu_logger_init(void)
 {
-    double wd;
-
     if (! proc.env.logging) {
         return;
     }
 
     /* TODO "%" modifiers for extra info */
     if (proc.env.logging_file != NULL) {
-        log_stream = fopen(proc.env.logging_file, "a");
+        log_stream = fopen(proc.env.logging_file, "w");
         if (log_stream == NULL) {
-            shmemu_fatal(MODULE ": can't append to log file \"%s\"",
+            shmemu_fatal(MODULE ": can't write to log file \"%s\"",
                          proc.env.logging_file);
             /* NOT REACHED */
         }
@@ -117,8 +115,7 @@ shmemu_logger_init(void)
     }
 
     /* how wide to display things */
-    wd = ceil(log10((double) proc.li.nranks));
-    pe_width = (int) wd;
+    pe_width = (int) ceil(log10((double) proc.li.nranks));
     stamp_width = 30 - pe_width;
     if (stamp_width < 1) {
         stamp_width = 1;
