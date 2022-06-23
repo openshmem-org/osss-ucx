@@ -31,7 +31,7 @@ all_cppflags           = $(atomics_cppflags) \
 MY_SOURCES             = \
 				accessible.c \
 				contexts.c \
-				fencequiet.c \
+				fence.c \
 				globalexit.c \
 				info.c \
 				init.c \
@@ -40,6 +40,7 @@ MY_SOURCES             = \
 				ptr.c \
 				putget.c \
 				put_signal.c \
+				quiet.c \
 				ranks.c	 \
 				shmalloc.c \
 				teams.c \
