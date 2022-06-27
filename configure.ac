@@ -23,7 +23,7 @@ m4_define([shmem_default_heap_size], ["32M"])
 shmem_heap_size=""
 
 AC_PREREQ([2.69])
-AC_INIT([pkg_name], [pkg_version], [pkg_bugreport], [],	[pkg_url])
+AC_INIT([pkg_name],[pkg_version],[pkg_bugreport],[],[pkg_url])
 
 config_flags="$*"
 AC_DEFINE_UNQUOTED([CONFIG_FLAGS],
@@ -66,7 +66,7 @@ AM_SILENT_RULES([yes])
 AC_PROG_LN_S
 
 # C
-AC_PROG_CC_C99
+AC_PROG_CC
 AC_PROG_CC_C_O
 AC_PROG_INSTALL
 AM_PROG_CC_C_O
