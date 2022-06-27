@@ -5,13 +5,22 @@
 
 #include <stdio.h>
 
-void info_output_spec_version(FILE *strm, const char *prefix);
-void info_output_package_name(FILE *strm, const char *prefix);
-void info_output_package_contact(FILE *strm, const char *prefix);
-void info_output_package_version(FILE *strm, const char *prefix, int terse);
-void info_output_build_env(FILE *strm, const char *prefix);
-void info_output_features(FILE *strm, const char *prefix);
-void info_output_comms(FILE *strm, const char *prefix);
-void info_output_help(FILE *strm, const char *prefix);
+void info_output_spec_version(FILE *strm,
+                              const char *prefix, const char *suffix);
+void info_output_package_name(FILE *strm,
+                              const char *prefix, const char *suffix);
+void info_output_package_contact(FILE *strm,
+                                 const char *prefix, const char *suffix);
+void info_output_package_version(FILE *strm,
+                                 const char *prefix, const char *suffix,
+                                 int terse);
+void info_output_build_env(FILE *strm,
+                           const char *prefix, const char *suffix);
+void info_output_features(FILE *strm,
+                          const char *prefix, const char *suffix);
+void info_output_comms(FILE *strm,
+                       const char *prefix, const char *suffix);
+void info_output_help(FILE *strm,
+                      const char *prefix, const char *suffix);
 
 #endif /* ! _SHMEM_OSH_INFO_H */

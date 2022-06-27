@@ -15,6 +15,7 @@
 static char *progname;
 
 static char *default_prefix = "# ";
+static char *default_suffix = "";
 
 static void
 output_help(void)
@@ -29,8 +30,14 @@ output_help(void)
             "only output OpenSHMEM package version info\n");
     fprintf(stderr,
             "    -p S | --prefix=S   "
-            "string to insert before output lines"
-            " (default \"%s\")\n", default_prefix);
+            "string to print at the beginning of output lines\n"
+            "                        (default \"%s\")\n",
+            default_prefix);
+    fprintf(stderr,
+            "    -s S | --suffix=S   "
+            "string to print at the end of output lines\n"
+            "                        (default \"%s\")\n",
+            default_suffix);
     fprintf(stderr,
             "    -h   | --help       "
             "show this help message\n");
@@ -42,6 +49,7 @@ static struct option opts[] = {
     { "version", no_argument,       NULL, 'V' },
     { "help",    no_argument,       NULL, 'h' },
     { "prefix",  required_argument, NULL, 'p' },
+    { "suffix",  required_argument, NULL, 's' },
     { NULL,      no_argument,       NULL, 0   }
 };
 
@@ -53,13 +61,14 @@ main(int argc, char *argv[])
     int just_version = 0;
     int help = 0;
     char *prefix = NULL;
+    char *suffix = NULL;
 
     progname = basename(argv[0]);
 
     opterr = 0;                 /* no err msg, just my output */
 
     while (1) {
-        const int c = getopt_long(argc, argv, "hVp:", opts, NULL);
+        const int c = getopt_long(argc, argv, "hVp:s:", opts, NULL);
 
         if (c == -1) {
             break;
@@ -75,6 +84,9 @@ main(int argc, char *argv[])
             break;
         case 'p':
             prefix = optarg;
+            break;
+        case 's':
+            suffix = optarg;
             break;
         default:
             help = 1;
@@ -92,20 +104,23 @@ main(int argc, char *argv[])
     if (prefix == NULL) {
         prefix = default_prefix;
     }
+    if (suffix == NULL) {
+        suffix = default_suffix;
+    }
 
     if (just_version) {
-        info_output_package_version(out, prefix, just_version);
+        info_output_package_version(out, prefix, suffix, just_version);
         return EXIT_SUCCESS;
         /* NOT REACHED */
     }
 
-    info_output_package_name(out, prefix);
-    info_output_package_version(out, prefix, just_version);
-    info_output_package_contact(out, prefix);
-    info_output_spec_version(out, prefix);
-    info_output_build_env(out, prefix);
-    info_output_features(out, prefix);
-    info_output_comms(out, prefix);
+    info_output_package_name(out, prefix, suffix);
+    info_output_package_version(out, prefix, suffix, just_version);
+    info_output_package_contact(out, prefix, suffix);
+    info_output_spec_version(out, prefix, suffix);
+    info_output_build_env(out, prefix, suffix);
+    info_output_features(out, prefix, suffix);
+    info_output_comms(out, prefix, suffix);
 
     return EXIT_SUCCESS;
 }
