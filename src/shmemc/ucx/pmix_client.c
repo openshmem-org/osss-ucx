@@ -606,7 +606,7 @@ shmemc_pmi_client_init(void)
 
     /* init proc for exchange use, rank filled in as needed */
     PMIX_PROC_CONSTRUCT(&ex_pmix);
-    strncpy(ex_pmix.nspace, my_pmix.nspace, PMIX_MAX_NSLEN + 1);
+    STRNCPY_SAFE(ex_pmix.nspace, my_pmix.nspace, PMIX_MAX_NSLEN + 1);
 
     init_ranks();
     init_peers();
