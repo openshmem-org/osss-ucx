@@ -352,7 +352,7 @@ inline static void
 init_ranks(void)
 {
     pmix_status_t ps;
-    pmix_value_t *vp;           /* holds things we get from PMIx */
+    pmix_value_t *vp = NULL;    /* holds things we get from PMIx */
 
     /* we can get our own rank immediately */
     proc.li.rank = (int) my_pmix.rank;
