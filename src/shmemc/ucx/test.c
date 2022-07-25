@@ -111,9 +111,9 @@ COMMS_CTX_TEST_ALL_SIZE(64, ge)
 #define COMMS_CTX_TEST_SOME_SIZE(_size, _opname)                        \
     size_t                                                              \
     shmemc_ctx_test_some_##_opname##_size(shmem_ctx_t ctx,              \
-                                          int##_size##_t * restrict vars, \
+                                          int##_size##_t * vars,        \
                                           size_t nelems,                \
-                                          size_t * restrict idxs,       \
+                                          size_t * idxs,                \
                                           const int *status,            \
                                           int##_size##_t value)         \
     {                                                                   \
@@ -166,7 +166,7 @@ COMMS_CTX_TEST_SOME_SIZE(64, ge)
 #define COMMS_CTX_TEST_ANY_SIZE(_size, _opname)                         \
     size_t                                                              \
     shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,               \
-                                         int##_size##_t * restrict vars, \
+                                         int##_size##_t * vars,         \
                                          size_t nelems,                 \
                                          const int *status,             \
                                          int##_size##_t value)          \
@@ -263,9 +263,9 @@ COMMS_CTX_TEST_ALL_VECTOR_SIZE(64, ge)
 #define COMMS_CTX_TEST_SOME_VECTOR_SIZE(_size, _opname)                 \
     size_t                                                              \
     shmemc_ctx_test_some_vector_##_opname##_size(shmem_ctx_t ctx,       \
-                                                 int##_size##_t * restrict vars, \
+                                                 int##_size##_t * vars, \
                                                  size_t nelems,         \
-                                                 size_t * restrict idxs, \
+                                                 size_t * idxs,         \
                                                  const int *status,     \
                                                  void *values)          \
     {                                                                   \
@@ -314,7 +314,7 @@ COMMS_CTX_TEST_SOME_VECTOR_SIZE(64, ge)
 #define COMMS_CTX_TEST_ANY_VECTOR_SIZE(_size, _opname)                  \
     size_t                                                              \
     shmemc_ctx_test_any_vector_##_opname##_size(shmem_ctx_t ctx,        \
-                                                int##_size##_t * restrict vars, \
+                                                int##_size##_t * vars,  \
                                                 size_t nelems,          \
                                                 const int *status,      \
                                                 void *values)           \

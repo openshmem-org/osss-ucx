@@ -319,9 +319,9 @@ SHMEMC_CTX_TEST_ALL(64, ge)
 
 #define SHMEMC_CTX_TEST_SOME(_size, _opname)                            \
     size_t shmemc_ctx_test_some_##_opname##_size(shmem_ctx_t ctx,       \
-                                                 int##_size##_t * restrict vars,  \
+                                                 int##_size##_t *vars,  \
                                                  size_t nelems,         \
-                                                 size_t * restrict idxs, \
+                                                 size_t *idxs,          \
                                                  const int *status,     \
                                                  int##_size##_t value);
 
@@ -351,7 +351,7 @@ SHMEMC_CTX_TEST_SOME(64, ge)
 
 #define SHMEMC_CTX_TEST_ANY(_size, _opname)                             \
     size_t shmemc_ctx_test_any_##_opname##_size(shmem_ctx_t ctx,        \
-                                                int##_size##_t * restrict vars,   \
+                                                int##_size##_t *vars,   \
                                                 size_t nelems,          \
                                                 const int *status,      \
                                                 int##_size##_t value);
@@ -413,9 +413,9 @@ SHMEMC_CTX_WAIT_UNTIL_ALL(64, ge)
 
 #define SHMEMC_CTX_WAIT_UNTIL_SOME(_size, _opname)                      \
     size_t shmemc_ctx_wait_until_some_##_opname##_size(shmem_ctx_t ctx, \
-                                                       int##_size##_t * restrict vars, \
+                                                       int##_size##_t *vars, \
                                                        size_t nelems,   \
-                                                       size_t * restrict idxs, \
+                                                       size_t *idxs,    \
                                                        const int *status, \
                                                        int##_size##_t value);
 
@@ -445,7 +445,7 @@ SHMEMC_CTX_WAIT_UNTIL_SOME(64, ge)
 
 #define SHMEMC_CTX_WAIT_UNTIL_ANY(_size, _opname)                       \
     size_t shmemc_ctx_wait_until_any_##_opname##_size(shmem_ctx_t ctx,  \
-                                                      int##_size##_t * restrict vars, \
+                                                      int##_size##_t *vars, \
                                                       size_t nelems,    \
                                                       const int *status, \
                                                       int##_size##_t value);
@@ -509,9 +509,9 @@ SHMEMC_CTX_TEST_ALL_VECTOR(64, ge)
 #define SHMEMC_CTX_TEST_SOME_VECTOR(_size, _opname)                     \
     size_t                                                              \
     shmemc_ctx_test_some_vector_##_opname##_size(shmem_ctx_t ctx,       \
-                                                 int##_size##_t * restrict vars, \
+                                                 int##_size##_t *vars,  \
                                                  size_t nelems,         \
-                                                 size_t * restrict idxs, \
+                                                 size_t *idxs,          \
                                                  const int *status,     \
                                                  void *values);
 
@@ -542,7 +542,7 @@ SHMEMC_CTX_TEST_SOME_VECTOR(64, ge)
 #define SHMEMC_CTX_TEST_ANY_VECTOR(_size, _opname)                      \
     size_t                                                              \
     shmemc_ctx_test_any_vector_##_opname##_size(shmem_ctx_t ctx,        \
-                                                int##_size##_t * restrict vars, \
+                                                int##_size##_t *vars,   \
                                                 size_t nelems,          \
                                                 const int *status,      \
                                                 void *values);
@@ -602,12 +602,12 @@ SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(16, ge)
 SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(32, ge)
 SHMEMC_CTX_WAIT_UNTIL_ALL_VECTOR(64, ge)
 
-#define SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(_size, _opname)   \
+#define SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(_size, _opname)               \
     size_t                                                              \
     shmemc_ctx_wait_until_some_vector_##_opname##_size(shmem_ctx_t ctx, \
-                                                       int##_size##_t * restrict vars, \
+                                                       int##_size##_t *vars, \
                                                        size_t nelems,   \
-                                                       size_t * restrict idxs, \
+                                                       size_t *idxs,    \
                                                        const int *status, \
                                                        void *values);
 
@@ -638,7 +638,7 @@ SHMEMC_CTX_WAIT_UNTIL_SOME_VECTOR(64, ge)
 #define SHMEMC_CTX_WAIT_UNTIL_ANY_VECTOR(_size, _opname)                \
     size_t                                                              \
     shmemc_ctx_wait_until_any_vector_##_opname##_size(shmem_ctx_t ctx,  \
-                                                      int##_size##_t * restrict vars, \
+                                                      int##_size##_t *vars, \
                                                       size_t nelems,    \
                                                       const int *status, \
                                                       void *values);
