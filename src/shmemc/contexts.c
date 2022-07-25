@@ -161,7 +161,7 @@ inline static void
 context_set_options(long options, shmemc_context_h ch)
 {
     ch->attr.serialized = options & SHMEM_CTX_SERIALIZED;
-    ch->attr.private    = options & SHMEM_CTX_PRIVATE;
+    ch->attr.privat     = options & SHMEM_CTX_PRIVATE;
     ch->attr.nostore    = options & SHMEM_CTX_NOSTORE;
 }
 

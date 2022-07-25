@@ -357,7 +357,7 @@ shmemc_team_destroy(shmemc_team_h th)
         size_t c;
 
         for (c = 0; c < th->nctxts; ++c) {
-            if (! th->ctxts[c]->attr.private) {
+            if (! th->ctxts[c]->attr.privat) {
                 shmemc_context_destroy(th->ctxts[c]);
             }
         }

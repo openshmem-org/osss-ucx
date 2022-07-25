@@ -106,7 +106,7 @@ typedef struct shmemc_team {
  */
 typedef struct shmemc_context_attr {
     bool serialized;
-    bool private;
+    bool privat;                /* "private" is c++ keyword */
     bool nostore;
 } shmemc_context_attr_t;
 

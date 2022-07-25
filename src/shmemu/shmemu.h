@@ -237,7 +237,7 @@ int shmemu_thread_level(const char *tn);
         if (shmemu_likely(ctx != SHMEM_CTX_INVALID)) {                  \
             shmemc_context_h ch = (shmemc_context_h) (_ctx);            \
                                                                         \
-            if (ch->attr.private) {                                     \
+            if (ch->attr.privat) {                                      \
                 const threadwrap_thread_t me = threadwrap_thread_id();  \
                 const threadwrap_thread_t cr = ch->creator_thread;      \
                 const unsigned long ulme = (unsigned long) me;          \

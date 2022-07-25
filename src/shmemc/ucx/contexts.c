@@ -30,7 +30,7 @@ shmemc_ucx_context_progress(shmemc_context_h ch)
     if (ch->attr.serialized) {
         wkpm.thread_mode = UCS_THREAD_MODE_SERIALIZED;
     }
-    else if (ch->attr.private) {
+    else if (ch->attr.privat) {
         wkpm.thread_mode = UCS_THREAD_MODE_SINGLE;
     }
     else {
