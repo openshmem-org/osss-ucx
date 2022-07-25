@@ -10,7 +10,7 @@ Here are some tested configurations:
 
 |Launcher|PMIx|Stability level|Note|
 |---:|---:|---:|---:|
-|OMPI 4.1.3|4.1.2||Author's more stable env|
+|OMPI 4.1.4|4.1.2||Author's more stable env|
 |OMPI github main|4.1.2||Author's less stable env|
 |PRRTE github main|github master|lowest|Author's bleeding-edge env|
 
