@@ -59,7 +59,7 @@ AM_CONDITIONAL([ENABLE_PSHMEM], [test "x$enable_pshmem" = "xyes"])
 AS_IF([test "x$enable_pshmem" != "xyes"], [enable_pshmem=no])
 
 #
-# address translation: disabled by default
+# addresses are aligned everywhere: disabled by default
 #
 AC_ARG_ENABLE([aligned-addresses],
 	AS_HELP_STRING([--enable-aligned-addresses],
@@ -75,7 +75,7 @@ AS_IF([test "x$enable_aligned_addresses" != "xyes"],
 	    [enable_aligned_addresses=no])
 
 #
-# threads: enabled by default
+# thread levels: enabled by default
 #
 AC_ARG_ENABLE([threads],
 	AS_HELP_STRING([--disable-threads],
@@ -90,7 +90,7 @@ AM_CONDITIONAL([ENABLE_THREADS], [test "x$enable_threads" != "xno"])
 AS_IF([test "x$enable_threads" != "xno"], [enable_threads=yes])
 
 #
-# Default symmetric heap size
+# Default symmetric heap size: default in configure.ac
 #
 AC_ARG_WITH([heap-size],
 	AS_HELP_STRING([--with-heap-size=VALUE],
