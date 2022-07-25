@@ -14,4 +14,5 @@ thispe_info_t proc = {
     .refcount = 0,               /* init never called */
     .li.rank = -1,               /* undefined position */
     .progress_thread = false,    /* no special progress */
+    .nodename = NULL,            /* node on which this PE runs */
 };
