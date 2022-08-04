@@ -68,7 +68,7 @@ finalize_helper(void)
 
     shmemc_finalize();
     collectives_finalize();
-    /* don't need a shmemt_finalize() */
+    shmemt_finalize();
     shmemu_finalize();
 
 #ifdef ENABLE_EXPERIMENTAL

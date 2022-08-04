@@ -10,6 +10,10 @@
 #ifdef ENABLE_THREADS
 
 void shmemt_init(void);
+/*
+ * There's no shutdown work involved
+ */
+inline static void shmemt_finalize(void) {}
 
 void shmemt_mutex_init(void);
 void shmemt_mutex_destroy(void);
