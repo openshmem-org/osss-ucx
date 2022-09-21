@@ -214,7 +214,7 @@ echo
 echo "         C Compiler: \"$CC\""
 echo "            C Flags: \"$CFLAGS\""
 echo "       C++ Compiler: \"$CXX\""
-echo "          C++ Flags: \"$XXCFLAGS\""
+echo "          C++ Flags: \"$CXXFLAGS\""
 echo
 echo "            Logging: $enable_logging"
 echo "          Debugging: $enable_debug"
