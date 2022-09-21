@@ -38,11 +38,19 @@ shmemu_deprecate(const char *fn_name, const shmemu_version_t *vp)
 
     kh_value(table, k) = true;
 
-    logger(LOG_DEPRECATE,
-           "\"%s\" is deprecated as of specification %d.%d",
-           fn_name,
-           vp->major, vp->minor
-           );
+    if (vp != NULL) {
+        logger(LOG_DEPRECATE,
+               "\"%s\" is deprecated as of specification %d.%d",
+               fn_name,
+               vp->major, vp->minor
+               );
+    }
+    else {
+        logger(LOG_DEPRECATE,
+               "\"%s\" is deprecated",
+               fn_name
+               );
+    }
 }
 
 void
