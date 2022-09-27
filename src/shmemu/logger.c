@@ -35,7 +35,7 @@ static int stamp_width;
 /*
  * cache process ID
  */
-static int mypid;
+static pid_t mypid;
 
 /*
  * keep track of trace events
@@ -45,7 +45,7 @@ KHASH_MAP_INIT_STR(events_hash, bool)
 
 static khash_t(events_hash) *events;
 
-inline static void
+static void
 event_set(shmemu_log_t name, bool state)
 {
     khiter_t k;
@@ -55,7 +55,7 @@ event_set(shmemu_log_t name, bool state)
     kh_value(events, k) = state;
 }
 
-inline static bool
+static bool
 event_enabled(shmemu_log_t name)
 {
     const khiter_t k = kh_get(events_hash, events, name);
@@ -63,7 +63,7 @@ event_enabled(shmemu_log_t name)
     return (k != kh_end(events)) ? kh_value(events, k) : false;
 }
 
-inline static void
+static void
 upperize(char *str)
 {
     char *q;
@@ -73,7 +73,7 @@ upperize(char *str)
     }
 }
 
-inline static void
+static void
 parse_log_events(void)
 {
     const char *delims = ",:;";
@@ -94,16 +94,84 @@ parse_log_events(void)
     }
 }
 
+/*
+ * %p - process ID
+ * %h - host name
+ * %n - my rank/PE
+ * %N - number of ranks/PEs
+ */
+
+static void
+parse_logfile_name(char *name, size_t len, const char *template)
+{
+    char *p = (char *) template;
+    char *lp = name;
+
+    while (*p != '\0') {
+        if (*p == '%') {     /* potential format, look at next char */
+            ++p;
+
+            if (*p == '\0') {   /* at end, copy the % */
+                *lp++ = '%';
+                break;
+            }
+
+            if (*p == 'p') {
+                ++p;
+                /* copy in pid, walk to end */
+                snprintf(lp, len, "%d", mypid);
+                while (*lp != '\0') {
+                    ++lp;
+                }
+            }
+            else if (*p == 'h') {
+                ++p;
+                snprintf(lp, len, "%s", proc.nodename);
+                while (*lp != '\0') {
+                    ++lp;
+                }
+            }
+            else if (*p == 'n') {
+                ++p;
+                snprintf(lp, len, "%d", shmemc_my_pe());
+                while (*lp != '\0') {
+                    ++lp;
+                }
+            }
+            else if (*p == 'N') {
+                ++p;
+                snprintf(lp, len, "%d", shmemc_n_pes());
+                while (*lp != '\0') {
+                    ++lp;
+                }
+            }
+            else {              /* not format, so just copy */
+                *lp++ = '%';
+                *lp++ = *p++;
+            }
+        }
+        else {                  /* straight copy */
+            *lp++ = *p++;
+        }
+    }
+    *lp = '\0';
+
+}
+
 void
 shmemu_logger_init(void)
 {
+    char lfname[PATH_MAX];
+
     if (! proc.env.logging) {
         return;
     }
 
-    /* TODO "%" modifiers for extra info */
+    mypid = (int) getpid();
+
     if (proc.env.logging_file != NULL) {
-        log_stream = fopen(proc.env.logging_file, "w");
+        parse_logfile_name((char *) lfname, PATH_MAX, proc.env.logging_file);
+        log_stream = fopen(lfname, "w");
         if (log_stream == NULL) {
             shmemu_fatal(MODULE ": can't write to log file \"%s\"",
                          proc.env.logging_file);
@@ -140,8 +208,6 @@ shmemu_logger_init(void)
     event_set(LOG_ATOMICS,     false);
 
     parse_log_events();
-
-    mypid = (int) getpid();
 }
 
 void
