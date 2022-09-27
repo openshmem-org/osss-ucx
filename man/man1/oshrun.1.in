@@ -70,7 +70,9 @@ contexts, info, reductions, barriers, deprecate, locks, atomics; or
 .RE
 .RS 2
 .IP "SHMEM_LOGGING_FILE (string: default none)"
-filename to receive logging information.
+filename to receive logging information.  "%" substitutions are: "%h"
+for hostname, "%p" for process ID, "%n" for PE number, and "%N" for
+the number of PEs.
 .RE
 .RS 2
 .IP "SHMEM_PREALLOC_CTXS (integer: default 64)"
