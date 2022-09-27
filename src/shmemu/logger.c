@@ -104,15 +104,16 @@ parse_log_events(void)
 static void
 parse_logfile_name(char *name, size_t len, const char *template)
 {
+    const char format_character = '%';
     char *p = (char *) template;
     char *lp = name;
 
     while (*p != '\0') {
-        if (*p == '%') {     /* potential format, look at next char */
+        if (*p == format_character) { /* potential format, check next char */
             ++p;
 
-            if (*p == '\0') {   /* at end, copy the % */
-                *lp++ = '%';
+            if (*p == '\0') {   /* at end, copy the format */
+                *lp++ = format_character;
                 break;
             }
 
@@ -146,7 +147,7 @@ parse_logfile_name(char *name, size_t len, const char *template)
                 }
             }
             else {              /* not format, so just copy */
-                *lp++ = '%';
+                *lp++ = format_character;
                 *lp++ = *p++;
             }
         }
@@ -155,7 +156,6 @@ parse_logfile_name(char *name, size_t len, const char *template)
         }
     }
     *lp = '\0';
-
 }
 
 void
