@@ -223,36 +223,35 @@ static char tmp2[TRACE_MSG_BUF_SIZE_2];
 void
 shmemu_logger(shmemu_log_t evt, const char *fmt, ...)
 {
-    if (! proc.env.logging) {
-        return;
-    }
+    if (proc.env.logging) {
 
-    if (event_enabled(evt) || event_enabled(LOG_ALL)) {
-        va_list ap;
+        if (event_enabled(evt) || event_enabled(LOG_ALL)) {
+            va_list ap;
 
-        snprintf(tmp1, TRACE_MSG_BUF_SIZE_1,
-                 "[%*d:%s:%d:%6.6f]",
-                 pe_width, proc.li.rank,
-                 proc.nodename,
-                 mypid,
-                 shmemu_timer()
-                 );
+            snprintf(tmp1, TRACE_MSG_BUF_SIZE_1,
+                     "[%*d:%s:%d:%6.6f]",
+                     pe_width, proc.li.rank,
+                     proc.nodename,
+                     mypid,
+                     shmemu_timer()
+                     );
 
-        snprintf(tmp2, TRACE_MSG_BUF_SIZE_2,
-                 "%-*s %s: ",
-                 stamp_width, tmp1,
-                 evt
-                 );
+            snprintf(tmp2, TRACE_MSG_BUF_SIZE_2,
+                     "%-*s %s: ",
+                     stamp_width, tmp1,
+                     evt
+                     );
 
-        va_start(ap, fmt);
-        vsnprintf(tmp1, TRACE_MSG_BUF_SIZE_1, fmt, ap);
-        va_end(ap);
+            va_start(ap, fmt);
+            vsnprintf(tmp1, TRACE_MSG_BUF_SIZE_1, fmt, ap);
+            va_end(ap);
 
-        STRNCAT_SAFE(tmp2, tmp1, TRACE_MSG_BUF_SIZE_1);
-        STRNCAT_SAFE(tmp2, "\n", 2);
+            STRNCAT_SAFE(tmp2, tmp1, TRACE_MSG_BUF_SIZE_1);
+            STRNCAT_SAFE(tmp2, "\n", 2);
 
-        fputs(tmp2, log_stream);
-        /* make sure this all goes out in 1 burst */
-        fflush(log_stream);
+            fputs(tmp2, log_stream);
+            /* make sure this all goes out in 1 burst */
+            fflush(log_stream);
+        }
     }
 }
