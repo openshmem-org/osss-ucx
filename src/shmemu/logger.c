@@ -101,6 +101,15 @@ parse_log_events(void)
  * %N - number of ranks/PEs
  */
 
+#define REPLACE(_fmt, _val)                      \
+    do {                                         \
+        ++p;                                     \
+        snprintf(lp, len, _fmt, _val);           \
+        while (*lp != '\0') {                    \
+            ++lp;                                \
+        }                                        \
+    } while (0)
+
 static void
 parse_logfile_name(char *name, size_t len, const char *template)
 {
@@ -112,46 +121,31 @@ parse_logfile_name(char *name, size_t len, const char *template)
         if (*p == format_character) { /* potential format, check next char */
             ++p;
 
-            if (*p == '\0') {   /* at end, copy the format */
+            if (*p == '\0') {   /* literal copy, stop */
                 *lp++ = format_character;
                 break;
             }
 
-            if (*p == 'p') {
-                ++p;
-                /* copy in pid, walk to end */
-                snprintf(lp, len, "%d", mypid);
-                while (*lp != '\0') {
-                    ++lp;
-                }
-            }
-            else if (*p == 'h') {
-                ++p;
-                snprintf(lp, len, "%s", proc.nodename);
-                while (*lp != '\0') {
-                    ++lp;
-                }
-            }
-            else if (*p == 'n') {
-                ++p;
-                snprintf(lp, len, "%d", shmemc_my_pe());
-                while (*lp != '\0') {
-                    ++lp;
-                }
-            }
-            else if (*p == 'N') {
-                ++p;
-                snprintf(lp, len, "%d", shmemc_n_pes());
-                while (*lp != '\0') {
-                    ++lp;
-                }
-            }
-            else {              /* not format, so just copy */
+            switch(*p) {
+            case 'p':
+                REPLACE("%d", mypid);
+                break;
+            case 'h':
+                REPLACE("%s", proc.nodename);
+                break;
+            case 'n':
+                REPLACE("%d", shmemc_my_pe());
+                break;
+            case 'N':
+                REPLACE("%d", shmemc_n_pes());
+                break;
+            default:            /* not format, so just copy */
                 *lp++ = format_character;
                 *lp++ = *p++;
+                break;
             }
         }
-        else {                  /* straight copy */
+        else {                  /* literal copy */
             *lp++ = *p++;
         }
     }
@@ -161,65 +155,61 @@ parse_logfile_name(char *name, size_t len, const char *template)
 void
 shmemu_logger_init(void)
 {
-    char lfname[PATH_MAX];
+    if (proc.env.logging) {
+        char lfname[PATH_MAX];
 
-    if (! proc.env.logging) {
-        return;
-    }
+        mypid = getpid();
 
-    mypid = (int) getpid();
-
-    if (proc.env.logging_file != NULL) {
-        parse_logfile_name((char *) lfname, PATH_MAX, proc.env.logging_file);
-        log_stream = fopen(lfname, "w");
-        if (log_stream == NULL) {
-            shmemu_fatal(MODULE ": can't write to log file \"%s\"",
-                         proc.env.logging_file);
-            /* NOT REACHED */
+        if (proc.env.logging_file != NULL) {
+            parse_logfile_name((char *) lfname, PATH_MAX, proc.env.logging_file);
+            log_stream = fopen(lfname, "w");
+            if (log_stream == NULL) {
+                shmemu_fatal(MODULE ": can't write to log file \"%s\"",
+                             proc.env.logging_file);
+                /* NOT REACHED */
+            }
         }
+        else {
+            log_stream = stderr;
+        }
+
+        /* how wide to display things */
+        pe_width = (int) ceil(log10((double) proc.li.nranks));
+        stamp_width = 30 - pe_width;
+        if (stamp_width < 1) {
+            stamp_width = 1;
+        }
+
+        events = kh_init(events_hash);
+
+        event_set(LOG_INIT,        false);
+        event_set(LOG_FINALIZE,    false);
+        event_set(LOG_MEMORY,      false);
+        event_set(LOG_FENCE,       false);
+        event_set(LOG_QUIET,       false);
+        event_set(LOG_HEAPS,       false);
+        event_set(LOG_RMA,         false);
+        event_set(LOG_CONTEXTS,    false);
+        event_set(LOG_RANKS,       false);
+        event_set(LOG_INFO,        false);
+        event_set(LOG_REDUCTIONS,  false);
+        event_set(LOG_COLLECTIVES, false);
+        event_set(LOG_DEPRECATE,   false);
+        event_set(LOG_LOCKS,       false);
+        event_set(LOG_ATOMICS,     false);
+
+        parse_log_events();
     }
-    else {
-        log_stream = stderr;
-    }
-
-    /* how wide to display things */
-    pe_width = (int) ceil(log10((double) proc.li.nranks));
-    stamp_width = 30 - pe_width;
-    if (stamp_width < 1) {
-        stamp_width = 1;
-    }
-
-    events = kh_init(events_hash);
-
-    event_set(LOG_INIT,        false);
-    event_set(LOG_FINALIZE,    false);
-    event_set(LOG_MEMORY,      false);
-    event_set(LOG_FENCE,       false);
-    event_set(LOG_QUIET,       false);
-    event_set(LOG_HEAPS,       false);
-    event_set(LOG_RMA,         false);
-    event_set(LOG_CONTEXTS,    false);
-    event_set(LOG_RANKS,       false);
-    event_set(LOG_INFO,        false);
-    event_set(LOG_REDUCTIONS,  false);
-    event_set(LOG_COLLECTIVES, false);
-    event_set(LOG_DEPRECATE,   false);
-    event_set(LOG_LOCKS,       false);
-    event_set(LOG_ATOMICS,     false);
-
-    parse_log_events();
 }
 
 void
 shmemu_logger_finalize(void)
 {
-    if (! proc.env.logging) {
-        return;
+    if (proc.env.logging) {
+        fclose(log_stream);
+
+        kh_destroy(events_hash, events);
     }
-
-    fclose(log_stream);
-
-    kh_destroy(events_hash, events);
 }
 
 #define TRACE_MSG_BUF_SIZE_1 256
