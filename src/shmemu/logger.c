@@ -155,13 +155,15 @@ parse_logfile_name(char *name, size_t len, const char *template)
 void
 shmemu_logger_init(void)
 {
-    if (proc.env.logging) {
-        char lfname[PATH_MAX];
+    mypid = getpid();
 
-        mypid = getpid();
+    if (proc.env.logging) {
 
         if (proc.env.logging_file != NULL) {
-            parse_logfile_name((char *) lfname, PATH_MAX, proc.env.logging_file);
+            char lfname[PATH_MAX];
+
+            parse_logfile_name((char *) lfname, PATH_MAX,
+                               proc.env.logging_file);
             log_stream = fopen(lfname, "w");
             if (log_stream == NULL) {
                 shmemu_fatal(MODULE ": can't write to log file \"%s\"",
