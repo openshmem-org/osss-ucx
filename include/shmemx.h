@@ -143,8 +143,8 @@ extern "C"
     /*
      * context sessions
      */
-    void shmemx_ctx_start_session(shmem_ctx_t ctx);
-    void shmemx_ctx_end_session(shmem_ctx_t ctx);
+    void shmemx_ctx_session_start(shmem_ctx_t ctx);
+    void shmemx_ctx_session_stop(shmem_ctx_t ctx);
 
     /*
      * multiple symmetric heap support
