@@ -36,7 +36,7 @@ static pmix_key_t k2;
 #endif /* ENABLE_ALIGNED_ADDRESSES */
 
 /*
- * Make local info avaialable to PMIx
+ * Make local info available to PMIx
  */
 
 static const char *wrkr_exch_fmt   = "w:%d"; /* pe */
