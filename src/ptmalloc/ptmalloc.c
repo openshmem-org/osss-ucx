@@ -4849,7 +4849,7 @@ size_t destroy_mspace(mspace msp) {
   if (ok_magic(ms)) {
     msegmentptr sp = &ms->seg;
     while (sp != 0) {
-      char* base = sp->base;
+      /* NOT USED: char* base = sp->base; */
       size_t size = sp->size;
       flag_t flag = sp->sflags;
       sp = sp->next;
@@ -4985,6 +4985,7 @@ void* mspace_malloc(mspace msp, size_t bytes) {
 }
 
 void mspace_free(mspace msp, void* mem) {
+  (void) msp; /* NOT USED */
   if (mem != 0) {
     mchunkptr p  = mem2chunk(mem);
 #if FOOTERS
